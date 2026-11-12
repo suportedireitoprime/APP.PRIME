@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileDown,
   Layers,
@@ -9,6 +9,7 @@ import {
   Share2,
   Paperclip,
   ChevronRight,
+  ChevronDown,
   Check,
   Copy,
   Table2,
@@ -19,12 +20,15 @@ import {
   Workflow,
   ArrowRight,
   Target,
+  ExternalLink,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { haptic } from '@/lib/nativeHaptics';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   CitationChip,
   SourcesFooter,
@@ -217,6 +221,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
   onOpenShare,
 }) => {
   const [isGrafoOpen, setIsGrafoOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [showSourcesInline, setShowSourcesInline] = useState(false);
 
   return (
     <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
@@ -311,7 +317,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                           <Icon className={`w-4.5 h-4.5 ${iconColor}`} strokeWidth={2.4} />
                         </div>
                         <h1
-                          className={`text-[16.5px] sm:text-[18.5px] font-black tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                          className={`text-[16.5px] sm:text-[18.5px] font-black tracking-wide uppercase leading-tight font-sans ${textColor} m-0 p-0 flex-1`}
                           style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
                         >
                           {title}
@@ -324,12 +330,12 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                     const isExemplo = title.toUpperCase().includes('EXEMPLO');
                     return (
                       <div className="mt-6 mb-3 first:mt-1 pb-2 border-b border-white/10 flex items-center justify-between gap-2.5 min-h-[32px]">
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
                             <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
                           </div>
                           <h2
-                            className={`text-[15px] sm:text-[16.5px] font-extrabold tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                            className={`text-[15px] sm:text-[16.5px] font-extrabold tracking-wide uppercase leading-tight font-sans ${textColor} m-0 p-0`}
                             style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
                           >
                             {title}
@@ -359,7 +365,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                           <Icon className={`w-3.5 h-3.5 ${iconColor}`} strokeWidth={2.2} />
                         </div>
                         <h3
-                          className={`text-[13.5px] sm:text-[15px] font-bold tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                          className={`text-[13.5px] sm:text-[15px] font-bold tracking-wide uppercase leading-tight font-sans ${textColor} m-0 p-0 flex-1`}
                           style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
                         >
                           {title}
@@ -549,8 +555,12 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
               </ReactMarkdown>
             </motion.div>
 
-            {/* Fontes citadas na internet (como nas builds anteriores) */}
-            {msg.sources && msg.sources.length > 0 && <SourcesFooter sources={msg.sources} />}
+            {/* Fontes citadas na internet (com toggle expansível) */}
+            {msg.sources && msg.sources.length > 0 && showSourcesInline && (
+              <div className="mt-2">
+                <SourcesFooter sources={msg.sources} />
+              </div>
+            )}
 
             {/* Modal do Grafo do Exemplo Prático */}
             <AssistenteExemploGrafoModal
@@ -563,65 +573,201 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
               <motion.div
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
+                className="mt-3 pt-3 border-t border-border/60 flex items-center gap-2"
               >
-                <ActionBtn
-                  icon={Workflow}
-                  label="Grafo"
-                  colorClass="text-sky-400 group-hover:text-sky-300"
-                  hoverClass="hover:border-sky-500/40 hover:bg-sky-500/10"
-                  onClick={() => setIsGrafoOpen(true)}
-                />
-                <ActionBtn
-                  icon={Copy}
-                  label="Copiar"
-                  colorClass="text-zinc-400 group-hover:text-zinc-300"
-                  hoverClass="hover:border-zinc-500/40 hover:bg-zinc-500/10"
-                  onClick={() => {
-                    const txt = formatForWhatsApp(stripCitations(msg.content));
-                    navigator.clipboard.writeText(txt).then(() => {
-                      toast.success('Mensagem copiada!');
-                      haptic.selection();
-                    });
-                  }}
-                />
-                <ActionBtn
-                  icon={FileDown}
-                  label="PDF"
-                  colorClass="text-rose-500 group-hover:text-rose-400"
-                  hoverClass="hover:border-rose-500/40 hover:bg-rose-500/10"
-                  onClick={() => onExportPdf(msg)}
-                />
-                <ActionBtn
-                  icon={Layers}
-                  label="Flashcards"
-                  colorClass="text-emerald-400 group-hover:text-emerald-300"
-                  hoverClass="hover:border-emerald-500/40 hover:bg-emerald-500/10"
-                  onClick={() => onGenerateArtifact(msg, 'flashcards')}
-                />
-                <ActionBtn
-                  icon={HelpCircle}
-                  label="Questões"
-                  colorClass="text-amber-400 group-hover:text-amber-300"
-                  hoverClass="hover:border-amber-500/40 hover:bg-amber-500/10"
-                  onClick={() => onGenerateArtifact(msg, 'questoes')}
-                />
-                <ActionBtn
-                  icon={GitBranch}
-                  label="Mapa"
-                  colorClass="text-purple-400 group-hover:text-purple-300"
-                  hoverClass="hover:border-purple-500/40 hover:bg-purple-500/10"
-                  onClick={() => onGenerateArtifact(msg, 'mapa')}
-                />
-                <ActionBtn
-                  icon={BookOpen}
-                  label="Termos"
-                  colorClass="text-sky-400 group-hover:text-sky-300"
-                  hoverClass="hover:border-sky-500/40 hover:bg-sky-500/10"
-                  onClick={() => onGenerateArtifact(msg, 'termos')}
-                />
-                <span className="ml-auto">
+                {/* Botão Único Consolidado de Ferramentas / Ações */}
+                <Popover open={isToolsOpen} onOpenChange={setIsToolsOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => haptic.light()}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-white/15 text-xs font-semibold text-zinc-100 hover:text-white transition-all active:scale-95 shadow-sm"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="text-[12px] font-bold">Ações & Estudo</span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
+                          isToolsOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="top"
+                    align="start"
+                    sideOffset={8}
+                    className="w-56 p-1.5 rounded-2xl bg-[#14161a] border border-white/15 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                  >
+                    <div className="px-2.5 py-1.5 mb-1 text-[10px] font-bold tracking-wider text-zinc-400 uppercase border-b border-white/10 flex items-center justify-between">
+                      <span>Ferramentas da Resposta</span>
+                      <Sparkles className="w-3 h-3 text-amber-400/80" />
+                    </div>
 
+                    <div className="space-y-0.5">
+                      {/* Grafo */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          setIsGrafoOpen(true);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-sky-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shrink-0">
+                          <Workflow className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Grafo do Caso</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Fluxo visual das partes</span>
+                        </div>
+                      </button>
+
+                      {/* Copiar */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          const txt = formatForWhatsApp(stripCitations(msg.content));
+                          navigator.clipboard.writeText(txt).then(() => {
+                            toast.success('Mensagem copiada!');
+                          });
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-zinc-800 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0">
+                          <Copy className="w-3.5 h-3.5 text-zinc-300 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Copiar Texto</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Formatado p/ WhatsApp</span>
+                        </div>
+                      </button>
+
+                      {/* PDF */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          onExportPdf(msg);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-rose-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center shrink-0">
+                          <FileDown className="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Exportar PDF</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Baixar estudo diagramado</span>
+                        </div>
+                      </button>
+
+                      <div className="my-1 border-t border-white/5" />
+
+                      {/* Flashcards */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          onGenerateArtifact(msg, 'flashcards');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-emerald-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                          <Layers className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Criar Flashcards</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Cartões para memorização</span>
+                        </div>
+                      </button>
+
+                      {/* Questões */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          onGenerateArtifact(msg, 'questoes');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-amber-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                          <HelpCircle className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Gerar Questões</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Treinar no padrão OAB</span>
+                        </div>
+                      </button>
+
+                      {/* Mapa */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          onGenerateArtifact(msg, 'mapa');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-purple-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center shrink-0">
+                          <GitBranch className="w-3.5 h-3.5 text-purple-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Mapa Mental</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Diagrama ramificado</span>
+                        </div>
+                      </button>
+
+                      {/* Termos */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setIsToolsOpen(false);
+                          onGenerateArtifact(msg, 'termos');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-zinc-200 hover:text-white hover:bg-cyan-500/15 transition-all text-left group"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                          <BookOpen className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-[12px] leading-tight">Glossário de Termos</span>
+                          <span className="text-[10px] text-zinc-400 block leading-tight">Conceitos jurídicos-chave</span>
+                        </div>
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Botão "Ver Fontes" quando houver fontes citadas */}
+                {msg.sources && msg.sources.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setShowSourcesInline((prev) => !prev);
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 shadow-sm ${
+                      showSourcesInline
+                        ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                        : 'bg-zinc-900/90 hover:bg-zinc-800 border-white/15 text-zinc-300 hover:text-white'
+                    }`}
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span className="text-[12px]">Ver Fontes</span>
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500/30 text-rose-200">
+                      {msg.sources.length}
+                    </span>
+                  </button>
+                )}
+
+                <span className="ml-auto flex items-center gap-1.5">
                   <ChatFeedback
                     messageId={msg.id}
                     sessionId={sessionId}

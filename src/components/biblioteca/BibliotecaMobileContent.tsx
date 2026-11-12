@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, Layers } from 'lucide-react';
+import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, Layers, ArrowUpRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { directImg, prefetchImages } from '@/lib/cdnImg';
@@ -22,6 +22,7 @@ import {
 } from '@/lib/bibliotecaTracking';
 import { styleForArea } from '@/lib/bibliotecaIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import BibliotecaHero from './BibliotecaHero';
 import BibliotecaAtalhosBar from './BibliotecaAtalhosBar';
 import BibliotecaContinuarLeituraBanner from './BibliotecaContinuarLeituraBanner';
@@ -281,8 +282,8 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   // Pré-aquecimento das capas das Áreas do Direito (0ms)
   useEffect(() => {
     areasList.slice(0, 14).forEach((item) => {
-      const coverData = getAreaCover(item.name);
-      const url = coverData?.cover || bibliotecaCoverImg;
+      const discTheme = getDisciplinaVisualTheme(item.name);
+      const url = discTheme?.fundoAssetUrl || getAreaCover(item.name)?.cover || bibliotecaCoverImg;
       if (url) {
         const img = new Image();
         img.src = url;
@@ -377,11 +378,14 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             </div>
           </div>
 
-          {/* Carrossel Horizontal Fluido com Capas 3:4 */}
-          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+          {/* Carrossel Horizontal Fluido com Capas 3:4 das Aulas Interativas */}
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
             {areasList.map((item, idx) => {
-              const coverData = getAreaCover(item.name);
-              const coverUrl = coverData?.cover || bibliotecaCoverImg;
+              const discTheme = getDisciplinaVisualTheme(item.name);
+              const coverUrl = discTheme?.fundoAssetUrl || getAreaCover(item.name)?.cover || bibliotecaCoverImg;
+              const corTema = discTheme?.primary || '#e11d48';
+              const corHighlight = discTheme?.highlight || '#ffe4e6';
+              const AreaIcon = styleForArea(item.name).icon || BookOpen;
 
               return (
                 <div
@@ -390,9 +394,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                     haptic.selection();
                     onAbrirMateria(item.name);
                   }}
-                  className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  className="snap-start shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                 >
-                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                  <div 
+                    className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transition-all duration-300 shadow-md group-hover:shadow-xl"
+                    style={{
+                      borderColor: `${corTema}55`,
+                      boxShadow: `0 10px 24px -4px rgba(0,0,0,0.85), 0 0 16px ${corTema}30, inset 0 1px 1px rgba(255,255,255,0.15)`,
+                    }}
+                  >
                     <img
                       src={coverUrl}
                       alt={item.name}
@@ -400,14 +410,50 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+
+                    {/* Gradiente de profundidade para legibilidade e visual das Aulas Interativas */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/40" />
+
+                    {/* Ícone SVG de Livro no Topo à Esquerda com Pill Translúcida */}
+                    <div className="absolute top-2.5 left-2.5 z-10">
+                      <div 
+                        className="w-7 h-7 rounded-xl bg-black/65 backdrop-blur-md border flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+                        style={{
+                          borderColor: `${corTema}60`,
+                        }}
+                      >
+                        <AreaIcon className="w-3.5 h-3.5 text-white drop-shadow-sm" strokeWidth={2.2} />
+                      </div>
+                    </div>
+
+                    {/* Seta no Topo à Direita para Ação Direta */}
+                    <div className="absolute top-2.5 right-2.5 z-10">
+                      <div 
+                        className="w-7 h-7 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg group-hover:border-white/40 group-hover:bg-black/80 transition-all"
+                      >
+                        <ArrowUpRight className="w-3.5 h-3.5 text-white/90 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.4} />
+                      </div>
+                    </div>
+
+                    {/* Título e Badge Estilo Aulas Interativas no Rodapé da Capa */}
+                    <div className="absolute inset-x-0 bottom-0 p-2.5 z-10 flex flex-col justify-end">
+                      <span 
+                        className="self-start text-[9px] font-mono font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-black/70 border border-white/10 mb-1"
+                        style={{ color: corHighlight }}
+                      >
+                        {item.count ? `${item.count} ${item.count === 1 ? 'OBRA' : 'OBRAS'}` : 'ACERVO'}
+                      </span>
+                      <h4 className="font-serif font-black text-xs sm:text-[13px] text-white uppercase leading-tight line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                        {item.name}
+                      </h4>
+                    </div>
                   </div>
 
-                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
+                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white/90 group-hover:text-rose-300 transition-colors line-clamp-1 mt-2 leading-snug">
                     {item.name}
                   </p>
                   <p className="text-[10.5px] text-white/50 truncate mt-0.5">
-                    {item.count ? `${item.count} ${item.count === 1 ? 'obra' : 'obras'}` : 'Acervo completo'}
+                    {item.count ? `${item.count} ${item.count === 1 ? 'obra disponível' : 'obras disponíveis'}` : 'Acervo completo'}
                   </p>
                 </div>
               );
