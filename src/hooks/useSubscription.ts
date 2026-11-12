@@ -120,7 +120,6 @@ interface Options {
 export function useSubscription(options: Options = {}): SubscriptionState {
   const { pollOnMount = false } = options;
   const { user } = useAuth();
-  const wasPremium = useRef(false);
   // Snapshot offline: hidrata imediatamente do cache local para não travar telas
   // premium quando o dispositivo está sem rede.
   const cacheKey = user ? `direitoprime:sub:${user.id}` : null;
@@ -525,33 +524,6 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       supabase.removeChannel(channel);
     };
   }, [user, nonce, pollOnMount]);
-
-  // GA4 / Telemetria: dispara `assinatura_ativada` na primeira vez que o Premium fica ativo
-  // Deduplicado via localStorage para não registrar a mesma compra toda vez que o app for aberto (sessão).
-  useEffect(() => {
-    if (!state.isPremium || state.loading || state.isAdminOverride) return;
-    if (wasPremium.current) return;
-    
-    // Adicionamos a data de início (startedAt) se existir, para que renovações ou 
-    // re-assinaturas futuras do mesmo plano sejam registradas corretamente.
-    const startedAtSuffix = state.startedAt ? `:${state.startedAt.split('T')[0]}` : '';
-    const localKey = `direitoprime:sub_logged_v2:${user?.id}:${state.plano}${startedAtSuffix}`;
-    
-    if (typeof window !== 'undefined') {
-      try {
-        if (window.localStorage.getItem(localKey)) {
-          wasPremium.current = true;
-          return;
-        }
-        window.localStorage.setItem(localKey, '1');
-      } catch {}
-    }
-
-    wasPremium.current = true;
-    import('@/lib/appEvents').then(({ appEvents }) =>
-      appEvents.assinaturaAtivada({ plano: state.plano, source: state.source })
-    ).catch(() => {});
-  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, state.startedAt, user?.id]);
 
   // Atualização reativa instantânea (0ms) ao alternar perfil no Simulador de Desenvolvedor
   useEffect(() => {

@@ -652,8 +652,8 @@ export function AdminHojeCards() {
           const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           // 1. Novo assinante de HOJE (1º mês):
-          // A assinatura foi criada hoje OU o ciclo atual iniciou hoje e é o primeiro mês (< 20 dias da criação)
-          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
+          // A assinatura deve ter sido criada no período de hoje
+          if (createdInPeriod) {
             subUsers.set(uid, { plano: planName, valor });
             renewUsers.delete(uid);
           }
@@ -681,7 +681,7 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
-          if (createdInPeriod) {
+          if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
           } else if (isMensal && createdInPeriod && isCriadaAntes) {
@@ -707,7 +707,7 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
-          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
+          if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
           } else if (isMensal && startedInPeriod && isCriadaAntes) {
@@ -744,31 +744,32 @@ export function AdminHojeCards() {
           if (!inPeriod(e.created_at)) return;
 
           const meta = e.metadata || {};
+          const valorReal = typeof meta.value === 'number' && meta.value > 0 ? meta.value : 0;
+          // Ignora rigorosamente telemetria de app com valor R$ 0,00 ou inválido
+          if (valorReal <= 0) return;
+
           const plano = (meta.plano || 'anual').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício') || plano.includes('vital'));
           const isMensal = !isVit && !isAnual;
-          const valor = typeof meta.value === 'number' && meta.value > 0
-            ? meta.value
-            : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
 
           const hadPriorSub = hasPriorSubscription(e.user_id, em);
 
           if (isMensal && hadPriorSub) {
             if (!renewUsers.has(uid) && !subUsers.has(uid)) {
-              renewUsers.set(uid, { plano: planName, valor });
-            } else if (renewUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
-              renewUsers.set(uid, { plano: planName, valor });
+              renewUsers.set(uid, { plano: planName, valor: valorReal });
+            } else if (renewUsers.has(uid) && valorReal > 0) {
+              renewUsers.set(uid, { plano: planName, valor: valorReal });
             }
-          } else {
-            // Nova compra de hoje (1º mês do usuário)
+          } else if (!hadPriorSub) {
+            // Nova compra de hoje (1º mês do usuário real sem assinatura prévia)
             renewUsers.delete(uid);
             if (!subUsers.has(uid)) {
-              subUsers.set(uid, { plano: planName, valor });
-            } else if (typeof meta.value === 'number' && meta.value > 0) {
-              subUsers.set(uid, { plano: planName, valor });
+              subUsers.set(uid, { plano: planName, valor: valorReal });
+            } else if (valorReal > 0) {
+              subUsers.set(uid, { plano: planName, valor: valorReal });
             }
           }
         });
@@ -1109,8 +1110,8 @@ export function AdminHojeCards() {
             // "Renovou": estritamente MENSAL de assinatura antiga (2º mês em diante) cujo ciclo renovou hoje
             if (!isMensal || !startedInPeriod || !isCriadaAntes || !isSegundoMesOuMais) return;
           } else {
-            // "Assinou": assinaturas do 1º mês (criadas no período de hoje ou novo assinante)
-            if (!(createdInPeriod || (!isCriadaAntes && startedInPeriod))) return;
+            // "Assinou": assinaturas do 1º mês criadas no período de hoje
+            if (!createdInPeriod) return;
           }
 
           allLists.push({
@@ -1137,14 +1138,16 @@ export function AdminHojeCards() {
           if (!uid || existingUserIds.has(uid)) return;
 
           const meta = e.metadata || {};
+          const valorReal = typeof meta.value === 'number' && meta.value > 0 ? meta.value : 0;
+          // Ignora rigorosamente telemetria de app com valor R$ 0,00 ou inválido
+          if (valorReal <= 0) return;
+
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício') || planoLower.includes('vital'));
           const isMensal = !isVit && !isAnual;
-          const planValor = typeof meta.value === 'number' && meta.value > 0
-            ? meta.value
-            : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
+          const planValor = valorReal;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
 
           // Renovou é ESTRITAMENTE MENSAL!
