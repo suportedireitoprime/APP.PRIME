@@ -9,29 +9,29 @@ import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 
-/** Nomes curtos para dentro da capa (sem "Direito", max 2 linhas) */
+/** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
 const NOMES_CAPA: Record<string, string> = {
   'DIREITO PENAL': 'PENAL',
   'DIREITO CIVIL': 'CIVIL',
-  'DIREITO CONSTITUCIONAL': 'CONSTI-\nTUCIONAL',
-  'DIREITO ADMINISTRATIVO': 'ADMINIS-\nTRATIVO',
+  'DIREITO CONSTITUCIONAL': 'CONSTITUCIONAL',
+  'DIREITO ADMINISTRATIVO': 'ADMINISTRATIVO',
   'DIREITO DO TRABALHO': 'TRABALHO',
-  'DIREITO PROCESSUAL CIVIL': 'PROC.\nCIVIL',
-  'DIREITO PROCESSUAL PENAL': 'PROC.\nPENAL',
+  'DIREITO PROCESSUAL CIVIL': 'PROC. CIVIL',
+  'DIREITO PROCESSUAL PENAL': 'PROC. PENAL',
   'DIREITO TRIBUTÁRIO': 'TRIBUTÁRIO',
-  'DIREITO EMPRESARIAL': 'EMPRE-\nSARIAL',
+  'DIREITO EMPRESARIAL': 'EMPRESARIAL',
   'DIREITO AMBIENTAL': 'AMBIENTAL',
-  'DIREITO PREVIDENCIÁRIO': 'PREVIDEN-\nCIÁRIO',
-  'DIREITO PROCESSUAL DO TRABALHO': 'PROC. DO\nTRABALHO',
+  'DIREITO PREVIDENCIÁRIO': 'PREVIDENCIÁRIO',
+  'DIREITO PROCESSUAL DO TRABALHO': 'PROC. TRABALHO',
   'DIREITO FINANCEIRO': 'FINANCEIRO',
-  'DIREITO INTERNACIONAL PRIVADO': 'INT.\nPRIVADO',
-  'DIREITO URBANÍSTICO': 'URBANÍS-\nTICO',
-  'DIREITOS HUMANOS': 'DIREITOS\nHUMANOS',
-  'LEI PENAL ESPECIAL': 'LEIS\nESPECIAIS',
-  'TEORIA E FILOSOFIA DO DIREITO': 'FILOSOFIA\nDO DIREITO',
+  'DIREITO INTERNACIONAL PRIVADO': 'INT. PRIVADO',
+  'DIREITO URBANÍSTICO': 'URBANÍSTICO',
+  'DIREITOS HUMANOS': 'DIR. HUMANOS',
+  'LEI PENAL ESPECIAL': 'LEIS ESPECIAIS',
+  'TEORIA E FILOSOFIA DO DIREITO': 'FILOSOFIA',
   'DIREITO DESPORTIVO': 'DESPORTIVO',
-  'POLÍTICAS PÚBLICAS': 'POLÍTICAS\nPÚBLICAS',
-  'PORTUGUÊS JURÍDICO': 'PORTUGUÊS\nJURÍDICO',
+  'POLÍTICAS PÚBLICAS': 'POL. PÚBLICAS',
+  'PORTUGUÊS JURÍDICO': 'PORTUGUÊS JUR.',
   'FORMAÇÃO COMPLEMENTAR': 'FORMAÇÃO',
 };
 
@@ -342,7 +342,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                           >
                             <h2 
                               className={cn(
-                                "font-serif font-black uppercase leading-[1.1] text-center whitespace-pre-line transition-all duration-300",
+                                "font-serif font-black uppercase leading-[1.1] text-center break-words transition-all duration-300",
                                 isActive 
                                   ? "text-[13px] xs:text-[14.5px] sm:text-[17px] md:text-[19px] tracking-[0.06em]" 
                                   : "text-[10px] xs:text-[11px] sm:text-[13px] tracking-[0.04em]"
