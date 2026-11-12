@@ -1,11 +1,11 @@
-import { Suspense, useEffect } from 'react';
+﻿import { Suspense, useEffect } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useBibliotecasData } from '@/components/biblioteca/useBibliotecasData';
 import { BibliotecaMobileContent } from '@/components/biblioteca/BibliotecaMobileContent';
 import { BibliotecaModals } from '@/components/biblioteca/BibliotecaModals';
-import ShapeGrid from '@/components/ui/ShapeGrid';
+import bibliotecaCoverClara from '@/assets/biblioteca-cover-clara.webp';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
@@ -41,10 +41,19 @@ const Bibliotecas = () => {
   }
 
   return (
-    <main className="min-h-dvh bg-[#0D0D0D] text-white pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
-      {/* Fundo Padrão ShapeGrid */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-40">
-        <ShapeGrid />
+    <main className="min-h-dvh bg-[#09090b] text-white pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden select-none">
+      {/* ── Imagem Monumental de Biblioteca Clara no Fundo Inteiro da Página (Estilo Flashcards) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#09090b]">
+        <img
+          src={bibliotecaCoverClara}
+          alt="Biblioteca Monumental e Iluminada"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.2px] brightness-[0.92] contrast-[1.05]"
+        />
+        {/* Camada sutil para contraste e legibilidade de leitura */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/60 to-black/90 pointer-events-none" />
       </div>
 
       <div className="relative z-10">
