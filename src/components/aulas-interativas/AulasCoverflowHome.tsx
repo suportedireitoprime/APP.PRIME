@@ -268,7 +268,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                className="relative w-full flex items-center gap-3.5 xs:gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-82px)] xs:px-[calc(50vw-92px)] sm:px-[calc(50vw-107px)] md:px-[calc(50vw-125px)]"
+                className="relative w-full flex items-center gap-3.5 xs:gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation px-[calc(50vw-82px)] xs:px-[calc(50vw-92px)] sm:px-[calc(50vw-107px)] md:px-[calc(50vw-125px)]"
               >
                 {loopedDisciplinas.map((disc, idx) => {
                   const isActive = idx === activeCarouselIndex;
@@ -281,17 +281,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   return (
                     <div
                       key={`${disc.id}-${idx}`}
-                      onClick={() => {
-                        if (idx === activeCarouselIndex) {
-                          if (onSelectDisciplina) {
-                            onSelectDisciplina(disc.id);
-                          } else {
-                            onCardClick(disc, idx);
-                          }
-                        } else {
-                          onCardClick(disc, idx);
-                        }
-                      }}
+                      onClick={() => onCardClick(disc, idx)}
                       className="snap-center shrink-0 w-[165px] xs:w-[185px] sm:w-[215px] md:w-[250px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
                       {/* ── QUANTIDADE DE AULAS ACIMA DA CAPA ── */}
