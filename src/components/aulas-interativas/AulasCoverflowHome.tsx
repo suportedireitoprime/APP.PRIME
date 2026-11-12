@@ -129,16 +129,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
               type="button"
               onClick={() => {
                 try { haptic.selection(); } catch {}
-                setAbaAtiva(abaAtiva === 'progresso' ? 'trilhas' : 'progresso');
+                setAbaAtiva(abaAtiva === 'estatisticas' || abaAtiva === 'progresso' ? 'trilhas' : 'estatisticas');
               }}
               className={cn(
                 "relative w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
-                abaAtiva === 'progresso'
+                abaAtiva === 'estatisticas' || abaAtiva === 'progresso'
                   ? "bg-black/90 text-amber-300 border-amber-500/60 shadow-[0_0_12px_rgba(245,158,11,0.35)]"
                   : "bg-black/60 text-white/90 border-white/20 hover:bg-black/80"
               )}
-              title="Progresso Geral das Aulas"
-              aria-label="Ver Progresso das Aulas"
+              title="Estatísticas e Desempenho das Aulas"
+              aria-label="Ver Estatísticas das Aulas"
             >
               <BarChart3 className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-6.5 sm:h-6.5 stroke-[2.4] text-amber-400" />
               {porcentagemGeral > 0 && (
