@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import ShapeGrid from '@/components/ui/ShapeGrid';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { AlertCircle, Lock, Play, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { assetUrl } from '@/lib/assetUrl';
@@ -262,18 +262,17 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
-      {/* Fundo ShapeGrid Dinâmico */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
-        <ShapeGrid
-          key={disciplinaAtual ? disciplinaAtual.id : 'home'}
-          speed={0.6}
-          squareSize={40}
-          direction="diagonal"
-          borderColor={disciplinaAtual ? `${disciplinaAtual.corDestaque}28` : "rgba(255, 255, 255, 0.04)"}
-          hoverFillColor={disciplinaAtual ? `${disciplinaAtual.corDestaque}40` : "rgba(255, 255, 255, 0.08)"}
-          shape="square"
-          hoverTrailAmount={6}
+      {/* ── Fundo Imersivo Oficial com Imagem Nobre e Vinheta (Substitui os quadrados por arte clássica) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
+        <img
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga e Filósofos"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.88] contrast-[1.08]"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85 pointer-events-none" />
       </div>
 
       {/* Glow Atmosférico Temático da Disciplina */}
@@ -363,13 +362,15 @@ export default function AdminAulasInterativas() {
           )}
 
           {abaAtiva === 'estatisticas' && (
-            <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto my-2 px-2 pt-16">
+            <div className="w-full max-w-3xl mx-auto flex-1 overflow-y-auto my-2 px-3 sm:px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] z-20 relative">
               <AulasTabEstatisticas
                 materias={MATERIAS_CATALOGO}
                 aulas={AULAS_CATALOGO}
                 calcularProgressoCiclo={calcularProgressoCiclo}
                 acertosMap={acertosMap}
                 corDestaque="#f59e0b"
+                onIniciarAula={handleIniciarAula}
+                onVoltar={() => setAbaAtiva('trilhas')}
                 onSelecionarMateria={(matId) => {
                   const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
                   if (mat) {
