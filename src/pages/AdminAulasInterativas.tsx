@@ -308,6 +308,8 @@ export default function AdminAulasInterativas() {
               onSelectCurrent={handleSelectCurrent}
               onSelectDisciplina={handleSelectDisciplina}
               onCardClick={handleCardClick}
+              onIniciarAula={handleIniciarAula}
+              calcularProgressoCiclo={calcularProgressoCiclo}
               handleVoltar={handleVoltar}
               buscaTermo={buscaTermo}
               setBuscaTermo={setBuscaTermo}

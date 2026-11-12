@@ -3,9 +3,8 @@ import {
   ArrowLeft, Trophy, BarChart3, TrendingUp, Layers, HelpCircle, 
   CheckCircle2, Sparkles, Flame, Award, Target, BookOpen, 
   ChevronRight, Activity, ShieldCheck, PieChart as PieIcon,
-  RefreshCw, Bot, BrainCircuit, Compass, AlertTriangle, Zap
+  Bot, Compass, AlertTriangle, Zap
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { 
   ResponsiveContainer, 
   RadarChart, 
@@ -83,8 +82,6 @@ function formatarTituloElegante(titulo: string): string {
   return limpo;
 }
 
-const STORAGE_DIAGNOSTICO_KEY = 'aulas_diagnostico_ia_cache_v2';
-
 export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
   disciplinaAtual,
   materias,
@@ -98,17 +95,6 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
 }) => {
   const [subAba, setSubAba] = useState<'graficos' | 'progresso'>('graficos');
   const [insightIdx, setInsightIdx] = useState(0);
-
-  // Estado da Inteligência Artificial do Diagnóstico (Omniroute / Assistente Jurídica)
-  const [diagnosticoIa, setDiagnosticoIa] = useState<string | null>(() => {
-    try {
-      return localStorage.getItem(STORAGE_DIAGNOSTICO_KEY) || null;
-    } catch {
-      return null;
-    }
-  });
-  const [carregandoIa, setCarregandoIa] = useState(false);
-  const [erroIa, setErroIa] = useState<string | null>(null);
 
   // 1. Estatísticas individuais matéria por matéria
   const estatisticasMaterias = useMemo(() => {
@@ -198,8 +184,9 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
     if (iniciadas.length > 0) {
       return [...iniciadas].sort((a, b) => a.scoreComposto - b.scoreComposto)[0];
     }
-    return estatisticasMaterias[estatisticasMaterias.length - 1] || null;
-  }, [estatisticasMaterias]);
+    const diferente = estatisticasMaterias.find(m => m.materia.id !== materiaTopAcertos?.materia.id);
+    return diferente || estatisticasMaterias[1] || estatisticasMaterias[0] || null;
+  }, [estatisticasMaterias, materiaTopAcertos]);
 
   const taxaPrecisaoGeral = useMemo(() => {
     const comDados = estatisticasMaterias.filter(m => m.totalPerguntas > 0);
@@ -290,109 +277,6 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
     return () => clearInterval(timer);
   }, [insights.length]);
 
-  // Disparo da Inteligência Artificial via Edge Function (Omniroute / Assistente Jurídico)
-  const handleGerarDiagnosticoIa = useCallback(async () => {
-    setCarregandoIa(true);
-    setErroIa(null);
-    try {
-      haptic.impact('medium');
-    } catch {}
-
-    const promptUsuario = `
-Atue como o Mentor e Tutor Jurídico de Elite do Direito Prime.
-Gere um DIAGNÓSTICO ANALÍTICO DE DESEMPENHO E ESTRATÉGIA DE ESTUDOS personalizado com base nestas métricas reais do aluno:
-
-MÉTRICAS DO ALUNO:
-- Aulas Concluídas no Catálogo: ${totalAulasFeitas} de ${aulas.length} aulas (${Math.round((totalAulasFeitas / (aulas.length || 1)) * 100)}% do catálogo total).
-- Ciclos Completos de Fixação (Aulas + Flashcards + Questões): ${aulasConcluidasCiclo.length}.
-- Flashcards Revisados com Sucesso: ${totalFlashcardsFeitos}.
-- Questões Práticas Respondidas: ${totalQuestoesFeitas}.
-- Taxa Média de Precisão Estimada: ${taxaPrecisaoGeral}%.
-- Disciplina de Maior Facilidade e Domínio: ${materiaTopAcertos?.materia.titulo || 'Nenhum módulo iniciado ainda'} (${materiaTopAcertos?.taxaAcerto || 0}% de acertos).
-- Disciplina com Menor Índice de Erros: ${materiaMenosErros?.materia.titulo || 'Fundamentos Gerais'}.
-- Disciplina Recomendada para Reforço Imediato: ${materiaParaReforcar?.materia.titulo || 'Módulos Iniciais'}.
-
-ESTRUTURE SUA RESPOSTA EM 4 SEÇÕES EXATAS USANDO MARKDOWN (sem emojis nos títulos, apenas texto claro em caixa alta):
-## DIAGNÓSTICO DO SEU RITMO E RETENÇÃO
-(Faça uma análise pedagógica cirúrgica do ritmo do aluno, sua consistência e a eficácia da fixação com flashcards e questões).
-
-## PONTOS DE ALTO RENDIMENTO (ONDE VOCÊ TEM MAIS FACILIDADE)
-(Destaque a matéria onde o aluno teve melhor desempenho, explicando por que ela é sua alavanca de confiança para OAB e concursos).
-
-## PONTOS DE VULNERABILIDADE E RISCOS DE PROVA
-(Aponte onde o aluno precisa elevar a guarda, alertando sobre pegadinhas e temas de alta incidência que não podem ficar com baixo domínio).
-
-## PLANO DE AÇÃO PARA OS PRÓXIMOS 7 DIAS
-(Entregue um roteiro prático e acionável com 3 passos objetivos para os próximos dias, indicando exatamente o que fazer para expandir o radar).
-
-Seja técnico, elegante, motivador e focado em alta performance jurídica.
-`;
-
-    try {
-      const { data, error } = await supabase.functions.invoke('assistente-juridica', {
-        body: {
-          messages: [
-            {
-              role: 'system',
-              content: 'Você é o Mentor Jurídico de Elite do Direito Prime, especialista em diagnóstico pedagógico para OAB e concursos.'
-            },
-            {
-              role: 'user',
-              content: promptUsuario
-            }
-          ],
-          webSearch: false,
-          stream: false,
-        }
-      });
-
-      if (error) throw error;
-
-      const reply = data?.reply || data?.content || (typeof data === 'string' ? data : null);
-      if (!reply) throw new Error('Não foi possível obter o parecer da IA.');
-
-      setDiagnosticoIa(reply);
-      try {
-        localStorage.setItem(STORAGE_DIAGNOSTICO_KEY, reply);
-      } catch {}
-      try {
-        haptic.success();
-      } catch {}
-    } catch (err: any) {
-      console.error('[Diagnostico IA] Erro ao invocar:', err);
-      // Fallback pedagógico imediato de alta qualidade se houver instabilidade de rede
-      const fallbackMsg = `## DIAGNÓSTICO DO SEU RITMO E RETENÇÃO
-Seu histórico inicial registra **${totalAulasFeitas} aulas concluídas** e **${totalFlashcardsFeitos} flashcards revisados**. Você está construindo a fundação essencial para uma retenção de longo prazo.
-
-## PONTOS DE ALTO RENDIMENTO (ONDE VOCÊ TEM MAIS FACILIDADE)
-Seu maior índice de acertos e fluidez concentra-se em **${formatarTituloElegante(materiaTopAcertos?.materia.titulo || 'Fundamentos Gerais')}**, onde você demonstrou rapidez na compreensão dos conceitos-chave.
-
-## PONTOS DE VULNERABILIDADE E RISCOS DE PROVA
-O radar indica necessidade de atenção nas disciplinas de base procedimental (**${formatarTituloElegante(materiaParaReforcar?.materia.titulo || 'Processo e Legislação Especial')}**). São matérias de alto peso que exigem resolução contínua de questões para evitar pegadinhas de prazos e ritos.
-
-## PLANO DE AÇÃO PARA OS PRÓXIMOS 7 DIAS
-1. **Passo 1:** Concluir ao menos 2 aulas do módulo de ${formatarTituloElegante(materiaParaReforcar?.materia.titulo || 'reforço')}.
-2. **Passo 2:** Praticar 15 flashcards de repetição espaçada para blindar a memória contra a curva do esquecimento.
-3. **Passo 3:** Resolver a rodada de questões práticas para consolidar seu índice de acertos acima de 85%.`;
-      setDiagnosticoIa(fallbackMsg);
-      try {
-        localStorage.setItem(STORAGE_DIAGNOSTICO_KEY, fallbackMsg);
-      } catch {}
-    } finally {
-      setCarregandoIa(false);
-    }
-  }, [
-    totalAulasFeitas,
-    aulas.length,
-    aulasConcluidasCiclo.length,
-    totalFlashcardsFeitos,
-    totalQuestoesFeitas,
-    taxaPrecisaoGeral,
-    materiaTopAcertos,
-    materiaMenosErros,
-    materiaParaReforcar
-  ]);
-
   return (
     <div className="w-full max-w-3xl mx-auto space-y-5 pb-24 animate-in fade-in duration-300 select-none">
       {/* ── TOP BAR 100% RESPONSIVA (SEM QUEBRAS DE LINHA AWKWARD) ── */}
@@ -463,54 +347,10 @@ O radar indica necessidade de atenção nas disciplinas de base procedimental (*
         </div>
       </div>
 
-      {/* ── CARD CONTINUAR DE ONDE PAROU ── */}
-      {ultimaAulaAndamento && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-black/85 to-black/95 border border-amber-500/40 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 relative z-10">
-            <div className="min-w-0 flex-1">
-              <span 
-                className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest flex items-center gap-1.5 text-amber-400"
-              >
-                <Flame className="w-3.5 h-3.5 fill-current" />
-                Continuar de Onde Parou
-              </span>
-              <h3 className="text-sm xs:text-base sm:text-lg font-serif font-black text-white mt-1 truncate drop-shadow-sm">
-                {ultimaAulaAndamento.titulo}
-              </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Etapa {calcularProgressoCiclo(ultimaAulaAndamento).etapaAtual || 1} de {ultimaAulaAndamento.etapas || 30}
-              </p>
-              {/* Barra de Progresso com Brilho */}
-              <div className="w-full max-w-xs h-2 rounded-full bg-white/10 mt-2 overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                  style={{ width: `${Math.max(calcularProgressoCiclo(ultimaAulaAndamento).porcentagemTotal, 4)}%` }}
-                />
-              </div>
-            </div>
-
-            {onIniciarAula && (
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.impact('medium'); } catch {}
-                  onIniciarAula(ultimaAulaAndamento);
-                }}
-                className="w-full sm:w-auto px-5 py-2.5 xs:py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-[0_4px_16px_rgba(251,191,36,0.35)] hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 border border-white/40"
-              >
-                <Flame className="w-4 h-4 fill-current" />
-                <span>Continuar Aula</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── 4 CARDS DE RESUMO EM NÚMEROS (LAPIDADO EM ALTA FIDELIDADE) ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-md flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 mb-1.5">
+      {/* ── 4 CARDS DE RESUMO EM NÚMEROS (LAYOUT PREMIUM REFINADO) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 xs:gap-2.5 sm:gap-3">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-red-500/30 transition-all">
+          <div className="p-1.5 xs:p-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 mb-1.5 shadow-sm">
             <BookOpen className="w-4 h-4" />
           </div>
           <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Aulas Feitas</span>
@@ -520,8 +360,8 @@ O radar indica necessidade de atenção nas disciplinas de base procedimental (*
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-md flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 mb-1.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-amber-500/30 transition-all">
+          <div className="p-1.5 xs:p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 mb-1.5 shadow-sm">
             <Layers className="w-4 h-4" />
           </div>
           <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Flashcards</span>
@@ -531,8 +371,8 @@ O radar indica necessidade de atenção nas disciplinas de base procedimental (*
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-md flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-1.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-emerald-500/30 transition-all">
+          <div className="p-1.5 xs:p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-1.5 shadow-sm">
             <HelpCircle className="w-4 h-4" />
           </div>
           <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Questões</span>
@@ -542,8 +382,8 @@ O radar indica necessidade de atenção nas disciplinas de base procedimental (*
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-md flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 mb-1.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-cyan-500/30 transition-all">
+          <div className="p-1.5 xs:p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 mb-1.5 shadow-sm">
             <Target className="w-4 h-4" />
           </div>
           <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Precisão Global</span>
@@ -553,159 +393,91 @@ O radar indica necessidade de atenção nas disciplinas de base procedimental (*
         </div>
       </div>
 
-      {/* ── CARDS DE DIAGNÓSTICO: MAIOR FACILIDADE / MENOR ÍNDICE DE ERRO ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div 
-          onClick={() => materiaTopAcertos && onSelecionarMateria(materiaTopAcertos.materia.id)}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-black/80 to-black/90 border border-amber-500/35 shadow-xl cursor-pointer hover:border-amber-400/60 transition-all group flex flex-col justify-between backdrop-blur-xl"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              ONDE VOCÊ TEM MAIS FACILIDADE
-            </span>
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-              Maior Êxito
-            </span>
-          </div>
-
-          <div className="my-2.5">
-            <h4 className="text-sm xs:text-base sm:text-lg font-serif font-black text-white group-hover:text-amber-200 transition-colors line-clamp-2">
-              {formatarTituloElegante(materiaTopAcertos?.materia.titulo || 'Módulo Geral')}
-            </h4>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              {materiaTopAcertos?.aulasTerminadas || 0} de {materiaTopAcertos?.totalAulas || 10} aulas concluídas
-            </p>
-          </div>
-
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-            <span className="text-zinc-400">Taxa de Acertos:</span>
-            <span className="font-mono font-black text-amber-300 text-sm">
-              {materiaTopAcertos?.taxaAcerto || 0}%
-            </span>
-          </div>
-        </div>
-
-        <div 
-          onClick={() => materiaMenosErros && onSelecionarMateria(materiaMenosErros.materia.id)}
-          className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-emerald-500/15 via-black/80 to-black/90 border border-emerald-500/35 shadow-xl cursor-pointer hover:border-emerald-400/60 transition-all group flex flex-col justify-between backdrop-blur-xl"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              MENOR ÍNDICE DE ERROS
-            </span>
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-              Retenção Forte
-            </span>
-          </div>
-
-          <div className="my-2.5">
-            <h4 className="text-sm xs:text-base sm:text-lg font-serif font-black text-white group-hover:text-emerald-200 transition-colors line-clamp-2">
-              {formatarTituloElegante(materiaMenosErros?.materia.titulo || 'Fundamentos do Direito')}
-            </h4>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              {materiaMenosErros?.flashcardsFeitos || 0} fixações consolidadas
-            </p>
-          </div>
-
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-            <span className="text-zinc-400">Consistência:</span>
-            <span className="font-mono font-black text-emerald-300 text-sm">
-              {materiaMenosErros?.taxaAcerto ? `${materiaMenosErros.taxaAcerto}%` : '100%'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── PAINEL DE INTELIGÊNCIA ARTIFICIAL: DIAGNÓSTICO JURÍDICO OFICIAL (OMNIROUTE) ── */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-gradient-to-b from-amber-500/15 via-black/90 to-black/95 border-2 border-amber-500/40 shadow-[0_16px_50px_rgba(0,0,0,0.95)] backdrop-blur-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-white/10 relative z-10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.5)]">
-              <BrainCircuit className="w-5 h-5 text-zinc-950" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                  IA JURÍDICA PRIME
-                </span>
-                <span className="text-[10px] text-zinc-400 hidden xs:inline-block">Omniroute Engine</span>
-              </div>
-              <h3 className="text-sm xs:text-base sm:text-lg font-serif font-black uppercase tracking-wider text-white mt-0.5">
-                Parecer & Diagnóstico Personalizado
-              </h3>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            disabled={carregandoIa}
-            onClick={handleGerarDiagnosticoIa}
-            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-amber-400/40 text-amber-300 text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 cursor-pointer shrink-0 shadow-md"
+      {/* ── MELHOR vs PIOR (ONDE É MELHOR VS ONDE PRECISA REFORÇAR) NA MESMA LINHA COM "VS" NO MEIO ELEGANTE ── */}
+      <div className="relative w-full my-2">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 items-stretch">
+          {/* LADO ESQUERDO: MAIS FACILIDADE / MELHOR DESEMPENHO */}
+          <div 
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              if (materiaTopAcertos) onSelecionarMateria(materiaTopAcertos.materia.id);
+            }}
+            className="p-3 xs:p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-black/85 to-black/95 border border-amber-500/40 shadow-xl cursor-pointer hover:border-amber-400/70 active:scale-[0.98] transition-all group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden"
           >
-            <RefreshCw className={cn("w-3.5 h-3.5", carregandoIa && "animate-spin text-amber-400")} />
-            <span>{carregandoIa ? "Analisando Métricas..." : diagnosticoIa ? "Atualizar Diagnóstico" : "Gerar Diagnóstico IA"}</span>
-          </button>
-        </div>
-
-        {/* Conteúdo do Diagnóstico da IA com ReactMarkdown */}
-        <div className="pt-4 relative z-10">
-          {carregandoIa ? (
-            <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-2 border-amber-400/20 border-t-amber-400 animate-spin" />
-                <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+            <div>
+              <div className="flex items-center justify-between gap-1 mb-2">
+                <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1 truncate">
+                  <Trophy className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-amber-400 shrink-0" />
+                  <span className="truncate">Mais Facilidade</span>
+                </span>
+                <span className="text-[8px] xs:text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 shrink-0">
+                  Maior Êxito
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-serif font-bold text-amber-300">
-                A IA Jurídica está cruzando seus acertos, erros e retenção...
-              </p>
-              <span className="text-[11px] text-zinc-400 font-sans max-w-sm">
-                Avaliando pontos de maior facilidade, vulnerabilidades e plano de ação imediato.
+
+              <div className="my-1.5 xs:my-2 min-h-[40px] xs:min-h-[46px] flex flex-col justify-center">
+                <h4 className="text-xs xs:text-sm sm:text-base font-serif font-black text-white group-hover:text-amber-200 transition-colors line-clamp-2 leading-snug">
+                  {formatarTituloElegante(materiaTopAcertos?.materia.titulo || 'Noções Gerais de Direito')}
+                </h4>
+                <p className="text-[10px] xs:text-[11px] text-zinc-400 mt-1 truncate">
+                  {materiaTopAcertos?.aulasTerminadas || 0} de {materiaTopAcertos?.totalAulas || 10} aulas
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] xs:text-xs">
+              <span className="text-zinc-400">Taxa de Acertos:</span>
+              <span className="font-mono font-black text-amber-300 text-xs xs:text-sm">
+                {materiaTopAcertos?.taxaAcerto || 0}%
               </span>
             </div>
-          ) : diagnosticoIa ? (
-            <div className="prose prose-invert max-w-none text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans space-y-3.5">
-              <ReactMarkdown
-                components={{
-                  h2: ({ node, ...props }) => (
-                    <div className="pt-2 pb-1 border-b border-amber-500/20">
-                      <h4 className="text-xs sm:text-sm font-serif font-black tracking-widest uppercase text-amber-400 flex items-center gap-2" {...props} />
-                    </div>
-                  ),
-                  p: ({ node, ...props }) => (
-                    <p className="text-xs sm:text-[13px] text-zinc-300 leading-relaxed" {...props} />
-                  ),
-                  strong: ({ node, ...props }) => (
-                    <strong className="font-bold text-white text-amber-200/90" {...props} />
-                  ),
-                  ol: ({ node, ...props }) => (
-                    <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-[13px] text-zinc-300" {...props} />
-                  ),
-                  ul: ({ node, ...props }) => (
-                    <ul className="list-disc pl-5 space-y-1 text-xs sm:text-[13px] text-zinc-300" {...props} />
-                  ),
-                  li: ({ node, ...props }) => (
-                    <li className="text-zinc-300 leading-snug" {...props} />
-                  ),
-                }}
-              >
-                {diagnosticoIa}
-              </ReactMarkdown>
+          </div>
+
+          {/* LADO DIREITO: ONDE PRECISA REFORÇAR / PIOR DESEMPENHO */}
+          <div 
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              if (materiaParaReforcar) onSelecionarMateria(materiaParaReforcar.materia.id);
+            }}
+            className="p-3 xs:p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-rose-500/15 via-black/85 to-black/95 border border-rose-500/40 shadow-xl cursor-pointer hover:border-rose-400/70 active:scale-[0.98] transition-all group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden"
+          >
+            <div>
+              <div className="flex items-center justify-between gap-1 mb-2">
+                <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-rose-400 flex items-center gap-1 truncate">
+                  <AlertTriangle className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-rose-400 shrink-0" />
+                  <span className="truncate">Mais Desafio</span>
+                </span>
+                <span className="text-[8px] xs:text-[9px] font-black px-1.5 py-0.5 rounded-full bg-rose-400/20 text-rose-300 border border-rose-400/30 shrink-0">
+                  Reforçar
+                </span>
+              </div>
+
+              <div className="my-1.5 xs:my-2 min-h-[40px] xs:min-h-[46px] flex flex-col justify-center">
+                <h4 className="text-xs xs:text-sm sm:text-base font-serif font-black text-white group-hover:text-rose-200 transition-colors line-clamp-2 leading-snug">
+                  {formatarTituloElegante(materiaParaReforcar?.materia.titulo || 'Princípios Penais')}
+                </h4>
+                <p className="text-[10px] xs:text-[11px] text-zinc-400 mt-1 truncate">
+                  {materiaParaReforcar?.aulasTerminadas || 0} de {materiaParaReforcar?.totalAulas || 10} aulas
+                </p>
+              </div>
             </div>
-          ) : (
-            <div className="py-6 text-center flex flex-col items-center justify-center gap-2.5">
-              <Zap className="w-8 h-8 text-amber-400/70" />
-              <p className="text-xs sm:text-sm font-serif font-bold text-white">
-                Toque no botão acima para a IA analisar seus dados de estudo
-              </p>
-              <p className="text-[11px] text-zinc-400 max-w-md">
-                O modelo analisa onde você teve mais êxito, onde menos errou e desenha um roteiro cirúrgico para os próximos 7 dias.
-              </p>
+
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] xs:text-xs">
+              <span className="text-zinc-400">Aproveitamento:</span>
+              <span className="font-mono font-black text-rose-300 text-xs xs:text-sm">
+                {materiaParaReforcar?.taxaAcerto || 0}%
+              </span>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* BADGE "VS" CENTRALIZADO ELEGANTE */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#121214] border-2 border-amber-400/80 shadow-[0_0_16px_rgba(251,191,36,0.65),0_4px_12px_rgba(0,0,0,0.9)] flex items-center justify-center">
+            <span className="text-[10px] xs:text-[11px] font-serif font-black italic tracking-tighter text-amber-400 select-none">
+              vs
+            </span>
+          </div>
         </div>
       </div>
 

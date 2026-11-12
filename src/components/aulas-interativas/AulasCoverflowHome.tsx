@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  ArrowLeft, Search, X, BarChart3 
+  ArrowLeft, Search, X, BarChart3, Flame, Play 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
@@ -42,6 +42,16 @@ interface AulasCoverflowHomeProps {
   onSelectCurrent: () => void;
   onSelectDisciplina?: (disciplinaId: string) => void;
   onCardClick: (disc: DisciplinaItem, idx: number) => void;
+  onIniciarAula?: (aula: AulaItem) => void;
+  calcularProgressoCiclo?: (aula: AulaItem) => {
+    etapaAtual: number;
+    totalEtapas: number;
+    aulaTerminada: boolean;
+    fcOk: boolean;
+    questoesOk: boolean;
+    cicloCompleto: boolean;
+    porcentagemTotal: number;
+  };
   handleVoltar: () => void;
   buscaTermo: string;
   setBuscaTermo: (val: string) => void;
@@ -67,6 +77,8 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   onSelectCurrent,
   onSelectDisciplina,
   onCardClick,
+  onIniciarAula,
+  calcularProgressoCiclo,
   handleVoltar,
   buscaTermo,
   setBuscaTermo,
@@ -92,6 +104,15 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   const activeTheme = activeDisc ? getDisciplinaVisualTheme(activeDisc.id) : null;
   const activeCorTema = activeTheme?.primary || activeDisc?.corDestaque || '#f59e0b';
   const activeCorHighlight = activeTheme?.highlight || '#fef08a';
+
+  const ultimaAulaAndamento = useMemo(() => {
+    if (!calcularProgressoCiclo) return null;
+    const emAndamento = aulasCatalogo.filter(a => {
+      const p = calcularProgressoCiclo(a);
+      return p.porcentagemTotal > 0 && p.porcentagemTotal < 100;
+    });
+    return emAndamento[0] || null;
+  }, [aulasCatalogo, calcularProgressoCiclo]);
 
   return (
     <>
@@ -247,7 +268,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                className="relative w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-65px)] xs:px-[calc(50vw-72.5px)] sm:px-[calc(50vw-87.5px)] md:px-[calc(50vw-105px)]"
+                className="relative w-full flex items-center gap-3.5 xs:gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-82px)] xs:px-[calc(50vw-92px)] sm:px-[calc(50vw-107px)] md:px-[calc(50vw-125px)]"
               >
                 {loopedDisciplinas.map((disc, idx) => {
                   const isActive = idx === activeCarouselIndex;
@@ -271,7 +292,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                           onCardClick(disc, idx);
                         }
                       }}
-                      className="snap-center shrink-0 w-[130px] xs:w-[145px] sm:w-[175px] md:w-[210px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
+                      className="snap-center shrink-0 w-[165px] xs:w-[185px] sm:w-[215px] md:w-[250px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
                       {/* ── QUANTIDADE DE AULAS ACIMA DA CAPA ── */}
                       <div className="mb-1.5 xs:mb-2 flex items-center justify-center select-none">
@@ -294,9 +315,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       {/* ── CARD (CAPA COM TÍTULO INTERIOR E CONTORNO NA COR DO TEMA) ── */}
                       <div
                         className={cn(
-                          "relative aspect-[3/4] max-h-[28vh] xs:max-h-[30vh] sm:max-h-[34vh] md:max-h-[38vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
+                          "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] sm:max-h-[42vh] md:max-h-[46vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
-                            ? "shadow-2xl scale-[1.03] opacity-100 ring-1 ring-white/10"
+                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-white/10"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
                         )}
                         style={{
@@ -378,6 +399,40 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
               );
             })}
           </div>
+
+          {/* ── BOTÃO CONTINUAR AULA DE ONDE PAROU (SE HOUVER AULA EM ANDAMENTO) ── */}
+          {ultimaAulaAndamento && onIniciarAula && (
+            <div className="w-full max-w-[280px] xs:max-w-[310px] sm:max-w-[340px] mx-auto px-4 mb-2 z-20 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.impact('medium'); } catch {}
+                  onIniciarAula(ultimaAulaAndamento);
+                }}
+                className="w-full py-2 px-3 rounded-2xl bg-black/85 hover:bg-black/95 border border-amber-500/50 text-left flex items-center justify-between gap-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.85)] active:scale-95 transition-all cursor-pointer backdrop-blur-md group"
+              >
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="w-7 h-7 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center shrink-0">
+                    <Flame className="w-3.5 h-3.5 text-amber-400 fill-current" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[9px] uppercase font-black tracking-wider text-amber-400 block truncate">
+                      Continuar Aula
+                    </span>
+                    <h4 className="text-xs font-serif font-black text-white truncate group-hover:text-amber-200">
+                      {ultimaAulaAndamento.titulo}
+                    </h4>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1.5 pl-2 border-l border-white/10">
+                  <span className="text-[10px] font-mono font-bold text-zinc-400">
+                    Etapa {calcularProgressoCiclo ? (calcularProgressoCiclo(ultimaAulaAndamento).etapaAtual || 1) : 1}
+                  </span>
+                  <Play className="w-3.5 h-3.5 text-amber-400 fill-current" />
+                </div>
+              </button>
+            </div>
+          )}
 
           {/* ── BOTÃO ACESSAR FORA DA CAPA (ELEVADO NA ZONA DO POLEGAR COM TIPOGRAFIA MODERNA) ── */}
           <div className="w-full max-w-[240px] xs:max-w-[260px] sm:max-w-[290px] mx-auto px-4 mb-3 xs:mb-4 sm:mb-5 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] z-20 shrink-0">
