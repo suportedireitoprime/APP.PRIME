@@ -6,7 +6,7 @@ import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 
-import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
+import bibliotecaCoverImg from '@/assets/biblioteca-cover-clara.webp';
 
 interface Props {
   onBuscar?: () => void;
