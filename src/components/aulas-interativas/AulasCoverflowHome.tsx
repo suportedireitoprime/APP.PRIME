@@ -1,13 +1,39 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  ArrowLeft, Search, X, BarChart3, ChevronLeft, ChevronRight 
+  ArrowLeft, Search, X, BarChart3 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+
+/** Nomes curtos para dentro da capa (sem "Direito", max 2 linhas) */
+const NOMES_CAPA: Record<string, string> = {
+  'DIREITO PENAL': 'PENAL',
+  'DIREITO CIVIL': 'CIVIL',
+  'DIREITO CONSTITUCIONAL': 'CONSTI-\nTUCIONAL',
+  'DIREITO ADMINISTRATIVO': 'ADMINIS-\nTRATIVO',
+  'DIREITO DO TRABALHO': 'TRABALHO',
+  'DIREITO PROCESSUAL CIVIL': 'PROC.\nCIVIL',
+  'DIREITO PROCESSUAL PENAL': 'PROC.\nPENAL',
+  'DIREITO TRIBUTÁRIO': 'TRIBUTÁRIO',
+  'DIREITO EMPRESARIAL': 'EMPRE-\nSARIAL',
+  'DIREITO AMBIENTAL': 'AMBIENTAL',
+  'DIREITO PREVIDENCIÁRIO': 'PREVIDEN-\nCIÁRIO',
+  'DIREITO PROCESSUAL DO TRABALHO': 'PROC. DO\nTRABALHO',
+  'DIREITO FINANCEIRO': 'FINANCEIRO',
+  'DIREITO INTERNACIONAL PRIVADO': 'INT.\nPRIVADO',
+  'DIREITO URBANÍSTICO': 'URBANÍS-\nTICO',
+  'DIREITOS HUMANOS': 'DIREITOS\nHUMANOS',
+  'LEI PENAL ESPECIAL': 'LEIS\nESPECIAIS',
+  'TEORIA E FILOSOFIA DO DIREITO': 'FILOSOFIA\nDO DIREITO',
+  'DIREITO DESPORTIVO': 'DESPORTIVO',
+  'POLÍTICAS PÚBLICAS': 'POLÍTICAS\nPÚBLICAS',
+  'PORTUGUÊS JURÍDICO': 'PORTUGUÊS\nJURÍDICO',
+  'FORMAÇÃO COMPLEMENTAR': 'FORMAÇÃO',
+};
 
 interface AulasCoverflowHomeProps {
   disciplinasFiltradas: DisciplinaItem[];
@@ -177,7 +203,32 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </div>
           ) : (
             <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-0.5 select-none overflow-hidden">
-              {/* Spotlight direcional sutil em tom âmbar clássico atrás da capa central (10% de opacidade para profundidade 3D) */}
+              {/* ⚖️ Balança da Justiça caindo/descendo com dignidade por trás das capas */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[48%] pointer-events-none z-0 select-none opacity-25 transform rotate-[-2deg] transition-transform duration-700">
+                <svg width="320" height="320" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[220px] h-[220px] xs:w-[260px] xs:h-[260px] sm:w-[320px] sm:h-[320px] drop-shadow-[0_12px_40px_rgba(251,191,36,0.25)]">
+                  {/* Pilar central */}
+                  <rect x="248" y="70" width="16" height="350" rx="5" fill="#f59e0b"/>
+                  {/* Base esculpida */}
+                  <rect x="170" y="405" width="172" height="22" rx="11" fill="#d97706"/>
+                  <rect x="200" y="392" width="112" height="18" rx="5" fill="#f59e0b"/>
+                  {/* Topo cúpula */}
+                  <circle cx="256" cy="72" r="20" fill="#fbbf24"/>
+                  {/* Braço horizontal principal da balança */}
+                  <rect x="70" y="64" width="372" height="14" rx="7" fill="#fbbf24"/>
+                  {/* Correntes douradas esquerda */}
+                  <line x1="105" y1="78" x2="105" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
+                  {/* Correntes douradas direita */}
+                  <line x1="407" y1="78" x2="407" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
+                  {/* Prato esquerdo */}
+                  <ellipse cx="105" cy="208" rx="65" ry="16" fill="#fbbf24"/>
+                  <path d="M40 208 Q50 245 105 250 Q160 245 170 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
+                  {/* Prato direito */}
+                  <ellipse cx="407" cy="208" rx="65" ry="16" fill="#fbbf24"/>
+                  <path d="M342 208 Q352 245 407 250 Q462 245 472 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
+                </svg>
+              </div>
+
+              {/* Spotlight direcional sutil */}
               <div 
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] xs:w-[250px] sm:w-[320px] h-[300px] xs:h-[340px] sm:h-[400px] rounded-full pointer-events-none z-10 transition-opacity duration-500 opacity-70"
                 style={{
@@ -185,16 +236,6 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   filter: 'blur(20px)',
                 }}
               />
-
-              {/* Botão Seta Esquerda */}
-              <button
-                type="button"
-                onClick={handlePrev}
-                className="absolute left-1 xs:left-2 sm:left-6 top-1/2 -translate-y-1/2 w-8.5 h-8.5 xs:w-9.5 xs:h-9.5 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.85)] z-30 shrink-0 backdrop-blur-md border border-white/20"
-                aria-label="Área anterior"
-              >
-                <ChevronLeft className="w-4.5 h-4.5 xs:w-5 xs:h-5 stroke-[2.4]" />
-              </button>
 
               {/* Scroller Horizontal de Capas */}
               <div
@@ -204,7 +245,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                className="w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-65px)] xs:px-[calc(50vw-72.5px)] sm:px-[calc(50vw-87.5px)] md:px-[calc(50vw-105px)]"
+                className="relative w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-65px)] xs:px-[calc(50vw-72.5px)] sm:px-[calc(50vw-87.5px)] md:px-[calc(50vw-105px)]"
               >
                 {loopedDisciplinas.map((disc, idx) => {
                   const isActive = idx === activeCarouselIndex;
@@ -220,28 +261,28 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       onClick={() => onCardClick(disc, idx)}
                       className="snap-center shrink-0 w-[130px] xs:w-[145px] sm:w-[175px] md:w-[210px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
-                      {/* ── NOME DA ÁREA EM CIMA FORA DA CAPA (TIPOGRAFIA MODERNA/IMPERIAL) ── */}
-                      <div className="w-full text-center mb-1 xs:mb-1.5 select-none h-6 xs:h-7 flex items-center justify-center px-1">
-                        <h2 
+                      {/* ── QUANTIDADE DE AULAS ACIMA DA CAPA ── */}
+                      <div className="mb-1.5 xs:mb-2 flex items-center justify-center select-none">
+                        <div 
                           className={cn(
-                            "font-sans font-black tracking-[0.14em] uppercase transition-all duration-300 leading-tight text-balance",
-                            isActive 
-                              ? "text-[11px] xs:text-[12.5px] sm:text-[14.5px] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] scale-105" 
-                              : "text-[8.5px] xs:text-[9.5px] sm:text-[11.5px] text-zinc-400/70 scale-95"
+                            "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
+                            isActive
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
+                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
                           )}
-                          style={isActive ? { 
+                          style={isActive ? {
                             color: corTemaHighlight,
-                            textShadow: `0 0 14px ${corTema}60`
+                            borderColor: `${corTema}60`,
                           } : undefined}
                         >
-                          {disc.nome}
-                        </h2>
+                          <span>{discAulas.length} AULAS</span>
+                        </div>
                       </div>
 
-                      {/* ── CARD (CAPA LIMPA COM CONTORNO NA COR DO TEMA) ── */}
+                      {/* ── CARD (CAPA COM TÍTULO INTERIOR E CONTORNO NA COR DO TEMA) ── */}
                       <div
                         className={cn(
-                          "relative aspect-[3/4] max-h-[26vh] xs:max-h-[28vh] sm:max-h-[32vh] md:max-h-[36vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
+                          "relative aspect-[3/4] max-h-[28vh] xs:max-h-[30vh] sm:max-h-[34vh] md:max-h-[38vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
                             ? "shadow-2xl scale-[1.03] opacity-100 ring-1 ring-white/10"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
@@ -267,39 +308,36 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                               : "scale-100 filter brightness-95 contrast-100 saturate-100"
                           )}
                         />
-                      </div>
 
-                      {/* ── QUANTIDADE DE AULAS FORA DA CAPA ── */}
-                      <div className="mt-1.5 xs:mt-2 flex items-center justify-center select-none">
-                        <div 
-                          className={cn(
-                            "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
-                            isActive
-                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
-                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
-                          )}
-                          style={isActive ? {
-                            color: corTemaHighlight,
-                            borderColor: `${corTema}60`,
-                          } : undefined}
-                        >
-                          <span>{discAulas.length} AULAS</span>
+                        {/* ── NOME DA DISCIPLINA DENTRO DA CAPA (OVERLAY INFERIOR COM TIPOGRAFIA DISPLAY) ── */}
+                        <div className="absolute inset-x-0 bottom-0 pointer-events-none select-none">
+                          <div 
+                            className="px-2 xs:px-2.5 sm:px-3 pb-2.5 xs:pb-3 sm:pb-3.5 pt-8 xs:pt-10 sm:pt-12"
+                            style={{
+                              background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.70) 40%, rgba(0,0,0,0.25) 75%, transparent 100%)',
+                            }}
+                          >
+                            <h2 
+                              className={cn(
+                                "font-serif font-black uppercase leading-[1.1] text-center whitespace-pre-line transition-all duration-300",
+                                isActive 
+                                  ? "text-[13px] xs:text-[14.5px] sm:text-[17px] md:text-[19px] tracking-[0.06em]" 
+                                  : "text-[10px] xs:text-[11px] sm:text-[13px] tracking-[0.04em]"
+                              )}
+                              style={{ 
+                                color: '#fff',
+                                textShadow: `0 2px 12px rgba(0,0,0,0.95), 0 0 20px ${corTema}50`,
+                              }}
+                            >
+                              {NOMES_CAPA[disc.nome] || disc.nome}
+                            </h2>
+                          </div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-
-              {/* Botão Seta Direita */}
-              <button
-                type="button"
-                onClick={handleNext}
-                className="absolute right-1 xs:right-2 sm:right-6 top-1/2 -translate-y-1/2 w-8.5 h-8.5 xs:w-9.5 xs:h-9.5 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.85)] z-30 shrink-0 backdrop-blur-md border border-white/20"
-                aria-label="Próxima área"
-              >
-                <ChevronRight className="w-4.5 h-4.5 xs:w-5 xs:h-5 stroke-[2.4]" />
-              </button>
             </div>
           )}
 
