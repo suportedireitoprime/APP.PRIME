@@ -24,7 +24,7 @@ export const PilulasHero: React.FC<Props> = ({
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -83,7 +83,7 @@ export const PilulasHero: React.FC<Props> = ({
       </header>
 
       {/* Conteúdo: Tipografia de Marca (sem o logo busto, conforme solicitado) */}
-      <div className="relative z-10 pt-10 sm:pt-12 flex-1 flex flex-col justify-start min-h-[110px]">
+      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
           <PilulasBrandBanner />
         </div>
