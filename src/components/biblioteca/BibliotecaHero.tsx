@@ -1,13 +1,12 @@
+import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive } from 'lucide-react';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
-import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
-import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
-
-import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
+import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.jpg';
+import BibliotecaHeroWave from './BibliotecaHeroWave';
+import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 
 interface Props {
   onBuscar?: () => void;
@@ -15,14 +14,14 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
+const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -35,48 +34,28 @@ const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
         aria-hidden="true"
       />
 
-      {/* Imagem de Fundo */}
-      <AnimatePresence>
-        <motion.img
-          key="biblioteca-cover"
-          src={bibliotecaCoverImg}
-          alt="Biblioteca Jurídica"
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
-          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none opacity-50"
-        />
-      </AnimatePresence>
+      {/* Imagem de Capa do Filósofo lendo ao Alvorecer no Parthenon */}
+      <img
+        src={bibliotecaFilosofoCover}
+        alt="Biblioteca Jurídica"
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-cover object-[52%_20%] md:object-[center_20%] z-0 pointer-events-none transform-gpu will-change-transform"
+      />
 
-      {/* Overlay vermelho com gradiente estilo menu e sombra */}
-      <div 
-        className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
-      >
-        <div 
-          className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-        >
-          <div className="absolute inset-0 bg-hero-panel" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,180,180,0.15),transparent_80%)]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      {/* Onda Dourada Animada da Cor do Céu ao Alvorecer */}
+      <BibliotecaHeroWave />
 
-          <HeroMotifs />
-
-          {/* Grid Pattern Background */}
-          <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
-            backgroundSize: '24px 24px'
-          }} />
-        </div>
-      </div>
-
-      {/* Botões do topo absolutos */}
-      <header className="absolute top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+      {/* Cabeçalho Superior Transparente (Botões de Voltar e Meus PDFs / Offline) */}
+      <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
         <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
-            onClick={() => { haptic.selection(); goBack(); }}
+            onClick={() => {
+              haptic.light();
+              goBack();
+            }}
             aria-label="Voltar"
             className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
           >
@@ -99,39 +78,37 @@ const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
         </div>
       </header>
 
-      {/* Conteúdo idêntico à altura da Home (Textos animando) */}
-      <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
-        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[52%] max-w-[220px] ml-2 sm:ml-4">
-          <div className="h-[65px] mb-1 w-full" />
-          
-          <div className="h-[90px] w-full flex flex-col items-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="biblioteca-hero"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6 }}
-                className="flex flex-col items-center w-full"
-              >
-                <h1 className="font-serif italic text-white text-[16px] sm:text-[18px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-                  Biblioteca Jurídica
-                </h1>
-                
-                <div className="mt-2 flex items-center text-left gap-2 w-full justify-center">
-                  <div className="w-[2px] h-auto self-stretch bg-white/40 rounded-full shrink-0 min-h-[24px]" />
-                  <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                    Acervo permanente com <span className="text-amber-400 font-bold not-italic">+{isLoading ? '...' : totalCount} livros</span> ao seu dispor.
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+      {/* Conteúdo: Tipografia de Marca Biblioteca Jurídica no padrão ouro da Home */}
+      <div className="relative z-10 pt-10 sm:pt-12 flex-1 flex flex-col justify-start min-h-[115px]">
+        <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
+          <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[240px]">
+            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (âmbar dourado itálico) */}
+            <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+              <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
+                Biblioteca
+              </span>
+              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-amber-400 block drop-shadow-[0_2px_14px_rgba(245,158,11,0.65)] -mt-0.5">
+                Jurídica
+              </span>
+            </h1>
+
+            {/* Traço vertical âmbar e subtítulo oficial */}
+            <div className="mt-2 flex items-start text-left gap-2">
+              <div className="w-[3px] h-8 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(245,158,11,0.55)]" />
+              <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+                Acervo permanente com{' '}
+                <span className="text-amber-300 font-bold not-italic">
+                  +{isLoading ? '...' : totalCount} livros
+                </span>{' '}
+                ao seu dispor.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Barra de atalhos docada no final do painel, contornando as laterais */}
-      <div className="relative z-10 mt-auto w-full">
+      {/* 4 Atalhos Rápidos flutuando sobre a onda (Padrão Início do App) */}
+      <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
         <BibliotecaActionShortcuts />
       </div>
 
@@ -144,4 +121,4 @@ const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
   );
 };
 
-export default BibliotecaHero;
+export default memo(BibliotecaHero);

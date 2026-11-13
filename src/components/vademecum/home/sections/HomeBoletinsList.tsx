@@ -230,3 +230,4 @@ export const HomeBoletinsList: React.FC = () => {
 };
 
 export default memo(HomeBoletinsList);
+
