@@ -37,7 +37,7 @@ export const PilulasHero: React.FC<Props> = ({
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa do Pôr do Sol (Estudante no Terraço com Vista ao Mar) */}
+      {/* Imagem de Capa do Pôr do Sol Dourado (Estudante nos Jardins Neoclássicos - enquadramento elevado) */}
       <img
         src={pilulasHeroCover}
         alt="Pílulas do Direito"
@@ -45,10 +45,10 @@ export const PilulasHero: React.FC<Props> = ({
         loading="eager"
         decoding="async"
         fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[52%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-0 w-full h-full object-cover object-[68%_22%] md:object-[center_20%] z-0 pointer-events-none transform-gpu will-change-transform"
       />
 
-      {/* Onda Vermelha-Crepúsculo em Seda 3D com a Cor Exata do Céu */}
+      {/* Onda de Cetim Dourada com a Cor Exata do Pôr do Sol */}
       <PilulasHeroWave />
 
       {/* Cabeçalho Superior Transparente (Botão de Voltar e Busca) */}
@@ -82,8 +82,8 @@ export const PilulasHero: React.FC<Props> = ({
         </div>
       </header>
 
-      {/* Conteúdo: Logotipo à esquerda e Tipografia de Marca */}
-      <div className="relative z-10 pt-10 sm:pt-12 flex-1 flex flex-col justify-start min-h-[120px]">
+      {/* Conteúdo: Tipografia de Marca (sem o logo busto, conforme solicitado) */}
+      <div className="relative z-10 pt-10 sm:pt-12 flex-1 flex flex-col justify-start min-h-[110px]">
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
           <PilulasBrandBanner />
         </div>
