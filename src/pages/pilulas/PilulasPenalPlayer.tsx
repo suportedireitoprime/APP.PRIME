@@ -4,7 +4,7 @@ import {
   ArrowLeft, Play, Pause, RotateCcw, RotateCw, 
   FileText, Subtitles, Volume2, Sparkles, 
   ChevronLeft, ChevronRight, BookOpen, ExternalLink, X, List,
-  Bookmark, Loader2
+  Bookmark, Loader2, Maximize2
 } from 'lucide-react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
@@ -41,6 +41,8 @@ interface SrtCue {
   end: number;
   text: string;
 }
+
+type PainelAba = 'legenda' | 'texto' | 'pdf';
 
 function parseTimeToSeconds(timeStr: string): number {
   const parts = timeStr.trim().replace(',', '.').split(':');
@@ -90,7 +92,6 @@ export default function PilulasPenalPlayer() {
         return { topico: m.topicos[idx], modulo: m, indiceNoModulo: idx };
       }
     }
-    // Fallback: primeiro tópico do primeiro módulo se não encontrado
     return { 
       topico: modules[0]?.topicos[0] || null, 
       modulo: modules[0] || null, 
@@ -106,8 +107,12 @@ export default function PilulasPenalPlayer() {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [cues, setCues] = useState<SrtCue[]>([]);
   const [legendaAtual, setLegendaAtual] = useState('');
-  const [mostrarLegendas, setMostrarLegendas] = useState(true);
   const [pdfAberto, setPdfAberto] = useState(false);
+
+  // Menu de Alternância (Legenda, Ficha em Texto sem PDF, Ficha em PDF)
+  const [abaPainel, setAbaPainel] = useState<PainelAba>('legenda');
+  const [textoFicha, setTextoFicha] = useState<string>('');
+  const [carregandoTexto, setCarregandoTexto] = useState(false);
 
   // Favoritos
   const [isFavorito, setIsFavorito] = useState(false);
@@ -165,6 +170,61 @@ export default function PilulasPenalPlayer() {
     });
   }, [topico]);
 
+  // Carregar texto do resumo (Ficha em Texto sem PDF)
+  useEffect(() => {
+    if (!topico) return;
+    setTextoFicha('');
+    setCarregandoTexto(true);
+
+    let cancelado = false;
+
+    const carregarTexto = async () => {
+      // 1. Tenta o R2 roteiroUrl
+      if (topico.roteiroUrl) {
+        try {
+          const res = await fetch(topico.roteiroUrl);
+          if (res.ok) {
+            const txt = await res.text();
+            if (txt && !txt.includes('<!doctype html>') && !cancelado) {
+              setTextoFicha(txt);
+              setCarregandoTexto(false);
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      // 2. Tenta Google Drive uc download
+      if (topico.driveTxtId) {
+        try {
+          const res = await fetch(`https://drive.google.com/uc?export=download&id=${topico.driveTxtId}`);
+          if (res.ok) {
+            const txt = await res.text();
+            if (txt && !txt.includes('<!doctype html>') && !cancelado) {
+              setTextoFicha(txt);
+              setCarregandoTexto(false);
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      // 3. Fallback montado das legendas SRT
+      if (!cancelado) {
+        if (cues.length > 0) {
+          setTextoFicha(cues.map(c => c.text).join(' '));
+        }
+        setCarregandoTexto(false);
+      }
+    };
+
+    carregarTexto();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [topico?.id, topico?.roteiroUrl, topico?.driveTxtId, cues]);
+
   // Inicializar o áudio ao trocar de tópico
   useEffect(() => {
     if (!topico) return;
@@ -182,7 +242,6 @@ export default function PilulasPenalPlayer() {
     if (audioRef.current && audioSrc) {
       audioRef.current.src = audioSrc;
       audioRef.current.load();
-      // Tentativa de autoplay com tratamento gracioso de bloqueio de autoplay
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise
@@ -192,7 +251,6 @@ export default function PilulasPenalPlayer() {
             marcarComoOuvido(topico.id);
           })
           .catch(() => {
-            // Autoplay bloqueado pelo navegador (normal antes do primeiro clique do usuário)
             setIsPlaying(false);
             setIsLoading(false);
           });
@@ -217,7 +275,6 @@ export default function PilulasPenalPlayer() {
     const cur = audioRef.current.currentTime;
     setCurrentTime(cur);
 
-    // Se ouviu mais de 20s, marcar como concluído
     if (cur > 20 && topico) {
       marcarComoOuvido(topico.id);
     }
@@ -228,7 +285,7 @@ export default function PilulasPenalPlayer() {
     }
   }, [cues, topico, marcarComoOuvido]);
 
-  // Controles
+  // Controles de Playback
   const togglePlay = () => {
     haptic.selection();
     if (!audioRef.current) return;
@@ -247,9 +304,8 @@ export default function PilulasPenalPlayer() {
             if (topico) marcarComoOuvido(topico.id);
           })
           .catch((err) => {
-            console.warn('Erro ao reproduzir áudio principal:', err);
+            console.warn('Erro ao reproduzir áudio:', err);
             setIsLoading(false);
-            // Fallback para Drive se o link do R2 falhar
             if (topico?.driveMp3Id && audioRef.current) {
               audioRef.current.src = `https://drive.google.com/uc?export=download&id=${topico.driveMp3Id}`;
               audioRef.current.load();
@@ -275,7 +331,6 @@ export default function PilulasPenalPlayer() {
     if (audioRef.current) audioRef.current.playbackRate = nextRate;
   };
 
-  // Navegar para próximo ou anterior dentro do módulo
   const navegarTopico = (delta: number) => {
     if (!modulo) return;
     haptic.selection();
@@ -285,7 +340,6 @@ export default function PilulasPenalPlayer() {
     }
   };
 
-  // URL do PDF para visualização
   const pdfUrlResolvida = useMemo(() => {
     if (!topico) return '';
     return topico.pdfUrl || (topico.drivePdfId ? `https://drive.google.com/uc?export=download&id=${topico.drivePdfId}` : '');
@@ -305,8 +359,17 @@ export default function PilulasPenalPlayer() {
     );
   }
 
+  // Parágrafos formatados para Ficha em Texto
+  const paragrafosTexto = useMemo(() => {
+    if (!textoFicha) return [];
+    return textoFicha
+      .split(/\n{2,}|\r\n\r\n/)
+      .map(p => p.trim())
+      .filter(Boolean);
+  }, [textoFicha]);
+
   return (
-    <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-16 text-white relative flex flex-col justify-between overflow-x-hidden select-none">
+    <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-6 text-white relative flex flex-col justify-between overflow-x-hidden select-none">
       {/* Background Padrão Oficial ShapeGrid */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <ShapeGrid 
@@ -320,7 +383,7 @@ export default function PilulasPenalPlayer() {
         />
       </div>
 
-      {/* Áudio Element com Eventos Robustos */}
+      {/* Áudio Element */}
       <audio
         ref={audioRef}
         preload="auto"
@@ -349,24 +412,24 @@ export default function PilulasPenalPlayer() {
         }}
       />
 
-      {/* Header Superior Fixo com Botão Voltar e Ações */}
-      <header className="relative z-20 max-w-xl mx-auto w-full px-4 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex items-center justify-between gap-3">
+      {/* Header Superior Fixo com Voltar e Ações */}
+      <header className="relative z-20 max-w-xl mx-auto w-full px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex items-center justify-between gap-3">
         <button
           onClick={() => {
             haptic.light();
             navigate('/pilulas/penal');
           }}
           aria-label="Voltar para Lista de Pílulas"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
+          className="grid w-11 h-11 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
         >
-          <ArrowLeft className="w-6 h-6 stroke-[2.4]" />
+          <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.4]" />
         </button>
 
         <div className="text-center px-2 min-w-0 flex-1">
-          <p className="text-[10.5px] uppercase tracking-widest font-black text-amber-400/90 truncate">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-amber-400/90 truncate">
             {modulo.folderName}
           </p>
-          <h1 className="text-xs font-semibold text-zinc-400 truncate">
+          <h1 className="text-xs font-medium text-zinc-400 truncate">
             Faixa {indiceNoModulo + 1} de {modulo.topicos.length}
           </h1>
         </div>
@@ -377,13 +440,13 @@ export default function PilulasPenalPlayer() {
             type="button"
             onClick={toggleFavorito}
             title={isFavorito ? 'Remover dos Favoritos' : 'Salvar nos Favoritos'}
-            className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all active:scale-95 cursor-pointer backdrop-blur-md ${
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-all active:scale-95 cursor-pointer backdrop-blur-md ${
               isFavorito 
                 ? 'bg-amber-400/20 border-amber-400/40 text-amber-400' 
                 : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
             }`}
           >
-            <Bookmark className={`w-5 h-5 ${isFavorito ? 'fill-amber-400' : ''}`} />
+            <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${isFavorito ? 'fill-amber-400' : ''}`} />
           </button>
 
           {/* Botão Ver Lista de Módulos */}
@@ -393,96 +456,186 @@ export default function PilulasPenalPlayer() {
               navigate('/pilulas/penal');
             }}
             aria-label="Ver todas as faixas"
-            className="grid w-11 h-11 shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
+            className="grid w-10 h-10 sm:w-11 sm:h-11 shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
           >
-            <List className="w-5 h-5" />
+            <List className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </header>
 
-      {/* Conteúdo Central: Capa Vermelha Oficial e Informações da Faixa */}
-      <main className="relative z-10 max-w-md mx-auto w-full px-6 flex-1 flex flex-col justify-center items-center py-4">
-        {/* Capa Vermelha Oficial com Brilho Volumétrico */}
-        <div className="relative group my-auto">
+      {/* Conteúdo Central: Capa Pequena com Título Dentro e Degradê */}
+      <main className="relative z-10 max-w-lg mx-auto w-full px-4 flex-1 flex flex-col justify-start items-center pt-2 pb-2">
+        {/* Capa Pequena Compacta com Título DENTRO e Degradê Inferior */}
+        <div className="relative group shrink-0">
           {/* Glow Atmosférico Vermelho & Dourado */}
           <div 
-            className="absolute -inset-4 rounded-3xl bg-red-600/25 blur-2xl opacity-75 group-hover:opacity-100 transition-opacity pointer-events-none transform-gpu"
+            className="absolute -inset-3 rounded-3xl bg-red-600/20 blur-xl opacity-75 group-hover:opacity-100 transition-opacity pointer-events-none transform-gpu"
           />
 
-          <div className="relative w-56 sm:w-64 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-red-500/50 shadow-2xl shadow-black/80 bg-zinc-900">
+          <div className="relative w-44 sm:w-48 aspect-[3/3.8] rounded-2xl overflow-hidden border-2 border-red-500/50 shadow-2xl shadow-black/90 bg-zinc-900 flex flex-col justify-end">
+            {/* Imagem de Fundo da Capa Vermelha */}
             <img 
               src={penalCover} 
               alt="Capa Vermelha Direito Penal" 
-              className="w-full h-full object-cover transform-gpu transition-transform duration-500 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-500 group-hover:scale-105"
             />
 
-            {/* Selo no Card */}
-            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[9.5px] font-bold text-amber-300">
+            {/* Selo no Topo do Card */}
+            <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[9px] font-bold text-amber-300">
               Pílula {indiceNoModulo + 1}
+            </div>
+
+            {/* Degradê Inferior e Título DENTRO da Capa com Nova Tipografia */}
+            <div className="relative z-10 w-full p-3 pt-8 bg-gradient-to-t from-black/95 via-black/75 to-transparent text-left">
+              <span className="inline-block px-1.5 py-0.5 rounded bg-red-600/30 border border-red-500/40 text-red-300 text-[9px] font-bold uppercase tracking-wider mb-1">
+                Módulo {modulo.folderIndex}
+              </span>
+              <h2 className="text-sm sm:text-[15px] font-bold text-zinc-100 leading-snug tracking-tight line-clamp-2 drop-shadow-md">
+                {topico.titulo}
+              </h2>
             </div>
           </div>
         </div>
 
-        {/* Títulos e Metadados com Tipografia Elegante */}
-        <div className="w-full text-center mt-6 space-y-1">
-          <span className="inline-block px-2.5 py-0.5 rounded-md bg-red-500/15 border border-red-500/30 text-red-300 text-[10.5px] font-bold uppercase tracking-wider">
-            Direito Penal • Módulo {modulo.folderIndex}
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight drop-shadow leading-tight">
-            {topico.titulo}
-          </h2>
-          <p className="text-xs text-zinc-400">
-            Resumo em áudio esquematizado de alta precisão
-          </p>
-        </div>
-
-        {/* Botão Oficial: Ver PDF da Ficha Cornell Igual ao Livro no Próprio App */}
-        <div className="w-full mt-4 flex items-center justify-center gap-2">
+        {/* Menu de Alternância: Legenda | Ficha em Texto (Sem PDF) | Ficha em PDF */}
+        <div className="w-full mt-3.5 p-1 rounded-2xl bg-zinc-900/80 border border-white/10 backdrop-blur-md flex items-center gap-1 shadow-lg">
           <button
             type="button"
             onClick={() => {
               haptic.selection();
-              setPdfAberto(true);
+              setAbaPainel('legenda');
             }}
-            className="flex-1 max-w-[280px] flex items-center justify-center gap-2 h-11 px-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
-          >
-            <BookOpen className="w-4 h-4 stroke-[2.5]" />
-            <span>Ver Ficha Cornell (PDF)</span>
-          </button>
-
-          {/* Botão de Alternar Legendas */}
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              setMostrarLegendas(!mostrarLegendas);
-            }}
-            className={`h-11 px-3 rounded-2xl border flex items-center gap-1.5 text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
-              mostrarLegendas
-                ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              abaPainel === 'legenda'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
-            title="Alternar Legendas"
           >
-            <Subtitles className="w-4 h-4" />
+            <Subtitles className="w-3.5 h-3.5" />
             <span>Legenda</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setAbaPainel('texto');
+            }}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              abaPainel === 'texto'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Ficha (Texto)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setAbaPainel('pdf');
+            }}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              abaPainel === 'pdf'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Ficha (PDF)</span>
+          </button>
         </div>
 
-        {/* Banner de Legenda em Tempo Real (SRT Sincronizado) */}
-        {mostrarLegendas && (
-          <div className="w-full min-h-[46px] mt-3 px-4 py-2 rounded-2xl bg-zinc-900/80 border border-white/10 backdrop-blur-md flex items-center justify-center text-center shadow-inner">
-            <p className="text-xs sm:text-sm font-semibold text-amber-300 drop-shadow animate-fade-in">
-              {legendaAtual ? `"${legendaAtual}"` : 'Acompanhe as legendas sincronizadas...'}
-            </p>
-          </div>
-        )}
+        {/* ── PAINEL DINÂMICO CONFORME ABA SELECIONADA ── */}
+        <div className="w-full mt-2.5 flex-1 flex flex-col justify-center">
+          {/* ABA 1: LEGENDA MAIOR E ELEGANTE */}
+          {abaPainel === 'legenda' && (
+            <div className="w-full min-h-[92px] max-h-[140px] px-5 py-3.5 rounded-2xl bg-zinc-900/90 border border-amber-500/25 backdrop-blur-md flex items-center justify-center text-center shadow-inner overflow-y-auto">
+              <p className="text-base sm:text-lg font-medium text-amber-200/95 leading-relaxed tracking-wide drop-shadow animate-fade-in select-text">
+                {legendaAtual ? (
+                  <span>“{legendaAtual}”</span>
+                ) : (
+                  <span className="text-zinc-400 text-sm font-normal italic">
+                    {isPlaying ? 'Acompanhe a legenda sincronizada ao áudio...' : 'Toque no Play para ouvir e acompanhar a legenda...'}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+
+          {/* ABA 2: FICHA FORMATADA COM TEXTO SEM PDF */}
+          {abaPainel === 'texto' && (
+            <div className="w-full h-[150px] sm:h-[180px] rounded-2xl bg-zinc-900/90 border border-white/10 backdrop-blur-md p-4 overflow-y-auto shadow-inner text-left select-text">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Resumo Esquematizado Cornell</span>
+                </span>
+                <span className="text-[10px] text-zinc-400 font-mono">
+                  Texto Completo
+                </span>
+              </div>
+
+              {carregandoTexto ? (
+                <div className="flex items-center justify-center h-24 text-zinc-400 gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                  <span className="text-xs">Carregando resumo esquematizado...</span>
+                </div>
+              ) : paragrafosTexto.length > 0 ? (
+                <div className="space-y-2.5 pr-1">
+                  {paragrafosTexto.map((paragrafo, i) => (
+                    <p key={i} className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-normal">
+                      {paragrafo}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-zinc-400 italic">
+                  Resumo esquematizado em texto disponível para este tópico.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* ABA 3: FICHA EM PDF (DO LADO) */}
+          {abaPainel === 'pdf' && (
+            <div className="w-full min-h-[92px] p-4 rounded-2xl bg-zinc-900/90 border border-white/10 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400 shrink-0">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 text-left">
+                  <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                    Ficha Cornell Original em PDF
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 truncate">
+                    Leitor paginado formato livro no app
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setPdfAberto(true);
+                }}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 h-10 px-5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 font-bold text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Abrir Ficha no App</span>
+              </button>
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Rodapé: Controles de Áudio & Scrubbing */}
-      <footer className="relative z-20 max-w-xl mx-auto w-full px-6 pb-4">
+      <footer className="relative z-20 max-w-xl mx-auto w-full px-5 pt-1 pb-2">
         {/* Barra de Progresso com Scrubbing */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <input
             type="range"
             min={0}
@@ -495,19 +648,19 @@ export default function PilulasPenalPlayer() {
             }}
             className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-400"
           />
-          <div className="flex justify-between text-[11px] font-mono text-zinc-400 px-0.5">
+          <div className="flex justify-between text-[10.5px] font-mono text-zinc-400 px-0.5">
             <span>{Math.floor(currentTime / 60)}:{(Math.floor(currentTime % 60)).toString().padStart(2, '0')}</span>
             <span>{Math.floor(duration / 60)}:{(Math.floor(duration % 60)).toString().padStart(2, '0')}</span>
           </div>
         </div>
 
         {/* Botões do Player */}
-        <div className="flex items-center justify-between gap-2 mt-2">
+        <div className="flex items-center justify-between gap-1 mt-1.5">
           {/* Botão de Velocidade */}
           <button
             type="button"
             onClick={mudarVelocidade}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
           >
             {playbackRate}x
           </button>
@@ -517,34 +670,34 @@ export default function PilulasPenalPlayer() {
             type="button"
             disabled={indiceNoModulo === 0}
             onClick={() => navegarTopico(-1)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Retroceder 15s */}
           <button
             type="button"
             onClick={() => pular(-15)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
             title="Voltar 15s"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
-          {/* Play / Pause Principal com Spinner se carregando */}
+          {/* Play / Pause Principal */}
           <button
             type="button"
             onClick={togglePlay}
             disabled={isLoading}
-            className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-80"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-80"
           >
             {isLoading ? (
-              <Loader2 className="w-7 h-7 animate-spin text-zinc-950" />
+              <Loader2 className="w-6 h-6 sm:w-7 sm:h-7 animate-spin text-zinc-950" />
             ) : isPlaying ? (
-              <Pause className="w-7 h-7 fill-current" />
+              <Pause className="w-6 h-6 sm:w-7 sm:h-7 fill-current" />
             ) : (
-              <Play className="w-7 h-7 fill-current ml-1" />
+              <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-0.5" />
             )}
           </button>
 
@@ -552,10 +705,10 @@ export default function PilulasPenalPlayer() {
           <button
             type="button"
             onClick={() => pular(15)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
             title="Avançar 15s"
           >
-            <RotateCw className="w-5 h-5" />
+            <RotateCw className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
           {/* Navegar Próximo */}
@@ -563,18 +716,18 @@ export default function PilulasPenalPlayer() {
             type="button"
             disabled={modulo ? indiceNoModulo === modulo.topicos.length - 1 : true}
             onClick={() => navegarTopico(1)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           {/* Botão de Fechar / Sair */}
           <button
             type="button"
             onClick={() => navigate('/pilulas/penal')}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
+            className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </footer>
