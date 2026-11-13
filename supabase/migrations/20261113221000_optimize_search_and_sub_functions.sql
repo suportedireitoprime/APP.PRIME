@@ -95,23 +95,27 @@ BEGIN
   ),
   sumulas AS (
     SELECT * FROM (
-      SELECT 'sumula'::text AS entity_type, ('stf-' || s.numero) AS entity_id, 'sumulas_stf'::text AS entity_table,
-             ('Súmula ' || s.numero || ' do STF') AS title, coalesce(s.ramo_direito, s.situacao) AS subtitle,
-             left(coalesce(s.enunciado,''), 220) AS snippet, NULL::text AS thumb_url,
-             ('/jurisprudencia/sumulas-stf?q=' || s.numero) AS route,
-             (CASE WHEN s.numero::text = q THEN 5.0 ELSE 2.0 END)::real AS score
-      FROM public.sumulas_stf s
-      WHERE ('sumula' = ANY(tipos)) AND (s.numero::text = q OR lower(public.f_unaccent(coalesce(s.enunciado,''))) LIKE pat)
-      LIMIT lim_cte
+      (
+        SELECT 'sumula'::text AS entity_type, ('stf-' || s.numero) AS entity_id, 'sumulas_stf'::text AS entity_table,
+               ('Súmula ' || s.numero || ' do STF') AS title, coalesce(s.ramo_direito, s.situacao) AS subtitle,
+               left(coalesce(s.enunciado,''), 220) AS snippet, NULL::text AS thumb_url,
+               ('/jurisprudencia/sumulas-stf?q=' || s.numero) AS route,
+               (CASE WHEN s.numero::text = q THEN 5.0 ELSE 2.0 END)::real AS score
+        FROM public.sumulas_stf s
+        WHERE ('sumula' = ANY(tipos)) AND (s.numero::text = q OR lower(public.f_unaccent(coalesce(s.enunciado,''))) LIKE pat)
+        LIMIT lim_cte
+      )
       UNION ALL
-      SELECT 'sumula', ('stj-' || s.numero), 'sumulas_stj',
-             ('Súmula ' || s.numero || ' do STJ'), coalesce(s.orgao_julgador, s.situacao),
-             left(coalesce(s.enunciado,''), 220), NULL::text,
-             ('/jurisprudencia/sumulas-stj?q=' || s.numero),
-             (CASE WHEN s.numero::text = q THEN 5.0 ELSE 2.0 END)::real
-      FROM public.sumulas_stj s
-      WHERE ('sumula' = ANY(tipos)) AND (s.numero::text = q OR lower(public.f_unaccent(coalesce(s.enunciado,''))) LIKE pat)
-      LIMIT lim_cte
+      (
+        SELECT 'sumula'::text, ('stj-' || s.numero), 'sumulas_stj'::text,
+               ('Súmula ' || s.numero || ' do STJ'), coalesce(s.orgao_julgador, s.situacao),
+               left(coalesce(s.enunciado,''), 220), NULL::text,
+               ('/jurisprudencia/sumulas-stj?q=' || s.numero),
+               (CASE WHEN s.numero::text = q THEN 5.0 ELSE 2.0 END)::real
+        FROM public.sumulas_stj s
+        WHERE ('sumula' = ANY(tipos)) AND (s.numero::text = q OR lower(public.f_unaccent(coalesce(s.enunciado,''))) LIKE pat)
+        LIMIT lim_cte
+      )
     ) y
   )
   SELECT * FROM vids
