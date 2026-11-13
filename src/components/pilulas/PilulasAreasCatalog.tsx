@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { memo, useState, useMemo, useCallback } from 'react';
-import { Play, Pause, Bookmark, Volume2, Search, Sparkles, Clock, Flame, ListMusic, ChevronRight } from 'lucide-react';
+import { Play, Pause, Bookmark, Volume2, Search, Clock, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { type PilulasHeroTab } from './hero/PilulasActionShortcuts';
 
@@ -105,7 +105,6 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
   favoritosIds,
   onToggleFavorito,
 }) => {
-  const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [playingId, setPlayingId] = useState<string | null>(null);
 
@@ -114,8 +113,8 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
     setPlayingId((prev) => (prev === id ? null : id));
   }, []);
 
-  // Filtragem
-  const filteredItems = useMemo(() => {
+  // Filtragem dos itens de acordo com a busca ou filtro especial do painel (favoritos, emalta, etc)
+  const filteredCatalog = useMemo(() => {
     let items = PILULAS_MOCK_CATALOG;
 
     if (activeTab === 'favoritos') {
@@ -126,10 +125,6 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
       items = items.filter((item) => item.recente);
     } else if (activeTab === 'playlist') {
       items = items.filter((item) => Boolean(item.playlist));
-    }
-
-    if (selectedArea) {
-      items = items.filter((item) => item.area === selectedArea);
     }
 
     if (searchTerm.trim()) {
@@ -143,10 +138,21 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
     }
 
     return items;
-  }, [activeTab, selectedArea, searchTerm, favoritosIds]);
+  }, [activeTab, searchTerm, favoritosIds]);
+
+  // Agrupamento estrito por Área do Direito (Sem menu de alternância horizontal)
+  const areasWithItems = useMemo(() => {
+    return AREAS_DO_DIREITO.map((area) => {
+      const items = filteredCatalog.filter((item) => item.area === area.nome);
+      return {
+        ...area,
+        items,
+      };
+    }).filter((area) => area.items.length > 0);
+  }, [filteredCatalog]);
 
   return (
-    <div className="space-y-6 pt-4 pb-24 max-w-[1400px] mx-auto px-3 sm:px-6">
+    <div className="space-y-8 pt-4 pb-24 max-w-[1400px] mx-auto px-3 sm:px-6">
       {/* Barra de Busca de Resumos */}
       <div className="relative">
         <input
@@ -154,7 +160,7 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Buscar tema, assunto ou artigo em áudio..."
-          className="w-full h-12 pl-11 pr-4 rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 text-[14px] focus:outline-none focus:border-rose-500/60 focus:ring-1 focus:ring-rose-500/50 transition-all shadow-lg"
+          className="w-full h-12 pl-11 pr-4 rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 text-[14px] focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/50 transition-all shadow-lg"
         />
         <Search className="w-5 h-5 text-zinc-400 absolute left-3.5 top-3.5" />
         {searchTerm && (
@@ -167,82 +173,29 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Chips Seletores de Todas as Áreas do Direito */}
-      {activeTab === 'todos' && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1 h-4 rounded-full bg-rose-500" />
-              Áreas do Direito ({AREAS_DO_DIREITO.length})
+      {/* Indicador de Filtro Ativo do Painel (se não for todos) */}
+      {activeTab !== 'todos' && (
+        <div className="flex items-center justify-between px-1 bg-amber-500/10 border border-amber-500/20 rounded-2xl py-2.5 px-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+              {activeTab === 'favoritos' && 'Exibindo: Meus Favoritos'}
+              {activeTab === 'emalta' && 'Exibindo: Em Alta na Semana'}
+              {activeTab === 'recentes' && 'Exibindo: Áudios Recentes'}
+              {activeTab === 'playlist' && 'Exibindo: Playlists & Trilhas'}
             </span>
-            {selectedArea && (
-              <button
-                onClick={() => {
-                  haptic.light();
-                  setSelectedArea(null);
-                }}
-                className="text-xs text-rose-400 hover:text-rose-300 font-medium"
-              >
-                Ver todas
-              </button>
-            )}
           </div>
-
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            <button
-              onClick={() => {
-                haptic.selection();
-                setSelectedArea(null);
-              }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
-                selectedArea === null
-                  ? 'bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/20'
-                  : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:bg-zinc-800 hover:text-white'
-              }`}
-            >
-              🌟 Todas as Matérias
-            </button>
-            {AREAS_DO_DIREITO.map((area) => {
-              const isSelected = selectedArea === area.nome;
-              return (
-                <button
-                  key={area.id}
-                  onClick={() => {
-                    haptic.selection();
-                    setSelectedArea(isSelected ? null : area.nome);
-                  }}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
-                    isSelected
-                      ? 'bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/20'
-                      : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:bg-zinc-800 hover:text-white'
-                  }`}
-                >
-                  <span>{area.icone}</span>
-                  <span>{area.nome.replace('Direito ', '')}</span>
-                </button>
-              );
-            })}
-          </div>
+          <button
+            onClick={() => onSelectTab('todos')}
+            className="text-xs text-zinc-400 hover:text-white font-medium underline"
+          >
+            Ver todas as áreas
+          </button>
         </div>
       )}
 
-      {/* Título de Seção Ativa */}
-      <div className="flex items-center justify-between px-1">
-        <h3 className="font-display text-white text-[17px] font-bold uppercase tracking-widest flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-[#FB7185]" />
-          {activeTab === 'favoritos' && 'MEUS FAVORITOS'}
-          {activeTab === 'emalta' && 'EM ALTA NA SEMANA'}
-          {activeTab === 'recentes' && 'ÁUDIOS RECENTES'}
-          {activeTab === 'playlist' && 'PLAYLISTS & TRILHAS'}
-          {activeTab === 'todos' && (selectedArea || 'TODAS AS PÍLULAS')}
-        </h3>
-        <span className="text-xs text-zinc-400 font-medium">
-          {filteredItems.length} {filteredItems.length === 1 ? 'áudio' : 'áudios'}
-        </span>
-      </div>
-
-      {/* Grade de Pílulas em Áudio */}
-      {filteredItems.length === 0 ? (
+      {/* Conteúdo: Organizado Estritamente Dentro de Cada Área do Direito */}
+      {areasWithItems.length === 0 ? (
         <div className="py-16 text-center rounded-3xl bg-zinc-900/40 border border-white/5 px-4">
           <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-zinc-400">
             {activeTab === 'favoritos' ? <Bookmark className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
@@ -253,108 +206,128 @@ export const PilulasAreasCatalog: React.FC<Props> = ({
           <p className="text-zinc-400 text-xs max-w-sm mx-auto">
             {activeTab === 'favoritos'
               ? 'Toque no ícone de marcador para salvar seus resumos preferidos e acessá-los rapidamente aqui.'
-              : 'Tente ajustar os filtros ou pesquisar por outro termo jurídico.'}
+              : 'Tente ajustar os termos de pesquisa.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredItems.map((item) => {
-            const isPlaying = playingId === item.id;
-            const isFav = favoritosIds.has(item.id);
-            const areaConfig = AREAS_DO_DIREITO.find((a) => a.nome === item.area) || AREAS_DO_DIREITO[0];
-
-            return (
-              <div
-                key={item.id}
-                onClick={() => handlePlayToggle(item.id)}
-                className={`group relative p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 shadow-lg shadow-black/40 overflow-hidden ${
-                  isPlaying
-                    ? 'bg-rose-950/30 border-rose-500/50 shadow-rose-950/20'
-                    : 'bg-[#18181B]/80 hover:bg-[#202024] border-white/5 hover:border-white/15'
-                }`}
-              >
-                {/* Topo do Card: Badge da Matéria + Duração + Favoritar */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span
-                      className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border leading-none flex items-center gap-1"
-                      style={{
-                        color: areaConfig.cor,
-                        backgroundColor: `${areaConfig.cor}15`,
-                        borderColor: `${areaConfig.cor}30`,
-                      }}
-                    >
-                      <span>{areaConfig.icone}</span>
-                      <span>{areaConfig.nome.replace('Direito ', '')}</span>
-                    </span>
-
-                    {item.playlist && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-purple-300 bg-purple-950/40 border border-purple-800/40 leading-none">
-                        {item.playlist}
-                      </span>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      haptic.selection();
-                      onToggleFavorito(item.id);
-                    }}
-                    aria-label={isFav ? 'Remover dos favoritos' : 'Favoritar'}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                      isFav
-                        ? 'text-rose-400 bg-rose-500/20'
-                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
-                    }`}
-                  >
-                    <Bookmark className={`w-4 h-4 ${isFav ? 'fill-rose-400' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Título do Resumo */}
-                <h4 className="font-sans text-[14px] sm:text-[14.5px] font-semibold text-white/95 leading-snug group-hover:text-rose-300 transition-colors">
-                  {item.titulo}
-                </h4>
-
-                {/* Rodapé do Card: Equalizador Waveform + Botão de Play */}
-                <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                  <div className="flex items-center gap-2">
-                    {/* Equalizador animado quando tocando */}
-                    {isPlaying ? (
-                      <div className="flex items-center gap-1 h-3.5">
-                        <span className="w-1 bg-rose-400 rounded-full animate-[equalize_0.8s_ease-in-out_infinite] h-full" />
-                        <span className="w-1 bg-rose-400 rounded-full animate-[equalize_0.6s_ease-in-out_infinite_0.2s] h-full" />
-                        <span className="w-1 bg-rose-400 rounded-full animate-[equalize_1s_ease-in-out_infinite_0.4s] h-full" />
-                        <span className="w-1 bg-rose-400 rounded-full animate-[equalize_0.7s_ease-in-out_infinite_0.1s] h-full" />
-                      </div>
-                    ) : (
-                      <Volume2 className="w-3.5 h-3.5 text-zinc-500" />
-                    )}
-                    <span className="text-[11.5px] text-zinc-400 font-mono">
-                      {item.duracao}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                      isPlaying
-                        ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30'
-                        : 'bg-white/10 text-white group-hover:bg-rose-500 group-hover:text-white'
-                    }`}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-3.5 h-3.5 fill-white" />
-                    ) : (
-                      <Play className="w-3.5 h-3.5 ml-0.5 fill-white" />
-                    )}
-                  </div>
-                </div>
+        areasWithItems.map((area) => (
+          <section key={area.id} className="space-y-3">
+            {/* Cabeçalho da Área do Direito */}
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="w-1.5 h-5 rounded-full"
+                  style={{ backgroundColor: area.cor }}
+                />
+                <h3 className="font-display text-white text-[16px] sm:text-[17px] font-bold uppercase tracking-wider flex items-center gap-2">
+                  <span>{area.icone}</span>
+                  <span>{area.nome}</span>
+                </h3>
               </div>
-            );
-          })}
-        </div>
+              <span className="text-xs text-zinc-400 font-medium">
+                {area.items.length} {area.items.length === 1 ? 'áudio' : 'áudios'}
+              </span>
+            </div>
+
+            {/* Grade de Pílulas da Área */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {area.items.map((item) => {
+                const isPlaying = playingId === item.id;
+                const isFav = favoritosIds.has(item.id);
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handlePlayToggle(item.id)}
+                    className={`group relative p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 shadow-lg shadow-black/40 overflow-hidden ${
+                      isPlaying
+                        ? 'bg-amber-950/30 border-amber-500/50 shadow-amber-950/20'
+                        : 'bg-[#18181B]/80 hover:bg-[#202024] border-white/5 hover:border-white/15'
+                    }`}
+                  >
+                    {/* Topo do Card: Badge da Matéria + Duração + Favoritar */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span
+                          className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border leading-none flex items-center gap-1"
+                          style={{
+                            color: area.cor,
+                            backgroundColor: `${area.cor}15`,
+                            borderColor: `${area.cor}30`,
+                          }}
+                        >
+                          <span>{area.icone}</span>
+                          <span>{area.nome.replace('Direito ', '')}</span>
+                        </span>
+
+                        {item.playlist && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-purple-300 bg-purple-950/40 border border-purple-800/40 leading-none">
+                            {item.playlist}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          haptic.selection();
+                          onToggleFavorito(item.id);
+                        }}
+                        aria-label={isFav ? 'Remover dos favoritos' : 'Favoritar'}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                          isFav
+                            ? 'text-amber-400 bg-amber-500/20'
+                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+                        }`}
+                      >
+                        <Bookmark className={`w-4 h-4 ${isFav ? 'fill-amber-400' : ''}`} />
+                      </button>
+                    </div>
+
+                    {/* Título do Resumo */}
+                    <h4 className="font-sans text-[14px] sm:text-[14.5px] font-semibold text-white/95 leading-snug group-hover:text-amber-300 transition-colors">
+                      {item.titulo}
+                    </h4>
+
+                    {/* Rodapé do Card: Equalizador Waveform + Botão de Play */}
+                    <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                      <div className="flex items-center gap-2">
+                        {isPlaying ? (
+                          <div className="flex items-center gap-1 h-3.5">
+                            <span className="w-1 bg-amber-400 rounded-full animate-[equalize_0.8s_ease-in-out_infinite] h-full" />
+                            <span className="w-1 bg-amber-400 rounded-full animate-[equalize_0.6s_ease-in-out_infinite_0.2s] h-full" />
+                            <span className="w-1 bg-amber-400 rounded-full animate-[equalize_1s_ease-in-out_infinite_0.4s] h-full" />
+                            <span className="w-1 bg-amber-400 rounded-full animate-[equalize_0.7s_ease-in-out_infinite_0.1s] h-full" />
+                          </div>
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5 text-zinc-500" />
+                        )}
+                        <span className="text-[11.5px] text-zinc-400 font-mono">
+                          {item.duracao}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                          isPlaying
+                            ? 'bg-amber-500 text-black shadow-md shadow-amber-500/30'
+                            : 'bg-white/10 text-white group-hover:bg-amber-500 group-hover:text-black'
+                        }`}
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-3.5 h-3.5 fill-current" />
+                        ) : (
+                          <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ))
       )}
 
       {/* Animação do Equalizador */}

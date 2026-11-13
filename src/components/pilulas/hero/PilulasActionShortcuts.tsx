@@ -11,7 +11,7 @@ interface Props {
 }
 
 const SHORTCUTS = [
-  { id: 'favoritos' as const, label: 'Favoritos', icon: Bookmark, color: '#F43F5E' },
+  { id: 'favoritos' as const, label: 'Favoritos', icon: Bookmark, color: '#F59E0B' },
   { id: 'emalta' as const,    label: 'Em Alta',   icon: Flame,    color: '#FB923C' },
   { id: 'recentes' as const,  label: 'Recentes',  icon: Clock,    color: '#38BDF8' },
   { id: 'playlist' as const,  label: 'Playlist',  icon: ListMusic, color: '#A855F7' },
@@ -38,12 +38,12 @@ export const PilulasActionShortcuts: React.FC<Props> = ({
             }}
             className={`flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden ${
               isActive
-                ? 'bg-white/15 border border-white/20 shadow-inner'
+                ? 'bg-amber-500/20 border border-amber-500/40 shadow-inner'
                 : 'hover:bg-white/5 active:bg-white/10 border border-transparent'
             }`}
           >
             {item.id === 'favoritos' && favoritosCount > 0 && (
-              <span className="absolute top-1 right-2 min-w-[17px] h-[16px] px-1 rounded-full bg-rose-500 text-white text-[9.5px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10">
+              <span className="absolute top-1 right-2 min-w-[17px] h-[16px] px-1 rounded-full bg-amber-500 text-black text-[9.5px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10">
                 {favoritosCount > 99 ? '99+' : favoritosCount}
               </span>
             )}
@@ -59,7 +59,7 @@ export const PilulasActionShortcuts: React.FC<Props> = ({
             />
             <span
               className={`text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm transition-colors ${
-                isActive ? 'text-white font-bold' : 'text-white/85 group-hover:text-white'
+                isActive ? 'text-amber-300 font-bold' : 'text-white/85 group-hover:text-white'
               }`}
             >
               {item.label}
