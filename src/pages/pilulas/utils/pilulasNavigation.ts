@@ -6,7 +6,9 @@ import type { PillGalleryItem } from '../data/galleryItems';
  * Compartilhado entre PilulasHome e PilulasLista.
  */
 const SLUG_ROUTE_MAP: Record<string, string> = {
-  'CP': '/pilulas/cp',
+  'Direito Penal': '/pilulas/penal',
+  'Penal': '/pilulas/penal',
+  'CP': '/pilulas/penal',
   'CF88': '/pilulas/cf',
   'CC': '/pilulas/cc',
   'CPP': '/pilulas/cpp',

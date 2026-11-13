@@ -296,6 +296,8 @@ const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 const Pilulas = lazy(() => import("./pages/Pilulas.tsx"));
 const PilulasLeiSeca = lazy(() => import("./pages/PilulasLeiSeca.tsx"));
+const PilulasDireitoPenal = lazy(() => import("./pages/pilulas/PilulasDireitoPenal.tsx"));
+const PilulasPenalPlayer = lazy(() => import("./pages/pilulas/PilulasPenalPlayer.tsx"));
 const PilulasPlayer = lazy(() => import("./pages/pilulas/PilulasPlayer.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
@@ -902,7 +904,9 @@ function AnimatedRoutes() {
           <Route path="/aulas" element={<ProtectedRoute><PageTransition instant><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cp" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/penal/player/:topicId" element={<ProtectedRoute><PageTransition instant><PilulasPenalPlayer /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/penal" element={<ProtectedRoute><PageTransition><PilulasDireitoPenal /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasDireitoPenal /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cf" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cf" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cc" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cc" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />

@@ -97,10 +97,10 @@ export default function PilulasHome() {
             <div className="flex items-start justify-between px-1 mb-2 gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[20px] font-black text-white uppercase tracking-widest mb-0.5">
-                  Pílulas de Códigos
+                  Pílulas de Matérias
                 </h2>
                 <p className="text-[12.5px] text-zinc-400 truncate">
-                  Áudios curtos e diretos sobre os artigos essenciais da lei seca.
+                  Áudios esquematizados, legendas em tempo real e resumos Cornell.
                 </p>
               </div>
               
