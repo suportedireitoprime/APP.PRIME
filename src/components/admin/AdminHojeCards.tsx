@@ -299,6 +299,8 @@ export function AdminHojeCards() {
   const [provRows, setProvRows] = useState<Row[]>([]);
   const [provLoading, setProvLoading] = useState(false);
   const rowsCache = useRef<Record<string, Row[]>>({});
+  const prevCountsRef = useRef<Record<string, number>>({});
+  const [pulsingCards, setPulsingCards] = useState<Record<string, boolean>>({});
 
 
   const abrirProvider = useCallback(
@@ -823,6 +825,31 @@ export function AdminHojeCards() {
         renovou: totalRenovou || 0,
         renovouValor: Number.isFinite(totalRenovouValor) ? totalRenovouValor : 0,
       };
+
+      // Detecta aumento em tempo real para disparar efeito de pulso neon verde nos cards
+      const prev = prevCountsRef.current;
+      if (Object.keys(prev).length > 0 && periodo === 'hoje') {
+        const novosPulsando: Record<string, boolean> = {};
+        let teveAumento = false;
+        (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial', 'renovou'] as CardId[]).forEach((cid) => {
+          if (typeof prev[cid] === 'number' && novos[cid] > prev[cid]) {
+            novosPulsando[cid] = true;
+            teveAumento = true;
+          }
+        });
+        if (teveAumento) {
+          setPulsingCards((curr) => ({ ...curr, ...novosPulsando }));
+          setTimeout(() => {
+            setPulsingCards((curr) => {
+              const updated = { ...curr };
+              Object.keys(novosPulsando).forEach((k) => delete updated[k]);
+              return updated;
+            });
+          }, 2000);
+        }
+      }
+      prevCountsRef.current = { ...novos };
+
       setCounts(novos);
     
     if (periodo === 'hoje') {
@@ -939,6 +966,11 @@ export function AdminHojeCards() {
       .on(
         'postgres_changes' as any,
         { event: '*', schema: 'public', table: 'asaas_subscriptions' },
+        triggerDebouncedLoad
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'app_events' },
         triggerDebouncedLoad
       )
       .subscribe((status) => {
@@ -1944,15 +1976,26 @@ export function AdminHojeCards() {
     const isFinancial = id === 'trial' || id === 'renovou';
     const rawVal = id === 'trial' ? counts.trialValor : counts.renovouValor;
     const valorFinanceiro = typeof rawVal === 'number' && Number.isFinite(rawVal) ? rawVal : 0;
+    const isPulsing = !!pulsingCards[id];
 
     return (
       <button
         key={id}
         onClick={() => openCard(id)}
-        className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[72px] sm:min-h-[76px]"
+        className={cn(
+          "group relative rounded-xl border p-2 sm:p-3 text-left transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[72px] sm:min-h-[76px]",
+          isPulsing
+            ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
+            : "border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98]"
+        )}
       >
         <div className="flex items-start justify-between w-full">
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+          <div className={cn(
+            "w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-colors shrink-0",
+            isPulsing
+              ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 animate-pulse"
+              : "bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20"
+          )}>
             <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
 
@@ -1965,7 +2008,7 @@ export function AdminHojeCards() {
               )}
               <span className={cn(
                 "font-['Plus_Jakarta_Sans',sans-serif] text-lg sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
-                isZero ? "text-zinc-600" : "text-foreground"
+                isPulsing ? "text-emerald-300" : isZero ? "text-zinc-600" : "text-foreground"
               )}>
                 {cardCount}
               </span>
@@ -1976,6 +2019,16 @@ export function AdminHojeCards() {
                 valorFinanceiro === 0 ? "text-zinc-600" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
+              </span>
+            )}
+            {id === 'paywall' && (
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8.5px] sm:text-[9.5px] font-bold mt-0.5 text-zinc-500 truncate" title="Início do funil de vendas">
+                1º passo
+              </span>
+            )}
+            {id === 'viu_planos' && (
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8.5px] sm:text-[9.5px] font-bold mt-0.5 text-sky-400 truncate" title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
+                {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
             )}
           </div>
@@ -2041,8 +2094,53 @@ export function AdminHojeCards() {
       </div>
 
       {/* Linha 2: 4 cards de Conversão, Vendas e Renovações na mesma linha */}
-      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-3">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2">
         {CARDS.slice(3).map(renderCardButton)}
+      </div>
+
+      {/* Régua Visual do Funil de Conversão (Item 4) */}
+      <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/20 border border-border/40 backdrop-blur-sm text-[10px] sm:text-[11px]">
+        <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-muted-foreground overflow-x-auto scrollbar-none py-0.5">
+          <span className="font-semibold text-zinc-400 shrink-0">Funil:</span>
+          
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">1.</span> {counts.paywall} telas
+          </span>
+
+          <span className="text-zinc-600 shrink-0">➔</span>
+
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">2.</span> {counts.viu_planos} checkout
+            <span className={cn(
+              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
+              counts.paywall > 0 && counts.viu_planos > 0 ? "bg-sky-500/15 text-sky-400 border border-sky-500/30" : "text-zinc-600"
+            )}>
+              {counts.paywall > 0 ? `${((counts.viu_planos / counts.paywall) * 100).toFixed(1)}%` : '0%'}
+            </span>
+          </span>
+
+          <span className="text-zinc-600 shrink-0">➔</span>
+
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">3.</span> {counts.trial} assinou
+            <span className={cn(
+              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
+              counts.viu_planos > 0 && counts.trial > 0 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "text-zinc-600"
+            )}>
+              {counts.viu_planos > 0 ? `${((counts.trial / counts.viu_planos) * 100).toFixed(1)}%` : '0%'}
+            </span>
+          </span>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-1 shrink-0 pl-2 border-l border-border/40 text-[10.5px]">
+          <span className="text-zinc-500">Conversão Geral:</span>
+          <span className={cn(
+            "font-extrabold tabular-nums",
+            counts.paywall > 0 && counts.trial > 0 ? "text-emerald-400" : "text-zinc-500"
+          )}>
+            {counts.paywall > 0 ? `${((counts.trial / counts.paywall) * 100).toFixed(1)}%` : '0.0%'}
+          </span>
+        </div>
       </div>
 
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
