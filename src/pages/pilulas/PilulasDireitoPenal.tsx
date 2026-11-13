@@ -281,8 +281,7 @@ export default function PilulasDireitoPenal() {
 
                     {/* Detalhes da Matéria ao Lado da Capa */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 text-red-400 text-xs font-bold uppercase tracking-wider mb-1 font-sans">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1 font-sans">
                         <span>Direito Penal</span>
                       </div>
 
@@ -437,8 +436,7 @@ export default function PilulasDireitoPenal() {
 
                 {/* Ao lado da capa: Direito Penal e Subtítulo com Quantidade de Matérias e Aulas */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 text-red-400 text-xs font-bold uppercase tracking-wider mb-1 font-sans">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <div className="text-red-400 text-xs font-bold uppercase tracking-wider mb-1 font-sans">
                     <span>Grade Doutrinária</span>
                   </div>
 
