@@ -21,7 +21,7 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -42,10 +42,10 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         loading="eager"
         decoding="async"
         fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[52%_20%] md:object-[center_20%] z-0 pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-0 w-full h-full object-cover object-[52%_15%] md:object-[center_18%] z-0 pointer-events-none transform-gpu will-change-transform"
       />
 
-      {/* Onda Dourada Animada da Cor do Céu ao Alvorecer */}
+      {/* Onda Bege de Seda Clássica (Bege Mármore & Papiro do Parthenon) */}
       <BibliotecaHeroWave />
 
       {/* Cabeçalho Superior Transparente (Botões de Voltar e Meus PDFs / Offline) */}
@@ -78,26 +78,29 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         </div>
       </header>
 
-      {/* Conteúdo: Tipografia de Marca Biblioteca Jurídica no padrão ouro da Home */}
-      <div className="relative z-10 pt-10 sm:pt-12 flex-1 flex flex-col justify-start min-h-[115px]">
+      {/* Conteúdo: Altura moderada, desobstruindo o botão voltar e mantendo proporção ideal */}
+      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
+        {/* Espaçamento vertical calibrado para livrar os botões superiores sem esticar demais */}
+        <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
+
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
           <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[240px]">
-            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (âmbar dourado itálico) */}
+            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (bege mármore itálico) */}
             <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
               <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
                 Biblioteca
               </span>
-              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-amber-400 block drop-shadow-[0_2px_14px_rgba(245,158,11,0.65)] -mt-0.5">
+              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#DFC8B2] block drop-shadow-[0_2px_14px_rgba(223,200,178,0.65)] -mt-0.5">
                 Jurídica
               </span>
             </h1>
 
-            {/* Traço vertical âmbar e subtítulo oficial */}
+            {/* Traço vertical bege e subtítulo oficial */}
             <div className="mt-2 flex items-start text-left gap-2">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(245,158,11,0.55)]" />
+              <div className="w-[3px] h-8 bg-gradient-to-b from-[#DFC8B2] to-[#8C7660] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(223,200,178,0.55)]" />
               <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                 Acervo permanente com{' '}
-                <span className="text-amber-300 font-bold not-italic">
+                <span className="text-[#ECE0D1] font-bold not-italic">
                   +{isLoading ? '...' : totalCount} livros
                 </span>{' '}
                 ao seu dispor.
@@ -107,8 +110,8 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         </div>
       </div>
 
-      {/* 4 Atalhos Rápidos flutuando sobre a onda (Padrão Início do App) */}
-      <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
+      {/* 4 Atalhos Rápidos flutuando sobre a onda */}
+      <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3">
         <BibliotecaActionShortcuts />
       </div>
 

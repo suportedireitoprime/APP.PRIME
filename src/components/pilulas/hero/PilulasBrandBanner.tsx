@@ -3,6 +3,9 @@ import React, { memo } from "react";
 export const PilulasBrandBanner: React.FC = () => {
   return (
     <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[240px]">
+      {/* Espaçamento vertical calibrado para livrar os botões superiores sem esticar demais */}
+      <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
+
       {/* Tipografia de Marca: Pílulas (branco) + em Áudio (âmbar dourado no tom do céu) */}
       <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
         <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
