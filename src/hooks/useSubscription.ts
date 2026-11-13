@@ -486,16 +486,20 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       }
     })();
 
-    // Realtime: qualquer INSERT/UPDATE em play_subscriptions, apple_subscriptions,
-    // asaas_subscriptions, profiles ou legacy_subscribers dispara re-fetch imediato.
+    // Realtime: escuta reativa estrita em profiles (tabela mestre com PK id) para revalidar assinatura
+    // Evita timeouts e erros de REPLICA IDENTITY causados por múltiplos filtros em tabelas secundárias
     const channel = supabase
-      .channel(`sub-${user.id}-${Math.random().toString(36).slice(2, 10)}`)
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'play_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'asaas_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'legacy_subscribers', filter: `claimed_user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .subscribe();
+      .channel(`sub-profiles-${user.id}`)
+      .on(
+        'postgres_changes' as any, 
+        { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, 
+        () => { void fetchOnce(); }
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.debug('[useSubscription] Realtime fallback para polling:', status);
+        }
+      });
 
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
     // renovações e o caso de concluir a compra fora do app.
