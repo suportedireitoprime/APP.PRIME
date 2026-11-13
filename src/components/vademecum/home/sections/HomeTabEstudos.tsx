@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import { toast } from '@/hooks/use-toast';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
+import HomeBoletinsList from './HomeBoletinsList';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import HomePraticarCarousel from '@/components/vademecum/home/carousel/HomePraticarCarousel';
 import HomeAulasInterativasBanner from '@/components/vademecum/home/HomeAulasInterativasBanner';
@@ -131,6 +132,11 @@ const HomeTabEstudos = ({
               </Suspense>
             </div>
           )}
+
+          {/* Boletins Jurídicos em Lista Vertical (logo após o carrossel de clássicos) */}
+          <div className="px-1 pt-1">
+            <HomeBoletinsList />
+          </div>
         </div>
       )}
 
