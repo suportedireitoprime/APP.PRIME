@@ -55,6 +55,9 @@ export async function persistLeiArtigosInBackground(tabelaNome: string): Promise
  */
 export async function persistResumoInBackground(id: string): Promise<void> {
   if (!id || inFlightResumos.has(id)) return;
+  // Previne erro de sintaxe inválida de UUID no Postgres caso id seja um slug textual
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id).trim());
+  if (!isUuid) return;
 
   try {
     const existing = await getPersistedResumo(id);

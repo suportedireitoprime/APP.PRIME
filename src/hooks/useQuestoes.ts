@@ -238,7 +238,9 @@ export function useQuestoesSessao(opts: SortearOpts) {
 
   const registrar = useCallback(async (questaoId: string, alternativa: string, acertou: boolean, contexto = 'pratica') => {
     if (!user) return;
-    const tempo = Date.now() - inicio.current;
+    const rawTempo = inicio.current ? (Date.now() - inicio.current) : 0;
+    // Duração válida em milissegundos: entre 0 e 3.600.000 ms (1h max) para nunca estourar o limite de INTEGER do Postgres
+    const tempo = Math.max(0, Math.min(3600000, Math.round(rawTempo)));
     inicio.current = Date.now();
     await db.from('questoes_respostas').insert({
       user_id: user.id, questao_id: questaoId, alternativa, acertou, tempo_ms: tempo, contexto,

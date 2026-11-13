@@ -43,20 +43,29 @@ export async function enableWebPush(): Promise<{ token?: string; error?: string 
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from("device_tokens").upsert(
+      const isAdmin = user.email === 'wn7corporation@gmail.com' || 
+                      user.email === 'suporte@direitoprime.com.br' || 
+                      user.user_metadata?.role === 'admin';
+      const { error: upErr } = await supabase.from("device_tokens").upsert(
         { 
           token, 
           platform: "web", 
           user_id: user.id,
-          is_admin_device: user.email === 'wn7corporation@gmail.com' || 
-                           user.email === 'suporte@direitoprime.com.br' || 
-                           user.user_metadata?.role === 'admin',
+          is_admin_device: isAdmin,
           invalidated_at: null,
           invalid_reason: null,
           last_seen_at: new Date().toISOString()
         },
         { onConflict: "token" },
       );
+
+      if (upErr && (upErr.code === '42501' || upErr.message?.includes('policy'))) {
+        try {
+          await supabase.functions.invoke('push-track', {
+            body: { action: 'register_token', token, platform: 'web', user_id: user.id, is_admin_device: isAdmin }
+          });
+        } catch {}
+      }
     }
 
     onMessage(messaging, (payload) => {
