@@ -14,6 +14,9 @@ type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
 
+// Cache em memória para métricas de datas passadas (evita recalcular dias imutáveis no Postgres)
+const pastDaysMetricasCache = new Map<string, any>();
+
 interface Row {
   key: string;
   title: string;
@@ -388,8 +391,19 @@ export function AdminHojeCards() {
 
     try {
       const datas = getDatasPeriodo(periodo);
+      const hojeIso = isoDate(datas[0]);
       
-      const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
+      const metricasPromises = datas.map(async (d) => {
+        const diaIso = isoDate(d);
+        if (diaIso !== hojeIso && pastDaysMetricasCache.has(diaIso)) {
+          return { data: pastDaysMetricasCache.get(diaIso), error: null };
+        }
+        const res = await (supabase.rpc('admin_metricas_dia' as any, { _dia: diaIso }) as any);
+        if (diaIso !== hojeIso && res && res.data && !res.error) {
+          pastDaysMetricasCache.set(diaIso, res.data);
+        }
+        return res;
+      });
       const [metricasResults, list5mResult, listOnlineResult, listCadastrosResult] = await Promise.allSettled([
         Promise.allSettled(metricasPromises),
         supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) }),

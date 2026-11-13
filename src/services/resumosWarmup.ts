@@ -13,8 +13,10 @@ export async function warmResumosCache(): Promise<void> {
   resumosWarmed = true;
 
   try {
-    // 1) Checa se já temos cache persistente
+    // 1) Checa se já temos cache persistente recente (TTL: 24 horas)
     const stored = localStorage.getItem('resumos_areas_temas_cache');
+    const cacheTime = Number(localStorage.getItem('resumos_areas_temas_cache_time') || '0');
+    const isFresh = cacheTime > 0 && (Date.now() - cacheTime < 24 * 60 * 60 * 1000);
     let hasValidCache = false;
 
     if (stored) {
@@ -93,12 +95,18 @@ export async function warmResumosCache(): Promise<void> {
 
           if (list.length > 0) {
             localStorage.setItem('resumos_areas_temas_cache', JSON.stringify(list));
+            localStorage.setItem('resumos_areas_temas_cache_time', String(Date.now()));
           }
         }
       } catch {
         /* sem internet, mantém cache local */
       }
     };
+
+    // Se o cache já for válido e recente (< 24h), evita consulta à rede
+    if (hasValidCache && isFresh) {
+      return;
+    }
 
     const ric = (window as any).requestIdleCallback;
     if (ric) {
