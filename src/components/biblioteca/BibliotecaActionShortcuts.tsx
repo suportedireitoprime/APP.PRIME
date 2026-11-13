@@ -19,7 +19,9 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
   const navigate = useNavigate();
 
   return (
-    <div className={`flex items-center justify-between gap-1 sm:gap-2 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl ${className}`}>
+    <div
+      className={`w-full flex items-center justify-between gap-1 sm:gap-2 bg-black/65 backdrop-blur-xl border-t border-white/10 rounded-b-[36px] px-3 sm:px-6 py-2.5 sm:py-3 shadow-2xl ${className}`}
+    >
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
@@ -31,7 +33,7 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
               item.action(navigate);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            className="flex-1 group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             <Icon
               className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"

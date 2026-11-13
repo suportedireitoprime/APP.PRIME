@@ -130,7 +130,8 @@ const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
         </div>
       </div>
 
-      <div className="relative z-10 px-3 sm:px-5 pt-3 pb-5">
+      {/* Barra de atalhos docada no final do painel, contornando as laterais */}
+      <div className="relative z-10 mt-auto w-full">
         <BibliotecaActionShortcuts />
       </div>
 

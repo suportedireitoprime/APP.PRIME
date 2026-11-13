@@ -327,9 +327,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
       <BibliotecaHero onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')} />
 
       {/* Conteúdo Principal com Estrutura Fluida e Organizada */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
-        {/* Banner Continuar Leitura com margem de respiro ajustada */}
-        <div className="mb-6">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-3.5 sm:mt-5 space-y-5 sm:space-y-6">
+        {/* Banner Continuar Leitura com altura compacta */}
+        <div className="mb-3 sm:mb-4">
           <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
         </div>
 

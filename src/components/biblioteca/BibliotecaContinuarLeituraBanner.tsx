@@ -114,16 +114,16 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
         background: `linear-gradient(to right, ${RED_COLOR}33, ${RED_COLOR}0D)`,
         borderColor: `${RED_COLOR}4D`,
       }}
-      className="w-full flex flex-col gap-2.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer my-3"
+      className="w-full flex flex-col gap-2 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer my-1"
     >
-      <div className="w-full flex items-center gap-3">
+      <div className="w-full flex items-center gap-2.5 sm:gap-3">
         {/* Ícone principal / capa em miniatura à esquerda */}
-        <div className="flex items-center justify-center shrink-0 z-10 w-12 h-12 rounded-xl bg-black/40 border border-white/10 overflow-hidden shadow-inner">
+        <div className="flex items-center justify-center shrink-0 z-10 w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-black/40 border border-white/10 overflow-hidden shadow-inner">
           {capaUrl ? (
             <img src={capaUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
           ) : (
             <BookOpen
-              className="w-6 h-6 text-red-400 group-hover:scale-105 transition-transform"
+              className="w-5 h-5 text-red-400 group-hover:scale-105 transition-transform"
               strokeWidth={1.8}
             />
           )}
@@ -131,42 +131,42 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
 
         {/* Textos informativos centrais */}
         <div className="flex-1 min-w-0 z-10">
-          <div className="flex items-center gap-2 mb-0.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-red-400">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <p className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-red-400">
               {displayTag}
             </p>
-            <span className="text-[9.5px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+            <span className="text-[9px] sm:text-[9.5px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
               {modoBadge}
             </span>
           </div>
 
-          <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+          <p className="font-serif italic text-[14px] sm:text-[15px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
             {displayNome}
           </p>
 
-          <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-red-300/80 mt-0.5">
+          <p className="text-[10.5px] font-semibold truncate flex items-center gap-1 text-red-300/80 mt-0.5">
             <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-red-500 shrink-0" />
             <span>{displaySubtitulo}</span>
-            <span className="text-white/40">• Clique para retomar</span>
+            <span className="text-white/40">• Retomar</span>
           </p>
         </div>
 
-        {/* Seta indicativa à direita ampliada */}
+        {/* Seta indicativa à direita */}
         <ArrowRight
-          className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-red-400 group-hover:translate-x-1 transition-transform"
-          strokeWidth={2.4}
+          className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 z-10 text-red-400 group-hover:translate-x-1 transition-transform"
+          strokeWidth={2.2}
         />
       </div>
 
-      {/* Barra de Progresso elegante e contínua */}
-      <div className="w-full z-10 pt-0.5">
-        <div className="flex items-center justify-between text-[10.5px] font-medium text-zinc-400 mb-1 px-0.5">
+      {/* Barra de Progresso compacta e contínua */}
+      <div className="w-full z-10 pt-0">
+        <div className="flex items-center justify-between text-[10px] font-medium text-zinc-400 mb-0.5 px-0.5">
           <span>Progresso de leitura</span>
           <span className="font-bold text-rose-300">
             {percent > 0 ? `${percent}% concluído` : 'Início'}
           </span>
         </div>
-        <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+        <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-rose-400 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
             style={{ width: `${Math.max(percent, percent > 0 ? 3 : 0)}%` }}
@@ -182,7 +182,7 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
         }}
       >
         <BookOpen
-          className="w-24 h-24 opacity-20 text-red-500"
+          className="w-20 h-20 opacity-20 text-red-500"
           strokeWidth={1.2}
         />
       </div>
