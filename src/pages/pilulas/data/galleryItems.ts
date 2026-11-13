@@ -15,11 +15,11 @@ export interface PillGalleryItem {
  */
 export const CODIGOS_ITEMS: PillGalleryItem[] = [
   {
-    id: 'cp',
+    id: 'penal',
     image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 400),
-    text: 'CP',
-    fullName: 'Código Penal',
-    descricao: 'Artigos fundamentais comentados em áudios rápidos',
+    text: 'Direito Penal',
+    fullName: 'Direito Penal',
+    descricao: 'Áudios esquematizados, legendas sincronizadas e resumos Cornell',
     borderColor: '#EF4444',
   },
   {
