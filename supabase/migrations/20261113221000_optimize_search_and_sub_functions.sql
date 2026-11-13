@@ -124,3 +124,4 @@ END;
 $function$;
 
 GRANT EXECUTE ON FUNCTION public.buscar_conteudo(text, text, integer) TO anon, authenticated, service_role;
+
