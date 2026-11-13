@@ -48,7 +48,7 @@ const CATEGORIAS_ACERVO: CategoriaAcervoConfig[] = [
     id: 'fora-da-toga',
     tabLabel: 'Fora da Toga',
     title: 'FORA DA TOGA',
-    subtitle: 'Filosofia, psicologia, história, literatura e comportamento',
+    subtitle: 'Leituras além do Direito para enriquecer sua formação humana e intelectual.',
     badgeLabel: 'Fora da Toga',
     gradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%)', // Indigo / Noite
     accentColor: '#818cf8',
@@ -454,7 +454,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   {activeCategoria.title}
                 </h2>
               </div>
-              <p className="text-sm text-white/60 mt-1 ml-3 leading-snug">
+              <p className="text-xs sm:text-sm text-white/60 mt-1 ml-3 leading-snug truncate">
                 {activeCategoria.subtitle}
               </p>
             </div>
@@ -589,26 +589,27 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
 
                         {/* Capa do livro à esquerda com sombra profunda */}
                         <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Library className="w-8 h-8 text-white/30" />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <Library className="w-8 h-8 text-white/20" />
                           </div>
-                          {livro.capa && (
-                            <img
-                              src={cdnImg(livro.capa, 240)}
-                              alt={livro.titulo}
-                              loading={idx < 6 ? 'eager' : 'lazy'}
-                              fetchPriority={idx < 2 ? 'high' : 'auto'}
-                              decoding="async"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                              className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300"
-                              style={{
-                                boxShadow:
-                                  '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
-                              }}
-                            />
-                          )}
+                          <img
+                            src={livro.capa ? cdnImg(livro.capa, 240) : (findColecao(activeCategoria.id)?.cover || bibliotecaCoverImg)}
+                            alt={livro.titulo}
+                            loading={idx < 6 ? 'eager' : 'lazy'}
+                            fetchPriority={idx < 2 ? 'high' : 'auto'}
+                            decoding="async"
+                            onError={(e) => {
+                              const fallback = findColecao(activeCategoria.id)?.cover || bibliotecaCoverImg;
+                              if (e.currentTarget.src !== fallback) {
+                                e.currentTarget.src = fallback;
+                              }
+                            }}
+                            className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300 shadow-md"
+                            style={{
+                              boxShadow:
+                                '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
+                            }}
+                          />
                         </div>
 
                         {/* Detalhes à direita: Selo, Tempo/Autor, Título e Seta */}
