@@ -48,7 +48,8 @@ function getCacheKey(termo: string, tipo: string, buscaIA: boolean = false): str
 
 export function prefetchBusca(termo: string, tipo: ConteudoTipo | ConteudoGrupo | 'tudo' = 'tudo') {
   const q = termo.trim();
-  if (q.length < 2) return;
+  // Exige no mínimo 3 caracteres para evitar full-scans pesados e timeouts no Postgres com termos de 2 letras
+  if (q.length < 3) return;
   const cacheKey = getCacheKey(q, tipo);
   if (searchCache.has(cacheKey)) return;
 
@@ -57,7 +58,7 @@ export function prefetchBusca(termo: string, tipo: ConteudoTipo | ConteudoGrupo 
       const { data, error } = await supabase.rpc('buscar_conteudo', {
         _termo: q,
         _tipo: tipo === 'tudo' ? null : tipo,
-        _limit: 60,
+        _limit: 30,
       });
       if (!error && Array.isArray(data)) {
         if (searchCache.size >= MAX_CACHE_SIZE) {
@@ -82,7 +83,7 @@ export function useBuscaConteudo(
 
   useEffect(() => {
     const q = termo.trim();
-    if (q.length < 2) {
+    if (q.length < 3) {
       setResultados([]);
       setLoading(false);
       return;
@@ -130,7 +131,7 @@ export function useBuscaConteudo(
             const { data, error } = await supabase.rpc('buscar_conteudo', {
               _termo: q,
               _tipo: tipo === 'tudo' ? null : tipo,
-              _limit: 60,
+              _limit: 30,
             });
             errorOnline = error;
             if (!error && Array.isArray(data)) {
