@@ -20,7 +20,7 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
 
   return (
     <div
-      className={`w-full flex items-center justify-between gap-1 sm:gap-2 bg-black/65 backdrop-blur-xl border-t border-white/10 rounded-b-[36px] px-3 sm:px-6 py-2.5 sm:py-3 shadow-2xl ${className}`}
+      className={`w-full flex items-center justify-between gap-1 sm:gap-2 bg-gradient-to-b from-black/70 via-black/85 to-black/95 backdrop-blur-2xl border-t border-white/15 rounded-b-[36px] px-3.5 sm:px-6 py-2.5 sm:py-3 shadow-[0_-8px_24px_rgba(0,0,0,0.5)] ${className}`}
     >
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
@@ -33,14 +33,14 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
               item.action(navigate);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            className="flex-1 group relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             <Icon
               className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
-              style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+              style={{ color: item.color, filter: 'saturate(1.3) drop-shadow(0 2px 6px rgba(0,0,0,0.7))' }}
               strokeWidth={2}
             />
-            <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="font-body text-zinc-100 group-hover:text-white text-[11px] sm:text-[12px] font-semibold leading-tight tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               {item.label}
             </span>
           </button>
