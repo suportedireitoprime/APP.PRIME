@@ -462,39 +462,39 @@ export default function PilulasPenalPlayer() {
       />
 
       {/* Header Superior Fixo Compacto com Voltar e Ações */}
-      <header className="relative z-20 w-full px-3 sm:px-5 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1.5 flex items-center justify-between gap-2 border-b border-white/5">
+      <header className="relative z-20 w-full px-3 sm:px-6 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2 flex items-center justify-between gap-2.5 border-b border-white/5">
         <button
           onClick={() => {
             haptic.light();
             navigate('/pilulas/penal');
           }}
           aria-label="Voltar para Lista de Pílulas"
-          className="grid w-10 h-10 sm:w-11 sm:h-11 shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer touch-manipulation"
         >
-          <ArrowLeft className="w-5 h-5 stroke-[2.4]" />
+          <ArrowLeft className="w-6 h-6 stroke-[2.4]" />
         </button>
 
         <div className="text-center px-1 min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-wider font-bold text-amber-400/90 truncate">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-400/90 truncate font-sans">
             {modulo.folderName}
           </p>
-          <h1 className="text-xs font-semibold text-zinc-300 truncate">
+          <h1 className="text-xs sm:text-sm font-bold text-zinc-100 truncate font-sans mt-0.5">
             Faixa {indiceNoModulo + 1} de {modulo.topicos.length} • {topico.titulo}
           </h1>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <button
             type="button"
             onClick={toggleFavorito}
             title={isFavorito ? 'Remover dos Favoritos' : 'Salvar nos Favoritos'}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all active:scale-95 cursor-pointer backdrop-blur-md ${
+            className={`w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full border flex items-center justify-center transition-all active:scale-95 cursor-pointer backdrop-blur-md touch-manipulation shrink-0 ${
               isFavorito 
                 ? 'bg-amber-400/20 border-amber-400/40 text-amber-400' 
                 : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
             }`}
           >
-            <Bookmark className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isFavorito ? 'fill-amber-400' : ''}`} />
+            <Bookmark className={`w-5 h-5 ${isFavorito ? 'fill-amber-400' : ''}`} />
           </button>
 
           <button
@@ -503,29 +503,29 @@ export default function PilulasPenalPlayer() {
               navigate('/pilulas/penal');
             }}
             aria-label="Ver todas as faixas"
-            className="grid w-9 h-9 sm:w-10 sm:h-10 shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer touch-manipulation"
           >
-            <List className="w-4 h-4" />
+            <List className="w-5 h-5" />
           </button>
         </div>
       </header>
 
-      {/* Menu de Alternância Ultra-Compacto em Altura */}
-      <div className="relative z-20 w-full px-3 sm:px-4 mt-2">
-        <div className="max-w-md mx-auto h-8 p-0.5 rounded-xl bg-zinc-900/90 border border-white/10 backdrop-blur-md flex items-center gap-1 shadow-md">
+      {/* Menu de Alternância - Padrão de Toque Google 48px */}
+      <div className="relative z-20 w-full px-3 sm:px-6 mt-2.5">
+        <div className="max-w-md mx-auto min-h-[48px] p-1 rounded-2xl bg-zinc-900/95 border border-white/10 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
           <button
             type="button"
             onClick={() => {
               haptic.selection();
               setAbaPainel('tabela');
             }}
-            className={`flex-1 h-7 flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
               abaPainel === 'tabela'
-                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-sm shadow-amber-500/20'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <FileText className="w-3 h-3" />
+            <FileText className="w-3.5 h-3.5" />
             <span>Ficha (Tabela)</span>
           </button>
 
@@ -535,13 +535,13 @@ export default function PilulasPenalPlayer() {
               haptic.selection();
               setAbaPainel('legenda');
             }}
-            className={`flex-1 h-7 flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
               abaPainel === 'legenda'
-                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-sm shadow-amber-500/20'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Subtitles className="w-3 h-3" />
+            <Subtitles className="w-3.5 h-3.5" />
             <span>Legenda</span>
           </button>
 
@@ -551,13 +551,13 @@ export default function PilulasPenalPlayer() {
               haptic.selection();
               setAbaPainel('pdf');
             }}
-            className={`flex-1 h-7 flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
               abaPainel === 'pdf'
-                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-sm shadow-amber-500/20'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <BookOpen className="w-3 h-3" />
+            <BookOpen className="w-3.5 h-3.5" />
             <span>Ficha (PDF)</span>
           </button>
         </div>
@@ -570,20 +570,20 @@ export default function PilulasPenalPlayer() {
         {abaPainel === 'tabela' && (
           <div className="w-full max-w-4xl mx-auto flex flex-col px-0 select-text">
             {/* Header da Ficha (Método Cornell no título e sem botão duplicado de PDF) */}
-            <div className="px-3 sm:px-4 py-2 border-b border-amber-500/20 bg-zinc-900/60 flex items-center justify-between gap-2">
+            <div className="px-3 sm:px-6 py-3 border-b border-amber-500/20 bg-zinc-900/70 backdrop-blur-md flex items-center justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center flex-wrap gap-1.5 text-[10px] uppercase tracking-wider font-extrabold">
+                <div className="flex items-center flex-wrap gap-1.5 text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold font-sans">
                   <span className="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 shadow-sm shadow-amber-500/10">
                     Método Cornell
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-red-600/30 text-red-300 border border-red-500/30">
+                  <span className="px-2 py-0.5 rounded-md bg-red-600/30 text-red-300 border border-red-500/30">
                     Módulo {modulo.folderIndex}
                   </span>
                   <span className="text-zinc-400 font-medium">
                     • Ficha #{indiceNoModulo + 1} de {modulo.topicos.length}
                   </span>
                 </div>
-                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate mt-1">
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-white tracking-normal truncate mt-1.5 font-sans">
                   {topico.titulo}
                 </h2>
               </div>
@@ -593,11 +593,11 @@ export default function PilulasPenalPlayer() {
             <div className="w-full overflow-x-hidden">
               <table className="w-full border-collapse text-left border-y border-white/10 table-fixed">
                 <thead>
-                  <tr className="bg-amber-500/15 border-b border-amber-500/25 text-[10.5px] sm:text-xs font-black uppercase tracking-wider text-amber-300">
-                    <th className="w-[36%] sm:w-[32%] py-2 px-2.5 sm:px-4 border-r border-amber-500/20">
+                  <tr className="bg-amber-500/15 border-b border-amber-500/25 text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-300 font-sans">
+                    <th className="w-[36%] sm:w-[32%] py-2.5 px-3 sm:px-5 border-r border-amber-500/20">
                       Pergunta / Pista
                     </th>
-                    <th className="w-[64%] sm:w-[68%] py-2 px-2.5 sm:px-4">
+                    <th className="w-[64%] sm:w-[68%] py-2.5 px-3 sm:px-5">
                       Resposta / Anotação
                     </th>
                   </tr>
@@ -610,19 +610,19 @@ export default function PilulasPenalPlayer() {
                         className={`transition-colors ${idx % 2 === 0 ? 'bg-zinc-950/70' : 'bg-zinc-900/40'} hover:bg-amber-500/[0.04]`}
                       >
                         {/* Coluna 1: Pergunta / Conceito (Ao lado) */}
-                        <td className="w-[36%] sm:w-[32%] py-2.5 sm:py-3 px-2.5 sm:px-4 align-top font-bold text-amber-300 text-[11.5px] sm:text-sm border-r border-white/10 leading-snug break-words">
+                        <td className="w-[36%] sm:w-[32%] py-3 sm:py-3.5 px-3 sm:px-5 align-top font-bold text-amber-300 text-xs sm:text-sm border-r border-white/10 leading-snug break-words font-sans">
                           {linha.pergunta}
                         </td>
 
                         {/* Coluna 2: Resposta / Explicação (Ao lado) */}
-                        <td className="w-[64%] sm:w-[68%] py-2.5 sm:py-3 px-2.5 sm:px-4 align-top text-zinc-200 text-[11.5px] sm:text-sm leading-relaxed break-words font-normal">
+                        <td className="w-[64%] sm:w-[68%] py-3 sm:py-3.5 px-3 sm:px-5 align-top text-zinc-200 text-xs sm:text-sm leading-relaxed break-words font-sans font-normal">
                           {linha.resposta}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={2} className="py-8 text-center text-xs text-zinc-400 italic">
+                      <td colSpan={2} className="py-8 text-center text-xs text-zinc-400 italic font-sans">
                         Carregando tabela da Ficha Cornell...
                       </td>
                     </tr>
@@ -633,26 +633,26 @@ export default function PilulasPenalPlayer() {
 
             {/* BLOCO RESUMO: GUARDA ASSIM (NO FINAL DA TABELA, SEM MARGEM LATERAL NO MOBILE) */}
             {(cornellData?.resumoGuardaAssim || cornellData?.perguntaRapida) && (
-              <div className="w-full p-3.5 sm:p-4 bg-gradient-to-r from-amber-500/15 via-zinc-900/90 to-red-950/20 border-b border-amber-500/30">
-                <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black uppercase tracking-wider mb-1.5">
-                  <Scale className="w-3.5 h-3.5" />
+              <div className="w-full p-3.5 sm:p-5 bg-gradient-to-r from-amber-500/15 via-zinc-900/90 to-red-950/20 border-b border-amber-500/30">
+                <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black uppercase tracking-wider mb-2 font-sans">
+                  <Scale className="w-4 h-4" />
                   <span>Resumo: Guarda Assim</span>
                 </div>
 
                 {cornellData.resumoGuardaAssim && (
-                  <p className="text-xs sm:text-sm font-semibold text-zinc-100 leading-relaxed mb-2.5">
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-100 leading-relaxed mb-3 font-sans">
                     {cornellData.resumoGuardaAssim}
                   </p>
                 )}
 
                 {cornellData.perguntaRapida && (
-                  <div className="p-2.5 rounded-xl bg-black/45 border border-white/5 space-y-1">
-                    <div className="flex items-start gap-1.5 text-[11.5px] sm:text-xs text-amber-300 font-bold">
+                  <div className="p-3 rounded-xl bg-black/45 border border-white/5 space-y-1.5">
+                    <div className="flex items-start gap-1.5 text-xs sm:text-[13px] text-amber-300 font-bold font-sans">
                       <span className="shrink-0">⚡ Pergunta:</span>
                       <span className="text-zinc-200 font-normal">{cornellData.perguntaRapida}</span>
                     </div>
                     {cornellData.respostaRapida && (
-                      <div className="flex items-start gap-1.5 text-[11.5px] sm:text-xs text-emerald-400 font-bold">
+                      <div className="flex items-start gap-1.5 text-xs sm:text-[13px] text-emerald-400 font-bold font-sans">
                         <span className="shrink-0">👉</span>
                         <span>{cornellData.respostaRapida}</span>
                       </div>
@@ -800,11 +800,11 @@ export default function PilulasPenalPlayer() {
         )}
       </main>
 
-      {/* ── PLAYER DE ÁUDIO 100% FIXO NO RODAPÉ COM CONTROLES COMPLETOS ── */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 backdrop-blur-2xl border-t border-white/10 px-3 pt-1.5 pb-[calc(0.4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl">
+      {/* ── PLAYER DE ÁUDIO 100% FIXO NO RODAPÉ COM CONTROLES COMPLETOS (PADRÃO GOOGLE 48PX / APPLE HIG) ── */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 backdrop-blur-2xl border-t border-white/10 px-3 sm:px-6 pt-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl">
         <div className="max-w-xl mx-auto w-full">
           {/* Barra de Progresso com Scrubbing */}
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <input
               type="range"
               min={0}
@@ -823,21 +823,22 @@ export default function PilulasPenalPlayer() {
                   }
                 }
               }}
-              className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-400"
+              className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-400 touch-manipulation"
             />
-            <div className="flex justify-between text-[10px] font-mono text-zinc-400 px-0.5 leading-none">
+            <div className="flex justify-between text-[11px] font-mono text-zinc-400 px-0.5 leading-none">
               <span>{Math.floor(currentTime / 60)}:{(Math.floor(currentTime % 60)).toString().padStart(2, '0')}</span>
               <span>{Math.floor(duration / 60)}:{(Math.floor(duration % 60)).toString().padStart(2, '0')}</span>
             </div>
           </div>
 
-          {/* Botões do Player Fixo */}
-          <div className="flex items-center justify-between gap-1 mt-0.5">
+          {/* Botões do Player Fixo - Touch Target Google Material 3 (min 48x48) */}
+          <div className="flex items-center justify-between gap-1 sm:gap-2 mt-1.5 px-0.5">
             {/* Velocidade */}
             <button
               type="button"
               onClick={mudarVelocidade}
-              className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-[11px] font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Velocidade de reprodução"
             >
               {playbackRate}x
             </button>
@@ -847,19 +848,20 @@ export default function PilulasPenalPlayer() {
               type="button"
               disabled={indiceNoModulo === 0}
               onClick={() => navegarTopico(-1)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Faixa anterior"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             {/* Retroceder 15s */}
             <button
               type="button"
               onClick={() => pular(-15)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer touch-manipulation shrink-0"
               title="Voltar 15s"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-5 h-5" />
             </button>
 
             {/* Play / Pause Principal */}
@@ -867,14 +869,15 @@ export default function PilulasPenalPlayer() {
               type="button"
               onClick={togglePlay}
               disabled={isLoading}
-              className="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-lg shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-80"
+              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-80 touch-manipulation shrink-0"
+              title={isPlaying ? 'Pausar áudio' : 'Tocar áudio'}
             >
               {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin text-zinc-950" />
+                <Loader2 className="w-6 h-6 animate-spin text-zinc-950" />
               ) : isPlaying ? (
-                <Pause className="w-5 h-5 fill-current" />
+                <Pause className="w-6 h-6 fill-current" />
               ) : (
-                <Play className="w-5 h-5 fill-current ml-0.5" />
+                <Play className="w-6 h-6 fill-current ml-0.5" />
               )}
             </button>
 
@@ -882,10 +885,10 @@ export default function PilulasPenalPlayer() {
             <button
               type="button"
               onClick={() => pular(15)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer touch-manipulation shrink-0"
               title="Avançar 15s"
             >
-              <RotateCw className="w-4 h-4" />
+              <RotateCw className="w-5 h-5" />
             </button>
 
             {/* Próximo */}
@@ -893,18 +896,20 @@ export default function PilulasPenalPlayer() {
               type="button"
               disabled={modulo ? indiceNoModulo === modulo.topicos.length - 1 : true}
               onClick={() => navegarTopico(1)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Próxima faixa"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             {/* Fechar */}
             <button
               type="button"
               onClick={() => navigate('/pilulas/penal')}
-              className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Fechar player"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
