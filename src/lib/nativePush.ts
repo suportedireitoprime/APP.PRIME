@@ -165,11 +165,21 @@ export async function saveNativePushToken(token?: string): Promise<RegisterResul
   }
 
   const platform = Capacitor.getPlatform() as 'android' | 'ios' | 'web';
-  const { error } = await supabase.from('device_tokens').upsert(
+  let { error } = await supabase.from('device_tokens').upsert(
     // Reativa o token caso tenha sido marcado como invalidado (reinstalação)
     { user_id: userId, token, platform, is_admin_device: isAdmin, invalidated_at: null, invalid_reason: null, last_seen_at: new Date().toISOString() },
     { onConflict: 'token' },
   );
+
+  // Fallback caso a política RLS rejeite o UPDATE devido ao token pertencer a outro user_id anterior no mesmo aparelho
+  if (error && (error.code === '42501' || error.message?.includes('policy'))) {
+    try {
+      await supabase.functions.invoke('push-track', {
+        body: { action: 'register_token', token, platform, user_id: userId, is_admin_device: isAdmin }
+      });
+      error = null;
+    } catch {}
+  }
 
   if (error) {
     console.warn('Push token save failed', error);

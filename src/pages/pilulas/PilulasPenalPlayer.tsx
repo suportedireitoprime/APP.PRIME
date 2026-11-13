@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Play, Pause, RotateCcw, RotateCw, 
   FileText, Subtitles, Volume2, Scale, 
@@ -98,6 +99,26 @@ function parseSRT(srtContent: string): SrtCue[] {
   return cues;
 }
 
+function getActiveCueAtTime(cur: number, cueList: SrtCue[]): { cue: SrtCue; index: number } | null {
+  if (!cueList || cueList.length === 0) return null;
+  // 1. Checagem direta de intervalo
+  for (let i = 0; i < cueList.length; i++) {
+    const c = cueList[i];
+    if (cur >= c.start && cur <= c.end) {
+      return { cue: c, index: i };
+    }
+  }
+  // 2. Micro-gap tolerance (até 0.9s de intervalo entre falas mantém a frase anterior visível sem piscar)
+  for (let i = 0; i < cueList.length; i++) {
+    const c = cueList[i];
+    const nextC = cueList[i + 1];
+    if (cur > c.end && nextC && cur < nextC.start && (nextC.start - c.end) < 1.0) {
+      return { cue: c, index: i };
+    }
+  }
+  return null;
+}
+
 export default function PilulasPenalPlayer() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
@@ -140,6 +161,8 @@ export default function PilulasPenalPlayer() {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [cues, setCues] = useState<SrtCue[]>([]);
   const [legendaAtual, setLegendaAtual] = useState('');
+  const [activeCue, setActiveCue] = useState<SrtCue | null>(null);
+  const [activeCueIndex, setActiveCueIndex] = useState<number>(-1);
   const [pdfAberto, setPdfAberto] = useState(false);
 
   // Menu de Alternância compacto (Legenda, Tabela Cornell sem margem, PDF)
@@ -210,6 +233,8 @@ export default function PilulasPenalPlayer() {
     setCurrentTime(0);
     setCues([]);
     setLegendaAtual('');
+    setActiveCue(null);
+    setActiveCueIndex(-1);
 
     registrarRecente(topico.id);
 
@@ -245,7 +270,38 @@ export default function PilulasPenalPlayer() {
     }
   }, [topico?.id, registrarRecente, marcarComoOuvido]);
 
-  // Atualização de tempo e legendas sincronizadas
+  // 60fps/120fps sync loop de precisão cirúrgica sem latência de eventos
+  useEffect(() => {
+    if (!isPlaying) return;
+    let rafId: number;
+    const tick = () => {
+      if (audioRef.current && !audioRef.current.paused) {
+        const cur = audioRef.current.currentTime;
+        setCurrentTime(cur);
+
+        if (cues.length > 0) {
+          const match = getActiveCueAtTime(cur, cues);
+          if (match) {
+            setActiveCue(match.cue);
+            setActiveCueIndex(match.index);
+            setLegendaAtual(match.cue.text);
+          } else {
+            setActiveCue(null);
+            setActiveCueIndex(-1);
+            setLegendaAtual('');
+          }
+        }
+      }
+      if (isPlaying) {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [isPlaying, cues]);
+
+  // Atualização de tempo e legendas sincronizadas (fallback para scrubbing/seek)
   const handleTimeUpdate = useCallback(() => {
     if (!audioRef.current) return;
     const cur = audioRef.current.currentTime;
@@ -256,10 +312,36 @@ export default function PilulasPenalPlayer() {
     }
 
     if (cues.length > 0) {
-      const activeCue = cues.find(c => cur >= c.start && cur <= c.end);
-      setLegendaAtual(activeCue ? activeCue.text : '');
+      const match = getActiveCueAtTime(cur, cues);
+      if (match) {
+        setActiveCue(match.cue);
+        setActiveCueIndex(match.index);
+        setLegendaAtual(match.cue.text);
+      } else {
+        setActiveCue(null);
+        setActiveCueIndex(-1);
+        setLegendaAtual('');
+      }
     }
   }, [cues, topico, marcarComoOuvido]);
+
+  // Palavras da legenda atual para animação tipo Karaoke em tempo real
+  const currentWords = useMemo(() => {
+    if (!activeCue?.text) return [];
+    return activeCue.text.split(/\s+/).filter(Boolean);
+  }, [activeCue?.text]);
+
+  const currentWordProgress = useMemo(() => {
+    if (!activeCue || currentWords.length === 0) return 0;
+    const dur = Math.max(0.25, activeCue.end - activeCue.start);
+    const elapsed = currentTime - activeCue.start;
+    return Math.max(0, Math.min(1, elapsed / dur));
+  }, [activeCue, currentTime, currentWords.length]);
+
+  const activeWordIdx = Math.min(
+    currentWords.length - 1,
+    Math.floor(currentWordProgress * currentWords.length)
+  );
 
   // Controles de Playback
   const togglePlay = () => {
@@ -487,29 +569,24 @@ export default function PilulasPenalPlayer() {
         {/* ── ABA 1: TABELA CORNELL (ONDE TEM A PERGUNTA E AO LADO A RESPOSTA, SEM MARGEM LATERAL) ── */}
         {abaPainel === 'tabela' && (
           <div className="w-full max-w-4xl mx-auto flex flex-col px-0 select-text">
-            {/* Header da Ficha (Compacto, informativo) */}
+            {/* Header da Ficha (Método Cornell no título e sem botão duplicado de PDF) */}
             <div className="px-3 sm:px-4 py-2 border-b border-amber-500/20 bg-zinc-900/60 flex items-center justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-extrabold uppercase tracking-wider">
-                  <span className="px-1.5 py-0.2 rounded bg-red-600/30 text-red-300">Módulo {modulo.folderIndex}</span>
-                  <span>• Ficha #{indiceNoModulo + 1}</span>
+                <div className="flex items-center flex-wrap gap-1.5 text-[10px] uppercase tracking-wider font-extrabold">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 shadow-sm shadow-amber-500/10">
+                    Método Cornell
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-md bg-red-600/30 text-red-300 border border-red-500/30">
+                    Módulo {modulo.folderIndex}
+                  </span>
+                  <span className="text-zinc-400 font-medium">
+                    • Ficha #{indiceNoModulo + 1} de {modulo.topicos.length}
+                  </span>
                 </div>
-                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate mt-0.5">
+                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate mt-1">
                   {topico.titulo}
                 </h2>
               </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setPdfAberto(true);
-                }}
-                className="shrink-0 flex items-center gap-1 h-7 px-2.5 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 text-[11px] font-bold text-amber-300 transition-all cursor-pointer"
-              >
-                <Maximize2 className="w-3 h-3" />
-                <span>PDF Original</span>
-              </button>
             </div>
 
             {/* TABELA CORNELL PURO: PERGUNTA NA ESQUERDA E RESPOSTA AO LADO */}
@@ -619,17 +696,73 @@ export default function PilulasPenalPlayer() {
               </div>
             </div>
 
-            {/* Legenda Maior e Elegante */}
-            <div className="w-full min-h-[105px] max-h-[150px] px-5 py-3.5 rounded-2xl bg-zinc-900/90 border border-amber-500/25 backdrop-blur-md flex items-center justify-center text-center shadow-2xl overflow-y-auto">
-              <p className="text-base sm:text-lg font-medium text-amber-200/95 leading-relaxed tracking-wide drop-shadow animate-fade-in select-text">
-                {legendaAtual ? (
-                  <span>“{legendaAtual}”</span>
+            {/* Legenda Animada, Elegante e Certeira no Time */}
+            <div className="w-full min-h-[125px] sm:min-h-[145px] px-5 py-4 rounded-2xl bg-gradient-to-b from-zinc-900/95 via-zinc-900/90 to-black/95 border border-amber-500/30 backdrop-blur-xl flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+              {/* Equalizador e Status de Sincronia */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-end gap-1 h-3.5">
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-3.5 animate-pulse' : 'h-1.5 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-2 animate-pulse delay-75' : 'h-1 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-3 animate-pulse delay-150' : 'h-2 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-2.5 animate-pulse delay-100' : 'h-1.5 opacity-40'}`} />
+                </div>
+                <span className="text-[10px] font-extrabold tracking-wider uppercase text-amber-400/90">
+                  {isPlaying ? 'Áudio Sincronizado ao Vivo' : 'Legenda Sincronizada'}
+                </span>
+              </div>
+
+              {/* Texto com Animação e Efeito Karaoke */}
+              <AnimatePresence mode="wait">
+                {activeCue && currentWords.length > 0 ? (
+                  <motion.div
+                    key={activeCueIndex}
+                    initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="w-full flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 select-text"
+                  >
+                    {currentWords.map((word, wIdx) => {
+                      const isSpoken = wIdx <= activeWordIdx;
+                      const isCurrent = wIdx === activeWordIdx && isPlaying;
+                      return (
+                        <span
+                          key={wIdx}
+                          className={`transition-all duration-150 text-base sm:text-lg leading-relaxed ${
+                            isCurrent
+                              ? 'text-amber-300 font-extrabold scale-105 drop-shadow-[0_0_14px_rgba(251,191,36,0.7)]'
+                              : isSpoken
+                              ? 'text-amber-200/95 font-semibold'
+                              : 'text-zinc-400 font-normal opacity-70'
+                          }`}
+                        >
+                          {word}
+                        </span>
+                      );
+                    })}
+                  </motion.div>
                 ) : (
-                  <span className="text-zinc-400 text-xs sm:text-sm font-normal italic">
+                  <motion.p
+                    key="empty"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-zinc-400 text-xs sm:text-sm font-normal italic"
+                  >
                     {isPlaying ? 'Acompanhe a legenda sincronizada ao áudio...' : 'Toque no Play para ouvir e acompanhar a legenda...'}
-                  </span>
+                  </motion.p>
                 )}
-              </p>
+              </AnimatePresence>
+
+              {/* Barra de Progresso Fina da Frase no Rodapé do Card */}
+              {activeCue && isPlaying && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-100 ease-linear shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                    style={{ width: `${Math.round(currentWordProgress * 100)}%` }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -681,6 +814,14 @@ export default function PilulasPenalPlayer() {
                 const val = parseFloat(e.target.value);
                 setCurrentTime(val);
                 if (audioRef.current) audioRef.current.currentTime = val;
+                if (cues.length > 0) {
+                  const match = getActiveCueAtTime(val, cues);
+                  if (match) {
+                    setActiveCue(match.cue);
+                    setActiveCueIndex(match.index);
+                    setLegendaAtual(match.cue.text);
+                  }
+                }
               }}
               className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-400"
             />
