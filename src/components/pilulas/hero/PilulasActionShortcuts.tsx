@@ -11,10 +11,10 @@ interface Props {
 }
 
 const SHORTCUTS = [
-  { id: 'favoritos' as const, label: 'Favoritos', icon: Bookmark, color: '#F59E0B' },
-  { id: 'emalta' as const,    label: 'Em Alta',   icon: Flame,    color: '#FB923C' },
-  { id: 'recentes' as const,  label: 'Recentes',  icon: Clock,    color: '#38BDF8' },
-  { id: 'playlist' as const,  label: 'Playlist',  icon: ListMusic, color: '#A855F7' },
+  { id: 'favoritos' as const, label: 'Favoritos', icon: Bookmark, color: '#FBBF24' },
+  { id: 'emalta' as const,    label: 'Em Alta',   icon: Flame,    color: '#FBBF24' },
+  { id: 'recentes' as const,  label: 'Recentes',  icon: Clock,    color: '#FBBF24' },
+  { id: 'playlist' as const,  label: 'Playlist',  icon: ListMusic, color: '#FBBF24' },
 ];
 
 export const PilulasActionShortcuts: React.FC<Props> = ({
