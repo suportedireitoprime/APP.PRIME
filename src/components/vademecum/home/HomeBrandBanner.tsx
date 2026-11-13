@@ -7,32 +7,38 @@ interface HomeBrandBannerProps {
 
 const HomeBrandBanner: React.FC<HomeBrandBannerProps> = () => {
   return (
-    <div className="flex flex-col items-center text-center gap-1 z-10 relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
-      <div className="relative h-[75px] mb-1 flex items-center justify-center overflow-visible">
+    <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[220px]">
+      {/* Logotipo Oficial da Justiça / Busto Dourado */}
+      <div className="relative h-[72px] sm:h-[78px] mb-0.5 flex items-center justify-start overflow-visible">
         <img
           src={logoCoruja}
           alt="Estudos Jurídicos"
           loading="eager"
           decoding="async"
-          width={96}
-          height={96}
+          width={88}
+          height={88}
           fetchPriority="high"
-          className="w-auto h-[92px] max-w-none object-contain transform-gpu scale-125 pointer-events-none select-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.85)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(0,0,0,0.7)]"
+          className="w-auto h-[78px] sm:h-[84px] max-w-none object-contain transform-gpu pointer-events-none select-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)] drop-shadow-[0_0_16px_rgba(229,9,20,0.35)]"
         />
       </div>
-      <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-        Estudos Jurídicos
-      </h1>
-      <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
-        USO PROFISSIONAL
-      </p>
 
-      <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
-        <div className="w-0.5 h-7 bg-white/40 rounded-full" />
-        <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          Domine as leis,
+      {/* Tipografia de Marca: Estudos (branco) + Jurídicos (carmesim itálico) */}
+      <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+        <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
+          Estudos
+        </span>
+        <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#E50914] block drop-shadow-[0_2px_14px_rgba(229,9,20,0.65)] -mt-0.5">
+          Jurídicos
+        </span>
+      </h1>
+
+      {/* Traço vertical carmesim e slogan oficial */}
+      <div className="mt-2 flex items-start text-left gap-2">
+        <div className="w-[3px] h-8 bg-gradient-to-b from-[#E50914] to-red-800 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(229,9,20,0.55)]" />
+        <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+          Conteúdo de qualidade
           <br />
-          imponha respeito.
+          para sua jornada no Direito.
         </p>
       </div>
     </div>

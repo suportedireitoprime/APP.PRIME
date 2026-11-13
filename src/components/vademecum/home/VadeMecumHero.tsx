@@ -2,6 +2,7 @@
 import React, { memo, useMemo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { getVadeMecumHeroConfig } from '@/lib/vademecumHeroImage';
+import HeroAnimatedWave from './HeroAnimatedWave';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
@@ -47,21 +48,8 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           className={heroConfig.className}
         />
 
-        {/* Overlay vermelho com gradiente estilo menu e sombra */}
-        <div 
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
-        >
-          <div 
-            className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-          >
-            <div className="absolute inset-0 bg-brand-gradient" />
-            <div className="absolute inset-0 opacity-15 mix-blend-overlay">
-              <ShapeGrid />
-            </div>
-          </div>
-        </div>
+        {/* Onda Vermelha Fluida e Animada em Movimento (substitui o painel diagonal rígido) */}
+        <HeroAnimatedWave />
 
         {/* Cabeçalho Transparente Vade Mecum (Absolute position like HomeHeaderHero) */}
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">

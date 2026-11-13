@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { useState, useEffect, useRef, Suspense, useMemo } from "react";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { leiToSlug, tipoToSlug } from "@/lib/legislacaoSlugs";
 import { getHomeHeroConfig } from "@/lib/vademecumHeroImage";
 
 import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
+import HeroAnimatedWave from "./HeroAnimatedWave";
 import HomeBrandBanner from "./HomeBrandBanner";
 import { HomeTrialCard } from "@/components/subscription/HomeTrialCard";
 import HomeActionShortcuts from "./HomeActionShortcuts";
@@ -108,35 +109,8 @@ const HomeHeaderHero = ({
           className={heroConfig.className}
         />
 
-        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisÃ³ria diagonal) */}
-        <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            filter:
-              "drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))",
-          }}
-        >
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: "polygon(0 0, 47% 0, 36% 100%, 0% 100%)" }}
-          >
-            <div className="absolute inset-0 bg-hero-panel" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-
-            <HeroMotifs />
-
-            {/* Grid Pattern Background */}
-            <div
-              className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)",
-                backgroundSize: "24px 24px",
-              }}
-            />
-          </div>
-        </div>
+        {/* Onda Vermelha Fluida e Animada em Movimento (substitui o painel diagonal rígido) */}
+        <HeroAnimatedWave />
 
         {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
