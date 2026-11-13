@@ -1,15 +1,15 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, BookOpen, ScrollText, Radio } from 'lucide-react';
+import { Headphones, BookOpen, ScrollText, Pill } from 'lucide-react';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
   { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#A855F7', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'audiobooks' as PrefetchKey },
+  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audiobooks' as PrefetchKey },
   { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, tag: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Boletins',    icon: Radio,                 to: '/boletins',         color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, tag: null, prefetch: 'boletins' as PrefetchKey },
+  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          color: '#FB7185', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
@@ -58,9 +58,8 @@ const HomeActionShortcuts = () => {
             <Icon
               className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
               style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-              strokeWidth={2}
             />
-            <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
+            <span className="text-white/90 text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>
