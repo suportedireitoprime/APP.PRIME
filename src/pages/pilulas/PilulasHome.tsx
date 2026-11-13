@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { usePilulasWarmup } from './hooks/usePilulasWarmup';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -105,9 +106,10 @@ export default function PilulasHome() {
               
               <button
                 onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=codigos'); }}
-                className="shrink-0 flex items-center justify-center h-[36px] px-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+                className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
               >
-                Ver lista
+                <span>Ver lista</span>
+                <ChevronRight className="w-4 h-4 stroke-[2.6]" />
               </button>
             </div>
 
@@ -136,9 +138,10 @@ export default function PilulasHome() {
 
               <button
                 onClick={handleSelectClassicos}
-                className="shrink-0 flex items-center justify-center h-[36px] px-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+                className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
               >
-                Ver lista
+                <span>Ver lista</span>
+                <ChevronRight className="w-4 h-4 stroke-[2.6]" />
               </button>
             </div>
 
