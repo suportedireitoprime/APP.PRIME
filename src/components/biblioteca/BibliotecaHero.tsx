@@ -4,7 +4,7 @@ import { ArrowLeft, HardDrive } from 'lucide-react';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
-import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.jpg';
+import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.webp';
 import BibliotecaHeroWave from './BibliotecaHeroWave';
 import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 

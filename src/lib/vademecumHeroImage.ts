@@ -1,6 +1,6 @@
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.webp';
 import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
-import heroConstituicaoImg from '@/assets/covers/hero-vademecum-constituicao.jpg';
+import heroConstituicaoImg from '@/assets/covers/hero-vademecum-constituicao.webp';
 
 /**
  * Capas Oficiais Fixas:

@@ -27,7 +27,7 @@ import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
 import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
 import { pickAsset, srcOf } from "@/lib/assetUrl";
 import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
-import logoCoruja from "@/assets/logo-coruja.png";
+import logoCoruja from "@/assets/logo-coruja.webp";
 
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 

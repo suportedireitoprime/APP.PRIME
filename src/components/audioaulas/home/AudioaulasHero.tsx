@@ -5,7 +5,7 @@ import { AudioActionShortcuts } from '@/components/audio/AudioActionShortcuts';
 import { type AulaAudio } from '@/contexts/AudioaulasPlayerContext';
 import { haptic } from '@/lib/nativeHaptics';
 import { resetGlobalScroll } from '@/lib/scrollUtils';
-import audioaulasOnibusCover from '@/assets/audioaulas-onibus-cover.jpg';
+import audioaulasOnibusCover from '@/assets/audioaulas-onibus-cover.webp';
 import AudioaulasHeroWave from './AudioaulasHeroWave';
 
 const AudioFavoritosModal = React.lazy(() => import('@/components/audio/AudioFavoritosModal').then((m) => ({ default: m.AudioFavoritosModal })));

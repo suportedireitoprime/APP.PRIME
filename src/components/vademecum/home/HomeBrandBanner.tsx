@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import logoCoruja from "@/assets/logo-coruja.png";
+import logoCoruja from "@/assets/logo-coruja.webp";
 
 interface HomeBrandBannerProps {
   perfilLabel?: string;

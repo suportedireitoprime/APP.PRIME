@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import logoThemis from '@/assets/logo-coruja.png';
+import logoThemis from '@/assets/logo-coruja.webp';
 import splashHeroSkyColumns from '@/assets/splash-hero-sky-columns.webp';
 
 export default function AppSplashScreen() {
