@@ -1,5 +1,6 @@
 import React from 'react';
 import { haptic } from '@/lib/nativeHaptics';
+import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import type { VideoaulaAreaItem } from './VideoaulasAreaCard';
 
 interface VideoaulasAreaChipsProps {
@@ -69,7 +70,8 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
 
       {/* Abas Individuais de Áreas / Matérias */}
       {areas.map((r) => {
-        const isActive = activeTab === r.area || activeTab === r.slug || activeTab === r.displayArea;
+        const nomeMateria = r.displayArea || simplificarNomeArea(r.area || '').replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '') || r.area || r.slug;
+        const isActive = activeTab === r.area || activeTab === r.slug || activeTab === nomeMateria || activeTab === r.displayArea;
         return (
           <button
             key={r.slug}
@@ -89,7 +91,7 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
                 : 'bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            <span>{r.displayArea}</span>
+            <span>{nomeMateria}</span>
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
                 isActive ? 'bg-black/30 text-white' : 'bg-white/10 text-zinc-400'

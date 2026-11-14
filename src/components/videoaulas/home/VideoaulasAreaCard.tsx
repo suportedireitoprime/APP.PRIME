@@ -10,6 +10,7 @@ export interface VideoaulaAreaItem {
   total: number;
   concluidas?: number;
   pct: number;
+  displayArea?: string;
 }
 
 interface VideoaulasAreaCardProps {
