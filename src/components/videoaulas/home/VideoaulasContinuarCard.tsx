@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, PlayCircle, Video } from 'lucide-react';
+import { Play, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
 import {
@@ -101,24 +101,20 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
 
   const titulo = ultimaAula ? ultimaAula.titulo : 'Direitos e Garantias Fundamentais';
   const subtitulo = ultimaAula
-    ? `${ultimaAula.area}${ultimaAula.percentual > 0 ? ` · ${ultimaAula.percentual}% assistido` : ''} · Toque para continuar`
-    : 'Direito Constitucional · Toque para começar a assistir';
+    ? `${ultimaAula.area}${ultimaAula.percentual > 0 ? ` • ${ultimaAula.percentual}% assistido` : ''}`
+    : 'Direito Constitucional • Iniciar estudos';
 
   return (
     <motion.button
       type="button"
-      initial={{ opacity: 0, y: -6 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.25 }}
       onClick={handleClick}
-      style={{
-        background: 'linear-gradient(to right, rgba(244, 63, 94, 0.22), rgba(244, 63, 94, 0.06))',
-        borderColor: 'rgba(244, 63, 94, 0.35)',
-      }}
-      className="w-full flex items-center gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer"
+      className="w-full flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/90 border border-white/10 hover:border-rose-500/40 text-left active:scale-[0.985] transition-all overflow-hidden relative shadow-lg group cursor-pointer touch-manipulation backdrop-blur-xl"
     >
-      {/* Capa da Videoaula à esquerda */}
-      <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden border border-white/20 bg-black shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
+      {/* Capa da Videoaula à esquerda com badge */}
+      <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300">
         <img
           src={coverUrl}
           alt={titulo}
@@ -126,36 +122,43 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
           loading="eager"
           decoding="async"
         />
-        <span className="absolute bottom-0 inset-x-0 bg-rose-600 text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
-          AULA
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        <span className="absolute bottom-1 left-1 right-1 text-center py-0.5 rounded bg-black/75 backdrop-blur-md text-[8px] font-black uppercase text-amber-300 border border-white/10">
+          {ultimaAula?.percentual ? `${ultimaAula.percentual}%` : 'Aula'}
         </span>
       </div>
 
-      {/* Textos informativos centrais */}
-      <div className="flex-1 min-w-0 z-10">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <PlayCircle className="w-3 h-3 fill-rose-400 text-black shrink-0" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-rose-300">
-            CONTINUAR ASSISTINDO
+      {/* Conteúdo Central */}
+      <div className="flex-1 min-w-0 pr-1">
+        <div className="flex items-center gap-1.5 mb-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 font-sans">
+            Continuar Assistindo
           </p>
         </div>
 
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
+        <h3 className="font-sans text-sm sm:text-base font-bold text-white group-hover:text-rose-300 transition-colors leading-snug line-clamp-1">
           {titulo}
+        </h3>
+
+        <p className="font-sans text-xs sm:text-[13px] text-zinc-400 leading-tight mt-1 truncate">
+          {subtitulo}
         </p>
 
-        <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-rose-200/90 mt-0.5">
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
-          <span className="truncate">{subtitulo}</span>
-        </p>
+        {ultimaAula && ultimaAula.percentual > 0 && (
+          <div className="w-full bg-white/10 h-1 rounded-full mt-2.5 overflow-hidden">
+            <div
+              className="bg-emerald-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${ultimaAula.percentual}%` }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Seta indicativa à direita */}
-      <ArrowRight
-        className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-rose-400 group-hover:translate-x-1 transition-transform"
-        strokeWidth={2.4}
-      />
+      {/* Botão Play Tátil Circular à Direita */}
+      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/10 text-white group-hover:bg-rose-500 group-hover:border-rose-400 group-hover:text-white flex items-center justify-center shrink-0 shadow-md transition-all duration-200">
+        <Play className="w-5 h-5 fill-current ml-0.5" />
+      </div>
     </motion.button>
   );
 });
-

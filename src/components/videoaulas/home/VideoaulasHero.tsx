@@ -1,22 +1,12 @@
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Video, BookOpen, Clock, Award } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { cn } from '@/lib/utils';
-import { srcOf } from '@/lib/assetUrl';
-import hero1 from '@/assets/aprender-hero/hero-1.webp.asset.json';
-import hero2 from '@/assets/aprender-hero/hero-2.webp.asset.json';
-import hero3 from '@/assets/aprender-hero/hero-3.webp.asset.json';
-import hero4 from '@/assets/aprender-hero/hero-4.webp.asset.json';
-import hero5 from '@/assets/aprender-hero/hero-5.webp.asset.json';
-import hero6 from '@/assets/aprender-hero/hero-6.webp.asset.json';
 import type { ResumoVideoaulas } from '@/lib/videoaulasResumo';
-
-const HERO_ILLUSTRATIONS = [srcOf(hero1), srcOf(hero2), srcOf(hero3), srcOf(hero4), srcOf(hero5), srcOf(hero6)];
 
 interface VideoaulasHeroProps {
   data: ResumoVideoaulas;
-  heroIdx: number;
-  emAndamentoCount: number;
+  heroIdx?: number;
+  emAndamentoCount?: number;
   areasDireitoLength: number;
   setShowDesempenho: (v: boolean) => void;
   horasAssistidas: number;
@@ -26,110 +16,123 @@ interface VideoaulasHeroProps {
 
 export const VideoaulasHero = React.memo(function VideoaulasHero({
   data,
-  heroIdx,
   areasDireitoLength,
   setShowDesempenho,
   horasAssistidas,
   c,
-  dash
+  dash,
 }: VideoaulasHeroProps) {
+  const percentualTotal = data.totalAulas > 0 
+    ? Math.min(100, Math.round((data.totalConcluidas / data.totalAulas) * 100))
+    : 0;
+
   return (
     <section
-      className="bg-primary relative isolate overflow-hidden border-b border-black/10 lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-xl"
+      className="relative z-10 w-full px-4 sm:px-6 pt-2 pb-1"
       aria-label="Seu progresso em videoaulas"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-900/95 via-zinc-900/80 to-zinc-950/95 border border-white/10 p-4 sm:p-6 backdrop-blur-xl shadow-2xl">
+        {/* Sutis reflexos de iluminação de fundo (Dark Editorial) */}
+        <div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
 
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
-        aria-hidden="true"
-      >
-        {HERO_ILLUSTRATIONS.map((url, i) => (
-          <img
-            key={url}
-            src={url}
-            alt=""
-            className={cn(
-              'absolute inset-0 h-full w-full object-cover object-left opacity-[0.12] sm:opacity-[0.18] transition-opacity duration-[2000ms] ease-in-out',
-              i === heroIdx ? 'opacity-100' : 'opacity-0',
-            )}
-            style={{
-              maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-            }}
-          />
-        ))}
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
-
-      <div className="relative p-4 sm:p-5 lg:flex lg:items-center lg:gap-10 lg:p-8">
-        <div className="flex items-start gap-3 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-6">
-          <div
-              className="relative h-[72px] w-[72px] sm:h-20 sm:w-20 lg:h-24 lg:w-24 shrink-0 active:opacity-70 transition-transform cursor-pointer"
-              onClick={() => { haptic.selection(); setShowDesempenho(true); }}
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          {/* Lado Esquerdo: Progresso Circular & Textos */}
+          <div className="flex items-center gap-4 sm:gap-5 min-w-0 flex-1">
+            {/* Anel de Progresso Circular Interativo */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setShowDesempenho(true);
+              }}
+              className="relative w-18 h-18 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center group cursor-pointer focus-visible:outline-none touch-manipulation active:scale-95 transition-transform"
+              title="Ver painel detalhado de desempenho"
+              aria-label="Ver desempenho"
             >
-              <svg className="absolute inset-0 h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
                 <circle
-                  className="text-white/20"
-                  strokeWidth="8"
+                  className="text-white/10"
+                  strokeWidth="7"
                   stroke="currentColor"
                   fill="transparent"
-                  r="40"
+                  r="42"
                   cx="50"
                   cy="50"
                 />
                 <circle
-                  className="text-white"
-                  strokeWidth="8"
+                  className="text-rose-500 transition-all duration-700 ease-out"
+                  strokeWidth="7"
                   strokeLinecap="round"
                   fill="none"
+                  stroke="currentColor"
                   strokeDasharray={c}
                   strokeDashoffset={dash}
-                  style={{ transition: 'stroke-dashoffset 600ms ease' }}
                 />
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pt-0.5">
-                <span className="font-display text-[22px] font-black leading-none text-white">{horasAssistidas}h</span>
-                <span className="mt-0.5 text-[7px] font-bold uppercase tracking-wider text-white/70">
-                  Assistidas
+              <div className="relative flex flex-col items-center justify-center text-center">
+                <span className="font-sans text-lg sm:text-xl font-black text-white leading-none">
+                  {horasAssistidas}h
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-white/50 mt-0.5" />
+                <span className="text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
+                  Tempo
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-500 group-hover:text-white transition-colors" />
               </div>
-            </div>
+            </button>
 
-          <div className="min-w-0 max-w-[58%] lg:max-w-none lg:flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Sua trilha</p>
-            <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px] lg:text-[38px]">
-              Videoaulas
-              <span className="ml-2 font-display text-[15px] font-semibold italic text-white/80 sm:text-[20px]">
-                em trilhas
-              </span>
-            </h1>
-            <p
-              className="mt-0.5 text-[12px] leading-snug text-white/80 sm:text-[13px]"
-              style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
-            >
-              Aulas em vídeo com ferramentas de estudo por área.
-            </p>
+            {/* Títulos e Contexto */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-rose-400/90 font-sans">
+                  Grade Completa
+                </p>
+              </div>
+
+              <h1 className="font-sans text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight truncate">
+                Videoaulas em Trilhas
+              </h1>
+
+              <p className="font-sans text-xs sm:text-[13px] text-zinc-400 leading-snug mt-0.5 line-clamp-1">
+                Aulas organizadas por área jurídica com resumos e questões.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="relative mt-3 rounded-xl lg:mt-0 lg:w-[440px] lg:shrink-0 bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
-          <div className="grid grid-cols-3 divide-x divide-white/10 lg:py-2">
-            <div className="flex flex-col items-center justify-center px-2 py-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Áreas</span>
-              <span className="mt-0.5 font-display text-base font-black leading-none">{areasDireitoLength}</span>
+          {/* Lado Direito: Métricas Rápidas em Pílulas Minimalistas */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-2.5 pt-3 md:pt-0 border-t md:border-t-0 md:border-l border-white/10 md:pl-6 shrink-0">
+            {/* Áreas */}
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+              <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
+                <BookOpen className="w-3 h-3 text-zinc-400" />
+                Áreas
+              </span>
+              <span className="font-sans text-base sm:text-lg font-black text-white mt-0.5">
+                {areasDireitoLength}
+              </span>
             </div>
-            <div className="flex flex-col items-center justify-center px-2 py-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Aulas</span>
-              <span className="mt-0.5 font-display text-base font-black leading-none">{data.totalAulas}</span>
+
+            {/* Aulas */}
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+              <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
+                <Video className="w-3 h-3 text-zinc-400" />
+                Aulas
+              </span>
+              <span className="font-sans text-base sm:text-lg font-black text-white mt-0.5">
+                {data.totalAulas}
+              </span>
             </div>
-            <div className="flex flex-col items-center justify-center px-2 py-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Assistidas</span>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(var(--aprender-accent))]">
+
+            {/* Assistidas */}
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+              <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
+                <Award className="w-3 h-3 text-emerald-400" />
+                Feitas
+              </span>
+              <span className="font-sans text-base sm:text-lg font-black text-emerald-400 mt-0.5">
                 {data.totalConcluidas}
-                <span className="text-white/50">/{data.totalAulas}</span>
+                <span className="text-zinc-500 text-xs font-semibold">/{data.totalAulas}</span>
               </span>
             </div>
           </div>
