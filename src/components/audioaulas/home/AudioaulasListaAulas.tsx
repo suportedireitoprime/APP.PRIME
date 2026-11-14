@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Play,
   Pause,
@@ -1154,6 +1155,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   capituloSelecionado: capituloExterno,
   setCapituloSelecionado: setCapituloExterno,
 }: AudioaulasListaAulasProps) {
+  const navigate = useNavigate();
   const { isPremium } = useSubscription();
   const { mapa: mapaProgresso, alternarConcluida } = useAudioaulasProgresso();
   const {
@@ -1501,6 +1503,22 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
     return (
       <div className="relative mx-auto w-full max-w-350 px-4 space-y-3.5 sm:space-y-4 mt-1 sm:mt-2 lg:px-10 2xl:max-w-[1600px] pb-24">
+        {/* Header fixo da página da matéria quando estiver na lista de capítulos (sem o painel/hero) */}
+        {capituloSelecionado === null && (
+          <div className="sticky top-0 z-20 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-white/10 shadow-sm pb-3 -mx-4 px-4 sm:-mx-10 sm:px-10">
+            <PageHeader
+              title={areaAtual.startsWith("Direito") ? areaAtual : `Direito ${areaAtual}`}
+              subtitle={`${metricasArea.total} aulas disponíveis`}
+              onBack={() => {
+                haptic.light();
+                resetGlobalScroll();
+                navigate("/audioaulas");
+              }}
+              className="border-b-0 pb-1"
+            />
+          </div>
+        )}
+
         {/* Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha (Apenas no Hub) */}
         {capituloSelecionado === null && (
           <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">

@@ -131,12 +131,12 @@ const Audioaulas = () => {
       <div className="relative z-10">
         {state.gateNodes}
 
-      {/* Hero: exibido na home e na página da área quando nenhum capítulo estiver selecionado. Ao abrir as aulas de um capítulo, a lista assume o layout idêntico ao de Resumos Jurídicos */}
-      {(!capituloSelecionado && (areaAtual !== null || modoVerTodos === 'hub')) && (
+      {/* Hero com a capa do ônibus: exibido exclusivamente na home principal hub (quando nenhuma matéria está selecionada) */}
+      {!areaAtual && !capituloSelecionado && modoVerTodos === 'hub' && (
         <AudioaulasHero 
-          areaAtual={areaAtual}
+          areaAtual={null}
           loading={state.loading}
-          totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
+          totalAulas={state.aulas.length}
           totalAreas={state.areas?.length || 12}
           totalFavoritas={state.favoritos?.size || 0}
           totalRecentes={0}
@@ -146,17 +146,10 @@ const Audioaulas = () => {
           onAlternarFavoritoAula={state.alternarFavorito}
           onBuscar={() => state.setAba('buscar')}
           aulas={state.aulas}
-          onVoltar={
-            areaAtual
-              ? () => {
-                  resetGlobalScroll();
-                  navigate('/audioaulas');
-                }
-              : () => {
-                  resetGlobalScroll();
-                  navigate('/');
-                }
-          }
+          onVoltar={() => {
+            resetGlobalScroll();
+            navigate('/');
+          }}
         />
       )}
 

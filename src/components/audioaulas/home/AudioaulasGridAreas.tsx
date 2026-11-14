@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
 import { AudioaulasAreaCard } from "./AudioaulasAreaCard";
-import { useAudioaulasProgresso } from "@/lib/audioaulaProgresso";
 
 export type ModoVisualizacao = "hub" | "areas" | "codigos" | "estatutos";
 
@@ -18,7 +17,6 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   areas,
 }: AudioaulasGridAreasProps) {
   const navigate = useNavigate();
-  const { mapa } = useAudioaulasProgresso();
 
   const irParaArea = useCallback(
     (nomeArea: string) => {
@@ -46,28 +44,28 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] px-4 space-y-6 mt-6 pb-20">
-      {/* Título de Seção padronizado com Barlow e traço vermelho */}
-      <div className="flex items-center justify-between gap-3">
+    <div className="mx-auto w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] px-4 space-y-4 mt-6 pb-20">
+      {/* Título de Seção com Barra Vermelha Padrão */}
+      <div className="flex items-center justify-between gap-3 px-1">
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
             <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
             <span className="break-words">Matérias em Áudio</span>
           </h2>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3">
-            Escolha uma matéria para abrir os módulos, capítulos e lições completas.
+            Toque em uma matéria para abrir os módulos e aulas completas.
           </p>
         </div>
       </div>
 
-      {/* Lista em cards idêntica à de Lições (Lei Seca) */}
+      {/* Lista vertical minimalista idêntica à de Pílulas */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"
+        className="space-y-3"
       >
-        {areasOrdenadas.map(([nome, totalAulas]) => {
+        {areasOrdenadas.map(([nome, totalAulas], index) => {
           return (
             <AudioaulasAreaCard
               key={nome}
@@ -75,6 +73,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
               totalAulas={totalAulas}
               concluidas={0}
               pct={0}
+              index={index}
               onClick={() => irParaArea(nome)}
             />
           );
