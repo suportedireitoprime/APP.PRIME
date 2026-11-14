@@ -91,10 +91,10 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
           }}
           style={{
             background:
-              "linear-gradient(to right, rgba(249, 115, 22, 0.22), rgba(249, 115, 22, 0.05))",
-            borderColor: "rgba(249, 115, 22, 0.38)",
+              "linear-gradient(to right, rgba(255, 107, 74, 0.22), rgba(255, 107, 74, 0.05))",
+            borderColor: "rgba(255, 107, 74, 0.4)",
           }}
-          className="w-full flex items-stretch rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg shadow-orange-950/20 group cursor-pointer min-h-[82px] sm:min-h-[88px]"
+          className="w-full flex items-stretch rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg shadow-black/40 group cursor-pointer min-h-[82px] sm:min-h-[88px]"
         >
           {/* Capa da Aula à esquerda — flush sem margens (design idêntico a Resumos) */}
           <div className="w-[74px] sm:w-[86px] shrink-0 self-stretch relative overflow-hidden bg-black flex flex-col justify-end border-r border-white/10">
@@ -107,9 +107,9 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-            {/* Play/Pause pulsante sobre a imagem */}
+            {/* Play/Pause pulsante com gradiente da onda salmão */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="w-8 h-8 rounded-full bg-orange-500/90 text-white flex items-center justify-center shadow-md shadow-black/70 group-hover:scale-110 transition-transform">
+              <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff6b4a] to-[#ffa285] text-white flex items-center justify-center shadow-lg shadow-black/80 border border-white/20 group-hover:scale-110 transition-transform">
                 {estaTocandoEsta ? (
                   <Pause className="w-3.5 h-3.5 fill-current" />
                 ) : (
@@ -118,7 +118,7 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
               </span>
             </div>
 
-            <span className="relative z-10 w-full bg-orange-600 text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
+            <span className="relative z-10 w-full bg-gradient-to-r from-[#c74229] to-[#ff6b4a] text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
               ÁUDIO
             </span>
           </div>
@@ -127,8 +127,8 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
           <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-3.5 sm:py-3.5 sm:pl-3.5 sm:pr-4 flex items-center justify-between gap-2.5">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <Headphones className="w-2.5 h-2.5 fill-orange-400 text-orange-400" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
+                <Headphones className="w-2.5 h-2.5 fill-[#ffa285] text-[#ffa285]" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#ffa285]">
                   CONTINUAR OUVINDO
                 </p>
               </div>
@@ -137,8 +137,8 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
                 {titulo}
               </p>
 
-              <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-orange-200/90 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-orange-400 shrink-0" />
+              <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-[#ffd4c7]/90 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#ff6b4a] shadow-[0_0_8px_rgba(255,107,74,0.8)] shrink-0" />
                 <span className="truncate">{subtitulo}</span>
               </p>
 
@@ -146,11 +146,11 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(255,107,74,0.5)]"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[10px] font-medium text-orange-300/80 shrink-0 font-mono">
+                <span className="text-[10px] font-medium text-[#ffa285] shrink-0 font-mono">
                   {pct}%
                 </span>
               </div>
@@ -162,26 +162,26 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
                 type="button"
                 onClick={handleDispensar}
                 aria-label="Dispensar continuar ouvindo"
-                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 text-orange-200/70 hover:text-white flex items-center justify-center transition active:scale-95"
+                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 text-[#ffd4c7]/70 hover:text-white flex items-center justify-center transition active:scale-95"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
               <ArrowRight
-                className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-orange-400 group-hover:translate-x-1 transition-transform"
+                className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-[#ffa285] group-hover:text-[#ff6b4a] group-hover:translate-x-1 transition-transform"
                 strokeWidth={2.4}
               />
             </div>
           </div>
 
-          {/* Decoração de fundo com glow laranja no canto direito */}
+          {/* Decoração de fundo com glow laranja salmão no canto direito */}
           <div
             className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center opacity-20"
             style={{
               filter:
-                "drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(249, 115, 22, 0.4))",
+                "drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(255, 107, 74, 0.5))",
             }}
           >
-            <Headphones className="w-24 h-24 text-orange-400" strokeWidth={1.2} />
+            <Headphones className="w-24 h-24 text-[#ff6b4a]" strokeWidth={1.2} />
           </div>
         </div>
       </motion.div>

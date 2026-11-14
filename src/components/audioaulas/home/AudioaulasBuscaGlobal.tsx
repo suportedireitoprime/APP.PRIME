@@ -34,7 +34,7 @@ function destacarTermos(texto: string, termoBusca: string) {
       regex.test(parte) ? (
         <mark
           key={i}
-          className="bg-orange-500/30 text-white font-black rounded-sm px-0.5 border-b border-orange-400"
+          className="bg-[#ff6b4a]/30 text-white font-black rounded-sm px-0.5 border-b border-[#ffa285]"
         >
           {parte}
         </mark>
@@ -105,16 +105,16 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Barra de Pesquisa Fixada/Integrada no Topo do Hub — Laranja Neon */}
+      {/* Barra de Pesquisa Fixada/Integrada no Topo do Hub — Laranja Salmão da Onda */}
       <div className="mx-auto w-full max-w-350 px-4 lg:px-10 2xl:max-w-[1600px]">
         <div className="relative group">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-orange-400 group-focus-within:text-orange-300 transition-colors" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#ffa285] group-focus-within:text-[#ffd4c7] transition-colors" />
           <input
             type="text"
             value={termoLocal}
             onChange={(e) => setTermoLocal(e.target.value)}
             placeholder={`Pesquisar entre as ${aulas.length > 0 ? aulas.length.toLocaleString("pt-BR") : "3.181"} aulas (ex: homicídio, 121, legítima defesa, usucapião)...`}
-            className="w-full rounded-2xl border border-orange-500/30 bg-orange-950/15 py-3 pl-11 pr-11 text-sm text-foreground placeholder:text-zinc-400 outline-none transition-all focus:border-orange-500/70 focus:bg-orange-950/25 focus:ring-2 focus:ring-orange-500/20 shadow-sm"
+            className="w-full rounded-2xl border border-[#ff6b4a]/35 bg-[#ff6b4a]/10 py-3 pl-11 pr-11 text-sm text-foreground placeholder:text-zinc-400 outline-none transition-all focus:border-[#ffa285] focus:bg-[#ff6b4a]/18 focus:ring-2 focus:ring-[#ff6b4a]/25 shadow-sm"
           />
           {termoLocal && (
             <button
@@ -126,7 +126,7 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
                 setBusca("");
               }}
               aria-label="Limpar busca"
-              className="absolute right-3.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-orange-300/80 hover:text-white hover:bg-orange-500/20 transition-colors"
+              className="absolute right-3.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-[#ffa285]/80 hover:text-white hover:bg-[#ff6b4a]/20 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -140,7 +140,7 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
           {/* Header com Quantidade de Resultados */}
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-orange-400" />
+              <Sparkles className="w-4 h-4 text-[#ffa285]" />
               <span className="text-sm font-semibold text-foreground">
                 {resultados.length === 0
                   ? `Nenhum resultado para "${debouncedTermo}"`
@@ -157,7 +157,7 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
                 setDebouncedTermo("");
                 setBusca("");
               }}
-              className="text-xs text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 h-7 px-2"
+              className="text-xs text-[#ffa285] hover:text-[#ffd4c7] hover:bg-[#ff6b4a]/10 h-7 px-2"
             >
               Limpar busca
             </Button>
@@ -187,8 +187,8 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
                     }}
                     className={`group flex items-center justify-between gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                       isAtual
-                        ? "bg-orange-500/15 border-orange-500/60 shadow-md shadow-orange-950/20 ring-1 ring-orange-500/30"
-                        : "bg-white/4 border-white/5 hover:border-orange-500/30 hover:bg-white/6"
+                        ? "bg-[#ff6b4a]/15 border-[#ff6b4a]/60 shadow-md shadow-black/40 ring-1 ring-[#ff6b4a]/30"
+                        : "bg-white/4 border-white/5 hover:border-[#ff6b4a]/35 hover:bg-white/6"
                     }`}
                   >
                     {/* Botão Play / Indicador */}
@@ -197,8 +197,8 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
                       aria-label={isPlaying ? "Pausar" : "Tocar aula"}
                       className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
                         isAtual
-                          ? "bg-orange-500 text-white shadow-sm shadow-orange-500/40"
-                          : "bg-white/8 text-zinc-300 group-hover:bg-orange-500 group-hover:text-white"
+                          ? "bg-gradient-to-tr from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/40"
+                          : "bg-white/8 text-zinc-300 group-hover:bg-[#ff6b4a] group-hover:text-white"
                       }`}
                     >
                       {isPlaying ? (
@@ -213,7 +213,7 @@ export const AudioaulasBuscaGlobal: React.FC<AudioaulasBuscaGlobalProps> = ({
                     {/* Informações da Aula */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/25">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#ff6b4a]/10 text-[#ffa285] border border-[#ff6b4a]/30">
                           {destacarTermos(aula.area || "Geral", debouncedTermo)}
                         </span>
                         {aula.tema && (

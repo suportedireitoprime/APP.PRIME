@@ -45,11 +45,11 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
 
   return (
     <div className="mx-auto w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] px-4 space-y-4 mt-6 pb-20">
-      {/* Título de Seção com Barra Vermelha Padrão */}
+      {/* Título de Seção com Barra Laranja Salmão Padrão da Onda */}
       <div className="flex items-center justify-between gap-3 px-1">
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+            <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#ffa285] to-[#ff6b4a] shadow-[0_0_10px_rgba(255,107,74,0.65)] shrink-0" />
             <span className="break-words">Matérias em Áudio</span>
           </h2>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3">
