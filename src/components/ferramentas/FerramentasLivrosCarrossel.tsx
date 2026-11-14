@@ -315,11 +315,11 @@ export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
       {/* Cabeçalho do Carrossel de Livros */}
       <div className="relative z-10 pointer-events-none px-1 flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="font-display text-white text-[16.5px] sm:text-[17.5px] font-extrabold flex items-center gap-2.5 pointer-events-auto uppercase tracking-[0.14em]">
-            <span className="w-1 h-4.5 rounded-full bg-primary shrink-0" />
+          <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 pointer-events-auto uppercase tracking-[0.05em]">
+            <span className="w-1 h-4 rounded-full bg-primary shrink-0" />
             <span className="truncate">CLÁSSICOS DO DIREITO</span>
           </h3>
-          <p className="font-sans text-white/55 text-[12px] sm:text-[12.5px] leading-snug ml-3.5 pointer-events-auto truncate mt-0.5">
+          <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 pointer-events-auto truncate mt-0.5">
             Obras fundamentais e livros jurídicos
           </p>
         </div>
