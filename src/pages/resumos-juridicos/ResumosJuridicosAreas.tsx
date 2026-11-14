@@ -7,6 +7,7 @@ import ResumosHero from "@/components/resumos/ResumosHero";
 import ResumosContinuarCard from "@/components/resumos/ResumosContinuarCard";
 import { useResumosAreasData } from "@/components/resumos/hooks/useResumosAreasData";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
@@ -135,7 +136,7 @@ export default function ResumosJuridicosAreas() {
             <div className="flex items-center justify-between gap-2 px-1">
               <div className="min-w-0 flex-1">
                 <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                  <span className="w-1 h-5 rounded-full bg-[#E8DCCB] shrink-0" />
+                  <span className="w-1 h-5 rounded-full bg-emerald-500 shrink-0" />
                   <span className="truncate">EM ALTA</span>
                 </h3>
                 <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
@@ -147,8 +148,7 @@ export default function ResumosJuridicosAreas() {
             {/* Carrossel Fluido sem margem morta na esquerda */}
             <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
               {areasEmAlta.map((item, idx) => {
-                const coverData = getAreaCover(item.area);
-                const coverUrl = coverData?.cover || constCover;
+                const coverUrl = getDisciplinaVisualTheme(item.area).fundoAssetUrl || getAreaCover(item.area)?.cover || constCover;
                 const isFav = favAreas.has(item.area);
 
                 return (
@@ -161,7 +161,7 @@ export default function ResumosJuridicosAreas() {
                     }}
                     className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                   >
-                    <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-[#E8DCCB]/50 transition-all shadow-md group-hover:shadow-amber-950/20">
+                    <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-emerald-500/50 transition-all shadow-md group-hover:shadow-emerald-950/30">
                       <img
                         src={coverUrl}
                         alt={item.area}
@@ -175,16 +175,16 @@ export default function ResumosJuridicosAreas() {
                       <button
                         type="button"
                         onClick={(e) => toggleFavArea(item.area, e)}
-                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-[#E8DCCB] hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-emerald-400 hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
                         aria-label="Favoritar"
                       >
                         <Heart
-                          className={`w-3.5 h-3.5 ${isFav ? "fill-[#E8DCCB] text-[#E8DCCB]" : ""}`}
+                          className={`w-3.5 h-3.5 ${isFav ? "fill-emerald-500 text-emerald-500" : ""}`}
                         />
                       </button>
                     </div>
 
-                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-[#E8DCCB] transition-colors line-clamp-2 mt-2 leading-snug">
+                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-emerald-300 transition-colors line-clamp-2 mt-2 leading-snug">
                       {item.area}
                     </p>
                     <p className="text-[10.5px] text-white/50 truncate mt-0.5">
@@ -202,11 +202,11 @@ export default function ResumosJuridicosAreas() {
         {/* ======================================================== */}
         <section className="pt-2 space-y-4">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[#E8DCCB] font-bold">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400 font-bold">
               ACERVO DE RESUMOS
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="w-1 h-6 rounded-full bg-[#E8DCCB]" />
+              <span className="w-1 h-6 rounded-full bg-emerald-500" />
               <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
                 {activeTab === "Todos" ? "Todas as Matérias" : activeTab}
               </h2>
@@ -224,7 +224,7 @@ export default function ResumosJuridicosAreas() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar matéria, tema ou resumo…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#E8DCCB]/60 transition-colors shadow-sm"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/60 transition-colors shadow-sm"
             />
             {q && (
               <button
