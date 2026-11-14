@@ -18,12 +18,12 @@ interface VideoaulasHeroProps {
   dash: number;
 }
 
-export const VideoaulasHero: React.FC<VideoaulasHeroProps> = memo(function VideoaulasHero({
+export const VideoaulasHero = memo(function VideoaulasHero({
   data,
   areasDireitoLength,
   setShowDesempenho,
   horasAssistidas,
-}) => {
+}: VideoaulasHeroProps) {
   const goBack = useGoBack();
 
   return (
