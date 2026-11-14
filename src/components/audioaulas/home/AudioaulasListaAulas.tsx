@@ -395,7 +395,7 @@ const TrilhaZigueZagueCapitulos = React.memo(function TrilhaZigueZagueCapitulos(
                           className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
                           style={{ backgroundColor: `${palette.primary}50` }}
                         />
-                        <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-[0_0_22px_rgba(239,68,68,0.6)]">
+                        <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-[#ffa285] group-hover:bg-[#ff6b4a] group-hover:text-white group-hover:shadow-[0_0_22px_rgba(255,107,74,0.6)]">
                           <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
                         </div>
                       </div>
@@ -766,8 +766,8 @@ const TrilhaZigueZagueAulas = React.memo(function TrilhaZigueZagueAulas({
                           className={cn(
                             "relative w-11 h-11 sm:w-13 sm:h-13 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
                             estaTocando
-                              ? "bg-primary border-primary text-primary-foreground shadow-[0_0_24px_rgba(239,68,68,0.7)]"
-                              : "bg-black/60 border-white/30 text-white group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-[0_0_22px_rgba(239,68,68,0.6)]",
+                              ? "bg-gradient-to-tr from-[#ff6b4a] to-[#ffa285] border-[#ffa285] text-white shadow-[0_0_24px_rgba(255,107,74,0.7)]"
+                              : "bg-black/60 border-white/30 text-white group-hover:border-[#ffa285] group-hover:bg-[#ff6b4a] group-hover:text-white group-hover:shadow-[0_0_22px_rgba(255,107,74,0.6)]",
                           )}
                         >
                           {estaTocando ? (
@@ -1702,7 +1702,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                 <div className="mb-3 flex items-center justify-between gap-3 flex-wrap">
                   <div>
                     <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                      <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#ffa285] to-[#ff6b4a] shadow-[0_0_10px_rgba(255,107,74,0.65)] shrink-0" />
                       <span className="break-words">
                         {modoVisualizacao === "recentes"
                           ? "Aulas Recentes"
@@ -1731,7 +1731,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "trilha"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar em Trilha Serpenteante"
@@ -1748,7 +1748,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "lista"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar em Grade Tradicional"
@@ -1765,7 +1765,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "recentes"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar Aulas Ouvidas Recentemente"
