@@ -970,6 +970,7 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
