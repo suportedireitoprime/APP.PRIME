@@ -114,28 +114,29 @@ export const HomeBoletinsList: React.FC = () => {
   }
 
   return (
-    <section className="pt-2 pb-6 space-y-3">
+    <section className="pt-2 pb-6 space-y-3.5">
       {/* Cabeçalho da Seção */}
       <div className="flex items-center justify-between gap-3 px-1">
-        <div>
-          <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-[#38BDF8]" />
-            BOLETINS & ATUALIZAÇÕES
+        <div className="min-w-0 flex-1">
+          <h3 className="font-display text-white text-[16.5px] sm:text-[17.5px] font-extrabold flex items-center gap-2.5 uppercase tracking-[0.14em]">
+            <span className="w-1 h-4.5 rounded-full bg-primary shrink-0" />
+            <span className="truncate">BOLETINS</span>
           </h3>
-          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 mt-0.5">
+          <p className="font-sans text-white/55 text-[12px] sm:text-[12.5px] leading-snug ml-3.5 truncate mt-0.5">
             Notícias jurídicas e informativos em áudio e vídeo
           </p>
         </div>
 
         <button
+          type="button"
           onClick={() => {
             haptic.selection();
             navigate('/boletins');
           }}
-          className="flex items-center gap-1 text-[12px] font-medium text-sky-400 hover:text-sky-300 transition-colors py-1 px-2 rounded-lg hover:bg-sky-500/10 active:scale-95 shrink-0"
+          className="group shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-[11.5px] sm:text-[12px] font-semibold text-white/80 hover:text-white transition-all shadow-sm cursor-pointer"
         >
           <span>Ver todos</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
         </button>
       </div>
 

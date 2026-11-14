@@ -311,15 +311,15 @@ export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
   if (!livros.length) return null;
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-3.5">
       {/* Cabeçalho do Carrossel de Livros */}
-      <div className="mb-0 relative z-10 pointer-events-none px-1 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-display text-white text-[15px] sm:text-[16px] font-bold mb-0.5 flex items-center gap-2 pointer-events-auto uppercase tracking-wider">
-            <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
-            CLÁSSICOS DO DIREITO
+      <div className="relative z-10 pointer-events-none px-1 flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-display text-white text-[16.5px] sm:text-[17.5px] font-extrabold flex items-center gap-2.5 pointer-events-auto uppercase tracking-[0.14em]">
+            <span className="w-1 h-4.5 rounded-full bg-primary shrink-0" />
+            <span className="truncate">CLÁSSICOS DO DIREITO</span>
           </h3>
-          <p className="font-sans text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
+          <p className="font-sans text-white/55 text-[12px] sm:text-[12.5px] leading-snug ml-3.5 pointer-events-auto truncate mt-0.5">
             Obras fundamentais e livros jurídicos
           </p>
         </div>
@@ -329,10 +329,10 @@ export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
             haptic.selection();
             navigate('/bibliotecas/classicos');
           }}
-          className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 active:opacity-70 backdrop-blur-md border border-rose-500/30 hover:border-rose-500/50 text-[12px] font-semibold text-rose-200 hover:text-white transition-all shadow-sm"
+          className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-[11.5px] sm:text-[12px] font-semibold text-white/80 hover:text-white transition-all shadow-sm cursor-pointer"
         >
           <span>Ver todos</span>
-          <ChevronRight className="w-3.5 h-3.5 text-rose-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+          <ChevronRight className="w-3.5 h-3.5 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
         </button>
       </div>
 

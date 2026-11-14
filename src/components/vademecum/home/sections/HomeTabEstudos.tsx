@@ -79,16 +79,16 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-6 pt-2">
+        <div className="flex flex-col gap-7 pt-2">
           {/* Seção Estudos Livres — posicionada logo após o carrossel de Leis em Alta */}
-          <div className="flex flex-col gap-3">
-            <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
-              <div>
-                <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
-                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                  Estudos Livres
+          <div className="flex flex-col gap-3.5">
+            <div className="relative z-10 flex items-start justify-between gap-3 px-1">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-display text-white text-[16.5px] sm:text-[17.5px] font-extrabold flex items-center gap-2.5 uppercase tracking-[0.14em]">
+                  <span className="w-1 h-4.5 rounded-full bg-primary shrink-0" />
+                  <span className="truncate">ESTUDOS LIVRES</span>
                 </h3>
-                <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+                <p className="font-sans text-white/55 text-[12px] sm:text-[12.5px] leading-snug ml-3.5 truncate mt-0.5">
                   Ferramentas complementares para seus estudos
                 </p>
               </div>
