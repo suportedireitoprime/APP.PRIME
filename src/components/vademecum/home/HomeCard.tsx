@@ -67,7 +67,7 @@ const HomeCardImpl = ({
       data-track-name={dataTrackName}
       data-track-section={dataTrackSection}
       style={style}
-      className={`group relative flex flex-col justify-between w-full min-h-[118px] sm:min-h-[124px] h-auto p-3.5 sm:p-4 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 hover:border-primary/40 shadow-sm hover:shadow-xl hover:-translate-y-[2px] active:scale-[0.98] transition-all duration-300 text-left overflow-hidden ${className}`}
+      className={`group relative flex flex-col justify-between w-full min-h-[118px] sm:min-h-[124px] h-auto p-3.5 sm:p-4 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 hover:border-emerald-500/40 shadow-sm hover:shadow-xl hover:-translate-y-[2px] active:scale-[0.98] transition-all duration-300 text-left overflow-hidden ${className}`}
     >
       {finalBadge && (
         <div className="absolute top-2.5 right-3 px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-wider hidden sm:block">

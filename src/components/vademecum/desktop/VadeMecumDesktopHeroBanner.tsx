@@ -111,7 +111,7 @@ const VadeMecumDesktopHeroBanner = ({
           >
             <Bell className="w-5 h-5 text-white drop-shadow-md group-hover/notif:scale-110 transition-transform" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-[#1E1E22] shadow-sm animate-pulse-slow">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-emerald-500 text-black text-[10px] font-black rounded-full border-2 border-[#1E1E22] shadow-sm animate-pulse-slow">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
@@ -130,7 +130,7 @@ const VadeMecumDesktopHeroBanner = ({
               onClick={onSearchClick}
               className="w-full h-14 bg-background/80 backdrop-blur-md rounded-2xl flex items-center px-4 gap-3 shadow-lg border border-border/50 hover:bg-background/90 transition-colors mb-8 group"
             >
-              <Search className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              <Search className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors" />
               <span className="text-muted-foreground font-body text-sm text-left flex-1">
                 {typingHint}
               </span>

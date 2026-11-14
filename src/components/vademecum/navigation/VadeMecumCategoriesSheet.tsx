@@ -42,7 +42,7 @@ export default function VadeMecumCategoriesSheet({ activeSheet, onClose, maisMen
 
   const getHeaderProps = () => {
     switch (activeSheet) {
-      case 'codigos': return { title: 'CÓDIGOS', color: 'bg-red-700' };
+      case 'codigos': return { title: 'CÓDIGOS', color: 'bg-emerald-600' };
       case 'estatutos': return { title: 'ESTATUTOS', color: 'bg-blue-700' };
       case 'sumulas': return { title: 'SÚMULAS E JURISPRUDÊNCIA', color: 'bg-emerald-700' };
       case 'novidades': return { title: 'NOVIDADES LEGISLATIVAS', color: 'bg-yellow-600' };
@@ -96,7 +96,7 @@ export default function VadeMecumCategoriesSheet({ activeSheet, onClose, maisMen
         <button
           key={item.id}
           onClick={() => handleNavigate(item.to)}
-          className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition active:scale-[0.98] text-left cursor-pointer"
+          className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border hover:border-emerald-500/40 transition active:scale-[0.98] text-left cursor-pointer"
         >
           <div className="flex items-center gap-4">
             <Icon className="w-7 h-7 shrink-0" style={{ color: item.color }} strokeWidth={1.5} />
@@ -125,7 +125,7 @@ export default function VadeMecumCategoriesSheet({ activeSheet, onClose, maisMen
         <button
           key={lei.id}
           onClick={() => handleNavigate(base)}
-          className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border hover:border-primary/40 transition active:scale-[0.98] text-left cursor-pointer"
+          className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border hover:border-emerald-500/40 transition active:scale-[0.98] text-left cursor-pointer"
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div

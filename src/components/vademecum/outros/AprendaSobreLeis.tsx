@@ -96,7 +96,7 @@ export default function AprendaSobreLeis({ titleClassName = 'px-1' }: AprendaSob
     <div className="space-y-2.5">
       <div className={titleClassName}>
         <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-primary" />
+          <span className="w-1 h-5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
           Entenda as Leis
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3 truncate">
@@ -146,7 +146,7 @@ export default function AprendaSobreLeis({ titleClassName = 'px-1' }: AprendaSob
                   <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
                 </div>
 
-                <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider bg-primary text-primary-foreground">
+                <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[9.5px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider bg-emerald-500 text-black shadow-sm">
                   <BookOpen className="w-2.5 h-2.5" />
                   LEIS
                 </span>
