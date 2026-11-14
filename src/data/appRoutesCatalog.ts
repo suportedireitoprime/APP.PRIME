@@ -71,13 +71,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": true,
     "component": "AdminAulasInterativas",
     "exampleUrl": "/admin-aulas-interativas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~180 KB",
     "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
+      "Code Splitting dinâmico por disciplina",
+      "Cache instantâneo em memória 0ms",
+      "Sincronizador SRT sob demanda"
     ]
   },
   {
