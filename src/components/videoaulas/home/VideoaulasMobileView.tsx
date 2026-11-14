@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Loader2 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { Search, X, Loader2, ChevronRight } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
+import { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
 import { VideoaulasEmAltaCarousel } from './VideoaulasEmAltaCarousel';
 import { VideoaulasAreaChips } from './VideoaulasAreaChips';
@@ -20,6 +20,9 @@ interface VideoaulasMobileViewProps {
   horasAssistidas: number;
 }
 
+const STORAGE_FAV_KEY = 'videoaulas_fav_areas_v1';
+const STORAGE_RECENTES_KEY = 'videoaulas_recentes_v1';
+
 export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   state,
   c,
@@ -27,8 +30,19 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   horasAssistidas,
 }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Todos');
+  const [heroTab, setHeroTab] = useState<VideoaulasHeroTab>('todos');
+  const [activeChipTab, setActiveChipTab] = useState('Todos');
   const [q, setQ] = useState('');
+
+  // Favoritos
+  const [favoritosSet, setFavoritosSet] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_FAV_KEY);
+      return saved ? new Set(JSON.parse(saved)) : new Set(['Direito Penal', 'Direito Constitucional']);
+    } catch {
+      return new Set(['Direito Penal', 'Direito Constitucional']);
+    }
+  });
 
   const handleSearchChange = (val: string) => {
     setQ(val);
@@ -50,16 +64,31 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     }));
   }, [state.areasDireito]);
 
-  // Filtragem de áreas por texto e aba ativa
+  // Filtragem combinada por Aba do Hero (Favoritos, Em Alta, Recentes, Playlist) e Chips
   const filteredAreas = useMemo(() => {
     let list = areasItens;
 
-    if (activeTab === 'Em Andamento') {
+    // Filtros do Hero (4 Funções)
+    if (heroTab === 'favoritos') {
+      list = list.filter((a) => favoritosSet.has(a.area) || favoritosSet.has(a.slug));
+    } else if (heroTab === 'emalta') {
+      // Prioridade das matérias mais acessadas
+      list = [...list].sort((a, b) => b.total - a.total);
+    } else if (heroTab === 'recentes') {
+      // Itens em andamento ou iniciados
       list = list.filter((a) => a.pct > 0);
-    } else if (activeTab !== 'Todos') {
-      list = list.filter((a) => a.area.toLowerCase() === activeTab.toLowerCase());
+      if (list.length === 0) list = areasItens.slice(0, 5);
+    } else if (heroTab === 'playlist') {
+      // Matérias fundamentais para trilha contínua
+      list = list.filter((a) => a.total > 20);
     }
 
+    // Filtros de chips
+    if (activeChipTab === 'Em Andamento') {
+      list = list.filter((a) => a.pct > 0);
+    }
+
+    // Filtro de busca textual
     if (q.trim()) {
       const termos = normalizeTexto(q).split(/\s+/).filter(Boolean);
       list = list.filter((a) => {
@@ -69,7 +98,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     }
 
     return list;
-  }, [areasItens, activeTab, q]);
+  }, [areasItens, heroTab, activeChipTab, q, favoritosSet]);
 
   const handleAreaClick = useCallback(
     (slug: string) => {
@@ -82,7 +111,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   return (
     <div className="relative z-10">
       <div className="mx-auto w-full max-w-4xl pb-32">
-        {/* Painel Hero Oficial com Capa da Cena e Onda em Seda 3D (Estilo Biblioteca) */}
+        {/* Painel Hero Idêntico ao de Pílulas com 4 Atalhos: Favoritos, Em Alta, Recentes e Playlist */}
         <VideoaulasHero
           data={state.data}
           heroIdx={state.heroIdx}
@@ -92,15 +121,22 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           horasAssistidas={horasAssistidas}
           c={c}
           dash={dash}
+          activeHeroTab={heroTab}
+          onSelectHeroTab={setHeroTab}
+          onOpenSearch={() => {
+            const input = document.getElementById('busca-videoaulas-input');
+            input?.focus();
+          }}
+          favoritosCount={favoritosSet.size}
         />
 
-        {/* Conteúdo Principal com Layout Enxuto e Minimalista */}
+        {/* Conteúdo Principal */}
         <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-5 space-y-5">
           {/* Card Dinâmico "Continuar Assistindo" Sem Abreviar */}
           <VideoaulasContinuarCard />
 
           {/* Seção "EM ALTA" (Carrossel Horizontal Fluido com Capas de Aulas Interativas) */}
-          {activeTab === 'Todos' && !q && (
+          {heroTab === 'todos' && activeChipTab === 'Todos' && !q && (
             <VideoaulasEmAltaCarousel
               areas={areasItens}
               onSelectArea={handleAreaClick}
@@ -109,27 +145,53 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
           {/* Seção Catálogo de Videoaulas */}
           <section className="pt-1 space-y-3.5">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-5 rounded-full bg-zinc-400" />
-                <h2 className="font-sans text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
-                  {activeTab === 'Todos' ? 'Todas as Matérias' : activeTab}
-                </h2>
+            <div className="flex items-start justify-between px-1 gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-amber-400" />
+                  <h2 className="font-sans text-lg sm:text-xl font-black text-white uppercase tracking-wider leading-tight">
+                    {heroTab === 'favoritos'
+                      ? 'Matérias Favoritas'
+                      : heroTab === 'emalta'
+                      ? 'Matérias em Alta'
+                      : heroTab === 'recentes'
+                      ? 'Matérias Recentes'
+                      : heroTab === 'playlist'
+                      ? 'Playlists de Aulas'
+                      : 'Todas as Matérias'}
+                  </h2>
+                </div>
+                <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
+                  {heroTab === 'favoritos'
+                    ? 'Suas áreas jurídicas salvas para estudo contínuo.'
+                    : 'Toque em qualquer matéria para abrir os módulos e aulas completas.'}
+                </p>
               </div>
-              <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
-                Toque em qualquer matéria para abrir os módulos e aulas completas.
-              </p>
+
+              {heroTab !== 'todos' && (
+                <button
+                  onClick={() => {
+                    haptic.selection();
+                    setHeroTab('todos');
+                  }}
+                  className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
+                >
+                  <span>Ver todas</span>
+                  <ChevronRight className="w-4 h-4 stroke-[2.6]" />
+                </button>
+              )}
             </div>
 
             {/* Campo de Busca Rápida Ergonômico */}
             <div className="relative">
               <Search className="w-5 h-5 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                id="busca-videoaulas-input"
                 type="text"
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors shadow-sm font-sans"
+                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/50 transition-colors shadow-sm font-sans"
               />
               {q && (
                 <button
@@ -143,23 +205,23 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               )}
             </div>
 
-            {/* Chips Enxutos: Apenas Todas e Em Andamento (Sem Lei Seca nem Três Poderes) */}
+            {/* Chips Enxutos: Todas e Em Andamento */}
             <VideoaulasAreaChips
               areas={areasItens}
-              activeTab={activeTab}
-              onSelectTab={setActiveTab}
+              activeTab={activeChipTab}
+              onSelectTab={setActiveChipTab}
               emAndamentoCount={state.emAndamentoCount}
             />
 
             {/* Listagem de Matérias ou Resultados */}
             {q.trim() && state.buscando ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
-                <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
-                <p className="text-xs">Buscando aulas e matérias…</p>
+                <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                <p className="text-xs font-sans">Buscando aulas e matérias…</p>
               </div>
             ) : q.trim() && state.resultadosAulas.length > 0 ? (
               <div className="space-y-3 pt-1">
-                <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-sans">
                   {state.resultadosAulas.length} {state.resultadosAulas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
                 </p>
                 <div className="space-y-2">
@@ -180,9 +242,13 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               </div>
             ) : (
               <div className="text-center py-12 rounded-2xl bg-zinc-900/40 border border-white/5 p-6">
-                <p className="text-sm font-semibold text-white">Nenhuma matéria encontrada</p>
-                <p className="text-xs text-zinc-400 mt-1">
-                  Tente buscar por outro termo ou limpe o filtro.
+                <p className="text-sm font-semibold text-white font-sans">
+                  {heroTab === 'favoritos' ? 'Nenhuma matéria favoritada' : 'Nenhuma matéria encontrada'}
+                </p>
+                <p className="text-xs text-zinc-400 mt-1 font-sans">
+                  {heroTab === 'favoritos'
+                    ? 'Toque no coração de qualquer matéria para salvá-la aqui.'
+                    : 'Tente buscar por outro termo ou limpe o filtro.'}
                 </p>
               </div>
             )}
@@ -193,7 +259,10 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
       {/* Navegação Inferior de Videoaulas */}
       <VideoaulasBottomNav
         activeTab="home"
-        onOpenBusca={() => {}}
+        onOpenBusca={() => {
+          const input = document.getElementById('busca-videoaulas-input');
+          input?.focus();
+        }}
         onOpenDesempenho={() => state.setShowDesempenho(true)}
       />
 
