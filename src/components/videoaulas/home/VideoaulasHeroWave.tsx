@@ -2,26 +2,20 @@ import React, { memo } from 'react';
 
 /**
  * VideoaulasHeroWave
- * Onda hiper-realista em cetim/seda pura 3D com caimento fluido harmonizada
- * com as cores da cena da biblioteca noturna (Âmbar / Mogno / Papiro Dourado / Pôr do Sol Carmin).
- * 
- * Paleta:
- * - Mogno Profundo (#1f1008)
- * - Âmbar Quente (#b45309)
- * - Ouro Velho Escovado (#d97706)
- * - Papiro Dourado (#fde68a / #fbbf24)
- * - Luz Especular Quente (#ffffff / #fef3c7)
+ * Onda idêntica à de BibliotecaHeroWave com translação porcentual (-50%)
+ * garantindo animação contínua e visibilidade perfeita sobre a capa de videoaulas.
+ * Harmonizada com tons âmbar/dourado/mogno da cena.
  */
 export const VideoaulasHeroWave: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
-      {/* ── 1. Resplendor Volumétrico e Bloom no Tom Âmbar & Mogno ── */}
+      {/* ── 1. Resplendor Volumétrico e Bloom no Tom Âmbar Suave ── */}
       <div 
-        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-[#b45309]/30 via-[#3b1908]/25 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-[#d97706]/30 via-[#451a03]/25 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'videoaulasWaveGlowPulse 8s ease-in-out infinite alternate' }}
       />
       <div 
-        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-[#d97706]/25 via-[#451a03]/20 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-[#fbbf24]/25 via-[#3b1908]/20 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'videoaulasWaveGlowPulse 10s ease-in-out infinite alternate-reverse' }}
       />
 
@@ -110,7 +104,7 @@ export const VideoaulasHeroWave: React.FC = () => {
             <linearGradient id="videoaulasCrestHalo" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
               <stop offset="35%" stopColor="#f59e0b" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
             </linearGradient>
 
             <linearGradient id="videoaulasTextureStreak" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -122,13 +116,11 @@ export const VideoaulasHeroWave: React.FC = () => {
             </linearGradient>
           </defs>
 
-          {/* Fita Mestra */}
           <path
             d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185 L 2880,400 L 0,400 Z"
             fill="url(#videoaulasSatinLustre)"
           />
 
-          {/* Estria Textural */}
           <path
             d="M 0,205 C 220,115 500,100 720,180 C 940,260 1220,270 1440,205 C 1660,115 1940,100 2160,180 C 2380,260 2660,270 2880,205"
             fill="none"
@@ -137,7 +129,6 @@ export const VideoaulasHeroWave: React.FC = () => {
             strokeDasharray="16 8"
           />
 
-          {/* Crista de Luz */}
           <path
             d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
             fill="none"
@@ -146,7 +137,6 @@ export const VideoaulasHeroWave: React.FC = () => {
             strokeLinecap="round"
           />
 
-          {/* Halo Translúcido */}
           <path
             d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
             fill="none"
@@ -157,8 +147,8 @@ export const VideoaulasHeroWave: React.FC = () => {
         </svg>
       </div>
 
-      {/* ════ CAMADA 3: Fita Dianteira de Crista Fina ════ */}
-      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform">
+      {/* ════ CAMADA 3: Fita Dianteira de Seda e Crista Fina ════ */}
+      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-95">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
@@ -169,39 +159,39 @@ export const VideoaulasHeroWave: React.FC = () => {
           }}
         >
           <defs>
-            <linearGradient id="videoaulasFrontSilk" x1="0%" y1="0%" x2="100%" y2="80%">
-              <stop offset="0%" stopColor="#3b1908" stopOpacity="0.95" />
-              <stop offset="25%" stopColor="#78350f" stopOpacity="0.95" />
-              <stop offset="50%" stopColor="#d97706" stopOpacity="0.98" />
-              <stop offset="70%" stopColor="#b45309" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#3b1908" stopOpacity="0.95" />
+            <linearGradient id="videoaulasFrontSilk" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3b1908" stopOpacity="0.96" />
+              <stop offset="20%" stopColor="#78350f" stopOpacity="0.98" />
+              <stop offset="44%" stopColor="#d97706" stopOpacity="1" />
+              <stop offset="66%" stopColor="#fbbf24" stopOpacity="0.98" />
+              <stop offset="85%" stopColor="#b45309" stopOpacity="0.96" />
+              <stop offset="100%" stopColor="#3b1908" stopOpacity="0.96" />
             </linearGradient>
 
-            <linearGradient id="videoaulasRimLight" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98" />
-              <stop offset="35%" stopColor="#fef3c7" stopOpacity="0.9" />
-              <stop offset="60%" stopColor="#ffffff" stopOpacity="0.98" />
-              <stop offset="85%" stopColor="#fde68a" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.98" />
+            <linearGradient id="videoaulasFrontCrest" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+              <stop offset="42%" stopColor="#ffffff" stopOpacity="0.98" />
+              <stop offset="58%" stopColor="#fef3c7" stopOpacity="0.82" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.25" />
             </linearGradient>
           </defs>
 
           <path
-            d="M 0,235 C 240,165 480,150 720,215 C 960,280 1200,285 1440,235 C 1680,165 1920,150 2160,215 C 2400,280 2640,285 2880,235 L 2880,400 L 0,400 Z"
+            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240 L 2880,400 L 0,400 Z"
             fill="url(#videoaulasFrontSilk)"
           />
 
           <path
-            d="M 0,235 C 240,165 480,150 720,215 C 960,280 1200,285 1440,235 C 1680,165 1920,150 2160,215 C 2400,280 2640,285 2880,235"
+            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240"
             fill="none"
-            stroke="url(#videoaulasRimLight)"
-            strokeWidth="2.5"
+            stroke="url(#videoaulasFrontCrest)"
+            strokeWidth="2.8"
             strokeLinecap="round"
           />
         </svg>
       </div>
 
-      {/* ── 4. Pontos de Brilho Especular na Crista ── */}
+      {/* ── 4. Glints e Micro-Brilhos na Crista ── */}
       <div 
         className="absolute bottom-16 sm:bottom-22 left-[26%] sm:left-[32%] w-3 h-3 rounded-full bg-white blur-[0.8px] pointer-events-none transform-gpu"
         style={{
@@ -217,17 +207,17 @@ export const VideoaulasHeroWave: React.FC = () => {
         }}
       />
 
-      {/* ── 5. Keyframes Orgânicos a 120fps ── */}
+      {/* ── 5. Keyframes Orgânicos a 120fps (Sem solavancos, idênticos a Biblioteca) ── */}
       <style>{`
         @keyframes videoaulasWaveMainSlide {
           0% {
             transform: translate3d(0, 0, 0) scaleY(1);
           }
           50% {
-            transform: translate3d(-720px, 0, 0) scaleY(1.03);
+            transform: translate3d(-25%, -6px, 0) scaleY(1.05);
           }
           100% {
-            transform: translate3d(-1440px, 0, 0) scaleY(1);
+            transform: translate3d(-50%, 0, 0) scaleY(1);
           }
         }
 
@@ -236,10 +226,10 @@ export const VideoaulasHeroWave: React.FC = () => {
             transform: translate3d(0, 0, 0) scaleY(0.97);
           }
           50% {
-            transform: translate3d(-720px, 0, 0) scaleY(1.02);
+            transform: translate3d(-25%, 6px, 0) scaleY(1.06);
           }
           100% {
-            transform: translate3d(-1440px, 0, 0) scaleY(0.97);
+            transform: translate3d(-50%, 0, 0) scaleY(0.97);
           }
         }
 
@@ -248,10 +238,10 @@ export const VideoaulasHeroWave: React.FC = () => {
             transform: translate3d(0, 0, 0) scaleY(1);
           }
           50% {
-            transform: translate3d(-720px, 0, 0) scaleY(1.04);
+            transform: translate3d(-25%, -7px, 0) scaleY(1.06);
           }
           100% {
-            transform: translate3d(-1440px, 0, 0) scaleY(1);
+            transform: translate3d(-50%, 0, 0) scaleY(1);
           }
         }
 
@@ -262,7 +252,7 @@ export const VideoaulasHeroWave: React.FC = () => {
           }
           100% {
             opacity: 0.95;
-            transform: scale(1.05);
+            transform: scale(1.06);
           }
         }
 
@@ -273,7 +263,7 @@ export const VideoaulasHeroWave: React.FC = () => {
           }
           50% {
             opacity: 1;
-            transform: scale(1.25);
+            transform: scale(1.35);
           }
         }
 
