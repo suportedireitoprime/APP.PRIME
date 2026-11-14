@@ -274,6 +274,7 @@ const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx")
 const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const AdminAulasInterativas = lazyWithRetry(() => import("./pages/AdminAulasInterativas.tsx"));
+const AdminLousaMagica = lazyWithRetry(() => import("./pages/AdminLousaMagica.tsx"));
 const AdminHorus = lazyWithRetry(() => import("./pages/AdminHorus.tsx"));
 const AdminOmniRouteTeste = lazyWithRetry(() => import("./pages/AdminOmniRouteTeste.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
@@ -950,6 +951,7 @@ function AnimatedRoutes() {
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-lousa-magica" element={<ProtectedRoute><PageTransition><AdminLousaMagica /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
