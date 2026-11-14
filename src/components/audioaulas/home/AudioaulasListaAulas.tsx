@@ -28,6 +28,8 @@ import { PageHeader } from "@/components/vademecum/navigation/PageHeader";
 import { Input } from "@/components/ui/input";
 import { BotaoDownloadAudio } from "./BotaoDownloadAudio";
 import { capaDaArea, decomporTituloCapitulo } from "@/lib/audioaulasHelper";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { type AulaAudio, audioIdOf, useAudioaulasPlayer } from "@/contexts/AudioaulasPlayerContext";
 import { useAudioaulasProgresso, type ProgressoAulaItem } from "@/lib/audioaulaProgresso";
 import { CapaOtimizada } from "./CapaOtimizada";
@@ -175,7 +177,11 @@ const LinhaAula = React.memo(function LinhaAula({
       >
         <span className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
           <CapaOtimizada
-            src={capaDaArea(a.area || "")}
+            src={
+              getDisciplinaVisualTheme(a.area || "")?.fundoAssetUrl ||
+              getAreaCover(a.area || "")?.cover ||
+              capaDaArea(a.area || "")
+            }
             alt=""
             className="transition-transform group-hover:scale-105"
           />
@@ -1194,7 +1200,12 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   );
 
   const palette = useMemo(() => getAreaThemePalette(areaAtual || "geral"), [areaAtual]);
-  const coverUrl = useMemo(() => capaDaArea(areaAtual || ""), [areaAtual]);
+  const coverUrl = useMemo(() => {
+    if (!areaAtual) return capaDaArea("");
+    const visualTheme = getDisciplinaVisualTheme(areaAtual);
+    const areaCover = getAreaCover(areaAtual);
+    return visualTheme?.fundoAssetUrl || areaCover?.cover || capaDaArea(areaAtual);
+  }, [areaAtual]);
 
   const capituloSelecionado = capituloExterno !== undefined ? capituloExterno : capituloLocal;
   const setCapituloSelecionado = setCapituloExterno || setCapituloLocal;
