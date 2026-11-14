@@ -63,46 +63,49 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
         background: 'linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05))',
         borderColor: 'rgba(16, 185, 129, 0.35)',
       }}
-      className="w-full flex items-center gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer"
+      className="w-full flex items-stretch rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer min-h-[82px] sm:min-h-[88px]"
     >
-      {/* Capa do Resumo à esquerda */}
-      <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden border border-white/20 bg-black shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
+      {/* Capa do Resumo à esquerda — flush sem margens em cima, na esquerda e embaixo */}
+      <div className="w-[72px] sm:w-[84px] shrink-0 self-stretch relative overflow-hidden bg-black flex flex-col justify-end border-r border-white/10">
         <img
           src={coverUrl}
           alt={titulo}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           loading="eager"
           decoding="async"
         />
-        <span className="absolute bottom-0 inset-x-0 bg-emerald-600 text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        <span className="relative z-10 w-full bg-emerald-600 text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
           RESUMO
         </span>
       </div>
 
-      {/* Textos informativos centrais */}
-      <div className="flex-1 min-w-0 z-10">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <BookOpen className="w-2.5 h-2.5 fill-emerald-400 text-emerald-400" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-            CONTINUAR ESTUDANDO
+      {/* Textos informativos centrais e seta */}
+      <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-3.5 sm:py-3.5 sm:pl-3.5 sm:pr-4 flex items-center justify-between gap-2.5">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <BookOpen className="w-2.5 h-2.5 fill-emerald-400 text-emerald-400" />
+            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+              CONTINUAR ESTUDANDO
+            </p>
+          </div>
+
+          <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
+            {titulo}
+          </p>
+
+          <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-emerald-200/90 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
+            <span className="truncate">{subtitulo}</span>
           </p>
         </div>
 
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
-          {titulo}
-        </p>
-
-        <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-emerald-200/90 mt-0.5">
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
-          <span className="truncate">{subtitulo}</span>
-        </p>
+        {/* Seta indicativa à direita */}
+        <ArrowRight
+          className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-emerald-400 group-hover:translate-x-1 transition-transform"
+          strokeWidth={2.4}
+        />
       </div>
-
-      {/* Seta indicativa à direita */}
-      <ArrowRight
-        className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-emerald-400 group-hover:translate-x-1 transition-transform"
-        strokeWidth={2.4}
-      />
 
       {/* Decoração de fundo com glow esmeralda no canto direito */}
       <div

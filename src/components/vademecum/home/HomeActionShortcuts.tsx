@@ -6,10 +6,10 @@ import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#38BDF8', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#A855F7', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audiobooks' as PrefetchKey },
-  { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, tag: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          color: '#FB7185', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
+  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audioaulas' as PrefetchKey },
+  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audiobooks' as PrefetchKey },
+  { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'blog' as PrefetchKey },
+  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          color: '#E61942', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
