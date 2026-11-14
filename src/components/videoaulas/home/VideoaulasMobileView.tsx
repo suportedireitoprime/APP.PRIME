@@ -1,13 +1,12 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Loader2, Scale, Landmark, Building, Building2, BookText } from 'lucide-react';
+import { Search, X, Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { VideoaulasHero } from './VideoaulasHero';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
 import { VideoaulasEmAltaCarousel } from './VideoaulasEmAltaCarousel';
 import { VideoaulasAreaChips } from './VideoaulasAreaChips';
 import { VideoaulasAreaCard, type VideoaulaAreaItem } from './VideoaulasAreaCard';
-import { VideoaulasEspeciaisCard, type EspecialCardItem } from './VideoaulasEspeciaisCard';
 import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
@@ -20,72 +19,6 @@ interface VideoaulasMobileViewProps {
   dash: number;
   horasAssistidas: number;
 }
-
-const ITENS_LEI_SECA: EspecialCardItem[] = [
-  {
-    id: 'lei-seca-vade',
-    title: 'Vade Mecum em Vídeo',
-    subtitle: 'Códigos e leis com leitura e comentários em vídeo',
-    badgeText: 'LEI SECA',
-    route: '/videoaulas/lei-seca',
-    icon: Scale,
-    iconColor: '#f59e0b',
-    bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.05))',
-  },
-  {
-    id: 'lei-seca-estatutos',
-    title: 'Estatutos e Legislação Especial',
-    subtitle: 'Estatuto da OAB, ECA, Servidores e Microempresa',
-    badgeText: 'ESTATUTOS',
-    route: '/videoaulas/lei-seca/categoria/estatutos',
-    icon: Landmark,
-    iconColor: '#10b981',
-    bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05))',
-  },
-  {
-    id: 'jurisprudencia-video',
-    title: 'Jurisprudência em Vídeo',
-    subtitle: 'Súmulas e teses comentadas dos tribunais superiores',
-    badgeText: 'JURISPRUDÊNCIA',
-    route: '/jurisprudencia',
-    icon: BookText,
-    iconColor: '#8b5cf6',
-    bgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.05))',
-  },
-];
-
-const ITENS_TRES_PODERES: EspecialCardItem[] = [
-  {
-    id: 'stf',
-    title: 'STF - Supremo Tribunal Federal',
-    subtitle: 'Transmissões plenárias, julgamentos e repertório',
-    badgeText: 'JUDICIÁRIO',
-    route: '/videoaulas/canal/stf',
-    icon: Landmark,
-    iconColor: '#60a5fa',
-    bgGradient: 'linear-gradient(135deg, rgba(96, 165, 250, 0.25), rgba(96, 165, 250, 0.05))',
-  },
-  {
-    id: 'senado',
-    title: 'Senado Federal',
-    subtitle: 'Sessões deliberativas, audiências públicas e comissões',
-    badgeText: 'LEGISLATIVO',
-    route: '/videoaulas/canal/senado',
-    icon: Building,
-    iconColor: '#34d399',
-    bgGradient: 'linear-gradient(135deg, rgba(52, 211, 153, 0.25), rgba(52, 211, 153, 0.05))',
-  },
-  {
-    id: 'camara',
-    title: 'Câmara dos Deputados',
-    subtitle: 'Debates, votações em plenário e CCJ ao vivo',
-    badgeText: 'LEGISLATIVO',
-    route: '/videoaulas/canal/camara',
-    icon: Building2,
-    iconColor: '#fbbf24',
-    bgGradient: 'linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.05))',
-  },
-];
 
 export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   state,
@@ -123,7 +56,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
     if (activeTab === 'Em Andamento') {
       list = list.filter((a) => a.pct > 0);
-    } else if (activeTab !== 'Todos' && activeTab !== 'Lei Seca' && activeTab !== 'Três Poderes') {
+    } else if (activeTab !== 'Todos') {
       list = list.filter((a) => a.area.toLowerCase() === activeTab.toLowerCase());
     }
 
@@ -151,7 +84,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
       <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
       <div className="mx-auto w-full max-w-4xl pb-32">
-        {/* Painel Hero Minimalista Editorial */}
+        {/* Painel Hero Minimalista e Monocromático (Sem ser colorido) */}
         <VideoaulasHero
           data={state.data}
           heroIdx={state.heroIdx}
@@ -163,12 +96,12 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           dash={dash}
         />
 
-        {/* Conteúdo Principal com Layout Minimalista e Espaçamento Ergonômico */}
-        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
-          {/* Card Dinâmico "Continuar Assistindo" */}
+        {/* Conteúdo Principal com Layout Enxuto e Minimalista */}
+        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-5 space-y-5">
+          {/* Card Dinâmico "Continuar Assistindo" Sem Abreviar */}
           <VideoaulasContinuarCard />
 
-          {/* Seção "EM ALTA" (Carrossel Horizontal Fluido) */}
+          {/* Seção "EM ALTA" (Carrossel Horizontal Fluido com Capas de Aulas Interativas) */}
           {activeTab === 'Todos' && !q && (
             <VideoaulasEmAltaCarousel
               areas={areasItens}
@@ -177,10 +110,10 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           )}
 
           {/* Seção Catálogo de Videoaulas */}
-          <section className="pt-2 space-y-4">
+          <section className="pt-1 space-y-3.5">
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-5 rounded-full bg-rose-500" />
+                <span className="w-1.5 h-5 rounded-full bg-zinc-400" />
                 <h2 className="font-sans text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
                   {activeTab === 'Todos' ? 'Todas as Matérias' : activeTab}
                 </h2>
@@ -190,7 +123,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               </p>
             </div>
 
-            {/* Campo de Busca Rápida Ergonômico (min 48px touch target) */}
+            {/* Campo de Busca Rápida Ergonômico */}
             <div className="relative">
               <Search className="w-5 h-5 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
@@ -198,7 +131,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm font-sans"
+                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors shadow-sm font-sans"
               />
               {q && (
                 <button
@@ -212,7 +145,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               )}
             </div>
 
-            {/* Chips de Filtragem de Matérias e Categorias */}
+            {/* Chips Enxutos: Apenas Todas e Em Andamento (Sem Lei Seca nem Três Poderes) */}
             <VideoaulasAreaChips
               areas={areasItens}
               activeTab={activeTab}
@@ -220,22 +153,10 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               emAndamentoCount={state.emAndamentoCount}
             />
 
-            {/* Conteúdo Dinâmico por Aba ou Busca */}
-            {activeTab === 'Lei Seca' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {ITENS_LEI_SECA.map((item) => (
-                  <VideoaulasEspeciaisCard key={item.id} item={item} />
-                ))}
-              </div>
-            ) : activeTab === 'Três Poderes' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {ITENS_TRES_PODERES.map((item) => (
-                  <VideoaulasEspeciaisCard key={item.id} item={item} />
-                ))}
-              </div>
-            ) : q.trim() && state.buscando ? (
+            {/* Listagem de Matérias ou Resultados */}
+            {q.trim() && state.buscando ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
-                <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
                 <p className="text-xs">Buscando aulas e matérias…</p>
               </div>
             ) : q.trim() && state.resultadosAulas.length > 0 ? (

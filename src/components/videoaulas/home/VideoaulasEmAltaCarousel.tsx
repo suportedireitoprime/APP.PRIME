@@ -2,10 +2,9 @@ import React, { memo, useMemo, useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
-import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import type { VideoaulaAreaItem } from './VideoaulasAreaCard';
-import constCover from '@/assets/biblioteca/areas/direito-constitucional.webp';
 
 interface VideoaulasEmAltaCarouselProps {
   areas: VideoaulaAreaItem[];
@@ -78,8 +77,8 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
     // Pré-carrega as capas em memória para exibição instantânea (0ms)
     useEffect(() => {
       areasOrdenadas.forEach((item) => {
-        const coverData = getAreaCover(item.area);
-        const url = coverData?.cover || constCover;
+        const tema = getDisciplinaVisualTheme(item.slug || item.area);
+        const url = tema.fundoAssetUrl;
         if (url) {
           const img = new Image();
           img.src = url;
@@ -94,7 +93,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="min-w-0 flex-1">
             <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-              <span className="w-1.5 h-4.5 rounded-full bg-rose-500 shrink-0" />
+              <span className="w-1.5 h-4.5 rounded-full bg-zinc-400 shrink-0" />
               <span>Em Alta</span>
             </h3>
             <p className="text-zinc-400 text-xs sm:text-[13px] leading-snug ml-3.5 mt-0.5">
@@ -106,8 +105,8 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
         {/* Carrossel Fluido com snap horizontal */}
         <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
           {areasOrdenadas.map((item, idx) => {
-            const coverData = getAreaCover(item.area);
-            const coverUrl = coverData?.cover || constCover;
+            const tema = getDisciplinaVisualTheme(item.slug || item.area);
+            const coverUrl = tema.fundoAssetUrl;
             const isFav = favAreas.has(item.area);
             const displayTitle = simplificarNomeArea(item.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
 
@@ -120,7 +119,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                 }}
                 className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150 touch-manipulation"
               >
-                <div className="relative aspect-[3/4.1] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                <div className="relative aspect-[3/4.1] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-white/30 transition-all shadow-md">
                   <img
                     src={coverUrl}
                     alt={displayTitle}
@@ -156,7 +155,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                     <p className="font-sans font-bold text-xs sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-md">
                       {displayTitle}
                     </p>
-                    <span className="text-[10px] text-zinc-400 font-medium leading-none block mt-1">
+                    <span className="text-[10px] text-zinc-400 font-medium leading-none block mt-1 font-sans">
                       {item.total} aulas
                     </span>
                   </div>
