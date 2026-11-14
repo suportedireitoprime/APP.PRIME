@@ -1,25 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Headphones, Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Search, Headphones } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { AudioActionShortcuts } from '@/components/audio/AudioActionShortcuts';
 import { type AulaAudio } from '@/contexts/AudioaulasPlayerContext';
 import { haptic } from '@/lib/nativeHaptics';
 import { resetGlobalScroll } from '@/lib/scrollUtils';
+import audioaulasOnibusCover from '@/assets/audioaulas-onibus-cover.jpg';
+import AudioaulasHeroWave from './AudioaulasHeroWave';
 
 const AudioFavoritosModal = React.lazy(() => import('@/components/audio/AudioFavoritosModal').then((m) => ({ default: m.AudioFavoritosModal })));
 const AudioRecentesModal = React.lazy(() => import('@/components/audio/AudioRecentesModal').then((m) => ({ default: m.AudioRecentesModal })));
 const AudioEstatisticasModal = React.lazy(() => import('@/components/audio/AudioEstatisticasModal').then((m) => ({ default: m.AudioEstatisticasModal })));
 const AudioEmAltaModal = React.lazy(() => import('@/components/audio/AudioEmAltaModal').then((m) => ({ default: m.AudioEmAltaModal })));
 const AudioTrilhasModal = React.lazy(() => import('@/components/audio/AudioTrilhasModal').then((m) => ({ default: m.AudioTrilhasModal })));
-
-import cenarioOnibus from '@/assets/audio-cenarios/cenario-onibus.webp';
-import cenarioAcademia from '@/assets/audio-cenarios/cenario-academia.webp';
-import cenarioCaminhada from '@/assets/audio-cenarios/cenario-caminhada.webp';
-import cenarioCafe from '@/assets/audio-cenarios/cenario-cafe.webp';
-import cenarioTransito from '@/assets/audio-cenarios/cenario-transito.webp';
-import cenarioDescanso from '@/assets/audio-cenarios/cenario-descanso.webp';
 
 interface AudioaulasHeroProps {
   areaAtual: string | null;
@@ -45,45 +38,6 @@ interface AudioaulasHeroProps {
   tituloCustom?: string;
   unidadeCustom?: string;
 }
-
-const CENARIOS_AULAS = [
-  {
-    id: 'onibus',
-    imagem: cenarioOnibus,
-    tag: '🚌 No trajeto',
-    descricao: 'Revisão ágil de cada matéria em qualquer lugar',
-  },
-  {
-    id: 'academia',
-    imagem: cenarioAcademia,
-    tag: '💪 Na academia',
-    descricao: 'Seu preparo teórico em ritmo acelerado',
-  },
-  {
-    id: 'caminhada',
-    imagem: cenarioCaminhada,
-    tag: '🚶‍♀️ Caminhando',
-    descricao: 'Aprenda ouvindo e fixe os conceitos chaves',
-  },
-  {
-    id: 'cafe',
-    imagem: cenarioCafe,
-    tag: '☕ No café',
-    descricao: 'Aproveite momentos de pausa para revisar conceitos',
-  },
-  {
-    id: 'transito',
-    imagem: cenarioTransito,
-    tag: '🚗 No trânsito',
-    descricao: 'Converta horas paradas em produtividade nos estudos',
-  },
-  {
-    id: 'descanso',
-    imagem: cenarioDescanso,
-    tag: '🛋️ Em casa',
-    descricao: 'Estudo contínuo e confortável no seu próprio ritmo',
-  },
-];
 
 export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
   function AudioaulasHero({
@@ -111,7 +65,6 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
     unidadeCustom,
   }) {
     const navigate = useNavigate();
-    const [cenarioIndex, setCenarioIndex] = useState(0);
 
     const [recentesOpen, setRecentesOpen] = useState(false);
     const [favoritosOpen, setFavoritosOpen] = useState(false);
@@ -119,15 +72,6 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
     const [emAltaOpen, setEmAltaOpen] = useState(false);
     const [trilhasOpen, setTrilhasOpen] = useState(false);
 
-    // Rotação suave automática das capas a cada 5 segundos
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setCenarioIndex((prev) => (prev + 1) % CENARIOS_AULAS.length);
-      }, 5000);
-      return () => clearInterval(timer);
-    }, []);
-
-    const cenarioAtual = CENARIOS_AULAS[cenarioIndex];
     const isEca = areaAtual && /eca|criança|adolescente/i.test(areaAtual);
     const heroTitulo =
       tituloCustom ||
@@ -159,166 +103,97 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
 
     return (
       <div className="relative mb-6">
-        {/* Shell principal com bordas arredondadas e fundo escuro azulado */}
+        {/* Shell unificado com o painel da Home, Resumos e Biblioteca */}
         <div
-          className="relative overflow-hidden rounded-b-[2rem] flex flex-col z-20 shadow-xl"
+          className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
           style={{
             transform: 'translateZ(0)',
-            backgroundColor: '#070f1e',
-            paddingTop: 'var(--sai-top, env(safe-area-inset-top, 0px))',
+            backgroundColor: '#050505',
           }}
         >
           {/* Blindagem de overscroll superior contra vazamento do fundo */}
           <div
             className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-            style={{ backgroundColor: '#070f1e' }}
+            style={{ backgroundColor: '#050505' }}
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa do Painel do Início (Lado Direito) com Transição Suave e Alta Luminosidade */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={cenarioAtual.id}
-                src={cenarioAtual.imagem}
-                alt={cenarioAtual.tag}
-                initial={{ opacity: 0, scale: 1.06 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.7, ease: 'easeInOut' }}
-                className="absolute top-0 bottom-0 right-0 h-full w-[65%] sm:w-[62%] lg:w-[58%] object-cover object-center select-none brightness-125 contrast-105 saturate-110"
-              />
-            </AnimatePresence>
+          {/* Imagem de Capa Oficial (Mulher no ônibus ouvindo com fones ao pôr do sol) */}
+          <img
+            src={audioaulasOnibusCover}
+            alt="Estudante ouvindo áudio aulas no trajeto"
+            aria-hidden="true"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover object-[center_30%] md:object-[center_25%] z-0 pointer-events-none transform-gpu will-change-transform"
+          />
 
-            {/* Degradê lateral suave e sutil para manter a capa bem clara e vívida */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070f1e]/40 via-transparent to-transparent sm:hidden" />
-            <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070f1e]/30 via-transparent to-transparent" />
+          {/* Onda Hiper-Realista 3D em Laranja Salmão / Coral */}
+          <AudioaulasHeroWave />
 
-            {/* Badge do Cenário Atual flutuando no canto inferior direito */}
-            <div className="absolute bottom-3 right-3 z-10 hidden sm:flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-white shadow-xl">
-              <span className="text-xs font-bold">{cenarioAtual.tag}</span>
-              <span className="w-1 h-1 rounded-full bg-white/40" />
-              <span className="text-[11px] text-zinc-300 font-medium">{cenarioAtual.descricao}</span>
-            </div>
-
-            {/* Indicadores de bolinha para alternar cenários */}
-            <div className="absolute bottom-3 left-auto right-3 sm:right-3 sm:bottom-10 z-20 flex items-center gap-1.5 pointer-events-auto">
-              {CENARIOS_AULAS.map((cen, idx) => (
-                <button
-                  key={cen.id}
-                  onClick={() => setCenarioIndex(idx)}
-                  aria-label={`Ver cenário ${cen.tag}`}
-                  className={`transition-all duration-300 rounded-full cursor-pointer ${
-                    idx === cenarioIndex
-                      ? 'w-5 h-1.5 bg-zinc-200 shadow-md shadow-zinc-400/40'
-                      : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Overlay Azul com gradiente e corte diagonal */}
-          <div
-            className="absolute inset-0 z-[1] pointer-events-none"
-            style={{
-              filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.85)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))',
-            }}
-          >
-            <div
-              className="absolute inset-0 overflow-hidden"
-              style={{
-                clipPath: 'polygon(0 0, 49% 0, 37% 100%, 0% 100%)',
-              }}
-            >
-              {/* Gradiente Azul Luxuoso correspondente ao Painel de Áudio Aulas */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: 'linear-gradient(135deg, #0d2847 0%, #081d33 45%, #051220 85%, #030a12 100%)',
-                }}
-              />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.35),transparent_65%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.6),transparent_70%)]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-              {/* Motifs jurídicos clássicos */}
-              <HeroMotifs />
-
-              {/* Grid Pattern Background */}
-              <div
-                className="absolute inset-0 opacity-15"
-                style={{
-                  backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px)',
-                  backgroundSize: '24px 24px',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Barra Superior Padronizada: Botão Voltar e Botão Pesquisar */}
-          <header className="relative z-20 px-4 sm:px-6 lg:px-10 pt-3.5 pb-2 flex items-center justify-between">
-            <button
-              onClick={() => {
-                haptic.light();
-                handleVoltar();
-              }}
-              aria-label="Voltar"
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none shrink-0 cursor-pointer"
-            >
-              <ArrowLeft className="w-6 h-6 text-white drop-shadow" strokeWidth={2.2} />
-            </button>
-
-            {onBuscar && (
+          {/* Cabeçalho Superior Transparente (Botão de Voltar e Busca) */}
+          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+            <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
               <button
-                type="button"
                 onClick={() => {
                   haptic.selection();
-                  onBuscar();
+                  handleVoltar();
                 }}
-                aria-label="Pesquisar áudio aulas"
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none shrink-0 cursor-pointer"
+                aria-label="Voltar"
+                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
               >
-                <Search className="w-6 h-6 text-white drop-shadow" strokeWidth={2.2} />
+                <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
               </button>
-            )}
+
+              {onBuscar && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    onBuscar();
+                  }}
+                  aria-label="Pesquisar áudio aulas"
+                  className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
+                >
+                  <Search className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.2} />
+                </button>
+              )}
+            </div>
           </header>
 
-          {/* Conteúdo Principal do Painel Azul à Esquerda */}
-          <div className="relative z-10 px-4 sm:px-6 lg:px-10 pt-4 sm:pt-5 pb-3 sm:pb-4 flex-1 flex flex-col justify-center max-w-[48%] sm:max-w-[44%] lg:max-w-[38%]">
-            <h1 className="font-title italic text-white text-[24px] sm:text-[28px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-              {heroTitulo}
-            </h1>
+          {/* Conteúdo: Tipografia de Marca Minimalista */}
+          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
+            <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-4 sm:ml-6 max-w-[270px]">
+              {/* Espaçador para o botão de voltar */}
+              <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
 
-            <p className="font-body text-sky-200/90 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
-              {heroSub}
-            </p>
-
-            {/* Lema com divisor vertical idêntico ao da Home */}
-            <div className="mt-2 flex items-center text-left gap-2">
-              <div className="w-[2px] h-6 bg-white/40 rounded-full shrink-0" />
-              <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] line-clamp-2">
-                Aulas didáticas<br />por área do Direito.
-              </p>
-            </div>
-
-            {/* Tag de Narrações Disponíveis com Altura Confortável e Animação de Reflexo */}
-            <div className="mt-3.5 flex items-center">
-              <span className="tag-narracoes-shine inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 min-h-[42px] sm:min-h-[46px] rounded-xl sm:rounded-2xl bg-black/45 text-white border border-white/20 font-bold text-xs sm:text-[13px] shadow-lg backdrop-blur-md">
-                <Headphones className="w-4 h-4 text-zinc-200 shrink-0" />
-                <span className="tracking-wide">
-                  {!loading && totalAulas > 0
-                    ? `${totalAulas.toLocaleString('pt-BR')} ${unidadeCustom || 'áudio aulas'}`
-                    : '133 áudio aulas'}
+              {/* Tipografia de Marca: Áudio Aulas (branco) + Especializada/Doutrina (laranja salmão) */}
+              <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+                <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
+                  {heroTitulo}
                 </span>
-              </span>
+                <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#ffa285] block drop-shadow-[0_2px_14px_rgba(255,107,74,0.65)] -mt-0.5">
+                  {areaAtual ? 'Especializada' : 'Jurídicas'}
+                </span>
+              </h1>
+
+              {/* Traço vertical laranja salmão e slogan */}
+              <div className="mt-2 flex items-start text-left gap-2">
+                <div className="w-[3px] h-8 bg-gradient-to-b from-[#ffa285] via-[#ff6b4a] to-[#7a2616] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(255,107,74,0.6)]" />
+                <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+                  Estudo dinâmico em áudio.
+                  <br />
+                  Aprenda no trajeto ou onde estiver.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Atalhos Rápidos no Painel Hero: Recentes, Em alta, Estatística, Trilhas */}
-          <div className="relative z-10 px-3 sm:px-6 lg:px-10 pb-3 pt-1">
+          {/* Atalhos Rápidos flutuando sobre a onda laranja salmão */}
+          <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3">
             <AudioActionShortcuts
-              colorScheme="blue"
+              colorScheme="salmon"
               onRecentes={() => {
                 if (onRecentes) onRecentes();
                 else setRecentesOpen(true);
@@ -340,13 +215,13 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
           </div>
         </div>
 
-        {/* Modais de Ações de Áudio com tema Azul (Carregados sob demanda) */}
+        {/* Modais de Ações de Áudio (Carregados sob demanda) */}
         {recentesOpen && (
           <React.Suspense fallback={null}>
             <AudioRecentesModal
               isOpen={recentesOpen}
               onClose={() => setRecentesOpen(false)}
-              colorScheme="blue"
+              colorScheme="purple"
               aulasRecentes={aulasRecentes}
               onTocarAula={onTocarAula}
               onLimparRecentes={onLimparRecentes}
@@ -359,7 +234,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioFavoritosModal
               isOpen={favoritosOpen}
               onClose={() => setFavoritosOpen(false)}
-              colorScheme="blue"
+              colorScheme="purple"
               aulasFavoritas={aulasFavoritas}
               onTocarAula={onTocarAula}
               onAlternarFavoritoAula={onAlternarFavoritoAula}
@@ -371,7 +246,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEstatisticasModal
               isOpen={statsOpen}
               onClose={() => setStatsOpen(false)}
-              colorScheme="blue"
+              colorScheme="purple"
             />
           </React.Suspense>
         )}
@@ -380,7 +255,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEmAltaModal
               isOpen={emAltaOpen}
               onClose={() => setEmAltaOpen(false)}
-              colorScheme="blue"
+              colorScheme="purple"
               aulas={aulas}
               onTocarAula={onTocarAula}
             />
@@ -391,7 +266,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioTrilhasModal
               isOpen={trilhasOpen}
               onClose={() => setTrilhasOpen(false)}
-              colorScheme="blue"
+              colorScheme="purple"
             />
           </React.Suspense>
         )}
