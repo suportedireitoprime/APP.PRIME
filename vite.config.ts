@@ -24,6 +24,17 @@ export default defineConfig({
         name: "serve-offline-bundle",
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
+            if (req.url && (req.url.startsWith("/lousa-magica") || req.url.startsWith("/lousa-magica/"))) {
+              const cleanUrl = req.url.split("?")[0];
+              let targetPath = path.join(__dirname, "public", cleanUrl);
+              if (!path.extname(targetPath)) {
+                targetPath = path.join(targetPath, "index.html");
+              }
+              if (fs.existsSync(targetPath)) {
+                res.setHeader("Content-Type", "text/html; charset=utf-8");
+                return fs.createReadStream(targetPath).pipe(res);
+              }
+            }
             if (req.url && req.url.startsWith("/offline-bundle/")) {
               const cleanUrl = req.url.split("?")[0];
               const filePath = path.join(__dirname, "public", cleanUrl);
