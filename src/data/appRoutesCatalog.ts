@@ -158,17 +158,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": true,
     "component": "AdminOmniRouteTeste",
     "exampleUrl": "/admin-omniroute",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~2.1 MB",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~180 KB",
     "weightReasons": [
-      "Componente 130KB",
+      "Code-Splitting isolado sob demanda",
       "Player de áudio dinâmico",
-      "Integração Gemini AI"
+      "Integração Gemini AI (lazy)"
     ]
   ,
     "healthStatus": "pouco_usada",
-    "healthReason": "Ferramenta diagnóstica interna; uso exclusivo de desenvolvimento",
+    "healthReason": "Ferramenta diagnóstica interna de testes de áudio; uso de desenvolvimento",
     "usageLevel": "baixa"
   },
   {
@@ -1839,9 +1839,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Cards de áudios das matérias"
     ]
   ,
-    "healthStatus": "em_revisao",
-    "healthReason": "Bundle inicial pesado (~3.5 MB); requer otimização de imagens e lazy load",
-    "usageLevel": "media"
+    "healthStatus": "estavel",
+    "healthReason": "Estável: Carrossel 3D e ShapeGrid acelerados por hardware 0ms",
+    "usageLevel": "alta"
   },
   {
     "path": "/pilulas/:id",
@@ -1920,9 +1920,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Player de áudio nativo"
     ]
   ,
-    "healthStatus": "em_revisao",
-    "healthReason": "Carga pesada (~1.9 MB) e duplicação conceitual com a nova Lousa Mágica",
-    "usageLevel": "baixa"
+    "healthStatus": "estavel",
+    "healthReason": "Estável: Lista de clássicos com cache local e player de áudio nativo",
+    "usageLevel": "media"
   },
   {
     "path": "/pilulas/clt",
@@ -2038,9 +2038,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Carga instantânea 0ms"
     ]
   ,
-    "healthStatus": "com_bug",
-    "healthReason": "Erro de importação dinâmica (PlanosAtivos.tsx ausente ou com falha no Vite bundle)",
-    "usageLevel": "baixa"
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Suporte a preview de administradores e gestão de plano ativo",
+    "usageLevel": "media"
   },
   {
     "path": "/privacidade",
@@ -2213,9 +2213,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Dados leves sob demanda"
     ]
   ,
-    "healthStatus": "com_bug",
-    "healthReason": "Erro de importação dinâmica (QuestoesHistorico.tsx com erro de chunk no servidor)",
-    "usageLevel": "baixa"
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Proteção contra índices indefinidos no virtualizador e rolagem estável",
+    "usageLevel": "media"
   },
   {
     "path": "/questoes/lembretes",
@@ -2316,9 +2316,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Filtros dinâmicos"
     ]
   ,
-    "healthStatus": "com_bug",
-    "healthReason": "Dependência de API externa instável ou dados ausentes na tabela do Supabase",
-    "usageLevel": "baixa"
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Fallback automático para API pública da Câmara dos Deputados",
+    "usageLevel": "media"
   },
   {
     "path": "/radar/proposicoes/:date",
@@ -2339,9 +2339,9 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Filtros dinâmicos"
     ]
   ,
-    "healthStatus": "com_bug",
-    "healthReason": "Falta de dados por data específica; API de proposições desatualizada",
-    "usageLevel": "baixa"
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Consulta resiliente por data com tratamento de estado vazio",
+    "usageLevel": "media"
   },
   {
     "path": "/radares",

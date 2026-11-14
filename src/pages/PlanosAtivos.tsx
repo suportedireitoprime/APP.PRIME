@@ -14,9 +14,13 @@ const PlanosAtivos = () => {
   const showDevToggle = isAdminEmail(session?.user?.email);
   const { isPremium, loading, plano, expiresAt, startedAt, source, status, isAdminOverride } = useSubscription();
 
-  if (!loading && !isPremium) {
+  if (!loading && !isPremium && !showDevToggle && !isAdminOverride) {
     return <Navigate to="/assinatura" replace />;
   }
+
+  const effectivePlano = plano || (showDevToggle || isAdminOverride ? 'Direito Prime Anual (Preview Admin)' : 'Direito Prime Anual');
+  const effectiveStatus = status || 'active';
+  const effectiveExpiresAt = expiresAt || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
 
   return (
     <div className="min-h-dvh bg-background pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
@@ -60,11 +64,11 @@ const PlanosAtivos = () => {
           <div className="h-40 rounded-2xl bg-card/50 border border-border/60 animate-pulse" />
         ) : (
           <MinhaAssinaturaView
-            plano={plano}
-            expiresAt={expiresAt}
+            plano={effectivePlano}
+            expiresAt={effectiveExpiresAt}
             startedAt={startedAt}
             source={source}
-            status={status}
+            status={effectiveStatus}
             isAdminOverride={isAdminOverride}
           />
         )}
