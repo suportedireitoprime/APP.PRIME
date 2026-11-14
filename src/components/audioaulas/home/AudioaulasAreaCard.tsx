@@ -1,5 +1,7 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { capaDaArea } from "@/lib/audioaulasHelper";
 import { haptic } from "@/lib/nativeHaptics";
 
@@ -20,8 +22,11 @@ export const AudioaulasAreaCard: React.FC<AudioaulasAreaCardProps> = ({
   index = 0,
   onClick,
 }) => {
-  const capaUrl = capaDaArea(nome);
-  const nomeLimpo = nome.replace(/^Direitos?\s+(do\s+|da\s+|de\s+)?/i, "").trim();
+  // Capa oficial das Aulas Interativas (Resumos Jurídicos)
+  const visualTheme = getDisciplinaVisualTheme(nome);
+  const areaCover = getAreaCover(nome);
+  const capaUrl = visualTheme?.fundoAssetUrl || areaCover?.cover || capaDaArea(nome);
+
   const nomeExibicao = nome.startsWith("Direito") ? nome : `Direito ${nome}`;
   const pctReal = Math.min(100, Math.max(0, pct));
   const numeroIndice = (index + 1).toString().padStart(2, "0");
