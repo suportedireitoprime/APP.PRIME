@@ -81,10 +81,8 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
   return (
     <div className="relative z-10">
-      <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
-
       <div className="mx-auto w-full max-w-4xl pb-32">
-        {/* Painel Hero Minimalista e Monocromático (Sem ser colorido) */}
+        {/* Painel Hero Oficial com Capa da Cena e Onda em Seda 3D (Estilo Biblioteca) */}
         <VideoaulasHero
           data={state.data}
           heroIdx={state.heroIdx}
