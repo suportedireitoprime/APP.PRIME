@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
-import pilulasHeroCover from '@/assets/covers/pilulas-hero-cover.jpg';
+import pilulasHeroCover from '@/assets/covers/pilulas-hero-cover.webp';
 import PilulasHeroWave from './PilulasHeroWave';
 import PilulasBrandBanner from './PilulasBrandBanner';
 import PilulasActionShortcuts, { type PilulasHeroTab } from './PilulasActionShortcuts';

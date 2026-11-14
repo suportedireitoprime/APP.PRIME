@@ -5,7 +5,7 @@ import {
   BarChart3, Sparkles, X, ChevronRight, Scale, Landmark 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import resumosHeroImg from '@/assets/covers/resumos-juristas-jardim.jpg';
+import resumosHeroImg from '@/assets/covers/resumos-juristas-jardim.webp';
 import ResumosHeroWave from './ResumosHeroWave';
 
 interface Props {

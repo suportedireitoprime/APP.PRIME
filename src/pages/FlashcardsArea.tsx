@@ -34,7 +34,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import direitoAdministrativoFundo from '@/assets/direito-administrativo-fundo.webp';
-import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
+import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';

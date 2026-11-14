@@ -21,7 +21,7 @@ import NotificationsSheet, {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getFavoritos, type Favorito } from "@/lib/leisFavoritos";
-import logoCoruja from "@/assets/logo-coruja.png";
+import logoCoruja from "@/assets/logo-coruja.webp";
 
 const primeLogo = pickAsset(primeLogoBundled, primeLogoAsset.url);
 

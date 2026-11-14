@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
-import videoaulasHeroCover from '@/assets/videoaulas-hero-cover.jpg';
+import videoaulasHeroCover from '@/assets/videoaulas-hero-cover.webp';
 import { VideoaulasHeroWave } from './VideoaulasHeroWave';
 import VideoaulasActionShortcuts, { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import type { ResumoVideoaulas } from '@/lib/videoaulasResumo';
