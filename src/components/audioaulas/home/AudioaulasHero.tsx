@@ -206,11 +206,16 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
                 if (onEstatistica) onEstatistica();
                 else setStatsOpen(true);
               }}
+              onFavoritos={() => {
+                if (onFavoritos) onFavoritos();
+                else setFavoritosOpen(true);
+              }}
               onTrilhas={() => {
-                if (onTrilhas) onTrilhas();
-                else setTrilhasOpen(true);
+                if (onFavoritos) onFavoritos();
+                else setFavoritosOpen(true);
               }}
               badgeRecentes={totalRecentes || aulasRecentes.length}
+              badgeFavoritos={totalFavoritas || aulasFavoritas?.length || 0}
             />
           </div>
         </div>
@@ -221,7 +226,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioRecentesModal
               isOpen={recentesOpen}
               onClose={() => setRecentesOpen(false)}
-              colorScheme="purple"
+              colorScheme="salmon"
               aulasRecentes={aulasRecentes}
               onTocarAula={onTocarAula}
               onLimparRecentes={onLimparRecentes}
@@ -234,7 +239,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioFavoritosModal
               isOpen={favoritosOpen}
               onClose={() => setFavoritosOpen(false)}
-              colorScheme="purple"
+              colorScheme="salmon"
               aulasFavoritas={aulasFavoritas}
               onTocarAula={onTocarAula}
               onAlternarFavoritoAula={onAlternarFavoritoAula}
@@ -246,7 +251,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEstatisticasModal
               isOpen={statsOpen}
               onClose={() => setStatsOpen(false)}
-              colorScheme="purple"
+              colorScheme="salmon"
             />
           </React.Suspense>
         )}
@@ -255,7 +260,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEmAltaModal
               isOpen={emAltaOpen}
               onClose={() => setEmAltaOpen(false)}
-              colorScheme="purple"
+              colorScheme="salmon"
               aulas={aulas}
               onTocarAula={onTocarAula}
             />

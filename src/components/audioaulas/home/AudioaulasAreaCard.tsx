@@ -37,7 +37,7 @@ export const AudioaulasAreaCard: React.FC<AudioaulasAreaCardProps> = ({
         haptic.selection();
         onClick();
       }}
-      className="group rounded-2xl border border-white/10 bg-zinc-900/60 backdrop-blur-md overflow-hidden transition-all duration-200 hover:border-amber-400/40 hover:bg-zinc-900/90 shadow-md p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] touch-manipulation"
+      className="group rounded-2xl border border-white/10 bg-zinc-900/60 backdrop-blur-md overflow-hidden transition-all duration-200 hover:border-[#ff6b4a]/40 hover:bg-zinc-900/90 shadow-md p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] touch-manipulation"
     >
       <div className="flex items-center gap-3.5 min-w-0 flex-1">
         {/* Capa com Índice da Matéria igual ao modelo minimalista de Pílulas */}
@@ -49,14 +49,14 @@ export const AudioaulasAreaCard: React.FC<AudioaulasAreaCardProps> = ({
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-          <span className="absolute bottom-1 right-1 px-1 rounded bg-black/85 text-[8.5px] font-black text-amber-300 leading-none shadow font-sans">
+          <span className="absolute bottom-1 right-1 px-1 rounded bg-black/85 text-[8.5px] font-black text-[#ffa285] leading-none shadow font-sans">
             {numeroIndice}
           </span>
         </div>
 
         {/* Informações da Matéria */}
         <div className="min-w-0 flex-1">
-          <h3 className="font-sans font-bold text-[15px] sm:text-base text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug line-clamp-1">
+          <h3 className="font-sans font-bold text-[15px] sm:text-base text-zinc-100 group-hover:text-[#ffa285] transition-colors tracking-normal leading-snug line-clamp-1">
             {nomeExibicao}
           </h3>
 
@@ -70,11 +70,11 @@ export const AudioaulasAreaCard: React.FC<AudioaulasAreaCardProps> = ({
               <span>
                 {concluidas > 0 ? `${concluidas} de ${totalAulas} ouvidas` : `Disponível`}
               </span>
-              <span className="font-bold text-amber-400">{pctReal}%</span>
+              <span className="font-bold text-[#ffa285]">{pctReal}%</span>
             </div>
             <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
+                className="h-full rounded-full bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] transition-all duration-300"
                 style={{ width: `${Math.max(pctReal === 0 ? 0 : 4, pctReal)}%` }}
               />
             </div>
@@ -82,8 +82,8 @@ export const AudioaulasAreaCard: React.FC<AudioaulasAreaCardProps> = ({
         </div>
       </div>
 
-      {/* Seta Chevron dourada de navegação */}
-      <div className="shrink-0 text-zinc-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all pl-2">
+      {/* Seta Chevron de navegação com cor salmão */}
+      <div className="shrink-0 text-zinc-500 group-hover:text-[#ffa285] group-hover:translate-x-0.5 transition-all pl-2">
         <ChevronRight className="w-5 h-5" />
       </div>
     </div>

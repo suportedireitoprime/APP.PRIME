@@ -16,6 +16,7 @@ import { AudioaulasBuscaInput } from '@/components/audioaulas/home/AudioaulasBus
 import { AudioaulasBuscaGlobal } from '@/components/audioaulas/home/AudioaulasBuscaGlobal';
 import { AudioaulasPlayerModal } from '@/components/audioaulas/home/AudioaulasPlayerModal';
 import { AudioaulasContinuarOuvindo } from '@/components/audioaulas/home/AudioaulasContinuarOuvindo';
+import { audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 
 const Audioaulas = () => {
   const navigate = useNavigate();
@@ -134,6 +135,7 @@ const Audioaulas = () => {
           totalAulas={state.aulas.length}
           totalAreas={state.areas?.length || 12}
           totalFavoritas={state.favoritos?.size || 0}
+          aulasFavoritas={state.aulas.filter(a => state.favoritos.has(audioIdOf(a)))}
           totalRecentes={0}
           aulasRecentes={[]}
           onLimparRecentes={() => {}}
