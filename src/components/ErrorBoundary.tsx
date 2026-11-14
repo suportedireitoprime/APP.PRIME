@@ -37,9 +37,12 @@ export class ErrorBoundary extends Component<Props, State> {
   reset = () => {
     try {
       sessionStorage.removeItem('chunk_reload');
+      sessionStorage.removeItem('prime_chunk_recovery');
     } catch {}
     if (this.isChunkError(this.state.error?.message || '')) {
-      window.location.reload();
+      const url = new URL(window.location.href);
+      url.searchParams.set('v', Date.now().toString());
+      window.location.replace(url.toString());
     } else {
       this.setState({ error: null });
     }

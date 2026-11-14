@@ -1,6 +1,4 @@
-import { ptBR as dateFnsPtBR } from 'date-fns/locale';
-
-export const ptBR = dateFnsPtBR;
+export const ptBR = { code: 'pt-BR' };
 
 export const formatDate = (date: Date | number | string, pattern = 'dd/MM/yyyy') => {
   const d = new Date(date);
