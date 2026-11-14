@@ -22,20 +22,13 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
   c,
   dash,
 }: VideoaulasHeroProps) {
-  const percentualTotal = data.totalAulas > 0 
-    ? Math.min(100, Math.round((data.totalConcluidas / data.totalAulas) * 100))
-    : 0;
-
   return (
     <section
       className="relative z-10 w-full px-4 sm:px-6 pt-2 pb-1"
       aria-label="Seu progresso em videoaulas"
     >
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-900/95 via-zinc-900/80 to-zinc-950/95 border border-white/10 p-4 sm:p-6 backdrop-blur-xl shadow-2xl">
-        {/* Sutis reflexos de iluminação de fundo (Dark Editorial) */}
-        <div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
-
+      {/* Container Neutro Minimalista (Grafite Escuro / Zinc Puro - Sem Cores Rosas/Vermelhas) */}
+      <div className="relative overflow-hidden rounded-3xl bg-zinc-900/90 border border-white/10 p-4 sm:p-5 backdrop-blur-xl shadow-2xl">
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           {/* Lado Esquerdo: Progresso Circular & Textos */}
           <div className="flex items-center gap-4 sm:gap-5 min-w-0 flex-1">
@@ -46,7 +39,7 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
                 haptic.selection();
                 setShowDesempenho(true);
               }}
-              className="relative w-18 h-18 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center group cursor-pointer focus-visible:outline-none touch-manipulation active:scale-95 transition-transform"
+              className="relative w-18 h-18 sm:w-20 sm:h-20 shrink-0 rounded-full flex items-center justify-center group cursor-pointer focus-visible:outline-none touch-manipulation active:scale-95 transition-transform bg-black/40 border border-white/10"
               title="Ver painel detalhado de desempenho"
               aria-label="Ver desempenho"
             >
@@ -61,7 +54,7 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
                   cy="50"
                 />
                 <circle
-                  className="text-rose-500 transition-all duration-700 ease-out"
+                  className="text-white transition-all duration-700 ease-out"
                   strokeWidth="7"
                   strokeLinecap="round"
                   fill="none"
@@ -74,18 +67,18 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
                 <span className="font-sans text-lg sm:text-xl font-black text-white leading-none">
                   {horasAssistidas}h
                 </span>
-                <span className="text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
+                <span className="text-[8px] sm:text-[8.5px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5 font-sans">
                   Tempo
                 </span>
-                <ChevronDown className="w-3 h-3 text-zinc-500 group-hover:text-white transition-colors" />
+                <ChevronDown className="w-3 h-3 text-zinc-400 group-hover:text-white transition-colors" />
               </div>
             </button>
 
             {/* Títulos e Contexto */}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
-                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-rose-400/90 font-sans">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0" />
+                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-zinc-400 font-sans">
                   Grade Completa
                 </p>
               </div>
@@ -95,15 +88,15 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
               </h1>
 
               <p className="font-sans text-xs sm:text-[13px] text-zinc-400 leading-snug mt-0.5 line-clamp-1">
-                Aulas organizadas por área jurídica com resumos e questões.
+                Aulas organizadas por área jurídica com ferramentas de estudo.
               </p>
             </div>
           </div>
 
-          {/* Lado Direito: Métricas Rápidas em Pílulas Minimalistas */}
+          {/* Lado Direito: Métricas Rápidas em Pílulas Minimalistas Monocromáticas */}
           <div className="grid grid-cols-3 gap-2 sm:gap-2.5 pt-3 md:pt-0 border-t md:border-t-0 md:border-l border-white/10 md:pl-6 shrink-0">
             {/* Áreas */}
-            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.03] border border-white/5">
               <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
                 <BookOpen className="w-3 h-3 text-zinc-400" />
                 Áreas
@@ -114,7 +107,7 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
             </div>
 
             {/* Aulas */}
-            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.03] border border-white/5">
               <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
                 <Video className="w-3 h-3 text-zinc-400" />
                 Aulas
@@ -125,12 +118,12 @@ export const VideoaulasHero = React.memo(function VideoaulasHero({
             </div>
 
             {/* Assistidas */}
-            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div className="flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-white/[0.03] border border-white/5">
               <span className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-sans flex items-center gap-1">
-                <Award className="w-3 h-3 text-emerald-400" />
+                <Award className="w-3 h-3 text-zinc-300" />
                 Feitas
               </span>
-              <span className="font-sans text-base sm:text-lg font-black text-emerald-400 mt-0.5">
+              <span className="font-sans text-base sm:text-lg font-black text-white mt-0.5">
                 {data.totalConcluidas}
                 <span className="text-zinc-500 text-xs font-semibold">/{data.totalAulas}</span>
               </span>
