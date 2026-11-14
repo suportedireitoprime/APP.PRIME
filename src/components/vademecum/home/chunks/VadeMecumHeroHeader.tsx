@@ -32,7 +32,7 @@ const VadeMecumHeroHeader: React.FC = () => {
         >
           <BellRing className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-500 text-black text-[10px] font-extrabold leading-none flex items-center justify-center border border-neutral-900 shadow">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}

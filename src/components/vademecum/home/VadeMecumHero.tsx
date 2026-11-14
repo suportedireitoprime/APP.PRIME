@@ -3,11 +3,11 @@ import React, { memo, useMemo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { getVadeMecumHeroConfig } from '@/lib/vademecumHeroImage';
 import HeroAnimatedWave from './HeroAnimatedWave';
+import { HomeTrialCard } from '@/components/subscription/HomeTrialCard';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
 import VadeMecumQuickActions from './chunks/VadeMecumQuickActions';
-import VadeMecumSearchBar from './chunks/VadeMecumSearchBar';
 
 import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
 
@@ -22,7 +22,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
 
   return (
     <>
-      {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
+      {/* Shell sólido, opaco e com blindagem contra culling e overscroll (mesma estrutura e proporção do Início) */}
       <div
         className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
         style={{
@@ -37,10 +37,10 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Inverte a cada 12h com o Início) */}
+        {/* Imagem de Fundo (Capa Oficial Constituição & Congresso Nacional) */}
         <img
           src={heroConfig.src}
-          alt="Vade Mecum Capa"
+          alt="Vade Mecum Capa Constituição"
           aria-hidden="true"
           loading="eager"
           fetchPriority="high"
@@ -48,28 +48,30 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           className={heroConfig.className}
         />
 
-        {/* Onda Vermelha Fluida e Animada em Movimento (substitui o painel diagonal rígido) */}
-        <HeroAnimatedWave />
+        {/* Onda Verde Fluida e Animada em Movimento (100% cetim verde Brasil a 120fps) */}
+        <HeroAnimatedWave colorScheme="green" />
 
-        {/* Cabeçalho Transparente Vade Mecum (Absolute position like HomeHeaderHero) */}
+        {/* Cabeçalho Transparente Vade Mecum (Alinhado com o Início) */}
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
           <div className="pointer-events-auto">
             <VadeMecumHeroHeader />
           </div>
         </header>
 
-        {/* Conteúdo: Logo à esquerda — centralizado na área vermelha */}
+        {/* Conteúdo: Logo à esquerda e Card de Status à direita — idêntico ao Início do App */}
         <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[120px]">
-          <VadeMecumHeroBrand />
+          <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
+            <VadeMecumHeroBrand />
+            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-1 sm:pt-2 pr-1 sm:pr-2">
+              <HomeTrialCard />
+            </div>
+          </div>
         </div>
 
-        {/* ── 4 Botões de Ação Rápida ────────────────── */}
+        {/* ── 4 Botões de Ação Rápida no Rodapé do Painel ────────────────── */}
         <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
           <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
-
-
-
       </div>
     </>
   );

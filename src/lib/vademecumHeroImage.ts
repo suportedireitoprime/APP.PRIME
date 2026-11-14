@@ -1,10 +1,11 @@
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.webp';
 import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
+import heroConstituicaoImg from '@/assets/covers/hero-vademecum-constituicao.jpg';
 
 /**
  * Capas Oficiais Fixas:
  * - Início: Advogados no Tribunal (heroAdvogadosImg)
- * - Vade Mecum: Estudante (heroEstudanteImg)
+ * - Vade Mecum: Constituição & Brasília (heroConstituicaoImg)
  * Sem alternância por horários.
  */
 export const isPeriodoDiurno = (): boolean => true;
@@ -14,6 +15,8 @@ export interface HeroImageConfig {
   className: string;
 }
 
+const CONSTITUICAO_CLASS =
+  "absolute inset-0 w-full h-full object-cover object-[72%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform";
 const ESTUDANTE_CLASS =
   "absolute inset-0 w-full h-full object-cover object-[36%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform";
 const ADVOGADOS_CLASS =
@@ -31,15 +34,15 @@ export const getHomeHeroConfig = (): HeroImageConfig => {
   };
 };
 
-/** Capa oficial definitiva para o Vade Mecum (Estudante) */
+/** Capa oficial definitiva para o Vade Mecum (Constituição & Congresso Nacional) */
 export const getVadeMecumHeroImage = (): string => {
-  return heroEstudanteImg;
+  return heroConstituicaoImg;
 };
 
 export const getVadeMecumHeroConfig = (): HeroImageConfig => {
   return {
-    src: heroEstudanteImg,
-    className: ESTUDANTE_CLASS,
+    src: heroConstituicaoImg,
+    className: CONSTITUICAO_CLASS,
   };
 };
 
@@ -47,13 +50,13 @@ export const getVadeMecumHeroConfig = (): HeroImageConfig => {
 if (typeof window !== 'undefined') {
   try {
     const img1 = new Image();
-    img1.src = heroEstudanteImg;
+    img1.src = heroConstituicaoImg;
     const img2 = new Image();
     img2.src = heroAdvogadosImg;
   } catch {}
 }
 
-export { heroEstudanteImg, heroAdvogadosImg };
+export { heroConstituicaoImg, heroEstudanteImg, heroAdvogadosImg };
 // Retrocompatibilidade
-export const vademecumHeroImg = heroEstudanteImg;
+export const vademecumHeroImg = heroConstituicaoImg;
 export const vademecumAdvogadosImg = heroAdvogadosImg;

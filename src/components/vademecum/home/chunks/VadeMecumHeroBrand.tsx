@@ -4,30 +4,38 @@ import brasaoImg from '@/assets/brasao-republica.webp';
 
 const VadeMecumHeroBrand: React.FC = () => {
   return (
-    <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[42%] max-w-[160px] ml-2 sm:ml-4">
-      <div className="relative h-[75px] mb-1 flex items-center justify-center">
+    <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[220px]">
+      {/* Brasão Oficial da República */}
+      <div className="relative h-[72px] sm:h-[78px] mb-0.5 flex items-center justify-start overflow-visible">
         <img
           src={brasaoImg}
           alt="Brasão da República Federativa do Brasil"
           loading="eager"
           decoding="async"
-          fetchpriority="high"
           width={75}
           height={75}
-          className="w-auto h-[75px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
+          fetchpriority="high"
+          className="w-auto h-[74px] sm:h-[80px] max-w-none object-contain transform-gpu pointer-events-none select-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)] drop-shadow-[0_0_16px_rgba(16,185,129,0.35)]"
         />
       </div>
-      <h1 className="font-serif italic text-white text-[18px] sm:text-[20px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-        Vade Mecum
+
+      {/* Tipografia de Marca: Vade Mecum (branco) + Legislação (verde esmeralda da onda/Constituição) */}
+      <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+        <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
+          Vade Mecum
+        </span>
+        <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-emerald-400 block drop-shadow-[0_2px_14px_rgba(16,185,129,0.65)] -mt-0.5">
+          Legislação
+        </span>
       </h1>
-      <p className="font-body text-white/95 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
-        LEGISLAÇÃO COMPLETA
-      </p>
-      
-      <div className="mt-3 flex items-center text-left gap-2 w-full justify-center">
-        <div className="w-[2px] h-7 bg-white/40 rounded-full" />
-        <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          Consulte as leis,<br/>domine o Direito.
+
+      {/* Traço vertical esmeralda e slogan oficial */}
+      <div className="mt-2 flex items-start text-left gap-2">
+        <div className="w-[3px] h-8 bg-gradient-to-b from-emerald-400 to-[#064e3b] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(16,185,129,0.55)]" />
+        <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+          Consulte as leis,
+          <br />
+          domine o Direito.
         </p>
       </div>
     </div>
