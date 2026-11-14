@@ -49,7 +49,8 @@ export const VideoaulasActionShortcuts: React.FC<Props> = ({
             )}
 
             <Icon
-              className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+              className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+              strokeWidth={2.1}
               style={{
                 color: item.color,
                 filter: isActive
@@ -58,8 +59,8 @@ export const VideoaulasActionShortcuts: React.FC<Props> = ({
               }}
             />
             <span
-              className={`text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm transition-colors ${
-                isActive ? 'text-rose-300 font-bold' : 'text-white/85 group-hover:text-white'
+              className={`text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm transition-colors ${
+                isActive ? 'text-rose-300 font-bold' : 'text-white/95 group-hover:text-white'
               }`}
             >
               {item.label}

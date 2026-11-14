@@ -36,11 +36,11 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
             className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             <Icon
-              className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+              className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
               style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-              strokeWidth={2}
+              strokeWidth={2.1}
             />
-            <span className="text-white/90 text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+            <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>
