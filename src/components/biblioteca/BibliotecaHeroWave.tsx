@@ -15,17 +15,17 @@ export const BibliotecaHeroWave: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
       {/* ── 1. Resplendor Volumétrico e Bloom no Tom Bege Suave ── */}
       <div 
-        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-[#cfbaa2]/25 via-[#382d22]/20 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-[#cfbaa2]/40 via-[#8c7355]/25 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'bibliotecaBeigeGlowPulse 8s ease-in-out infinite alternate' }}
       />
       <div 
-        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-[#ece0d1]/20 via-[#423528]/15 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-[#ece0d1]/35 via-[#beaa94]/25 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'bibliotecaBeigeGlowPulse 10s ease-in-out infinite alternate-reverse' }}
       />
 
       {/* ── 2. Gradiente Lateral de Contraste para Legibilidade Absoluta dos Textos ── */}
       <div 
-        className="absolute inset-y-0 left-0 w-[65%] sm:w-[50%] bg-gradient-to-r from-black/92 via-black/55 to-transparent pointer-events-none z-[6]" 
+        className="absolute inset-y-0 left-0 w-[50%] sm:w-[42%] bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[6]" 
       />
 
       {/* ══════════════════════════════════════════════════════════════════════════
@@ -89,15 +89,15 @@ export const BibliotecaHeroWave: React.FC = () => {
           <defs>
             {/* Gradiente de Seda Bege Clássico */}
             <linearGradient id="biblioBeigeSatinLustre" x1="0%" y1="0%" x2="100%" y2="70%">
-              <stop offset="0%" stopColor="#292119" />
-              <stop offset="12%" stopColor="#524333" />
-              <stop offset="25%" stopColor="#7a6550" />
-              <stop offset="38%" stopColor="#a89076" />
-              <stop offset="48%" stopColor="#cfbaa2" />
-              <stop offset="60%" stopColor="#ece0d1" />
-              <stop offset="74%" stopColor="#beaa94" />
-              <stop offset="86%" stopColor="#665442" />
-              <stop offset="100%" stopColor="#292119" />
+              <stop offset="0%" stopColor="#3d3023" />
+              <stop offset="12%" stopColor="#6e5741" />
+              <stop offset="25%" stopColor="#9c8063" />
+              <stop offset="38%" stopColor="#c4ab8e" />
+              <stop offset="48%" stopColor="#dfc8b2" />
+              <stop offset="60%" stopColor="#f5ebe0" />
+              <stop offset="74%" stopColor="#cfbaa2" />
+              <stop offset="86%" stopColor="#876e55" />
+              <stop offset="100%" stopColor="#3d3023" />
             </linearGradient>
 
             {/* Crista Especular Pérola / Marfim Suave */}
@@ -178,12 +178,12 @@ export const BibliotecaHeroWave: React.FC = () => {
         >
           <defs>
             <linearGradient id="biblioBeigeFrontGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#33281e" stopOpacity="0.96" />
-              <stop offset="20%" stopColor="#6e5a47" stopOpacity="0.98" />
-              <stop offset="44%" stopColor="#cfbaa2" stopOpacity="1" />
-              <stop offset="66%" stopColor="#ece0d1" stopOpacity="0.98" />
-              <stop offset="85%" stopColor="#5e4c3a" stopOpacity="0.96" />
-              <stop offset="100%" stopColor="#33281e" stopOpacity="0.96" />
+              <stop offset="0%" stopColor="#4a3b2b" stopOpacity="0.96" />
+              <stop offset="20%" stopColor="#8c7355" stopOpacity="0.98" />
+              <stop offset="44%" stopColor="#dfc8b2" stopOpacity="1" />
+              <stop offset="66%" stopColor="#f7eee4" stopOpacity="0.98" />
+              <stop offset="85%" stopColor="#7a6249" stopOpacity="0.96" />
+              <stop offset="100%" stopColor="#4a3b2b" stopOpacity="0.96" />
             </linearGradient>
 
             <linearGradient id="biblioBeigeFrontCrest" x1="0%" y1="0%" x2="100%" y2="0%">
