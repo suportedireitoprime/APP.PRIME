@@ -81,6 +81,26 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/admin-lousa-magica",
+    "group": "Administração",
+    "label": "Lousa Mágica",
+    "description": "Aulas interativas narradas com animação de lousa, giz e timeline",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": true,
+    "component": "AdminLousaMagica",
+    "exampleUrl": "/admin-lousa-magica",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~65 KB",
+    "weightReasons": [
+      "Iframe isolado de alta performance",
+      "Player de lousa com áudio integrado",
+      "Recursos de tela cheia e controle de aula"
+    ]
+  },
+  {
     "path": "/admin-funcoes",
     "group": "Administração",
     "label": "Admin Funcoes",
