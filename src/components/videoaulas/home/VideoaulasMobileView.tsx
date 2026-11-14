@@ -86,6 +86,13 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     // Filtros de chips
     if (activeChipTab === 'Em Andamento') {
       list = list.filter((a) => a.pct > 0);
+    } else if (activeChipTab !== 'Todos') {
+      list = list.filter(
+        (a) =>
+          a.area.toLowerCase() === activeChipTab.toLowerCase() ||
+          a.slug === activeChipTab ||
+          a.displayArea.toLowerCase() === activeChipTab.toLowerCase()
+      );
     }
 
     // Filtro de busca textual
@@ -158,21 +165,26 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                       ? 'Matérias Recentes'
                       : heroTab === 'playlist'
                       ? 'Playlists de Aulas'
+                      : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
+                      ? `Matéria: ${activeChipTab}`
                       : 'Todas as Matérias'}
                   </h2>
                 </div>
                 <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
                   {heroTab === 'favoritos'
                     ? 'Suas áreas jurídicas salvas para estudo contínuo.'
+                    : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
+                    ? 'Toque na matéria para abrir os módulos e aulas completas.'
                     : 'Toque em qualquer matéria para abrir os módulos e aulas completas.'}
                 </p>
               </div>
 
-              {heroTab !== 'todos' && (
+              {(heroTab !== 'todos' || activeChipTab !== 'Todos') && (
                 <button
                   onClick={() => {
                     haptic.selection();
                     setHeroTab('todos');
+                    setActiveChipTab('Todos');
                   }}
                   className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-md shadow-red-600/30 transition-all active:scale-95"
                 >
@@ -205,13 +217,29 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               )}
             </div>
 
-            {/* Chips Enxutos: Todas e Em Andamento */}
+            {/* Menu de Alternância de Áreas & Matérias */}
             <VideoaulasAreaChips
               areas={areasItens}
               activeTab={activeChipTab}
               onSelectTab={setActiveChipTab}
+              onOpenArea={handleAreaClick}
               emAndamentoCount={state.emAndamentoCount}
             />
+
+            {/* Banner de Acesso Rápido quando uma área específica está selecionada */}
+            {activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento' && filteredAreas.length > 0 && (
+              <div className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 shadow-md">
+                <span className="text-xs sm:text-[13px] font-medium">Toque para abrir os módulos e aulas completas</span>
+                <button
+                  type="button"
+                  onClick={() => handleAreaClick(filteredAreas[0].slug)}
+                  className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1 shadow-md shadow-rose-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
+                >
+                  <span>Abrir Matéria</span>
+                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+            )}
 
             {/* Listagem de Matérias ou Resultados */}
             {q.trim() && state.buscando ? (
