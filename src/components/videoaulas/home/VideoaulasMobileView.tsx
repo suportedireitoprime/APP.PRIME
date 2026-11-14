@@ -148,7 +148,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
             <div className="flex items-start justify-between px-1 gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-5 rounded-full bg-amber-400" />
+                  <span className="w-1.5 h-5 rounded-full bg-red-500" />
                   <h2 className="font-sans text-lg sm:text-xl font-black text-white uppercase tracking-wider leading-tight">
                     {heroTab === 'favoritos'
                       ? 'Matérias Favoritas'
@@ -174,7 +174,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                     haptic.selection();
                     setHeroTab('todos');
                   }}
-                  className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
+                  className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-md shadow-red-600/30 transition-all active:scale-95"
                 >
                   <span>Ver todas</span>
                   <ChevronRight className="w-4 h-4 stroke-[2.6]" />
@@ -191,7 +191,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/50 transition-colors shadow-sm font-sans"
+                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500/50 transition-colors shadow-sm font-sans"
               />
               {q && (
                 <button
@@ -216,7 +216,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
             {/* Listagem de Matérias ou Resultados */}
             {q.trim() && state.buscando ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
-                <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                <Loader2 className="w-6 h-6 animate-spin text-red-500" />
                 <p className="text-xs font-sans">Buscando aulas e matérias…</p>
               </div>
             ) : q.trim() && state.resultadosAulas.length > 0 ? (
