@@ -4,7 +4,6 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { normalizar } from '@/lib/audioaulasHelper';
 import { resetGlobalScroll } from '@/lib/scrollUtils';
-import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -106,15 +105,11 @@ const Audioaulas = () => {
     requestAnimationFrame(() => resetGlobalScroll());
   }, [capituloSelecionado]);
 
-  const isBottomNavVisivel = !state.aberto && !areaAtual && modoVerTodos === 'hub' && state.aba === 'aulas';
-
   const content = (
     <div className={`w-full bg-zinc-950 text-foreground relative ${
       isDesktop
         ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden'
-        : isBottomNavVisivel
-          ? 'min-h-screen pb-40'
-          : 'min-h-screen pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
+        : 'min-h-screen pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
     }`}>
       <div className="absolute inset-0 z-0 opacity-60">
         <ShapeGrid 
@@ -240,20 +235,6 @@ const Audioaulas = () => {
         pular={state.pular}
         setVelocidade={state.setVelocidade}
         tocandoIntro={state.tocandoIntro}
-      />
-
-      {/* Navegação Inferior das Áudio Aulas — visível estritamente no início */}
-      <AudioaulasBottomNav
-        ativo={areaAtual ? null : state.aba}
-        hidden={!isBottomNavVisivel}
-        onSelect={(t) => {
-          resetGlobalScroll();
-          if (areaAtual) navigate('/audioaulas');
-          state.setAba(t);
-          state.setAberto(false);
-          if (t === 'buscar') window.setTimeout(() => buscaRef.current?.focus(), 150);
-          requestAnimationFrame(() => resetGlobalScroll());
-        }}
       />
       </div>
     </div>
