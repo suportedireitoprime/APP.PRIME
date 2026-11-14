@@ -36,19 +36,20 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center pt-2.5 pb-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible"
+            className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible"
           >
             <div className="relative flex items-center justify-center">
               {item.tag && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[7.5px] sm:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] sm:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                   {item.tag}
                 </span>
               )}
               <Icon
-                className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                strokeWidth={2.1}
               />
             </div>
-            <span className="text-white/90 text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+            <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>

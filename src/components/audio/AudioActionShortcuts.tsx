@@ -91,12 +91,12 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
             >
               <div className="relative inline-flex items-center justify-center">
                 <Icon
-                  className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
                   style={{
                     color: item.color,
                     filter: 'saturate(1.2) drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
                   }}
-                  strokeWidth={1.8}
+                  strokeWidth={2}
                 />
                 {item.badge > 0 && (
                   <span
@@ -108,7 +108,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
                 )}
               </div>
 
-              <span className="font-sans text-white/95 text-[11px] sm:text-[12px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
+              <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
                 {item.label}
               </span>
             </button>
