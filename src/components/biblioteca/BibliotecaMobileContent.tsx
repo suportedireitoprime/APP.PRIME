@@ -326,9 +326,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
       {/* Hero Padrão Resumos / Audiobooks com Painel Vermelho e 4 Atalhos */}
       <BibliotecaHero onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')} />
 
-      {/* Conteúdo Principal com Estrutura Fluida e Organizada */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-3.5 sm:mt-5 space-y-5 sm:space-y-6">
-        {/* Banner Continuar Leitura com altura compacta */}
+      {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem idêntica à Home do app) */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-7 sm:mt-8 space-y-5 sm:space-y-6">
+        {/* Banner Continuar Leitura no modelo de Resumos com capa flush */}
         <div className="mb-3 sm:mb-4">
           <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
         </div>

@@ -123,8 +123,8 @@ export default function ResumosJuridicosAreas() {
         totalTemas={totalCalculatedTemas}
       />
 
-      {/* Conteúdo Principal com Margens Laterais e Layout Fluido */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
+      {/* Conteúdo Principal com Margens Laterais e Layout Fluido (Margem idêntica à Home do app) */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-7 sm:mt-8 space-y-6">
         {/* Banner Continuar Estudando Dinâmico */}
         <ResumosContinuarCard />
 
