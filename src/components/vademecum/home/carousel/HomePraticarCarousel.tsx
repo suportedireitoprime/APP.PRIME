@@ -253,11 +253,11 @@ const HomePraticarCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-end mt-auto">
-                  <div className="flex flex-col">
-                    <span className="font-display text-white text-[19px] sm:text-[21px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                  <div className="flex flex-col w-full pr-1">
+                    <span className="text-white text-[13px] sm:text-[14px] font-black tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-none whitespace-nowrap">
                       {item.title}
                     </span>
-                    <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                    <span className="text-white/90 text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] leading-none whitespace-nowrap">
                       {item.subtitle}
                     </span>
                   </div>
