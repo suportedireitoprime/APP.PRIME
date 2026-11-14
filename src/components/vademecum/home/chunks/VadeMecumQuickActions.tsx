@@ -26,20 +26,20 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
     <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
       <button 
         onClick={() => handleAction('favoritos', '/vade-mecum/favoritos')} 
-        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-emerald-500/10 active:bg-emerald-500/20 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Favoritos"
       >
-        <Heart className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#F43F5E', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2.1} />
-        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Favoritos</span>
+        <Heart className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.55)]" strokeWidth={2.1} />
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:text-emerald-300 transition-colors truncate max-w-full">Favoritos</span>
       </button>
       
       <button 
         onClick={() => handleAction('anotacoes', '/vade-mecum/anotacoes')} 
-        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-emerald-500/10 active:bg-emerald-500/20 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Anotações"
       >
-        <NotebookPen className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#60A5FA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2.1} />
-        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Anotações</span>
+        <NotebookPen className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.55)]" strokeWidth={2.1} />
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:text-emerald-300 transition-colors truncate max-w-full">Anotações</span>
       </button>
 
       <button 
@@ -47,20 +47,20 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
           haptic.selection();
           window.dispatchEvent(new CustomEvent('vademecum:abrir-sheet', { detail: 'novidades' }));
         }} 
-        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-emerald-500/10 active:bg-emerald-500/20 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Novidades"
       >
-        <AlertTriangle className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#FBBF24', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2.1} />
-        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Novidades</span>
+        <AlertTriangle className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.55)]" strokeWidth={2.1} />
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:text-emerald-300 transition-colors truncate max-w-full">Novidades</span>
       </button>
 
       <button 
         onClick={() => handleAction('radares', '/radares')} 
-        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+        className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-emerald-500/10 active:bg-emerald-500/20 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Radares"
       >
-        <Radar className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#A78BFA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2.1} />
-        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Radares</span>
+        <Radar className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.55)]" strokeWidth={2.1} />
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:text-emerald-300 transition-colors truncate max-w-full">Radares</span>
       </button>
     </div>
   );

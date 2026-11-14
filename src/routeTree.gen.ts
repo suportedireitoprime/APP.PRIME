@@ -14,6 +14,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
+import { Route as AdminLousaMagicaRouteImport } from './routes/admin-lousa-magica'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
@@ -174,6 +175,11 @@ const AdminFuncoesRoute = AdminFuncoesRouteImport.update({
 const AdminHorusRoute = AdminHorusRouteImport.update({
   id: '/admin-horus',
   path: '/admin-horus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLousaMagicaRoute = AdminLousaMagicaRouteImport.update({
+  id: '/admin-lousa-magica',
+  path: '/admin-lousa-magica',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminOmnirouteRoute = AdminOmnirouteRouteImport.update({
@@ -881,6 +887,7 @@ export interface FileRoutesByFullPath {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1024,6 +1031,7 @@ export interface FileRoutesByTo {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1168,6 +1176,7 @@ export interface FileRoutesById {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1313,6 +1322,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1456,6 +1466,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1599,6 +1610,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1743,6 +1755,7 @@ export interface RootRouteChildren {
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminHorusRoute: typeof AdminHorusRoute
+  AdminLousaMagicaRoute: typeof AdminLousaMagicaRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
@@ -1837,6 +1850,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-horus'
       fullPath: '/admin-horus'
       preLoaderRoute: typeof AdminHorusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-lousa-magica': {
+      id: '/admin-lousa-magica'
+      path: '/admin-lousa-magica'
+      fullPath: '/admin-lousa-magica'
+      preLoaderRoute: typeof AdminLousaMagicaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-omniroute': {
@@ -3232,6 +3252,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminHorusRoute: AdminHorusRoute,
+  AdminLousaMagicaRoute: AdminLousaMagicaRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,

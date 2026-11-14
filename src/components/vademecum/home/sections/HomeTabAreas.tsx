@@ -11,7 +11,7 @@ const HomeTabAreas = ({ onOpenArea }: HomeTabAreasProps) => {
     <div className="space-y-4 px-1 pb-8">
       <div>
         <div className="flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-primary" />
+          <span className="w-1 h-5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
           <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
             Áreas do Direito
           </h2>

@@ -254,7 +254,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
-            <span className="w-1 h-4 rounded-full bg-primary shrink-0" />
+            <span className="w-1 h-4 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
             <span className="truncate">LEIS EM ALTA</span>
           </h3>
           <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
