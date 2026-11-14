@@ -3,6 +3,8 @@
 // Inclui métricas e estimativas reais de peso de bundle, dependências e consumo de memória
 
 export type RouteWeightLevel = 'muito_pesada' | 'pesada' | 'media' | 'leve' | 'zero';
+export type RouteHealthStatus = 'estavel' | 'com_bug' | 'pouco_usada' | 'em_revisao';
+export type RouteUsageLevel = 'alta' | 'media' | 'baixa' | 'rara';
 
 export interface AppRouteItem {
   path: string;
@@ -19,6 +21,9 @@ export interface AppRouteItem {
   weightLevel: RouteWeightLevel;
   weightEstimate: string;
   weightReasons: string[];
+  healthStatus?: RouteHealthStatus;
+  healthReason?: string;
+  usageLevel?: RouteUsageLevel;
 }
 
 export const APP_ROUTES_CATALOG: AppRouteItem[] = [
@@ -137,6 +142,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Painel administrativo",
       "Tabelas e queries Supabase"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Painel administrativo legado de testes do assistente Horus",
+    "usageLevel": "baixa"
   },
   {
     "path": "/admin-omniroute",
@@ -157,6 +166,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Player de áudio dinâmico",
       "Integração Gemini AI"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Ferramenta diagnóstica interna; uso exclusivo de desenvolvimento",
+    "usageLevel": "baixa"
   },
   {
     "path": "/admin-push",
@@ -176,6 +189,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Painel administrativo",
       "Tabelas e queries Supabase"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Disparo manual de notificações push; uso estritamente operacional",
+    "usageLevel": "baixa"
   },
   {
     "path": "/ajustes/excluir-conta",
@@ -195,6 +212,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Ação crítica e rara; mantida apenas para conformidade LGPD e Apple HIG",
+    "usageLevel": "rara"
   },
   {
     "path": "/assinatura",
@@ -442,6 +463,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Seção de boletins estáticos com baixa frequência de atualização",
+    "usageLevel": "baixa"
   },
   {
     "path": "/chat-juridico",
@@ -480,6 +505,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Página receptora de links compartilhados externos; tráfego esporádico",
+    "usageLevel": "rara"
   },
   {
     "path": "/desktop-link/:token",
@@ -499,6 +528,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Acesso esporádico (apenas no emparelhamento com o app desktop)",
+    "usageLevel": "rara"
   },
   {
     "path": "/estudos",
@@ -878,6 +911,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Sub-rota interna de métricas legadas com baixíssimo tráfego",
+    "usageLevel": "baixa"
   },
   {
     "path": "/ir/*",
@@ -897,6 +934,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Redirecionador interno de links curtos antigos",
+    "usageLevel": "rara"
   },
   {
     "path": "/jurisprudencia",
@@ -1182,6 +1223,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Artigos dinâmicos",
       "Virtualização leve de leitura"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Leis estaduais específicas com baixo volume de consulta",
+    "usageLevel": "baixa"
   },
   {
     "path": "/legislacao/:tipo",
@@ -1410,6 +1455,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Cards de usuário",
       "Atalhos leves"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Configuração de alarme local; integrado na tela principal de lembretes",
+    "usageLevel": "baixa"
   },
   {
     "path": "/mapas-mentais",
@@ -1789,6 +1838,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Canvas ShapeGrid 2D acelerado",
       "Cards de áudios das matérias"
     ]
+  ,
+    "healthStatus": "em_revisao",
+    "healthReason": "Bundle inicial pesado (~3.5 MB); requer otimização de imagens e lazy load",
+    "usageLevel": "media"
   },
   {
     "path": "/pilulas/:id",
@@ -1866,6 +1919,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Consulta Supabase com cache",
       "Player de áudio nativo"
     ]
+  ,
+    "healthStatus": "em_revisao",
+    "healthReason": "Carga pesada (~1.9 MB) e duplicação conceitual com a nova Lousa Mágica",
+    "usageLevel": "baixa"
   },
   {
     "path": "/pilulas/clt",
@@ -1980,6 +2037,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "com_bug",
+    "healthReason": "Erro de importação dinâmica (PlanosAtivos.tsx ausente ou com falha no Vite bundle)",
+    "usageLevel": "baixa"
   },
   {
     "path": "/privacidade",
@@ -2151,6 +2212,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Navegação modular",
       "Dados leves sob demanda"
     ]
+  ,
+    "healthStatus": "com_bug",
+    "healthReason": "Erro de importação dinâmica (QuestoesHistorico.tsx com erro de chunk no servidor)",
+    "usageLevel": "baixa"
   },
   {
     "path": "/questoes/lembretes",
@@ -2227,6 +2292,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Gráficos estatísticos",
       "Filtros dinâmicos"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Radar legislativo com baixo engajamento dos usuários",
+    "usageLevel": "baixa"
   },
   {
     "path": "/radar/proposicoes",
@@ -2246,6 +2315,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Gráficos estatísticos",
       "Filtros dinâmicos"
     ]
+  ,
+    "healthStatus": "com_bug",
+    "healthReason": "Dependência de API externa instável ou dados ausentes na tabela do Supabase",
+    "usageLevel": "baixa"
   },
   {
     "path": "/radar/proposicoes/:date",
@@ -2265,6 +2338,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Gráficos estatísticos",
       "Filtros dinâmicos"
     ]
+  ,
+    "healthStatus": "com_bug",
+    "healthReason": "Falta de dados por data específica; API de proposições desatualizada",
+    "usageLevel": "baixa"
   },
   {
     "path": "/radares",
@@ -2436,6 +2513,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Gráficos de aproveitamento",
       "Histórico do estudante"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Sub-rota secundária; a maioria visualiza estatísticas direto no término do simulado",
+    "usageLevel": "baixa"
   },
   {
     "path": "/sobre",
@@ -2493,6 +2574,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Página de suporte deslogado; usuários utilizam o suporte logado",
+    "usageLevel": "baixa"
   },
   {
     "path": "/termos",
