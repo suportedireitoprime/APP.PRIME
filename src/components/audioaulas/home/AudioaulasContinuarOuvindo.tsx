@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Play, Pause, X, Headphones, Sparkles } from "lucide-react";
+import React, { useEffect, useState, useCallback, memo } from "react";
+import { Play, Pause, X, Headphones, ArrowRight } from "lucide-react";
 import { useAudioaulasPlayer } from "@/contexts/AudioaulasPlayerContext";
 import {
   obterUltimoProgressoAudioaula,
   limparProgressoAudioaula,
   type ProgressoAudioaula,
 } from "@/lib/audioaulaProgresso";
-import { capaDaArea, fmt, decomporTituloCapitulo } from "@/lib/audioaulasHelper";
-import { CapaOtimizada } from "./CapaOtimizada";
+import { fmt, decomporTituloCapitulo, capaDaArea } from "@/lib/audioaulasHelper";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { haptic } from "@/lib/nativeHaptics";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const AudioaulasContinuarOuvindo: React.FC = () => {
@@ -28,6 +30,7 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
 
   const handleRetomar = useCallback(() => {
     if (!progresso) return;
+    haptic.impact();
     const aula = aulas.find((a) => a.id === progresso.id);
     if (!aula) return;
 
@@ -40,6 +43,7 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
 
   const handleDispensar = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    haptic.selection();
     setFechado(true);
     limparProgressoAudioaula();
   }, []);
@@ -51,81 +55,138 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
     progresso.duracao > 0
       ? Math.min(100, Math.round((progresso.tempo / progresso.duracao) * 100))
       : 0;
-  const capaUrl = capaDaArea(progresso.area || "");
+
+  const areaNome = progresso.area || "";
+  const coverUrl =
+    getDisciplinaVisualTheme(areaNome)?.fundoAssetUrl ||
+    getAreaCover(areaNome)?.cover ||
+    capaDaArea(areaNome);
+
+  const titulo = progresso.titulo || "Aula em áudio";
+  const temaLimpo = progresso.tema
+    ? decomporTituloCapitulo(progresso.tema).tituloLimpo
+    : "";
+  const subtitulo = `${areaNome || "Direito"}${temaLimpo ? ` · ${temaLimpo}` : ""} · ${fmt(progresso.tempo)}${
+    progresso.duracao > 0 ? ` / ${fmt(progresso.duracao)}` : ""
+  }`;
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.98 }}
-        transition={{ duration: 0.25 }}
-        className="mx-auto w-full max-w-[1400px] px-4 mb-4 lg:px-10 2xl:max-w-[1600px]"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.3 }}
+        className="mx-auto w-full max-w-350 px-4 mb-4 lg:px-10 2xl:max-w-[1600px]"
       >
-        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-3 sm:p-4">
-          <div className="flex items-center justify-between gap-3 mb-2.5">
-            <span className="inline-flex items-center gap-1.5 text-primary text-[11px] font-bold uppercase tracking-normal">
-              <Sparkles className="w-3 h-3 text-primary" /> Continue de onde parou
-            </span>
+        <div
+          onClick={handleRetomar}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleRetomar();
+            }
+          }}
+          style={{
+            background:
+              "linear-gradient(to right, rgba(249, 115, 22, 0.22), rgba(249, 115, 22, 0.05))",
+            borderColor: "rgba(249, 115, 22, 0.38)",
+          }}
+          className="w-full flex items-stretch rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg shadow-orange-950/20 group cursor-pointer min-h-[82px] sm:min-h-[88px]"
+        >
+          {/* Capa da Aula à esquerda — flush sem margens (design idêntico a Resumos) */}
+          <div className="w-[74px] sm:w-[86px] shrink-0 self-stretch relative overflow-hidden bg-black flex flex-col justify-end border-r border-white/10">
+            <img
+              src={coverUrl}
+              alt={titulo}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="eager"
+              decoding="async"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-            <button
-              onClick={handleDispensar}
-              aria-label="Dispensar continuar ouvindo"
-              className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition active:scale-95"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div
-            onClick={handleRetomar}
-            className="group flex items-center gap-3.5 cursor-pointer select-none"
-          >
-            {/* Capa com Play pulsante */}
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-800 border border-white/10 shadow-md">
-              <CapaOtimizada
-                src={capaUrl}
-                alt={progresso.titulo}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white backdrop-blur-[1px]">
-                <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-black/50 group-hover:scale-110 transition-transform">
-                  {estaTocandoEsta ? (
-                    <Pause className="w-4 h-4 fill-current" />
-                  ) : (
-                    <Play className="w-4 h-4 fill-current ml-0.5" />
-                  )}
-                </span>
-              </div>
+            {/* Play/Pause pulsante sobre a imagem */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="w-8 h-8 rounded-full bg-orange-500/90 text-white flex items-center justify-center shadow-md shadow-black/70 group-hover:scale-110 transition-transform">
+                {estaTocandoEsta ? (
+                  <Pause className="w-3.5 h-3.5 fill-current" />
+                ) : (
+                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                )}
+              </span>
             </div>
 
-            {/* Informações da Aula */}
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-primary uppercase tracking-wider line-clamp-1">
-                {progresso.area}{" "}
-                {progresso.tema ? `• ${decomporTituloCapitulo(progresso.tema).tituloLimpo}` : ""}
-              </p>
-              <h4 className="text-sm sm:text-base !font-sans font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5 tracking-normal normal-case">
-                {progresso.titulo}
-              </h4>
+            <span className="relative z-10 w-full bg-orange-600 text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
+              ÁUDIO
+            </span>
+          </div>
 
-              {/* Barra de progresso */}
-              <div className="mt-2 flex items-center gap-2.5">
-                <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+          {/* Textos informativos centrais e ações */}
+          <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-3.5 sm:py-3.5 sm:pl-3.5 sm:pr-4 flex items-center justify-between gap-2.5">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <Headphones className="w-2.5 h-2.5 fill-orange-400 text-orange-400" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
+                  CONTINUAR OUVINDO
+                </p>
+              </div>
+
+              <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
+                {titulo}
+              </p>
+
+              <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-orange-200/90 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-orange-400 shrink-0" />
+                <span className="truncate">{subtitulo}</span>
+              </p>
+
+              {/* Barra de progresso sutil */}
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
                   <div
-                    className="h-full bg-primary rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-300"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[11px] font-medium text-zinc-400 shrink-0 font-mono">
-                  {fmt(progresso.tempo)}{" "}
-                  {progresso.duracao > 0 ? `/ ${fmt(progresso.duracao)}` : ""}
+                <span className="text-[10px] font-medium text-orange-300/80 shrink-0 font-mono">
+                  {pct}%
                 </span>
               </div>
             </div>
+
+            {/* Botão fechar (X) e Seta indicativa à direita */}
+            <div className="flex items-center gap-1.5 shrink-0 z-10">
+              <button
+                type="button"
+                onClick={handleDispensar}
+                aria-label="Dispensar continuar ouvindo"
+                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 text-orange-200/70 hover:text-white flex items-center justify-center transition active:scale-95"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+              <ArrowRight
+                className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-orange-400 group-hover:translate-x-1 transition-transform"
+                strokeWidth={2.4}
+              />
+            </div>
+          </div>
+
+          {/* Decoração de fundo com glow laranja no canto direito */}
+          <div
+            className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center opacity-20"
+            style={{
+              filter:
+                "drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(249, 115, 22, 0.4))",
+            }}
+          >
+            <Headphones className="w-24 h-24 text-orange-400" strokeWidth={1.2} />
           </div>
         </div>
       </motion.div>
     </AnimatePresence>
   );
 };
+
+export default memo(AudioaulasContinuarOuvindo);
