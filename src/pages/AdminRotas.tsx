@@ -482,11 +482,23 @@ const AdminRotas = () => {
         {/* Lista de Rotas */}
         {filteredRoutes.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-border rounded-2xl p-8">
-            <Filter className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
-            <p className="font-display text-sm text-foreground">Nenhuma rota encontrada</p>
-            <p className="font-body text-xs text-muted-foreground mt-1">
-              Tente pesquisar com outro termo ou limpe os filtros.
-            </p>
+            {viewMode === 'bugs' ? (
+              <>
+                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+                <p className="font-display text-base text-foreground font-bold">Nenhum bug detectado!</p>
+                <p className="font-body text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                  Todas as rotas do catálogo estão revisadas, com importação dinâmica funcional e estáveis.
+                </p>
+              </>
+            ) : (
+              <>
+                <Filter className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+                <p className="font-display text-sm text-foreground">Nenhuma rota encontrada</p>
+                <p className="font-body text-xs text-muted-foreground mt-1">
+                  Tente pesquisar com outro termo ou limpe os filtros.
+                </p>
+              </>
+            )}
           </div>
         ) : viewMode === 'agrupadas' ? (
           /* Visualização Agrupada por Rota Principal com suas subrotas */

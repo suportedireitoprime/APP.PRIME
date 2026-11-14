@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchProposicoes } from '@/services/radarService';
 import { motion } from 'framer-motion';
 import { ArrowRight, Moon, FileText, ChevronDown } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -118,13 +119,27 @@ const RadarProposicoes = () => {
           .lte('data_apresentacao', newestDateKey + 'T23:59:59Z');
           
         const map: Record<string, number> = {};
-        if (data) {
+        if (data && data.length > 0) {
           data.forEach(p => {
             if (p.data_apresentacao) {
               const key = p.data_apresentacao.split('T')[0];
               map[key] = (map[key] || 0) + 1;
             }
           });
+        } else {
+          // Fallback para API pública da Câmara caso a tabela esteja sem registros
+          try {
+            const apiItems = await fetchProposicoes(undefined, undefined, 1, oldestDateKey, newestDateKey);
+            if (Array.isArray(apiItems)) {
+              apiItems.forEach((p: any) => {
+                const dt = p.dataApresentacao || p.data_apresentacao;
+                if (dt) {
+                  const key = String(dt).split('T')[0];
+                  map[key] = (map[key] || 0) + 1;
+                }
+              });
+            }
+          } catch {}
         }
         setCountsMap(map);
       } catch (e) {
