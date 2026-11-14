@@ -47,7 +47,6 @@ import { Route as PilulasRouteImport } from './routes/pilulas'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as QuestoesRouteImport } from './routes/questoes'
 import { Route as Radar360RouteImport } from './routes/radar-360'
-import { Route as RadarConcursosRouteImport } from './routes/radar-concursos'
 import { Route as RadaresRouteImport } from './routes/radares'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResumosJuridicosRouteImport } from './routes/resumos-juridicos'
@@ -120,9 +119,6 @@ import { Route as QuestoesHistoricoRouteImport } from './routes/questoes.histori
 import { Route as QuestoesLembretesRouteImport } from './routes/questoes.lembretes'
 import { Route as QuestoesPraticarRouteImport } from './routes/questoes.praticar'
 import { Route as QuestoesRevisarRouteImport } from './routes/questoes.revisar'
-import { Route as QuestoesSimuladoRouteImport } from './routes/questoes.simulado'
-import { Route as QuestoesTrilhasRouteImport } from './routes/questoes.trilhas'
-import { Route as RadarConcursosEstatisticasRouteImport } from './routes/radar-concursos.estatisticas'
 import { Route as RadarProposicoesRouteImport } from './routes/radar.proposicoes'
 import { Route as ResumosJuridicosAreaRouteImport } from './routes/resumos-juridicos.$area'
 import { Route as ResumosJuridicosFavoritosRouteImport } from './routes/resumos-juridicos.favoritos'
@@ -147,7 +143,6 @@ import { Route as LeiSecaSlugParteRouteImport } from './routes/lei-seca.$slug.$p
 import { Route as PilulasDeckDeckIdRouteImport } from './routes/pilulas.deck.$deckId'
 import { Route as QuestoesAreaSlugRouteImport } from './routes/questoes.area.$slug'
 import { Route as QuestoesDesafiosConquistasRouteImport } from './routes/questoes.desafios.conquistas'
-import { Route as QuestoesSimuladoCargoIdRouteImport } from './routes/questoes.simulado.$cargoId'
 import { Route as RadarProposicoesDateRouteImport } from './routes/radar.proposicoes.$date'
 import { Route as VideoaulasCatalogoAreaRouteImport } from './routes/videoaulas.$catalogo.$area'
 import { Route as JurisprudenciaProntasTribunalSlugRouteImport } from './routes/jurisprudencia.prontas.$tribunal.$slug'
@@ -344,11 +339,6 @@ const QuestoesRoute = QuestoesRouteImport.update({
 const Radar360Route = Radar360RouteImport.update({
   id: '/radar-360',
   path: '/radar-360',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RadarConcursosRoute = RadarConcursosRouteImport.update({
-  id: '/radar-concursos',
-  path: '/radar-concursos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RadaresRoute = RadaresRouteImport.update({
@@ -718,22 +708,6 @@ const QuestoesRevisarRoute = QuestoesRevisarRouteImport.update({
   path: '/revisar',
   getParentRoute: () => QuestoesRoute,
 } as any)
-const QuestoesSimuladoRoute = QuestoesSimuladoRouteImport.update({
-  id: '/simulado',
-  path: '/simulado',
-  getParentRoute: () => QuestoesRoute,
-} as any)
-const QuestoesTrilhasRoute = QuestoesTrilhasRouteImport.update({
-  id: '/trilhas',
-  path: '/trilhas',
-  getParentRoute: () => QuestoesRoute,
-} as any)
-const RadarConcursosEstatisticasRoute =
-  RadarConcursosEstatisticasRouteImport.update({
-    id: '/estatisticas',
-    path: '/estatisticas',
-    getParentRoute: () => RadarConcursosRoute,
-  } as any)
 const RadarProposicoesRoute = RadarProposicoesRouteImport.update({
   id: '/radar/proposicoes',
   path: '/radar/proposicoes',
@@ -861,11 +835,6 @@ const QuestoesDesafiosConquistasRoute =
     path: '/conquistas',
     getParentRoute: () => QuestoesDesafiosRoute,
   } as any)
-const QuestoesSimuladoCargoIdRoute = QuestoesSimuladoCargoIdRouteImport.update({
-  id: '/$cargoId',
-  path: '/$cargoId',
-  getParentRoute: () => QuestoesSimuladoRoute,
-} as any)
 const RadarProposicoesDateRoute = RadarProposicoesDateRouteImport.update({
   id: '/$date',
   path: '/$date',
@@ -945,7 +914,6 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/radar-360': typeof Radar360Route
-  '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
@@ -1018,9 +986,6 @@ export interface FileRoutesByFullPath {
   '/questoes/lembretes': typeof QuestoesLembretesRoute
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
-  '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
-  '/questoes/trilhas': typeof QuestoesTrilhasRoute
-  '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1045,7 +1010,6 @@ export interface FileRoutesByFullPath {
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
-  '/questoes/simulado/$cargoId': typeof QuestoesSimuladoCargoIdRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
@@ -1093,7 +1057,6 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/radar-360': typeof Radar360Route
-  '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
@@ -1166,9 +1129,6 @@ export interface FileRoutesByTo {
   '/questoes/lembretes': typeof QuestoesLembretesRoute
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
-  '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
-  '/questoes/trilhas': typeof QuestoesTrilhasRoute
-  '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1193,7 +1153,6 @@ export interface FileRoutesByTo {
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
-  '/questoes/simulado/$cargoId': typeof QuestoesSimuladoCargoIdRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
@@ -1242,7 +1201,6 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/radar-360': typeof Radar360Route
-  '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
@@ -1315,9 +1273,6 @@ export interface FileRoutesById {
   '/questoes/lembretes': typeof QuestoesLembretesRoute
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
-  '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
-  '/questoes/trilhas': typeof QuestoesTrilhasRoute
-  '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1342,7 +1297,6 @@ export interface FileRoutesById {
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
-  '/questoes/simulado/$cargoId': typeof QuestoesSimuladoCargoIdRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
@@ -1392,7 +1346,6 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/radar-360'
-    | '/radar-concursos'
     | '/radares'
     | '/reset-password'
     | '/resumos-juridicos'
@@ -1465,9 +1418,6 @@ export interface FileRouteTypes {
     | '/questoes/lembretes'
     | '/questoes/praticar'
     | '/questoes/revisar'
-    | '/questoes/simulado'
-    | '/questoes/trilhas'
-    | '/radar-concursos/estatisticas'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -1492,7 +1442,6 @@ export interface FileRouteTypes {
     | '/pilulas/deck/$deckId'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
-    | '/questoes/simulado/$cargoId'
     | '/radar/proposicoes/$date'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
@@ -1540,7 +1489,6 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/radar-360'
-    | '/radar-concursos'
     | '/radares'
     | '/reset-password'
     | '/resumos-juridicos'
@@ -1613,9 +1561,6 @@ export interface FileRouteTypes {
     | '/questoes/lembretes'
     | '/questoes/praticar'
     | '/questoes/revisar'
-    | '/questoes/simulado'
-    | '/questoes/trilhas'
-    | '/radar-concursos/estatisticas'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -1640,7 +1585,6 @@ export interface FileRouteTypes {
     | '/pilulas/deck/$deckId'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
-    | '/questoes/simulado/$cargoId'
     | '/radar/proposicoes/$date'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
@@ -1688,7 +1632,6 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/radar-360'
-    | '/radar-concursos'
     | '/radares'
     | '/reset-password'
     | '/resumos-juridicos'
@@ -1761,9 +1704,6 @@ export interface FileRouteTypes {
     | '/questoes/lembretes'
     | '/questoes/praticar'
     | '/questoes/revisar'
-    | '/questoes/simulado'
-    | '/questoes/trilhas'
-    | '/radar-concursos/estatisticas'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -1788,7 +1728,6 @@ export interface FileRouteTypes {
     | '/pilulas/deck/$deckId'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
-    | '/questoes/simulado/$cargoId'
     | '/radar/proposicoes/$date'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
@@ -1837,7 +1776,6 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   QuestoesRoute: typeof QuestoesRouteWithChildren
   Radar360Route: typeof Radar360Route
-  RadarConcursosRoute: typeof RadarConcursosRouteWithChildren
   RadaresRoute: typeof RadaresRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ResumosJuridicosRoute: typeof ResumosJuridicosRouteWithChildren
@@ -2130,13 +2068,6 @@ declare module '@tanstack/react-router' {
       path: '/radar-360'
       fullPath: '/radar-360'
       preLoaderRoute: typeof Radar360RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/radar-concursos': {
-      id: '/radar-concursos'
-      path: '/radar-concursos'
-      fullPath: '/radar-concursos'
-      preLoaderRoute: typeof RadarConcursosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/radares': {
@@ -2643,27 +2574,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuestoesRevisarRouteImport
       parentRoute: typeof QuestoesRoute
     }
-    '/questoes/simulado': {
-      id: '/questoes/simulado'
-      path: '/simulado'
-      fullPath: '/questoes/simulado'
-      preLoaderRoute: typeof QuestoesSimuladoRouteImport
-      parentRoute: typeof QuestoesRoute
-    }
-    '/questoes/trilhas': {
-      id: '/questoes/trilhas'
-      path: '/trilhas'
-      fullPath: '/questoes/trilhas'
-      preLoaderRoute: typeof QuestoesTrilhasRouteImport
-      parentRoute: typeof QuestoesRoute
-    }
-    '/radar-concursos/estatisticas': {
-      id: '/radar-concursos/estatisticas'
-      path: '/estatisticas'
-      fullPath: '/radar-concursos/estatisticas'
-      preLoaderRoute: typeof RadarConcursosEstatisticasRouteImport
-      parentRoute: typeof RadarConcursosRoute
-    }
     '/radar/proposicoes': {
       id: '/radar/proposicoes'
       path: '/radar/proposicoes'
@@ -2831,13 +2741,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/questoes/desafios/conquistas'
       preLoaderRoute: typeof QuestoesDesafiosConquistasRouteImport
       parentRoute: typeof QuestoesDesafiosRoute
-    }
-    '/questoes/simulado/$cargoId': {
-      id: '/questoes/simulado/$cargoId'
-      path: '/$cargoId'
-      fullPath: '/questoes/simulado/$cargoId'
-      preLoaderRoute: typeof QuestoesSimuladoCargoIdRouteImport
-      parentRoute: typeof QuestoesSimuladoRoute
     }
     '/radar/proposicoes/$date': {
       id: '/radar/proposicoes/$date'
@@ -3173,17 +3076,6 @@ const QuestoesDesafiosRouteChildren: QuestoesDesafiosRouteChildren = {
 const QuestoesDesafiosRouteWithChildren =
   QuestoesDesafiosRoute._addFileChildren(QuestoesDesafiosRouteChildren)
 
-interface QuestoesSimuladoRouteChildren {
-  QuestoesSimuladoCargoIdRoute: typeof QuestoesSimuladoCargoIdRoute
-}
-
-const QuestoesSimuladoRouteChildren: QuestoesSimuladoRouteChildren = {
-  QuestoesSimuladoCargoIdRoute: QuestoesSimuladoCargoIdRoute,
-}
-
-const QuestoesSimuladoRouteWithChildren =
-  QuestoesSimuladoRoute._addFileChildren(QuestoesSimuladoRouteChildren)
-
 interface QuestoesRouteChildren {
   QuestoesAreasRoute: typeof QuestoesAreasRoute
   QuestoesCadernosRoute: typeof QuestoesCadernosRoute
@@ -3193,8 +3085,6 @@ interface QuestoesRouteChildren {
   QuestoesLembretesRoute: typeof QuestoesLembretesRoute
   QuestoesPraticarRoute: typeof QuestoesPraticarRoute
   QuestoesRevisarRoute: typeof QuestoesRevisarRoute
-  QuestoesSimuladoRoute: typeof QuestoesSimuladoRouteWithChildren
-  QuestoesTrilhasRoute: typeof QuestoesTrilhasRoute
   QuestoesAreaSlugRoute: typeof QuestoesAreaSlugRoute
 }
 
@@ -3207,25 +3097,11 @@ const QuestoesRouteChildren: QuestoesRouteChildren = {
   QuestoesLembretesRoute: QuestoesLembretesRoute,
   QuestoesPraticarRoute: QuestoesPraticarRoute,
   QuestoesRevisarRoute: QuestoesRevisarRoute,
-  QuestoesSimuladoRoute: QuestoesSimuladoRouteWithChildren,
-  QuestoesTrilhasRoute: QuestoesTrilhasRoute,
   QuestoesAreaSlugRoute: QuestoesAreaSlugRoute,
 }
 
 const QuestoesRouteWithChildren = QuestoesRoute._addFileChildren(
   QuestoesRouteChildren,
-)
-
-interface RadarConcursosRouteChildren {
-  RadarConcursosEstatisticasRoute: typeof RadarConcursosEstatisticasRoute
-}
-
-const RadarConcursosRouteChildren: RadarConcursosRouteChildren = {
-  RadarConcursosEstatisticasRoute: RadarConcursosEstatisticasRoute,
-}
-
-const RadarConcursosRouteWithChildren = RadarConcursosRoute._addFileChildren(
-  RadarConcursosRouteChildren,
 )
 
 interface ResumosJuridicosRouteChildren {
@@ -3389,7 +3265,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   QuestoesRoute: QuestoesRouteWithChildren,
   Radar360Route: Radar360Route,
-  RadarConcursosRoute: RadarConcursosRouteWithChildren,
   RadaresRoute: RadaresRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ResumosJuridicosRoute: ResumosJuridicosRouteWithChildren,
