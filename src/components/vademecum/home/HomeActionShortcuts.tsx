@@ -6,10 +6,10 @@ import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audiobooks' as PrefetchKey },
-  { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#E61942', badgeColor: null, badgeKey: null, tag: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          color: '#E61942', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
+  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       tag: null, prefetch: 'audioaulas' as PrefetchKey },
+  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       tag: null, prefetch: 'audiobooks' as PrefetchKey },
+  { label: 'Blog',        icon: ScrollText,            to: '/blog',             tag: null, prefetch: 'blog' as PrefetchKey },
+  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
@@ -20,7 +20,6 @@ const HomeActionShortcuts = () => {
     <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
-        const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
         return (
           <button
             key={item.label}
@@ -31,7 +30,6 @@ const HomeActionShortcuts = () => {
             onClick={() => {
               try {
                 haptic.selection();
-                if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
               } catch (err) {
                 console.warn('[HomeActionShortcuts] Feedback error:', err);
               }
@@ -40,26 +38,14 @@ const HomeActionShortcuts = () => {
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
             className="flex-1 group relative flex flex-col items-center justify-center pt-2.5 pb-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible"
           >
-            {badgeCount > 0 && item.badgeColor && (
-              <span
-                className="absolute -top-1 right-1 min-w-[17px] h-[16px] px-1 rounded-full text-white text-[9.5px] font-medium tracking-tight leading-none flex items-center justify-center border border-white/20 shadow-md drop-shadow z-20 pointer-events-none"
-                style={{ backgroundColor: item.badgeColor }}
-              >
-                <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">
-                  {badgeCount > 99 ? '99+' : badgeCount}
-                </span>
-              </span>
-            )}
-
             <div className="relative flex items-center justify-center">
               {item.tag && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[7.5px] sm:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(244,63,94,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[7.5px] sm:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                   {item.tag}
                 </span>
               )}
               <Icon
-                className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
-                style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
               />
             </div>
             <span className="text-white/90 text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
