@@ -99,9 +99,7 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
   const coverUrl = temaInterativo.fundoAssetUrl || ultimaAula?.thumb;
 
   const titulo = ultimaAula ? ultimaAula.titulo : 'Direitos e Garantias Fundamentais';
-  const subtitulo = ultimaAula
-    ? `${ultimaAula.area}${ultimaAula.percentual > 0 ? ` • ${ultimaAula.percentual}% assistido` : ''}`
-    : 'Direito Constitucional • Iniciar estudos';
+  const percentual = ultimaAula?.percentual || 0;
 
   return (
     <motion.button
@@ -123,36 +121,36 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
         <span className="absolute bottom-1 left-1 right-1 text-center py-0.5 rounded bg-black/75 backdrop-blur-md text-[8px] font-black uppercase text-white border border-white/10 font-sans">
-          {ultimaAula?.percentual ? `${ultimaAula.percentual}%` : 'Aula'}
+          {percentual > 0 ? `${percentual}%` : 'Aula'}
         </span>
       </div>
 
-      {/* Conteúdo Central Sem Abreviar */}
+      {/* Conteúdo Central: Apenas Título Sem Negrito + Porcentagem de Quanto Já Viu */}
       <div className="flex-1 min-w-0 pr-1">
-        <div className="flex items-center gap-1.5 mb-1">
+        <div className="flex items-center gap-1.5 mb-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
           <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 font-sans">
             Continuar Assistindo
           </p>
         </div>
 
-        {/* Título sem abreviação com quebra limpa */}
-        <h3 className="font-sans text-sm sm:text-base font-bold text-white group-hover:text-zinc-200 transition-colors leading-snug break-words">
+        {/* Título sem negrito (font-normal) */}
+        <h3 className="font-sans text-sm sm:text-base font-normal text-white group-hover:text-zinc-200 transition-colors leading-snug break-words">
           {titulo}
         </h3>
 
-        <p className="font-sans text-xs sm:text-[13px] text-zinc-400 leading-tight mt-1 break-words">
-          {subtitulo}
-        </p>
-
-        {ultimaAula && ultimaAula.percentual > 0 && (
-          <div className="w-full bg-white/10 h-1 rounded-full mt-2.5 overflow-hidden">
+        {/* Porcentagem de quanto a pessoa já viu */}
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex-1 max-w-[140px] bg-white/10 h-1.5 rounded-full overflow-hidden">
             <div
               className="bg-emerald-400 h-full rounded-full transition-all duration-500"
-              style={{ width: `${ultimaAula.percentual}%` }}
+              style={{ width: `${percentual}%` }}
             />
           </div>
-        )}
+          <span className="font-sans text-xs text-emerald-400 font-semibold leading-none">
+            {percentual}% concluído
+          </span>
+        </div>
       </div>
 
       {/* Botão Play Tátil Circular à Direita */}
