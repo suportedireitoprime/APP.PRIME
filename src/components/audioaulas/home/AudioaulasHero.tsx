@@ -226,7 +226,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioRecentesModal
               isOpen={recentesOpen}
               onClose={() => setRecentesOpen(false)}
-              colorScheme="salmon"
+              colorScheme="purple"
               aulasRecentes={aulasRecentes}
               onTocarAula={onTocarAula}
               onLimparRecentes={onLimparRecentes}
@@ -239,7 +239,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioFavoritosModal
               isOpen={favoritosOpen}
               onClose={() => setFavoritosOpen(false)}
-              colorScheme="salmon"
+              colorScheme="purple"
               aulasFavoritas={aulasFavoritas}
               onTocarAula={onTocarAula}
               onAlternarFavoritoAula={onAlternarFavoritoAula}
@@ -251,7 +251,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEstatisticasModal
               isOpen={statsOpen}
               onClose={() => setStatsOpen(false)}
-              colorScheme="salmon"
+              colorScheme="purple"
             />
           </React.Suspense>
         )}
@@ -260,7 +260,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             <AudioEmAltaModal
               isOpen={emAltaOpen}
               onClose={() => setEmAltaOpen(false)}
-              colorScheme="salmon"
+              colorScheme="purple"
               aulas={aulas}
               onTocarAula={onTocarAula}
             />

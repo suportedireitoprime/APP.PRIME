@@ -108,19 +108,19 @@ const Ferramentas = lazy(() => import("./pages/Ferramentas.tsx"));
 const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 // Lazy loaded
-const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
-const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const PilulasLista = lazyWithRetry(() => import("./pages/pilulas/PilulasLista.tsx"));
+const SmartLink = lazyWithRetry(() => import("./pages/SmartLink.tsx"));
+const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword.tsx"));
 
-const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
-const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
-const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
-const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
-const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
+const QuestoesHistorico = lazyWithRetry(() => import("./pages/QuestoesHistorico.tsx"));
+const AdminFuncoes = lazyWithRetry(() => import("./pages/AdminFuncoes.tsx"));
+const AdminAssinantes = lazyWithRetry(() => import("./pages/AdminAssinantes.tsx"));
+const AdminPush = lazyWithRetry(() => import("./pages/AdminPush.tsx"));
+const AdminRotas = lazyWithRetry(() => import("./pages/AdminRotas.tsx"));
 
-const Simulados = lazy(() => import("./pages/Simulados.tsx"));
-const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
-const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
+const Simulados = lazyWithRetry(() => import("./pages/Simulados.tsx"));
+const SimuladosEstatisticas = lazyWithRetry(() => import("./pages/SimuladosEstatisticas.tsx"));
+const SimuladosResolver = lazyWithRetry(() => import("./pages/SimuladosResolver.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -172,14 +172,14 @@ const FlashcardsMaterias = lazy(() => import("./pages/flashcards/FlashcardsMater
 const FlashcardsLeis = lazy(() => import("./pages/flashcards/FlashcardsLeis.tsx"));
 const FlashcardsJurisprudencia = lazy(() => import("./pages/flashcards/FlashcardsJurisprudencia.tsx"));
 const FlashcardsRouteWrapper = lazy(() => import("@/components/flashcards/FlashcardsRouteWrapper"));
-const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
-const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
+const VideoaulasLeiSeca = lazyWithRetry(() => import('./pages/VideoaulasLeiSeca.tsx'));
+const VideoaulasLeiSecaArtigos = lazyWithRetry(() => import('./pages/VideoaulasLeiSecaArtigos.tsx'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
 const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 
-const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo"));
+const JurisprudenciaArtigo = lazyWithRetry(() => import("./pages/JurisprudenciaArtigo.tsx"));
 const Jurisprudencia = lazy(() => import("./pages/Jurisprudencia.tsx"));
 const PesquisasProntasLista = lazy(() => import("./pages/PesquisasProntasLista.tsx"));
 const SumulasVinculantes = lazy(() => import("./pages/SumulasTribunal.tsx").then(m => ({ default: m.SumulasVinculantes })));
@@ -190,16 +190,16 @@ const InformativosSTF = lazy(() => import("./pages/InformativosTribunal.tsx").th
 const TesesSTJ = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTJ })));
 const TesesSTF = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTF })));
 const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx"));
-const Questoes = lazy(() => import("./pages/Questoes.tsx"));
-const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
-const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
-const QuestoesRevisar = lazy(() => import("./pages/QuestoesRevisar.tsx"));
-const QuestoesDesafios = lazy(() => import("./pages/QuestoesDesafios.tsx"));
-const QuestoesLembretes = lazy(() => import('./pages/QuestoesLembretes'));
-const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
-const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
+const Questoes = lazyWithRetry(() => import("./pages/Questoes.tsx"));
+const QuestoesAreas = lazyWithRetry(() => import("./pages/QuestoesAreas.tsx"));
+const QuestoesPraticar = lazyWithRetry(() => import("./pages/QuestoesPraticar.tsx"));
+const QuestoesRevisar = lazyWithRetry(() => import("./pages/QuestoesRevisar.tsx"));
+const QuestoesDesafios = lazyWithRetry(() => import("./pages/QuestoesDesafios.tsx"));
+const QuestoesLembretes = lazyWithRetry(() => import("./pages/QuestoesLembretes.tsx"));
+const QuestoesCadernos = lazyWithRetry(() => import("./pages/QuestoesCadernos.tsx"));
+const QuestoesConquistas = lazyWithRetry(() => import("./pages/QuestoesConquistas.tsx"));
 
-const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
+const QuestoesDesempenho = lazyWithRetry(() => import("./pages/QuestoesDesempenho.tsx"));
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosDesktop = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosDesktop.tsx"));
 const ResumosMaterias = lazy(() => import("./pages/resumos-juridicos/ResumosMaterias.tsx"));
@@ -273,16 +273,16 @@ const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
 const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
 const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
-const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminHorus = lazy(() => import('./pages/AdminHorus'));
-const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
+const AdminAulasInterativas = lazyWithRetry(() => import("./pages/AdminAulasInterativas.tsx"));
+const AdminHorus = lazyWithRetry(() => import("./pages/AdminHorus.tsx"));
+const AdminOmniRouteTeste = lazyWithRetry(() => import("./pages/AdminOmniRouteTeste.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
 const Assinatura = lazyWithRetry(() => import("./pages/Assinatura.tsx"));
 const PlanosAtivos = lazyWithRetry(() => import("./pages/PlanosAtivos.tsx"));
-const NovidadesRadarOverlay = lazy(() => import("./components/NovidadesRadarOverlay"));
-const GlobalDesktopHeader = lazy(() => import("./components/layout/GlobalDesktopHeader"));
-const DesktopFileDropOverlay = lazy(() => import("./components/desktop/DesktopFileDropOverlay"));
+const NovidadesRadarOverlay = lazyWithRetry(() => import("./components/NovidadesRadarOverlay.tsx"));
+const GlobalDesktopHeader = lazyWithRetry(() => import("./components/layout/GlobalDesktopHeader.tsx"));
+const DesktopFileDropOverlay = lazyWithRetry(() => import("./components/desktop/DesktopFileDropOverlay.tsx"));
 const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
