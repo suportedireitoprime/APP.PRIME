@@ -744,6 +744,11 @@ export function AdminHojeCards() {
           if (!inPeriod(e.created_at)) return;
 
           const meta = e.metadata || {};
+          // Blindagem contra eventos fantasmas de telemetria client-side:
+          // Apenas aceita eventos confirmados financeiramente com payment_id, transaction_id da adquirente ou valor real positivo
+          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || (typeof meta.value === 'number' && meta.value > 0));
+          if (!isRealFinancialEvent) return;
+
           const plano = (meta.plano || 'anual').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
@@ -1137,6 +1142,10 @@ export function AdminHojeCards() {
           if (!uid || existingUserIds.has(uid)) return;
 
           const meta = e.metadata || {};
+          // Blindagem contra eventos fantasmas de telemetria client-side
+          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || (typeof meta.value === 'number' && meta.value > 0));
+          if (!isRealFinancialEvent) return;
+
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');

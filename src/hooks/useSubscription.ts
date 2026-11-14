@@ -526,14 +526,21 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     };
   }, [user, nonce, pollOnMount]);
 
-  // GA4 / Telemetria: dispara `assinatura_ativada` na primeira vez que o Premium fica ativo
-  // Deduplicado via localStorage para não registrar a mesma compra toda vez que o app for aberto (sessão).
+  // GA4 / Telemetria: dispara `assinatura_ativada` APENAS para compras novas em tempo real (< 15 minutos)
+  // Assinantes existentes que apenas abrem o app NUNCA disparam evento de nova compra (previne eventos fantasmas).
   useEffect(() => {
-    if (!state.isPremium || state.loading || state.isAdminOverride) return;
+    if (!state.isPremium || state.loading || state.isAdminOverride || state.isTrial) return;
     if (wasPremium.current) return;
     
-    // Adicionamos a data de início (startedAt) se existir, para que renovações ou 
-    // re-assinaturas futuras do mesmo plano sejam registradas corretamente.
+    // Se a assinatura começou há mais de 15 minutos, é um usuário pré-existente — NUNCA gerar evento de nova compra
+    const startTime = state.startedAt ? new Date(state.startedAt).getTime() : 0;
+    const isRecentPurchase = startTime > 0 && (Date.now() - startTime < 15 * 60 * 1000);
+
+    if (!isRecentPurchase) {
+      wasPremium.current = true;
+      return;
+    }
+
     const startedAtSuffix = state.startedAt ? `:${state.startedAt.split('T')[0]}` : '';
     const localKey = `direitoprime:sub_logged_v2:${user?.id}:${state.plano}${startedAtSuffix}`;
     
@@ -551,7 +558,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     import('@/lib/appEvents').then(({ appEvents }) =>
       appEvents.assinaturaAtivada({ plano: state.plano, source: state.source })
     ).catch(() => {});
-  }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, state.startedAt, user?.id]);
+  }, [state.isPremium, state.loading, state.isAdminOverride, state.isTrial, state.plano, state.source, state.startedAt, user?.id]);
 
   // Atualização reativa instantânea (0ms) ao alternar perfil no Simulador de Desenvolvedor
   useEffect(() => {

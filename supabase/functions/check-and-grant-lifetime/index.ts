@@ -12,14 +12,36 @@ serve(async (req) => {
   }
 
   try {
-    let targetEmail = 'tudoakiimoveis@gmail.com';
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Não autorizado: token ausente.');
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const token = authHeader.replace('Bearer ', '').trim();
+
+    if (token !== serviceRoleKey) {
+      const { createClient } = await import('npm:@supabase/supabase-js@2');
+      const adminClient = createClient(supabaseUrl, serviceRoleKey);
+      const { data: { user }, error: authErr } = await adminClient.auth.getUser(token);
+      if (authErr || !user) throw new Error('Não autorizado.');
+      const { data: isAdmin } = await adminClient.rpc('is_admin_user', { _user_id: user.id });
+      if (!isAdmin) throw new Error('Acesso restrito a administradores.');
+    }
+
+    let targetEmail = '';
     try {
       const body = await req.json();
       if (body && body.email) {
         targetEmail = body.email.trim();
       }
     } catch (_) {
-      // Usar targetEmail padrão
+      // JSON vazio
+    }
+
+    if (!targetEmail) {
+      throw new Error('Parâmetro email é obrigatório.');
     }
 
     const dbUrl = Deno.env.get('SUPABASE_DB_URL') ?? '';

@@ -28,6 +28,12 @@ Deno.serve(async (req) => {
       if (authErr || !user) {
         throw new Error('Unauthorized');
       }
+
+      // Validação estrita de administrador
+      const { data: isAdmin } = await admin.rpc("is_admin_user", { _user_id: user.id });
+      if (!isAdmin) {
+        throw new Error('Forbidden: Acesso restrito a administradores');
+      }
     }
 
     const asaasKey = Deno.env.get('ASAAS_API_KEY') || Deno.env.get('ASAAS_WEBHOOK_TOKEN');

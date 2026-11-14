@@ -13,6 +13,7 @@ import { fbTrack, fbTrackCustom, fbSetUserData, type FbStandardEvent } from "./f
 import { adsConversion, setAdsUserData, type AdsConversionKey } from "./googleAds";
 import { nativeLogEvent } from "./nativeAnalytics";
 import { supabase } from "@/integrations/supabase/client";
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from "./precos";
 
 type Method = "email" | "google" | string;
 type Channel = "app" | "horus" | "whatsapp";
@@ -20,25 +21,34 @@ type NarrKind = "boletim" | "blog" | "artigo" | "noticia";
 
 export const CURRENCY = "BRL";
 
-/** Valor de referência (receita anualizada) de cada plano, em BRL. */
+/** Valor de referência (receita anualizada) de cada plano, em BRL, alinhado à fonte única precos.ts. */
 export const PLAN_VALUE: Record<string, number> = {
-  mensal: 29.9,
-  anual: 199.9,
-  anual_parcelado: 199.9,
+  mensal: PRECO_MENSAL,
+  mensal_pix: PRECO_MENSAL,
+  anual: PRECO_ANUAL,
+  anual_parcelado: PRECO_ANUAL,
+  anual_pix: PRECO_ANUAL,
+  anual_regular_pix: PRECO_ANUAL,
+  vitalicio: PRECO_VITALICIO,
+  vitalicio_pix: PRECO_VITALICIO,
 };
 
-/** Planos oficiais padronizados: Mensal (R$ 29,90) e Anual (R$ 199,90). */
+/** Planos oficiais padronizados: Mensal, Anual e Vitalício. */
 const PLAN_VALUE_IOS: Record<string, number> = {};
 
 export function planValue(plano?: string | null): number {
   if (!plano) return 0;
+  const p = plano.toLowerCase().trim();
+  if (p.includes("vitalicio") || p.includes("vitalício")) return PRECO_VITALICIO;
+  if (p.includes("anual")) return PRECO_ANUAL;
+  if (p.includes("mensal")) return PRECO_MENSAL;
   try {
     const isIOS =
       typeof navigator !== "undefined" &&
       /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS && PLAN_VALUE_IOS[plano] != null) return PLAN_VALUE_IOS[plano];
+    if (isIOS && PLAN_VALUE_IOS[p] != null) return PLAN_VALUE_IOS[p];
   } catch { /* ignore */ }
-  return PLAN_VALUE[plano] ?? 0;
+  return PLAN_VALUE[p] ?? 0;
 }
 
 let dbEventQueue: Array<{
