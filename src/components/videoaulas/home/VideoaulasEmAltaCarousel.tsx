@@ -75,7 +75,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
       return copy.slice(0, 12);
     }, [areas]);
 
-    // Pré-carrega as capas em memória para exibição a 0ms
+    // Pré-carrega as capas em memória para exibição instantânea (0ms)
     useEffect(() => {
       areasOrdenadas.forEach((item) => {
         const coverData = getAreaCover(item.area);
@@ -94,11 +94,11 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="min-w-0 flex-1">
             <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-              <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
-              <span className="truncate">EM ALTA</span>
+              <span className="w-1.5 h-4.5 rounded-full bg-rose-500 shrink-0" />
+              <span>Em Alta</span>
             </h3>
-            <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
-              Matérias e videoaulas fundamentais para sua formação e concursos
+            <p className="text-zinc-400 text-xs sm:text-[13px] leading-snug ml-3.5 mt-0.5">
+              Matérias fundamentais para sua formação e concursos
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
             const coverData = getAreaCover(item.area);
             const coverUrl = coverData?.cover || constCover;
             const isFav = favAreas.has(item.area);
-            const displayTitle = simplificarNomeArea(item.area);
+            const displayTitle = simplificarNomeArea(item.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
 
             return (
               <div
@@ -118,9 +118,9 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                   haptic.selection();
                   onSelectArea(item.slug);
                 }}
-                className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150 touch-manipulation"
               >
-                <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                <div className="relative aspect-[3/4.1] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
                   <img
                     src={coverUrl}
                     alt={displayTitle}
@@ -128,34 +128,39 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 
                   {/* Badge de progresso */}
                   {item.pct > 0 && (
-                    <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded-md bg-emerald-500/90 text-[9px] font-black text-white shadow">
+                    <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded-md bg-emerald-500/90 text-[9.5px] font-black text-white shadow">
                       {item.pct}%
                     </span>
                   )}
 
-                  {/* Botão de Favorito no topo direito */}
+                  {/* Botão de Favorito no topo direito com alvo de toque Google 44px */}
                   <button
                     type="button"
                     onClick={(e) => toggleFav(item.area, e)}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
-                    aria-label="Favoritar área"
+                    aria-label={`Favoritar ${item.area}`}
+                    className="absolute top-1.5 right-1.5 w-10 h-10 rounded-full flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/15 text-white/80 active:scale-90 transition-transform cursor-pointer"
                   >
                     <Heart
-                      className={`w-3.5 h-3.5 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`}
+                      className={`w-4 h-4 transition-colors ${
+                        isFav ? 'fill-rose-500 text-rose-500' : 'hover:text-white'
+                      }`}
                     />
                   </button>
-                </div>
 
-                <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
-                  {displayTitle}
-                </p>
-                <p className="text-[10.5px] text-white/50 truncate mt-0.5">
-                  {item.total} {item.total === 1 ? 'aula disponível' : 'aulas disponíveis'}
-                </p>
+                  {/* Título DENTRO da Capa com degradê elegante */}
+                  <div className="absolute bottom-0 inset-x-0 p-2.5 pt-4 text-left pointer-events-none">
+                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-md">
+                      {displayTitle}
+                    </p>
+                    <span className="text-[10px] text-zinc-400 font-medium leading-none block mt-1">
+                      {item.total} aulas
+                    </span>
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -164,4 +169,3 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
     );
   }
 );
-

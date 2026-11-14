@@ -151,7 +151,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
       <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
       <div className="mx-auto w-full max-w-4xl pb-32">
-        {/* Painel Hero Preservado Rigorosamente ("menos o painel") */}
+        {/* Painel Hero Minimalista Editorial */}
         <VideoaulasHero
           data={state.data}
           heroIdx={state.heroIdx}
@@ -163,12 +163,12 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           dash={dash}
         />
 
-        {/* Conteúdo Principal com Layout Minimalista e Detalhista Estilo Resumos */}
+        {/* Conteúdo Principal com Layout Minimalista e Espaçamento Ergonômico */}
         <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
           {/* Card Dinâmico "Continuar Assistindo" */}
           <VideoaulasContinuarCard />
 
-          {/* Seção "EM ALTA" (Carrossel Horizontal com Snap) */}
+          {/* Seção "EM ALTA" (Carrossel Horizontal Fluido) */}
           {activeTab === 'Todos' && !q && (
             <VideoaulasEmAltaCarousel
               areas={areasItens}
@@ -179,35 +179,32 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           {/* Seção Catálogo de Videoaulas */}
           <section className="pt-2 space-y-4">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
-                CATÁLOGO DE VIDEOAULAS
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="w-1 h-6 rounded-full bg-rose-500" />
-                <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-rose-500" />
+                <h2 className="font-sans text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
                   {activeTab === 'Todos' ? 'Todas as Matérias' : activeTab}
                 </h2>
               </div>
-              <p className="text-sm text-white/60 mt-1 ml-3 leading-snug">
-                Toque em qualquer matéria para abrir os módulos e videoaulas completas.
+              <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
+                Toque em qualquer matéria para abrir os módulos e aulas completas.
               </p>
             </div>
 
-            {/* Campo de Busca Rápida Idêntico a Resumos e Audiobooks */}
+            {/* Campo de Busca Rápida Ergonômico (min 48px touch target) */}
             <div className="relative">
-              <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-5 h-5 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm font-sans"
               />
               {q && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer active:scale-95"
                   aria-label="Limpar busca"
                 >
                   <X className="w-4 h-4" />
@@ -223,88 +220,72 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               emAndamentoCount={state.emAndamentoCount}
             />
 
-            {/* Conteúdo do Grid Conforme a Aba Selecionada */}
-            <div className="pt-2">
-              {state.loading ? (
-                <div className="flex items-center justify-center py-16 text-white/50">
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando videoaulas...
-                </div>
-              ) : activeTab === 'Lei Seca' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {ITENS_LEI_SECA.map((item) => (
-                    <VideoaulasEspeciaisCard key={item.id} item={item} />
+            {/* Conteúdo Dinâmico por Aba ou Busca */}
+            {activeTab === 'Lei Seca' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {ITENS_LEI_SECA.map((item) => (
+                  <VideoaulasEspeciaisCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : activeTab === 'Três Poderes' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {ITENS_TRES_PODERES.map((item) => (
+                  <VideoaulasEspeciaisCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : q.trim() && state.buscando ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
+                <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
+                <p className="text-xs">Buscando aulas e matérias…</p>
+              </div>
+            ) : q.trim() && state.resultadosAulas.length > 0 ? (
+              <div className="space-y-3 pt-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                  {state.resultadosAulas.length} {state.resultadosAulas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
+                </p>
+                <div className="space-y-2">
+                  {state.resultadosAulas.map((aula) => (
+                    <VideoaulasAulaResultCard key={aula.id} aula={aula} />
                   ))}
                 </div>
-              ) : activeTab === 'Três Poderes' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {ITENS_TRES_PODERES.map((item) => (
-                    <VideoaulasEspeciaisCard key={item.id} item={item} />
-                  ))}
-                </div>
-              ) : q.trim() && state.buscaAulas.length > 0 ? (
-                <div className="space-y-4">
-                  {filteredAreas.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs uppercase font-bold text-white/50 tracking-wider">
-                        Disciplinas correspondentes
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {filteredAreas.map((r) => (
-                          <VideoaulasAreaCard
-                            key={r.slug}
-                            area={r}
-                            onClick={handleAreaClick}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-2 pt-2">
-                    <p className="text-xs uppercase font-bold text-white/50 tracking-wider">
-                      Videoaulas encontradas ({state.buscaAulas.length})
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {state.buscaAulas.slice(0, 30).map((aula) => (
-                        <VideoaulasAulaResultCard key={aula.videoId} aula={aula} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : filteredAreas.length === 0 ? (
-                <div className="text-center py-16 text-white/50 text-sm space-y-3">
-                  <p>Nenhuma videoaula encontrada para "{q}".</p>
-                  {q && (
-                    <button
-                      onClick={handleClearSearch}
-                      className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition cursor-pointer"
-                    >
-                      Limpar filtro
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {filteredAreas.map((r) => (
-                    <VideoaulasAreaCard
-                      key={r.slug}
-                      area={r}
-                      onClick={handleAreaClick}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+              </div>
+            ) : filteredAreas.length > 0 ? (
+              <div className="space-y-3 pt-1">
+                {filteredAreas.map((area) => (
+                  <VideoaulasAreaCard
+                    key={area.slug}
+                    area={area}
+                    onClick={handleAreaClick}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 rounded-2xl bg-zinc-900/40 border border-white/5 p-6">
+                <p className="text-sm font-semibold text-white">Nenhuma matéria encontrada</p>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Tente buscar por outro termo ou limpe o filtro.
+                </p>
+              </div>
+            )}
           </section>
         </main>
       </div>
 
-      <VideoaulasBottomNav />
+      {/* Navegação Inferior de Videoaulas */}
+      <VideoaulasBottomNav
+        activeTab="home"
+        onOpenBusca={() => {}}
+        onOpenDesempenho={() => state.setShowDesempenho(true)}
+      />
 
+      {/* Sheet de Desempenho */}
       <VideoaulasDesempenhoSheet
         open={state.showDesempenho}
-        onClose={() => state.setShowDesempenho(false)}
-        horasTotais={horasAssistidas}
+        onOpenChange={state.setShowDesempenho}
+        data={state.data}
+        horasAssistidas={horasAssistidas}
+        c={c}
+        dash={dash}
       />
     </div>
   );
