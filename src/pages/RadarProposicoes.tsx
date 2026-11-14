@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo, startTransition, useCallback } from 'reac
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
-import RadarBottomNav from '@/components/radar/RadarBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { ArrowRight, Moon, FileText, ChevronDown } from 'lucide-react';
@@ -244,8 +243,6 @@ const RadarProposicoes = () => {
           timelineItems
         )}
       </div>
-
-      <RadarBottomNav />
     </div>
   );
 };

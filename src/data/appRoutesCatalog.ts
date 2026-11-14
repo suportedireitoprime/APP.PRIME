@@ -2189,63 +2189,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/questoes/simulado",
-    "group": "Questões & Simulados",
-    "label": "Questoes Simulado",
-    "description": "Página correspondente ao componente QuestoesSimulado",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesSimulado",
-    "exampleUrl": "/questoes/simulado",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~90 KB",
-    "weightReasons": [
-      "Navegação modular",
-      "Dados leves sob demanda"
-    ]
-  },
-  {
-    "path": "/questoes/simulado/:cargoId",
-    "group": "Questões & Simulados",
-    "label": "QUESTOES (:cargoId)",
-    "description": "Página correspondente ao componente QuestoesSimuladoCargoConfig",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesSimuladoCargoConfig",
-    "exampleUrl": "/questoes/simulado/geral",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~90 KB",
-    "weightReasons": [
-      "Navegação modular",
-      "Dados leves sob demanda"
-    ]
-  },
-  {
-    "path": "/questoes/trilhas",
-    "group": "Questões & Simulados",
-    "label": "Questoes Trilhas",
-    "description": "Página correspondente ao componente QuestoesTrilhas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesTrilhas",
-    "exampleUrl": "/questoes/trilhas",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~90 KB",
-    "weightReasons": [
-      "Navegação modular",
-      "Dados leves sob demanda"
-    ]
-  },
-  {
     "path": "/radar-360",
     "group": "Radares",
     "label": "Radar 360",
@@ -2256,44 +2199,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Radar360",
     "exampleUrl": "/radar-360",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~280 KB",
-    "weightReasons": [
-      "Gráficos estatísticos",
-      "Filtros dinâmicos"
-    ]
-  },
-  {
-    "path": "/radar-concursos",
-    "group": "Radares",
-    "label": "Radar Concursos",
-    "description": "Radar de Concursos com filtros por cargo, estado e banca examinadora",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "RadarConcursos",
-    "exampleUrl": "/radar-concursos",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~280 KB",
-    "weightReasons": [
-      "Gráficos estatísticos",
-      "Filtros dinâmicos"
-    ]
-  },
-  {
-    "path": "/radar-concursos/estatisticas",
-    "group": "Radares",
-    "label": "Radar Concursos Estatisticas",
-    "description": "Estatísticas e métricas de matérias mais cobradas em concursos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "RadarEstatisticas",
-    "exampleUrl": "/radar-concursos/estatisticas",
     "weightScore": 2,
     "weightLevel": "media",
     "weightEstimate": "~280 KB",

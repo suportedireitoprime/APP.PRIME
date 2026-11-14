@@ -134,8 +134,6 @@ const PessoalLeis = lazy(() => import("./pages/pessoal/Leis.tsx"));
 const PessoalAnotacoes = lazy(() => import("./pages/pessoal/Anotacoes.tsx"));
 const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
-const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
-const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
 const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 
 const MeExplique = lazy(routePrefetch.meExplique);
@@ -195,11 +193,8 @@ const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx
 const Questoes = lazy(() => import("./pages/Questoes.tsx"));
 const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
 const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
-const QuestoesSimulado = lazy(() => import("./pages/QuestoesSimulado.tsx"));
-const QuestoesSimuladoCargoConfig = lazy(() => import("./pages/QuestoesSimuladoCargoConfig.tsx"));
 const QuestoesRevisar = lazy(() => import("./pages/QuestoesRevisar.tsx"));
 const QuestoesDesafios = lazy(() => import("./pages/QuestoesDesafios.tsx"));
-const QuestoesTrilhas = lazy(() => import("./pages/QuestoesTrilhas.tsx"));
 const QuestoesLembretes = lazy(() => import('./pages/QuestoesLembretes'));
 const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
 const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
@@ -831,8 +826,6 @@ function AnimatedRoutes() {
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug/:artigoNumero" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition instant><Boletins /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
@@ -847,7 +840,6 @@ function AnimatedRoutes() {
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/radar-concursos" element={<Navigate to="/radar-concursos" replace />} />
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
@@ -934,12 +926,9 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/simulados/resolver/:id" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition instant><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition instant><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition instant><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition instant><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition instant><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition instant><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/trilhas" element={<ProtectedRoute><PageTransition instant><QuestoesTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/cadernos" element={<ProtectedRoute><PageTransition instant><QuestoesCadernos /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios/conquistas" element={<ProtectedRoute><PageTransition instant><QuestoesConquistas /></PageTransition></ProtectedRoute>} />
