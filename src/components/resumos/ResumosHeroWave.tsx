@@ -2,20 +2,21 @@ import React, { memo } from 'react';
 
 /**
  * ResumosHeroWave
- * Onda hiper-realista em cetim/seda pura 3D com paleta Bege / Marfim / Champanhe Acetinado.
+ * Onda hiper-realista em cetim/seda 3D em tom Verde Botânico / Esmeralda Clássico,
+ * extraído diretamente da vegetação do jardim e ciprestes da pintura dos juristas.
  * 100% GPU-accelerated (120fps contínuo, sem engasgos, ciclo de 1440px).
  */
 export const ResumosHeroWave: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
-      {/* ── 1. Resplendor Volumétrico e Bloom no Tom Bege / Champanhe ── */}
+      {/* ── 1. Resplendor Volumétrico e Bloom no Tom Verde Esmeralda / Musgo ── */}
       <div 
-        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-[#E6D7C3]/25 via-[#8C7A65]/15 to-transparent blur-3xl pointer-events-none transform-gpu"
-        style={{ animation: 'resumosBeigeGlowPulse 8s ease-in-out infinite alternate' }}
+        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-emerald-600/30 via-emerald-950/20 to-transparent blur-3xl pointer-events-none transform-gpu"
+        style={{ animation: 'resumosGreenGlowPulse 8s ease-in-out infinite alternate' }}
       />
       <div 
-        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-[#F5EBE0]/20 via-[#6E5D4A]/20 to-transparent blur-3xl pointer-events-none transform-gpu"
-        style={{ animation: 'resumosBeigeGlowPulse 10s ease-in-out infinite alternate-reverse' }}
+        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-emerald-500/25 via-green-950/20 to-transparent blur-3xl pointer-events-none transform-gpu"
+        style={{ animation: 'resumosGreenGlowPulse 10s ease-in-out infinite alternate-reverse' }}
       />
 
       {/* ── 2. Gradiente Lateral de Contraste para Legibilidade Absoluta dos Textos ── */}
@@ -24,7 +25,7 @@ export const ResumosHeroWave: React.FC = () => {
       />
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          CAMADA 1: Fita Traseira de Veludo Castanho Suave / Taupe Quente
+          CAMADA 1: Fita Traseira de Veludo Verde Floresta Profundo
           ══════════════════════════════════════════════════════════════════════════ */}
       <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-80">
         <svg
@@ -32,44 +33,44 @@ export const ResumosHeroWave: React.FC = () => {
           preserveAspectRatio="none"
           className="absolute -bottom-1 left-0 w-[200%] h-[142px] sm:h-[178px] pointer-events-none transform-gpu"
           style={{
-            animation: 'resumosBeigeWaveBackSlide 24s linear infinite',
+            animation: 'resumosGreenWaveBackSlide 24s linear infinite',
             filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
           }}
         >
           <defs>
-            <linearGradient id="beigeDeepVelvet" x1="0%" y1="0%" x2="100%" y2="50%">
-              <stop offset="0%" stopColor="#1a1510" stopOpacity="0.98" />
-              <stop offset="25%" stopColor="#3d3328" stopOpacity="0.92" />
-              <stop offset="50%" stopColor="#241e17" stopOpacity="0.98" />
-              <stop offset="75%" stopColor="#483d30" stopOpacity="0.92" />
-              <stop offset="100%" stopColor="#1a1510" stopOpacity="0.98" />
+            <linearGradient id="greenDeepVelvet" x1="0%" y1="0%" x2="100%" y2="50%">
+              <stop offset="0%" stopColor="#07170c" stopOpacity="0.98" />
+              <stop offset="25%" stopColor="#12331b" stopOpacity="0.92" />
+              <stop offset="50%" stopColor="#0a2111" stopOpacity="0.98" />
+              <stop offset="75%" stopColor="#173d22" stopOpacity="0.92" />
+              <stop offset="100%" stopColor="#07170c" stopOpacity="0.98" />
             </linearGradient>
 
-            <linearGradient id="beigeBackCrest" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id="greenBackCrest" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="25%" stopColor="#f5ebe0" stopOpacity="0.45" />
+              <stop offset="25%" stopColor="#86efac" stopOpacity="0.45" />
               <stop offset="50%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="75%" stopColor="#f5ebe0" stopOpacity="0.5" />
+              <stop offset="75%" stopColor="#86efac" stopOpacity="0.5" />
               <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
             </linearGradient>
           </defs>
 
           <path
             d="M 0,210 C 260,120 520,135 720,205 C 940,285 1200,270 1440,210 C 1700,120 1960,135 2160,205 C 2380,285 2640,270 2880,210 L 2880,400 L 0,400 Z"
-            fill="url(#beigeDeepVelvet)"
+            fill="url(#greenDeepVelvet)"
           />
 
           <path
             d="M 0,210 C 260,120 520,135 720,205 C 940,285 1200,270 1440,210 C 1700,120 1960,135 2160,205 C 2380,285 2640,270 2880,210"
             fill="none"
-            stroke="url(#beigeBackCrest)"
+            stroke="url(#greenBackCrest)"
             strokeWidth="2.2"
           />
         </svg>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          CAMADA 2: Fita Mestra de Cetim Bege Champanhe Acetinado
+          CAMADA 2: Fita Mestra de Cetim Verde Esmeralda Acetinado
           ══════════════════════════════════════════════════════════════════════════ */}
       <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform">
         <svg
@@ -77,50 +78,50 @@ export const ResumosHeroWave: React.FC = () => {
           preserveAspectRatio="none"
           className="absolute -bottom-1 left-0 w-[200%] h-[130px] sm:h-[162px] pointer-events-none transform-gpu"
           style={{
-            animation: 'resumosBeigeWaveMainSlide 16s linear infinite',
-            filter: 'drop-shadow(0 -8px 20px rgba(230, 215, 195, 0.4)) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))',
+            animation: 'resumosGreenWaveMainSlide 16s linear infinite',
+            filter: 'drop-shadow(0 -8px 20px rgba(16, 185, 129, 0.4)) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))',
           }}
         >
           <defs>
-            <linearGradient id="beigeSatinLustre" x1="0%" y1="0%" x2="100%" y2="70%">
-              <stop offset="0%" stopColor="#241e17" />
-              <stop offset="12%" stopColor="#4d3f32" />
-              <stop offset="25%" stopColor="#7a6754" />
-              <stop offset="38%" stopColor="#bfae98" />
-              <stop offset="48%" stopColor="#e8dccb" />
-              <stop offset="62%" stopColor="#c5b39c" />
-              <stop offset="76%" stopColor="#f5ebe0" />
-              <stop offset="88%" stopColor="#6e5c48" />
-              <stop offset="100%" stopColor="#241e17" />
+            <linearGradient id="greenSatinLustre" x1="0%" y1="0%" x2="100%" y2="70%">
+              <stop offset="0%" stopColor="#0b2413" />
+              <stop offset="12%" stopColor="#144222" />
+              <stop offset="25%" stopColor="#1e5f33" />
+              <stop offset="38%" stopColor="#2e854b" />
+              <stop offset="48%" stopColor="#48b86e" />
+              <stop offset="62%" stopColor="#329755" />
+              <stop offset="76%" stopColor="#86efac" />
+              <stop offset="88%" stopColor="#1a502c" />
+              <stop offset="100%" stopColor="#0b2413" />
             </linearGradient>
 
-            <linearGradient id="beigeMainCrest" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#57493b" stopOpacity="0.4" />
+            <linearGradient id="greenMainCrest" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#164e29" stopOpacity="0.4" />
               <stop offset="20%" stopColor="#ffffff" stopOpacity="0.85" />
-              <stop offset="35%" stopColor="#f7efe4" stopOpacity="1" />
-              <stop offset="50%" stopColor="#ded0bc" stopOpacity="0.6" />
+              <stop offset="35%" stopColor="#bbf7d0" stopOpacity="1" />
+              <stop offset="50%" stopColor="#4ade80" stopOpacity="0.6" />
               <stop offset="70%" stopColor="#ffffff" stopOpacity="0.9" />
-              <stop offset="85%" stopColor="#f7efe4" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#57493b" stopOpacity="0.4" />
+              <stop offset="85%" stopColor="#bbf7d0" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#164e29" stopOpacity="0.4" />
             </linearGradient>
           </defs>
 
           <path
             d="M 0,240 C 240,150 480,165 720,235 C 960,310 1200,300 1440,240 C 1680,150 1920,165 2160,235 C 2400,310 2640,300 2880,240 L 2880,400 L 0,400 Z"
-            fill="url(#beigeSatinLustre)"
+            fill="url(#greenSatinLustre)"
           />
 
           <path
             d="M 0,240 C 240,150 480,165 720,235 C 960,310 1200,300 1440,240 C 1680,150 1920,165 2160,235 C 2400,310 2640,300 2880,240"
             fill="none"
-            stroke="url(#beigeMainCrest)"
+            stroke="url(#greenMainCrest)"
             strokeWidth="3.2"
           />
         </svg>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          CAMADA 3: Fita Frontal Flutuante com Fios Especulares de Luz Marfim
+          CAMADA 3: Fita Frontal Flutuante com Fios Especulares de Luz Verde-Menta
           ══════════════════════════════════════════════════════════════════════════ */}
       <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-90">
         <svg
@@ -128,37 +129,37 @@ export const ResumosHeroWave: React.FC = () => {
           preserveAspectRatio="none"
           className="absolute -bottom-1 left-0 w-[200%] h-[112px] sm:h-[138px] pointer-events-none transform-gpu"
           style={{
-            animation: 'resumosBeigeWaveFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-            filter: 'drop-shadow(0 -4px 14px rgba(245, 235, 224, 0.45))',
+            animation: 'resumosGreenWaveFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+            filter: 'drop-shadow(0 -4px 14px rgba(134, 239, 172, 0.45))',
           }}
         >
           <defs>
-            <linearGradient id="beigeFrontCrest" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id="greenFrontCrest" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
               <stop offset="30%" stopColor="#ffffff" stopOpacity="0.95" />
-              <stop offset="45%" stopColor="#faf3ea" stopOpacity="1" />
+              <stop offset="45%" stopColor="#dcfce7" stopOpacity="1" />
               <stop offset="60%" stopColor="#ffffff" stopOpacity="0.3" />
               <stop offset="80%" stopColor="#ffffff" stopOpacity="0.95" />
               <stop offset="100%" stopColor="#ffffff" stopOpacity="0.2" />
             </linearGradient>
 
-            <linearGradient id="beigeFrontBody" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#30271f" stopOpacity="0.7" />
-              <stop offset="40%" stopColor="#695744" stopOpacity="0.5" />
-              <stop offset="60%" stopColor="#96816a" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#241d16" stopOpacity="0.75" />
+            <linearGradient id="greenFrontBody" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0b2413" stopOpacity="0.75" />
+              <stop offset="40%" stopColor="#1a552e" stopOpacity="0.5" />
+              <stop offset="60%" stopColor="#2d7c46" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#0d2b17" stopOpacity="0.75" />
             </linearGradient>
           </defs>
 
           <path
             d="M 0,270 C 300,195 560,205 720,265 C 920,335 1180,330 1440,270 C 1740,195 2000,205 2160,265 C 2360,335 2620,330 2880,270 L 2880,400 L 0,400 Z"
-            fill="url(#beigeFrontBody)"
+            fill="url(#greenFrontBody)"
           />
 
           <path
             d="M 0,270 C 300,195 560,205 720,265 C 920,335 1180,330 1440,270 C 1740,195 2000,205 2160,265 C 2360,335 2620,330 2880,270"
             fill="none"
-            stroke="url(#beigeFrontCrest)"
+            stroke="url(#greenFrontCrest)"
             strokeWidth="2.4"
           />
         </svg>
@@ -166,7 +167,7 @@ export const ResumosHeroWave: React.FC = () => {
 
       {/* ── Keyframes Fluidos a 120fps (GPU pura) ── */}
       <style>{`
-        @keyframes resumosBeigeWaveMainSlide {
+        @keyframes resumosGreenWaveMainSlide {
           0% {
             transform: translate3d(0, 0, 0) scaleY(1);
           }
@@ -178,7 +179,7 @@ export const ResumosHeroWave: React.FC = () => {
           }
         }
 
-        @keyframes resumosBeigeWaveBackSlide {
+        @keyframes resumosGreenWaveBackSlide {
           0% {
             transform: translate3d(0, 0, 0) scaleY(0.97);
           }
@@ -190,7 +191,7 @@ export const ResumosHeroWave: React.FC = () => {
           }
         }
 
-        @keyframes resumosBeigeWaveFrontSlide {
+        @keyframes resumosGreenWaveFrontSlide {
           0% {
             transform: translate3d(0, 0, 0) scaleY(1);
           }
@@ -202,7 +203,7 @@ export const ResumosHeroWave: React.FC = () => {
           }
         }
 
-        @keyframes resumosBeigeGlowPulse {
+        @keyframes resumosGreenGlowPulse {
           0% {
             opacity: 0.45;
             transform: scale(0.96);

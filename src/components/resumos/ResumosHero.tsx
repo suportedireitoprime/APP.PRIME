@@ -5,7 +5,7 @@ import {
   BarChart3, Sparkles, X, ChevronRight, Scale, Landmark 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import resumosHeroImg from '@/assets/covers/resumos-juristas-jardim.jpg';
 import ResumosHeroWave from './ResumosHeroWave';
 
 interface Props {
@@ -42,18 +42,18 @@ const ResumosHero = ({
           aria-hidden="true"
         />
 
-        {/* Imagem de Capa Oficial das Aulas Interativas (Grécia Antiga e Filósofos) */}
+        {/* Imagem de Capa Oficial dos Três Juristas no Jardim Clássico */}
         <img
-          src={greciaFilosofosFundo}
-          alt="Aulas Interativas e Resumos"
+          src={resumosHeroImg}
+          alt="Juristas e Filósofos do Direito no Jardim"
           aria-hidden="true"
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-[center_28%] z-0 pointer-events-none transform-gpu will-change-transform"
+          className="absolute inset-0 w-full h-full object-cover object-[center_35%] md:object-[center_30%] z-0 pointer-events-none transform-gpu will-change-transform"
         />
 
-        {/* Onda Hiper-Realista 3D em Tom Bege / Champanhe Acetinado */}
+        {/* Onda Hiper-Realista 3D em Tom Verde Botânico / Esmeralda Acetinado */}
         <ResumosHeroWave />
 
         {/* Cabeçalho Superior Transparente (Botão de Voltar Padrão Ouro do Projeto) */}
@@ -78,19 +78,19 @@ const ResumosHero = ({
             {/* Espaçador para o botão de voltar */}
             <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
 
-            {/* Tipografia de Marca Minimalista: Resumos (branco) + Jurídicos (bege champanhe) */}
+            {/* Tipografia de Marca Minimalista: Resumos (branco) + Jurídicos (verde esmeralda) */}
             <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
               <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
                 {isMapas ? 'Mapas' : 'Resumos'}
               </span>
-              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-[#E8DCCB] block drop-shadow-[0_2px_14px_rgba(232,220,203,0.45)] -mt-0.5">
+              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-[#86efac] block drop-shadow-[0_2px_14px_rgba(74,222,128,0.55)] -mt-0.5">
                 {isMapas ? 'Mentais' : 'Jurídicos'}
               </span>
             </h1>
 
-            {/* Traço vertical bege champanhe e slogan minimalista */}
+            {/* Traço vertical verde esmeralda e slogan minimalista */}
             <div className="mt-2 flex items-start text-left gap-2">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-[#E8DCCB] via-[#C5B39C] to-[#6E5C48] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(232,220,203,0.5)]" />
+              <div className="w-[3px] h-8 bg-gradient-to-b from-[#86efac] via-[#22c55e] to-[#14532d] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(74,222,128,0.6)]" />
               <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                 Domine os conceitos.
                 <br />
@@ -114,7 +114,7 @@ const ResumosHero = ({
               aria-label="Abrir Favoritos"
             >
               <Heart
-                className="w-5 h-5 text-[#E8DCCB] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
               <span className="text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap text-white/85 group-hover:text-white drop-shadow-sm">
@@ -133,7 +133,7 @@ const ResumosHero = ({
               aria-label="Abrir Recentes"
             >
               <History
-                className="w-5 h-5 text-[#E8DCCB] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
               <span className="text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap text-white/85 group-hover:text-white drop-shadow-sm">
@@ -152,7 +152,7 @@ const ResumosHero = ({
               aria-label="Abrir Estatísticas"
             >
               <BarChart3
-                className="w-5 h-5 text-[#E8DCCB] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
               <span className="text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap text-white/85 group-hover:text-white drop-shadow-sm">
@@ -171,7 +171,7 @@ const ResumosHero = ({
               aria-label="Outros Recursos"
             >
               <Sparkles
-                className="w-5 h-5 text-[#E8DCCB] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+                className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
               <span className="text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap text-white/85 group-hover:text-white drop-shadow-sm">
@@ -193,7 +193,7 @@ const ResumosHero = ({
             <div className="w-12 h-1.5 bg-zinc-700/60 rounded-full mx-auto mb-4" />
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#E8DCCB]" />
+                <BarChart3 className="w-5 h-5 text-emerald-400" />
                 <h3 className="font-display font-bold text-lg text-white">Estatísticas do Acervo</h3>
               </div>
               <button
@@ -205,17 +205,17 @@ const ResumosHero = ({
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-zinc-900 border border-white/10 rounded-2xl p-3.5 text-center">
-                <BookOpen className="w-5 h-5 text-[#E8DCCB] mx-auto mb-1" />
+                <BookOpen className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
                 <p className="text-xl font-bold font-display text-white">{totalResumos.toLocaleString('pt-BR')}</p>
                 <p className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-0.5">Resumos</p>
               </div>
               <div className="bg-zinc-900 border border-white/10 rounded-2xl p-3.5 text-center">
-                <Library className="w-5 h-5 text-[#E8DCCB] mx-auto mb-1" />
+                <Library className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
                 <p className="text-xl font-bold font-display text-white">{totalAreas.toLocaleString('pt-BR')}</p>
                 <p className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-0.5">Áreas</p>
               </div>
               <div className="bg-zinc-900 border border-white/10 rounded-2xl p-3.5 text-center">
-                <Layers className="w-5 h-5 text-[#E8DCCB] mx-auto mb-1" />
+                <Layers className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
                 <p className="text-xl font-bold font-display text-white">{totalTemas.toLocaleString('pt-BR')}</p>
                 <p className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mt-0.5">Temas</p>
               </div>
@@ -238,7 +238,7 @@ const ResumosHero = ({
             <div className="w-12 h-1.5 bg-zinc-700/60 rounded-full mx-auto mb-4" />
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#E8DCCB]" />
+                <Sparkles className="w-5 h-5 text-emerald-400" />
                 <h3 className="font-display font-bold text-lg text-white">Recursos Complementares</h3>
               </div>
               <button
@@ -257,7 +257,7 @@ const ResumosHero = ({
                 }}
                 className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#E8DCCB] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                   <Library className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -275,7 +275,7 @@ const ResumosHero = ({
                 }}
                 className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#E8DCCB] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                   <Scale className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -293,7 +293,7 @@ const ResumosHero = ({
                 }}
                 className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#E8DCCB] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                   <Landmark className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
