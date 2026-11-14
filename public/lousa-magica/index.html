@@ -35,7 +35,7 @@ html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Robo
 .eraser-rest{display:flex;flex-direction:column;width:54px;cursor:pointer;flex:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));background:none;border:0;padding:0}
 .er-wood{height:14px;background:linear-gradient(180deg,#9a6a3e,#6b4423);border-radius:4px 4px 2px 2px}
 .er-felt{height:7px;background:linear-gradient(180deg,#efe9d6,#d8d0ba);border-radius:2px 2px 3px 3px}
-.scene-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;margin-bottom:2px;font-size:11px;color:#f5f2e3;flex:none;padding:0 2px}
+.scene-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:0;margin-bottom:4px;font-size:11px;color:#f5f2e3;flex:none;padding:0 2px}
 .dots{display:flex;gap:5px;align-items:center}
 .dot{width:9px;height:9px;border-radius:50%;background:#555;border:0;padding:0;cursor:pointer;transition:transform .2s,background-color .2s}
 .dot.on{background:#ffe66d;transform:scale(1.35)}
@@ -84,6 +84,7 @@ svg text{font-family:"Caveat","Segoe Script","Bradley Hand","Comic Sans MS",curs
 </head>
 <body>
 <div class="phone">
+  <div class="scene-row"><span id="sceneLabel">Quadro 1 de 7</span><div class="dots" id="sceneDots" role="tablist" aria-label="Quadros"></div><button class="cont-btn" id="contBtn" hidden>Continuar</button></div>
   <div class="stage">
   <div class="board-frame">
     <div class="board" id="board">
@@ -102,7 +103,6 @@ svg text{font-family:"Caveat","Segoe Script","Bradley Hand","Comic Sans MS",curs
     <div class="tray"><div class="chalks"><span class="chalk-piece" style="background:#f5f2e3"></span><span class="chalk-piece" style="background:#ffe66d"></span><span class="chalk-piece" style="background:#ff9db1"></span><span class="chalk-piece" style="background:#8ecfff"></span></div><button class="eraser-rest" id="eraserRest" title="Apagar o quadro" aria-label="Apagar o quadro"><span class="er-wood"></span><span class="er-felt"></span></button></div>
   </div>
   </div>
-  <div class="scene-row"><span id="sceneLabel">Quadro 1 de 7</span><div class="dots" id="sceneDots" role="tablist" aria-label="Quadros"></div><button class="cont-btn" id="contBtn" hidden>Continuar</button></div>
   <div class="player">
     <div class="player-top">
       <div class="track" id="track" role="slider" tabindex="0" aria-label="Progresso da pílula" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div><div class="thumb" id="thumb"></div></div>
