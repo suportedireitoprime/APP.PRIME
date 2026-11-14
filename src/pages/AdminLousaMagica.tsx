@@ -7,7 +7,7 @@ export default function AdminLousaMagica() {
   const navigate = useNavigate();
 
   return (
-    <div className="h-dvh max-h-dvh w-full overflow-hidden flex flex-col bg-[#0D0D0D] text-white select-none pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,20px)))]">
+    <div className="h-dvh max-h-dvh w-full overflow-hidden flex flex-col bg-[#0D0D0D] text-white select-none pb-0">
       {/* Top Bar Minimalista Responsivo com Botão de Voltar & Título (Padrão Google Material 3 / HIG) */}
       <header className="min-h-[58px] sm:min-h-[64px] flex-none px-3 sm:px-4 border-b border-white/10 bg-black/85 backdrop-blur-md flex items-center z-20 pt-[calc(0.5rem+env(safe-area-inset-top,0px))] pb-2">
         <button
@@ -33,12 +33,12 @@ export default function AdminLousaMagica() {
         </div>
       </header>
 
-      {/* Container Fullscreen do Player da Lousa Mágica com Proteção Safe Area Dupla */}
-      <main className="flex-1 w-full h-full min-h-0 bg-[#0e0f0e] flex items-center justify-center overflow-hidden relative pb-2 sm:pb-4">
+      {/* Container Fullscreen do Player da Lousa Mágica Responsivo e Justo no Rodapé */}
+      <main className="flex-1 w-full h-full min-h-0 bg-[#0e0f0e] flex items-center justify-center overflow-hidden relative pb-0">
         <iframe
           src="/lousa-magica/index.html"
           title="Lousa Mágica - Hans Kelsen"
-          className="w-full h-full border-0 block overflow-hidden max-w-[480px] md:max-w-none"
+          className="w-full h-full border-0 block overflow-hidden max-w-full md:max-w-3xl"
           allow="autoplay; fullscreen; clipboard-write"
         />
       </main>

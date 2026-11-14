@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none!important;-ms-overflow-style:none!important}
 *::-webkit-scrollbar,html::-webkit-scrollbar,body::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#f2f2f2;margin:0;padding:0;width:100%;height:100%;height:100dvh;max-height:100dvh;overflow:hidden!important}
-.phone{width:100%;max-width:460px;height:100%;height:100dvh;max-height:100dvh;background:#14161a;padding:8px 10px calc(28px + env(safe-area-inset-bottom, 20px));margin:0 auto;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;overflow:hidden!important}
+.phone{width:100%;max-width:600px;height:100%;height:100dvh;max-height:100dvh;background:#14161a;padding:4px 6px 4px;margin:0 auto;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;overflow:hidden!important}
 .stage{flex:1 1 0%;min-height:0;display:flex;flex-direction:column;width:100%;overflow:hidden}
 .board-frame{flex:1 1 0%;min-height:0;display:flex;flex-direction:column;background:repeating-linear-gradient(93deg,rgba(0,0,0,.07) 0 2px,transparent 2px 9px),linear-gradient(180deg,#a9743f,#7c4f27 60%,#6b4423);border-radius:12px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.22);overflow:hidden}
 .board{flex:1 1 0%;min-height:0;position:relative;border-radius:6px;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2e5d47 0%,#234a38 55%,#173325 100%);border:3px solid #5d3a1e;box-shadow:inset 0 0 70px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
@@ -18,7 +18,7 @@ html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Robo
 #curtainSvg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .curtain-valance{position:absolute;top:0;left:0;right:0;height:26px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.30) 0 12px,rgba(255,255,255,.07) 12px 24px,rgba(0,0,0,.30) 24px 36px),linear-gradient(180deg,#c01728,#8a0f1d);border-bottom:3px solid #d9a441}
 #annoLayer{position:absolute;inset:0;pointer-events:none;z-index:1}
-#boardSvg{position:relative;z-index:2;width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:360/470;object-fit:contain;display:block}
+#boardSvg{position:relative;z-index:2;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block}
 .board-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;pointer-events:none}
 #hand{position:absolute;top:0;left:0;z-index:6;pointer-events:none;opacity:0;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45));transition:opacity .25s;transform-origin:12px 109px}
 #hand img{display:block;width:140px;height:auto}
@@ -40,7 +40,7 @@ html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Robo
 .dots{display:flex;gap:6px;align-items:center}
 .dot{width:11px;height:11px;border-radius:50%;background:#555;border:0;padding:0;cursor:pointer;transition:transform .2s,background-color .2s}
 .dot.on{background:#ffe66d;transform:scale(1.35)}
-.player{display:flex;flex-direction:column;gap:8px;margin-top:4px;margin-bottom:calc(8px + env(safe-area-inset-bottom, 8px));padding:10px 12px 12px;background:#1e2126;border:1px solid #333;border-radius:14px;flex:none;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.player{display:flex;flex-direction:column;gap:6px;margin-top:4px;margin-bottom:0;padding:8px 12px 10px;background:#1e2126;border:1px solid #333;border-radius:14px;flex:none;box-shadow:0 4px 16px rgba(0,0,0,.35)}
 .player-top{display:flex;align-items:center;gap:12px;width:100%}
 .track{flex:1;min-width:60px;height:24px;padding:7px 0;background:#333;background-clip:content-box;border-radius:6px;cursor:pointer;position:relative}
 .fill{height:100%;width:0%;background:#ffe66d;border-radius:6px}
@@ -57,7 +57,7 @@ html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Robo
 .speed-btn:active,.skip-btn:active{transform:scale(0.94);background:#333740}
 .skip-btn{padding:6px 10px;font-size:13px}
 .subs{display:none!important;margin:0!important;padding:0!important;height:0!important;min-height:0!important;border:0!important;opacity:0!important;pointer-events:none!important}
-@media (max-width:480px){.phone{padding:6px 8px calc(34px + env(safe-area-inset-bottom, 24px))}}
+@media (max-width:480px){.phone{padding:2px 4px 4px}}
 .attn{animation:pulse 1.1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 /* v62: pulso do nó atual da linha do tempo ("você está aqui") */
