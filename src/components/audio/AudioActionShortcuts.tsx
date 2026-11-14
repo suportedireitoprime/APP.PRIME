@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { History, Flame, BarChart3, Route } from 'lucide-react';
+import { History, Flame, BarChart3, Heart } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AudioActionShortcutsProps {
@@ -62,13 +62,13 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
         action: onEstatistica,
       },
       {
-        id: 'trilhas',
-        label: 'Trilhas',
-        icon: Route,
-        color: isSalmon ? '#FDBA74' : '#FACC15',
-        badge: badgeTrilhas,
-        badgeColor: isSalmon ? '#EA580C' : '#CA8A04',
-        action: onTrilhas,
+        id: 'favoritos',
+        label: 'Favoritos',
+        icon: Heart,
+        color: isSalmon ? '#FFA285' : '#F43F5E',
+        badge: badgeFavoritos > 0 ? badgeFavoritos : badgeTrilhas,
+        badgeColor: isSalmon ? '#D94D2E' : '#E11D48',
+        action: onFavoritos || onTrilhas || (() => {}),
       },
     ];
 
