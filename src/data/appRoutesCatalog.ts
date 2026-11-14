@@ -1761,13 +1761,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasHome",
     "exampleUrl": "/pilulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~85 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Carrossel em leque Framer Motion",
+      "Canvas ShapeGrid 2D acelerado",
+      "Cards de áudios das matérias"
     ]
   },
   {
