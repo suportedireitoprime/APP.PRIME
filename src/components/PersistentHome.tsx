@@ -1,8 +1,10 @@
 import { useLocation } from "react-router-dom";
-import { useLayoutEffect } from "react";
-import Index from "@/pages/Index";
+import { useLayoutEffect, Suspense } from "react";
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useAuth } from "@/hooks/useAuth";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
+
+const Index = lazyWithRetry(() => import("@/pages/Index"));
 
 const HEAVY_GPU_PATHS = new Set([
   "/admin/laboratorio",
@@ -63,7 +65,9 @@ const PersistentHome = () => {
         style={{ display: "none" }}
         aria-hidden="true"
       >
-        <Index />
+        <Suspense fallback={null}>
+          <Index />
+        </Suspense>
       </div>
     );
   }
@@ -76,7 +80,9 @@ const PersistentHome = () => {
       style={{ display: visible ? "block" : "none" }}
       aria-hidden={!visible}
     >
-      <Index />
+      <Suspense fallback={null}>
+        <Index />
+      </Suspense>
     </div>
   );
 };

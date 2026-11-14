@@ -1,11 +1,9 @@
-import { memo, useMemo, useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
 
-const LOCAL_PROGRESSO_KEY = 'aulas_interativas_progresso_v1';
 const RED_COLOR = '#E11D48';
 
 const HomeAulasInterativasBanner = () => {
@@ -36,29 +34,6 @@ const HomeAulasInterativasBanner = () => {
       window.removeEventListener('focus', handleFocusOrVisible);
     };
   }, [location.pathname, location.key]);
-
-  // Verifica se o usuário tem alguma aula recente em progresso
-  const aulaRecente = useMemo(() => {
-    try {
-      const raw = localStorage.getItem(LOCAL_PROGRESSO_KEY);
-      if (!raw) return null;
-      const progresso = JSON.parse(raw) as Record<string, { etapaAtual: number }>;
-      const entries = Object.entries(progresso);
-      if (entries.length === 0) return null;
-
-      // Pega a última aula com progresso registrado
-      const lastEntry = entries[entries.length - 1];
-      const aula = AULAS_CATALOGO_COMPLETO.find((a) => a.id === lastEntry[0]);
-      if (!aula) return null;
-
-      return {
-        aula,
-        etapaAtual: lastEntry[1].etapaAtual || 1,
-      };
-    } catch {
-      return null;
-    }
-  }, []);
 
   const handleClick = () => {
     haptic.selection();

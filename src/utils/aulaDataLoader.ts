@@ -1,4 +1,4 @@
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { SlideItem, AulaData } from '@/types/aulaInterativa';
 import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
 
