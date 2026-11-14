@@ -11,6 +11,7 @@ import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
+import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface VideoaulasMobileViewProps {
@@ -55,13 +56,17 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   };
 
   const areasItens: VideoaulaAreaItem[] = useMemo(() => {
-    return state.areasDireito.map((a) => ({
-      area: a.area,
-      slug: a.slug,
-      total: a.total,
-      concluidas: a.concluidas,
-      pct: a.pct,
-    }));
+    return state.areasDireito.map((a) => {
+      const display = simplificarNomeArea(a.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
+      return {
+        area: a.area,
+        slug: a.slug,
+        total: a.total,
+        concluidas: a.concluidas,
+        pct: a.pct,
+        displayArea: display || a.area,
+      };
+    });
   }, [state.areasDireito]);
 
   // Filtragem combinada por Aba do Hero (Favoritos, Em Alta, Recentes, Playlist) e Chips
@@ -87,11 +92,12 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     if (activeChipTab === 'Em Andamento') {
       list = list.filter((a) => a.pct > 0);
     } else if (activeChipTab !== 'Todos') {
+      const tabLower = activeChipTab.toLowerCase();
       list = list.filter(
         (a) =>
-          a.area.toLowerCase() === activeChipTab.toLowerCase() ||
-          a.slug === activeChipTab ||
-          a.displayArea.toLowerCase() === activeChipTab.toLowerCase()
+          a.area.toLowerCase() === tabLower ||
+          a.slug.toLowerCase() === tabLower ||
+          (a.displayArea && a.displayArea.toLowerCase() === tabLower)
       );
     }
 
