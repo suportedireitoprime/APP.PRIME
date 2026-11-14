@@ -1838,12 +1838,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Pilulas",
     "exampleUrl": "/pilulas/classicos",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.9 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~75 KB",
     "weightReasons": [
-      "Cenário 3D Three.js",
-      "Iluminação e shaders"
+      "Cards de clássicos",
+      "Consulta Supabase com cache",
+      "Player de áudio nativo"
     ]
   },
   {
