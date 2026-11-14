@@ -1,6 +1,6 @@
 import { createSyncedList } from '@/lib/userSync';
 import { supabase } from '@/integrations/supabase/client';
-import { AUDIOBOOKS_CATALOGO, AudiobookLivro } from '@/data/audiobooksCatalogo';
+import type { AudiobookLivro } from '@/data/audiobooksCatalogo';
 
 export interface AudiobookFavItem {
   id: string;
@@ -110,17 +110,16 @@ export const audiobooksTracking = {
   getRecentes(): AudiobookRecenteItem[] {
     const list = audiobooksRecentesList.read();
     if (list.length === 0) {
-      const padrao = AUDIOBOOKS_CATALOGO[0];
       return [
         {
-          id: padrao.id,
-          titulo: padrao.titulo,
-          autor: padrao.autor,
-          capaUrl: padrao.capaUrl,
+          id: 'o-principe',
+          titulo: 'O Príncipe',
+          autor: 'Nicolau Maquiavel',
+          capaUrl: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_principe_manual.webp',
           capituloIndex: 0,
-          capituloTitulo: padrao.capitulos?.[0]?.titulo || 'Capítulo 1',
+          capituloTitulo: 'Capítulo 1',
           tempoSegundos: 0,
-          duracaoSegundos: padrao.capitulos?.[0]?.duracaoSegundos || 600,
+          duracaoSegundos: 600,
           ts: Date.now() - 3600000,
         },
       ];

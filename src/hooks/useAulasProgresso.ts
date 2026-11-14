@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { 
   carregarProgressoSupabase, 
   salvarProgressoSupabase, 
