@@ -24,7 +24,7 @@ export const ResumosAreaChips: React.FC<ResumosAreaChipsProps> = ({
         }}
         className={`px-4 h-9 rounded-xl text-[12.5px] font-bold whitespace-nowrap transition-colors shadow-sm cursor-pointer ${
           activeTab === "Todos"
-            ? "bg-rose-600 text-white shadow-rose-900/50"
+            ? "bg-[#E8DCCB] text-black shadow-md font-black"
             : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
         }`}
       >
@@ -42,14 +42,14 @@ export const ResumosAreaChips: React.FC<ResumosAreaChipsProps> = ({
             }}
             className={`px-3.5 h-9 rounded-xl text-[12.5px] font-bold whitespace-nowrap transition-colors shadow-sm cursor-pointer flex items-center gap-1.5 ${
               isActive
-                ? "bg-rose-600 text-white shadow-rose-900/50"
+                ? "bg-[#E8DCCB] text-black shadow-md font-black"
                 : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
             }`}
           >
             <span>{displayArea}</span>
             <span
               className={`text-[10.5px] px-1.5 py-0.5 rounded-full font-black ${
-                isActive ? "bg-black/30 text-white" : "bg-white/10 text-white/60"
+                isActive ? "bg-black/20 text-black font-extrabold" : "bg-white/10 text-white/60"
               }`}
             >
               {r.total}

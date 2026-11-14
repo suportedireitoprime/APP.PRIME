@@ -56,8 +56,8 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
       transition={{ duration: 0.3 }}
       onClick={handleClick}
       style={{
-        background: 'linear-gradient(to right, rgba(244, 63, 94, 0.22), rgba(244, 63, 94, 0.06))',
-        borderColor: 'rgba(244, 63, 94, 0.35)',
+        background: 'linear-gradient(to right, rgba(232, 220, 203, 0.16), rgba(232, 220, 203, 0.04))',
+        borderColor: 'rgba(232, 220, 203, 0.32)',
       }}
       className="w-full flex items-center gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer"
     >
@@ -70,7 +70,7 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
           loading="eager"
           decoding="async"
         />
-        <span className="absolute bottom-0 inset-x-0 bg-rose-600 text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
+        <span className="absolute bottom-0 inset-x-0 bg-[#BFAE98] text-[8px] font-black uppercase text-center text-black py-0.5 tracking-wider">
           RESUMO
         </span>
       </div>
@@ -78,8 +78,8 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
       {/* Textos informativos centrais */}
       <div className="flex-1 min-w-0 z-10">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <BookOpen className="w-2.5 h-2.5 fill-rose-400 text-rose-400" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-rose-300">
+          <BookOpen className="w-2.5 h-2.5 fill-[#E8DCCB] text-[#E8DCCB]" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#E8DCCB]">
             CONTINUAR ESTUDANDO
           </p>
         </div>
@@ -88,7 +88,7 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
           {titulo}
         </p>
 
-        <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-rose-200/90 mt-0.5">
+        <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-[#E8DCCB]/90 mt-0.5">
           <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
           <span className="truncate">{subtitulo}</span>
         </p>
@@ -96,18 +96,18 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
 
       {/* Seta indicativa à direita */}
       <ArrowRight
-        className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-rose-400 group-hover:translate-x-1 transition-transform"
+        className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-[#E8DCCB] group-hover:translate-x-1 transition-transform"
         strokeWidth={2.4}
       />
 
-      {/* Decoração de fundo com glow rose no canto direito */}
+      {/* Decoração de fundo com glow bege no canto direito */}
       <div
         className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center opacity-20"
         style={{
-          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(244, 63, 94, 0.4))',
+          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(232, 220, 203, 0.4))',
         }}
       >
-        <Layers className="w-24 h-24 text-rose-400" strokeWidth={1.2} />
+        <Layers className="w-24 h-24 text-[#E8DCCB]" strokeWidth={1.2} />
       </div>
     </motion.button>
   );
