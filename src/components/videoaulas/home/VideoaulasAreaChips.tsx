@@ -6,6 +6,7 @@ interface VideoaulasAreaChipsProps {
   areas: VideoaulaAreaItem[];
   activeTab: string;
   onSelectTab: (tab: string) => void;
+  onOpenArea?: (slug: string) => void;
   emAndamentoCount: number;
 }
 
@@ -13,6 +14,7 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
   areas,
   activeTab,
   onSelectTab,
+  onOpenArea,
   emAndamentoCount,
 }) => {
   const totalCount = React.useMemo(
@@ -48,7 +50,7 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           }}
           className={`px-3.5 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shadow-sm cursor-pointer touch-manipulation font-sans flex items-center gap-2 ${
             activeTab === 'Em Andamento'
-              ? 'bg-zinc-100 text-zinc-950 shadow-md font-extrabold'
+              ? 'bg-rose-600 text-white shadow-rose-950/50 shadow-md font-extrabold'
               : 'bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -56,7 +58,7 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
               activeTab === 'Em Andamento'
-                ? 'bg-black/20 text-zinc-950'
+                ? 'bg-black/30 text-white'
                 : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
             }`}
           >
@@ -64,6 +66,40 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           </span>
         </button>
       )}
+
+      {/* Abas Individuais de Áreas / Matérias */}
+      {areas.map((r) => {
+        const isActive = activeTab === r.area || activeTab === r.slug || activeTab === r.displayArea;
+        return (
+          <button
+            key={r.slug}
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              if (isActive && onOpenArea) {
+                // Se já estiver ativa, um segundo toque abre a matéria diretamente
+                onOpenArea(r.slug);
+              } else {
+                onSelectTab(r.area);
+              }
+            }}
+            className={`px-3.5 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shadow-sm cursor-pointer touch-manipulation font-sans flex items-center gap-2 shrink-0 ${
+              isActive
+                ? 'bg-rose-600 text-white shadow-rose-950/50 shadow-md font-extrabold'
+                : 'bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            <span>{r.displayArea}</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
+                isActive ? 'bg-black/30 text-white' : 'bg-white/10 text-zinc-400'
+              }`}
+            >
+              {r.total}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };
