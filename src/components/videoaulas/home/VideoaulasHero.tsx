@@ -46,15 +46,14 @@ export const VideoaulasHero = memo(function VideoaulasHero({
         aria-hidden="true"
       />
 
-      {/* Imagem Oficial de Capa Idêntica a Pílulas (Pôr do Sol Dourado) */}
+      {/* Imagem Oficial de Capa da Biblioteca Jurídica ao Pôr do Sol Carmesim */}
       <img
         src={videoaulasHeroCover}
         alt="Videoaulas Jurídicas"
         aria-hidden="true"
         loading="eager"
         decoding="async"
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[68%_22%] md:object-[center_20%] z-0 pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-0 w-full h-full object-cover object-[70%_25%] md:object-[center_25%] z-0 pointer-events-none transform-gpu will-change-transform"
       />
 
       {/* Onda Hiper-Realista em Seda Dourada Idêntica à de Pílulas */}
@@ -96,19 +95,19 @@ export const VideoaulasHero = memo(function VideoaulasHero({
             {/* Espaçamento vertical para livrar o botão de voltar */}
             <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
 
-            {/* Tipografia de Marca: Videoaulas (branco) + em Trilhas (âmbar dourado) */}
+            {/* Tipografia de Marca: Videoaulas (branco) + em Trilhas (vermelho carmesim nobre) */}
             <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
               <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
                 Videoaulas
               </span>
-              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-[#FBBF24] block drop-shadow-[0_2px_14px_rgba(245,158,11,0.65)] -mt-0.5">
+              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-[#FF4D6D] block drop-shadow-[0_2px_14px_rgba(225,29,72,0.75)] -mt-0.5">
                 em Trilhas
               </span>
             </h1>
 
-            {/* Traço vertical âmbar dourado e slogan */}
+            {/* Traço vertical vermelho carmesim e slogan */}
             <div className="mt-2 flex items-start text-left gap-2">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-[#FBBF24] via-amber-500 to-amber-900 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
+              <div className="w-[3px] h-8 bg-gradient-to-b from-rose-400 via-red-500 to-red-950 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(225,29,72,0.7)]" />
               <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                 Aulas esquematizadas por área.
                 <br />
