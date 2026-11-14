@@ -3,7 +3,7 @@ import { History, Flame, BarChart3, Route } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AudioActionShortcutsProps {
-  colorScheme?: 'purple' | 'blue';
+  colorScheme?: 'purple' | 'blue' | 'salmon';
   onRecentes?: () => void;
   onFavoritos?: () => void; // compatibilidade legada
   onEmAlta: () => void;
@@ -29,6 +29,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
     className = '',
   }) {
     const isPurple = colorScheme === 'purple';
+    const isSalmon = colorScheme === 'salmon';
     const acaoRecentes = onRecentes || onFavoritos || (() => {});
     const badgeRecentesFinal = badgeRecentes !== undefined ? badgeRecentes : badgeFavoritos;
 
@@ -37,36 +38,36 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
         id: 'recentes',
         label: 'Recentes',
         icon: History,
-        color: isPurple ? '#C084FC' : '#d4d4d8',
+        color: isSalmon ? '#FFA285' : isPurple ? '#C084FC' : '#d4d4d8',
         badge: badgeRecentesFinal,
-        badgeColor: isPurple ? '#9333EA' : '#52525b',
+        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#9333EA' : '#52525b',
         action: acaoRecentes,
       },
       {
         id: 'em_alta',
         label: 'Em alta',
         icon: Flame,
-        color: '#FB923C',
+        color: isSalmon ? '#FF7E5F' : '#FB923C',
         badge: 0,
-        badgeColor: '#EA580C',
+        badgeColor: isSalmon ? '#D94D2E' : '#EA580C',
         action: onEmAlta,
       },
       {
         id: 'estatistica',
         label: 'Estatística',
         icon: BarChart3,
-        color: isPurple ? '#A78BFA' : '#d4d4d8',
+        color: isSalmon ? '#FFB49A' : isPurple ? '#A78BFA' : '#d4d4d8',
         badge: 0,
-        badgeColor: isPurple ? '#7C3AED' : '#52525b',
+        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#7C3AED' : '#52525b',
         action: onEstatistica,
       },
       {
         id: 'trilhas',
         label: 'Trilhas',
         icon: Route,
-        color: '#FACC15',
+        color: isSalmon ? '#FDBA74' : '#FACC15',
         badge: badgeTrilhas,
-        badgeColor: '#CA8A04',
+        badgeColor: isSalmon ? '#EA580C' : '#CA8A04',
         action: onTrilhas,
       },
     ];
