@@ -35,6 +35,7 @@ html,body{background:#0e0f0e;font-family:system-ui,-apple-system,"Segoe UI",Robo
 .eraser-rest{display:flex;flex-direction:column;width:54px;cursor:pointer;flex:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));background:none;border:0;padding:0}
 .er-wood{height:14px;background:linear-gradient(180deg,#9a6a3e,#6b4423);border-radius:4px 4px 2px 2px}
 .er-felt{height:7px;background:linear-gradient(180deg,#efe9d6,#d8d0ba);border-radius:2px 2px 3px 3px}
+.cont-btn{display:none!important}
 .scene-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:0;margin-bottom:4px;font-size:11px;color:#f5f2e3;flex:none;padding:0 2px}
 .dots{display:flex;gap:5px;align-items:center}
 .dot{width:9px;height:9px;border-radius:50%;background:#555;border:0;padding:0;cursor:pointer;transition:transform .2s,background-color .2s}
@@ -84,7 +85,7 @@ svg text{font-family:"Caveat","Segoe Script","Bradley Hand","Comic Sans MS",curs
 </head>
 <body>
 <div class="phone">
-  <div class="scene-row"><span id="sceneLabel">Quadro 1 de 7</span><div class="dots" id="sceneDots" role="tablist" aria-label="Quadros"></div><button class="cont-btn" id="contBtn" hidden>Continuar</button></div>
+  <div class="scene-row"><span id="sceneLabel">Quadro 1 de 7</span><div class="dots" id="sceneDots" role="tablist" aria-label="Quadros"></div><button class="cont-btn" id="contBtn" style="display:none!important" hidden>Continuar</button></div>
   <div class="stage">
   <div class="board-frame">
     <div class="board" id="board">
@@ -1759,13 +1760,7 @@ function saveProgressTick(t){
   if(t-lastSave<5) return; lastSave=t;
   try{ localStorage.setItem('lousa-progress', JSON.stringify({id:lessonId, t:t})); }catch(e){}
 }
-function showContBtn(){
-  const btn=elContBtn; if(!btn) return;
-  let s=null; try{ s=JSON.parse(localStorage.getItem('lousa-progress')||'null'); }catch(e){}
-  const dur=LESSONS[lessonId]?LESSONS[lessonId].dur:0;
-  if(s && s.id===lessonId && s.t>10 && s.t<dur-5){ btn.hidden=false; btn.textContent='Continuar de '+fmtTime(s.t); btn.onclick=()=>{ audio.currentTime=s.t; seekTo(s.t); updatePlayer(); btn.hidden=true; if(audio.paused) togglePlay(); }; }
-  else btn.hidden=true;
-}
+function showContBtn(){ if(elContBtn) { elContBtn.hidden=true; elContBtn.style.display="none"; } return; }
 if(elPlay) elPlay.onclick=togglePlay;
 if(elSpeed) elSpeed.onclick=()=>{ speedIdx=(speedIdx+1)%speeds.length; audio.playbackRate=speeds[speedIdx]; if(elSpeed) elSpeed.textContent=speeds[speedIdx]+'×'; };
 if(elMute) elMute.onclick=()=>{ const m=!audio.muted; audio.muted=m; try{ fundoAudio.muted=m; gizAudio.muted=m; }catch(e){} if(elMute) elMute.textContent=m?'🔇':'🔊'; };
