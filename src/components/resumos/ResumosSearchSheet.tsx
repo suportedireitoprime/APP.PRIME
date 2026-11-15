@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  X,
-  ChevronRight,
-  BookOpen,
-  Folder,
-  FileText,
-  Sparkles,
-  ArrowRight,
-  Layers,
-} from "lucide-react";
+import { Search, X, Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   getResumosCatalog,
@@ -30,7 +20,7 @@ interface ResumosSearchSheetProps {
   onSelectAreaTab?: (area: string) => void;
 }
 
-type ResultType = "area" | "tema" | "resumo";
+type ResultType = "area" | "tema" | "topico";
 
 interface SearchResultItem {
   id: string;
@@ -68,7 +58,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
   const [q, setQ] = useState("");
   const [catalog, setCatalog] = useState<AreaItem[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<"todos" | "area" | "tema" | "resumo">("todos");
+  const [activeFilter, setActiveFilter] = useState<"todos" | "area" | "tema" | "topico">("todos");
 
   // Carrega o catálogo completo de resumos uma vez
   useEffect(() => {
@@ -105,6 +95,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     } else {
       document.body.style.overflow = "";
       setQ("");
+      setActiveFilter("todos");
     }
   }, [open]);
 
@@ -129,23 +120,23 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     for (const a of catalog) {
       const areaNorm = cleanResumoString(a.area);
       const isAreaMatch = areaNorm.includes(query);
+      const areaCover =
+        getDisciplinaVisualTheme(a.area)?.fundoAssetUrl ||
+        getAreaCover(a.area)?.cover ||
+        a.coverUrl ||
+        constCover;
 
       // 1. Match em Matéria (Área)
       if (isAreaMatch) {
-        const cover =
-          getDisciplinaVisualTheme(a.area)?.fundoAssetUrl ||
-          getAreaCover(a.area)?.cover ||
-          a.coverUrl ||
-          constCover;
         results.push({
           id: `area-${a.area}`,
           type: "area",
           title: a.area,
           area: a.area,
           caminho: ["Resumos Jurídicos", a.area],
-          previa: `${a.total || 0} resumos disponíveis · ${a.temas?.length || 0} módulos organizados`,
+          previa: `${a.total || 0} tópicos disponíveis · ${a.temas?.length || 0} módulos organizados`,
           total: a.total,
-          coverUrl: cover,
+          coverUrl: areaCover,
         });
       }
 
@@ -155,10 +146,6 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
         const isTemaMatch = temaNorm.includes(query);
 
         if (isTemaMatch) {
-          const cover =
-            getDisciplinaVisualTheme(a.area)?.fundoAssetUrl ||
-            getAreaCover(a.area)?.cover ||
-            constCover;
           results.push({
             id: `tema-${a.area}-${t.tema}`,
             type: "tema",
@@ -166,13 +153,13 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
             area: a.area,
             tema: t.tema,
             caminho: [a.area, t.tema],
-            previa: `${t.total || t.subtemas?.length || 0} resumos e tópicos neste módulo`,
+            previa: `${t.total || t.subtemas?.length || 0} tópicos neste tema`,
             total: t.total,
-            coverUrl: cover,
+            coverUrl: areaCover,
           });
         }
 
-        // 3. Match em Resumos / Capítulos (Subtemas)
+        // 3. Match em Tópicos / Capítulos (Subtemas)
         for (const s of t.subtemas || []) {
           const subtemaNorm = cleanResumoString(s.subtema);
           const isSubMatch = subtemaNorm.includes(query);
@@ -191,24 +178,25 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                   const end = Math.min(rawMd.length, idx + 110);
                   previaText = (start > 0 ? "…" : "") + rawMd.slice(start, end) + (end < rawMd.length ? "…" : "");
                 } else {
-                  previaText = rawMd.slice(0, 120) + (rawMd.length > 120 ? "…" : "");
+                  previaText = rawMd.slice(0, 110) + (rawMd.length > 110 ? "…" : "");
                 }
               } else {
-                previaText = rawMd.slice(0, 120) + (rawMd.length > 120 ? "…" : "");
+                previaText = rawMd.slice(0, 110) + (rawMd.length > 110 ? "…" : "");
               }
             } else if (s.exemplos) {
-              previaText = stripMarkdown(s.exemplos).slice(0, 120) + "…";
+              previaText = stripMarkdown(s.exemplos).slice(0, 110) + "…";
             }
 
             results.push({
-              id: `resumo-${s.id || s.subtema}`,
-              type: "resumo",
+              id: `topico-${s.id || s.subtema}`,
+              type: "topico",
               title: s.subtema,
               area: a.area,
               tema: t.tema,
               subtema: s.subtema,
               caminho: [a.area, t.tema, s.subtema],
-              previa: previaText || "Toque para abrir a leitura completa deste resumo.",
+              previa: previaText || "Conteúdo completo deste tópico.",
+              coverUrl: areaCover,
             });
           }
         }
@@ -227,17 +215,17 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
   const counts = useMemo(() => {
     let areasCount = 0;
     let temasCount = 0;
-    let resumosCount = 0;
+    let topicosCount = 0;
     for (const r of allResults) {
       if (r.type === "area") areasCount++;
       else if (r.type === "tema") temasCount++;
-      else if (r.type === "resumo") resumosCount++;
+      else if (r.type === "topico") topicosCount++;
     }
     return {
       todos: allResults.length,
       area: areasCount,
       tema: temasCount,
-      resumo: resumosCount,
+      topico: topicosCount,
     };
   }, [allResults]);
 
@@ -256,7 +244,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
       navigate(
         `/resumos-juridicos/${encodeURIComponent(item.area)}/${encodeURIComponent(item.tema!)}`
       );
-    } else if (item.type === "resumo") {
+    } else if (item.type === "topico") {
       navigate(
         `/resumos-juridicos/${encodeURIComponent(item.area)}/${encodeURIComponent(item.tema!)}?subtema=${encodeURIComponent(item.subtema!)}`
       );
@@ -265,14 +253,14 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
 
   // Sugestões rápidas quando o campo está vazio
   const sugestoesRapidas = [
-    "Direito Constitucional",
     "Direito Penal",
+    "Direito Constitucional",
     "Direito Administrativo",
     "Direito Civil",
     "Direito Tributário",
+    "Teoria Geral do Delito",
     "Atos Administrativos",
-    "Origens e Definições",
-    "Princípios Fundamentais",
+    "Contratos",
   ];
 
   return (
@@ -312,7 +300,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     type="text"
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder="Digite uma matéria, tema ou conteúdo de resumo…"
+                    placeholder="Digite uma matéria, tema ou tópico…"
                     className="w-full pl-11 pr-10 h-12 text-[14.5px] sm:text-[15.5px] rounded-2xl bg-[#18181c] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/70 transition-colors shadow-inner"
                   />
                   {q && (
@@ -339,7 +327,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                 </button>
               </div>
 
-              {/* Filtros de Categoria (Todos, Matérias, Temas, Resumos) */}
+              {/* Filtros de Categoria (Todos, Matérias, Temas, Tópicos) */}
               {allResults.length > 0 && (
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5">
                   <button
@@ -377,14 +365,14 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveFilter("resumo")}
+                    onClick={() => setActiveFilter("topico")}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                      activeFilter === "resumo"
+                      activeFilter === "topico"
                         ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20 font-bold"
                         : "bg-white/5 text-white/60 hover:text-white border border-white/5"
                     }`}
                   >
-                    Resumos ({counts.resumo})
+                    Tópicos ({counts.topico})
                   </button>
                 </div>
               )}
@@ -392,7 +380,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
 
             {/* Conteúdo Dinâmico com Scroll */}
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3 pb-[calc(2.5rem+var(--sai-bottom,0px))]">
-              {/* ESTADO 1: Campo vazio — Exibe sugestões e histórico */}
+              {/* ESTADO 1: Campo vazio — Exibe sugestões */}
               {!q.trim() && (
                 <div className="space-y-6 pt-2">
                   <div>
@@ -420,9 +408,9 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
 
                   <div className="rounded-2xl border border-white/10 bg-[#16161a] p-4 text-left">
                     <p className="text-xs text-white/70 leading-relaxed font-sans">
-                      💡 <strong className="text-white">Busca Inteligente em 360°:</strong> Você
-                      pode buscar tanto pelo nome da matéria quanto pelo tema, capítulo ou trecho de
-                      conteúdo. O resultado exibirá o caminho exato e a prévia do resumo.
+                      💡 <strong className="text-white">Busca Organizada:</strong> Digite o nome de
+                      uma matéria, tema ou conteúdo específico. Os tópicos exibirão sua respectiva
+                      capa, a trilha completa e as cores exclusivas de cada disciplina.
                     </p>
                   </div>
                 </div>
@@ -443,66 +431,91 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     {filteredResults.length === 1 ? "resultado encontrado" : "resultados encontrados"}
                   </p>
 
-                  {filteredResults.map((item) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      onClick={() => handleSelectResult(item)}
-                      className="group cursor-pointer rounded-2xl bg-[#16161a] hover:bg-[#1c1c22] border border-white/10 hover:border-emerald-500/40 p-3.5 transition-all relative overflow-hidden text-left"
-                    >
-                      {/* Trilha do Caminho (Breadcrumb) */}
-                      <div className="flex items-center gap-1.5 text-[10.5px] font-medium text-emerald-400/90 mb-1.5 overflow-hidden">
-                        {item.type === "area" && <Folder className="w-3 h-3 shrink-0" />}
-                        {item.type === "tema" && <Layers className="w-3 h-3 shrink-0" />}
-                        {item.type === "resumo" && <FileText className="w-3 h-3 shrink-0" />}
+                  {filteredResults.map((item) => {
+                    const theme = getDisciplinaVisualTheme(item.area);
 
-                        {item.caminho.map((step, idx) => (
-                          <React.Fragment key={idx}>
-                            <span className="truncate max-w-[140px] sm:max-w-[200px]">{step}</span>
-                            {idx < item.caminho.length - 1 && (
-                              <ChevronRight className="w-3 h-3 text-white/30 shrink-0" />
-                            )}
-                          </React.Fragment>
-                        ))}
-                      </div>
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => handleSelectResult(item)}
+                        style={{
+                          borderColor: "rgba(255, 255, 255, 0.08)",
+                        }}
+                        className="group cursor-pointer rounded-2xl bg-[#16161a] hover:bg-[#1a1a20] border p-2.5 sm:p-3 transition-all relative overflow-hidden text-left flex items-center gap-3 sm:gap-3.5"
+                      >
+                        {/* Indicador de cor do tema na borda esquerda */}
+                        <div
+                          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+                          style={{ backgroundColor: theme.primary }}
+                        />
 
-                      {/* Título e Tag de Identificação */}
-                      <div className="flex items-start justify-between gap-2.5">
-                        <h4 className="font-sans font-semibold text-[14.5px] sm:text-[15.5px] text-white group-hover:text-emerald-300 transition-colors leading-snug line-clamp-1 flex-1">
-                          {item.title}
-                        </h4>
+                        {/* Capa à esquerda */}
+                        <div className="w-[52px] h-[68px] sm:w-[60px] sm:h-[78px] rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-black shadow-md ml-1">
+                          <img
+                            src={item.coverUrl || constCover}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+                        </div>
 
-                        <span
-                          className={`shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                            item.type === "area"
-                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                              : item.type === "tema"
-                              ? "bg-sky-500/10 border-sky-500/30 text-sky-400"
-                              : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                          }`}
-                        >
-                          {item.type === "area"
-                            ? "Matéria"
-                            : item.type === "tema"
-                            ? "Tema"
-                            : "Resumo"}
-                        </span>
-                      </div>
+                        {/* Informações centrais */}
+                        <div className="flex-1 min-w-0 py-0.5">
+                          {/* Trilha do Caminho (SEM ÍCONES, com a cor da disciplina) */}
+                          <div
+                            className="flex items-center gap-1 text-[11px] font-medium mb-1 overflow-hidden truncate"
+                            style={{ color: theme.accent }}
+                          >
+                            {item.caminho.map((step, idx) => (
+                              <React.Fragment key={idx}>
+                                <span className="truncate">{step}</span>
+                                {idx < item.caminho.length - 1 && (
+                                  <span className="text-white/30 shrink-0 mx-0.5">&gt;</span>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </div>
 
-                      {/* Prévia do Conteúdo / Informação */}
-                      {item.previa && (
-                        <p className="font-sans text-[12px] sm:text-[12.5px] text-white/60 line-clamp-2 mt-1.5 leading-relaxed">
-                          {item.previa}
-                        </p>
-                      )}
+                          {/* Título e Badge */}
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-sans font-semibold text-[14px] sm:text-[15px] text-white group-hover:text-white transition-colors leading-snug line-clamp-1 flex-1">
+                              {item.title}
+                            </h4>
 
-                      {/* Ícone de seta à direita discreto */}
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRight className="w-4 h-4 text-emerald-400" />
-                      </div>
-                    </motion.div>
-                  ))}
+                            <span
+                              style={{
+                                borderColor: theme.border,
+                                color: theme.accent,
+                                backgroundColor: theme.glowSoft,
+                              }}
+                              className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                            >
+                              {item.type === "area"
+                                ? "Matéria"
+                                : item.type === "tema"
+                                ? "Tema"
+                                : "Tópico"}
+                            </span>
+                          </div>
+
+                          {/* Prévia textual limpa */}
+                          {item.previa && (
+                            <p className="font-sans text-[11.5px] sm:text-[12px] text-white/55 line-clamp-1 mt-1 leading-normal">
+                              {item.previa}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Ícone de seta discreto na cor da matéria */}
+                        <div className="shrink-0 pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ArrowRight className="w-4 h-4" style={{ color: theme.accent }} />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -516,8 +529,8 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     Nenhum resultado encontrado
                   </h3>
                   <p className="font-sans text-xs text-white/50 max-w-xs mx-auto">
-                    Não encontramos matérias, temas ou resumos para "<strong>{q}</strong>". Tente
-                    buscar com outros termos ou selecione uma matéria abaixo.
+                    Não encontramos matérias, temas ou tópicos para "<strong>{q}</strong>". Tente
+                    buscar com outros termos ou selecione uma matéria sugerida.
                   </p>
                   <button
                     type="button"
