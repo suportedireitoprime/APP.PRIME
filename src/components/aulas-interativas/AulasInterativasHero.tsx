@@ -196,9 +196,9 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                 aria-label="Aulas Favoritas"
               >
                 <div className="relative inline-flex items-center justify-center">
-                  <Heart className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#f43f5e] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  <Heart className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
                   {badgeFavoritos > 0 && (
-                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-rose-600 text-white">
+                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
                       {badgeFavoritos}
                     </span>
                   )}
@@ -219,7 +219,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                 aria-label="Aulas Em Alta"
               >
                 <div className="relative inline-flex items-center justify-center">
-                  <Flame className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#f59e0b] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  <Flame className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
                 </div>
                 <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
                   Em Alta
@@ -237,9 +237,9 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                 aria-label="Desempenho e Estatísticas"
               >
                 <div className="relative inline-flex items-center justify-center">
-                  <BarChart3 className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#10b981] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  <BarChart3 className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
                   {porcentagemGeral > 0 && (
-                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-emerald-600 text-white">
+                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
                       {porcentagemGeral}%
                     </span>
                   )}

@@ -67,6 +67,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   const [faseSelecionadaId, setFaseSelecionadaId] = useState<string | null>(null);
   const [recentesModalOpen, setRecentesModalOpen] = useState(false);
   const [emAltaModalOpen, setEmAltaModalOpen] = useState(false);
+  const [bannerDispensado, setBannerDispensado] = useState(false);
 
   // Procura aula em andamento para o banner "Continuar de onde parou" abaixo do painel
   const aulaParaContinuar = useMemo(() => {
@@ -139,10 +140,11 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
       />
 
       {/* ── 2. BOTÃO CONTINUAR DE ONDE PAROU ABAIXO DO PAINEL (IGUAL AO CONTINUAR LEITURA) ── */}
-      {aulaParaContinuar && (
+      {aulaParaContinuar && !bannerDispensado && (
         <AulasContinuarAulaBanner
           aula={aulaParaContinuar}
           onIniciarAula={handleIniciarAulaSegura}
+          onFechar={() => setBannerDispensado(true)}
           calcularProgressoCiclo={calcularProgressoCiclo}
         />
       )}
