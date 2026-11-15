@@ -6,11 +6,12 @@ import {
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { AulaItem, AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { 
   TRILHAS_CRONOLOGICAS, 
   TRILHAS_MODULOS_OFICIAIS,
+  TrilhaModuloAula,
   getDisciplinasDaFase 
 } from '@/data/aulasTrilhasCronologicas';
 import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
@@ -680,28 +681,33 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           faseSelecionadaId={faseSelecionadaId}
           onSelectFase={setFaseSelecionadaId}
           onIniciarAula={(item) => {
-            if ('etapas' in item) {
-              handleIniciarAulaSegura(item as AulaItem);
-            } else {
-              const mod = TRILHAS_MODULOS_OFICIAIS.find(m => m.moduloNumero === item.moduloNumero);
-              const discId = mod?.disciplinasIds[0] || 'penal';
-              const synthesizedAula: AulaItem = {
-                id: item.id,
-                numeroAula: item.aulaNumeroOuTitulo,
-                titulo: item.aulaNumeroOuTitulo,
-                descricao: item.sobre,
-                slug: item.id,
-                etapas: 10,
-                audioQtd: 1,
-                imagensQtd: 1,
-                urlHtmlR2: '',
-                capaUrl: mod?.capaUrl || '',
-                status: 'pronto',
-                disciplinaId: discId,
-                materiaId: `mat-${discId}-01`,
-              };
-              handleIniciarAulaSegura(synthesizedAula);
+            // Se for uma aula real direta do catálogo
+            const aulaItemReal = (aulasCatalogo && aulasCatalogo.find(a => a.id === item.id))
+              || AULAS_CATALOGO_COMPLETO.find(a => a.id === item.id);
+            if (aulaItemReal) {
+              handleIniciarAulaSegura(aulaItemReal);
+              return;
             }
+
+            // Se for TrilhaModuloAula com dados reais já linkados do R2
+            const modAula = item as TrilhaModuloAula;
+            const fullAula: AulaItem = {
+              id: modAula.id,
+              numeroAula: modAula.numeroAula || 'Aula 01',
+              titulo: modAula.titulo || modAula.aulaNumeroOuTitulo,
+              descricao: modAula.sobre || '',
+              slug: modAula.id,
+              etapas: modAula.etapas || 30,
+              audioQtd: 1,
+              imagensQtd: 1,
+              urlHtmlR2: modAula.urlHtmlR2 || '',
+              urlJsonR2: modAula.urlJsonR2,
+              capaUrl: modAula.capaUrl || '',
+              status: 'pronto',
+              disciplinaId: modAula.disciplinaId || 'penal',
+              materiaId: modAula.materiaId || 'mat-01',
+            };
+            handleIniciarAulaSegura(fullAula);
           }}
           moduloInicialId={moduloInicialAbertoId}
           calcularProgressoCiclo={calcularProgressoCiclo}

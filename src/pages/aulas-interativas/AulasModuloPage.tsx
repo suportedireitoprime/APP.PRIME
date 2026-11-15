@@ -7,7 +7,7 @@ import {
   TrilhaModuloOficial
 } from '@/data/aulasTrilhasModulosOficiais';
 import { AulasModuloDedicadoView } from '@/components/aulas-interativas/AulasModuloDedicadoView';
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { AulaItem, AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { ArrowLeft } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -72,27 +72,30 @@ export default function AulasModuloPage() {
       modulo={modulo}
       onVoltar={() => navigate(-1)}
       onIniciarAula={(item) => {
-        if ('etapas' in item) {
-          setAulaAtiva(item as AulaItem);
-        } else {
-          const discId = modulo.disciplinasIds[0] || 'penal';
-          const synthesizedAula: AulaItem = {
-            id: item.id,
-            numeroAula: item.aulaNumeroOuTitulo,
-            titulo: item.aulaNumeroOuTitulo,
-            descricao: item.sobre,
-            slug: item.id,
-            etapas: 10,
-            audioQtd: 1,
-            imagensQtd: 1,
-            urlHtmlR2: '',
-            capaUrl: modulo.capaUrl || '',
-            status: 'pronto',
-            disciplinaId: discId,
-            materiaId: `mat-${discId}-01`,
-          };
-          setAulaAtiva(synthesizedAula);
+        const modAula = item as TrilhaModuloAula;
+        const catalogoItem = AULAS_CATALOGO_COMPLETO.find(a => a.id === modAula.id);
+        if (catalogoItem) {
+          setAulaAtiva(catalogoItem);
+          return;
         }
+
+        const fullAula: AulaItem = {
+          id: modAula.id,
+          numeroAula: modAula.numeroAula || 'Aula 01',
+          titulo: modAula.titulo || modAula.aulaNumeroOuTitulo,
+          descricao: modAula.sobre || '',
+          slug: modAula.id,
+          etapas: modAula.etapas || 30,
+          audioQtd: 1,
+          imagensQtd: 1,
+          urlHtmlR2: modAula.urlHtmlR2 || '',
+          urlJsonR2: modAula.urlJsonR2,
+          capaUrl: modAula.capaUrl || modulo.capaUrl || '',
+          status: 'pronto',
+          disciplinaId: modAula.disciplinaId || modulo.disciplinasIds[0] || 'filosofia',
+          materiaId: modAula.materiaId || 'mat-01',
+        };
+        setAulaAtiva(fullAula);
       }}
       onSelecionarNoCatalogo={() => {
         navigate('/aulas');
