@@ -55,7 +55,7 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({
           </h3>
 
           <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans">
-            {areaRow.total} {areaRow.total === 1 ? "resumo disponível" : "resumos disponíveis"}
+            {areaRow.total} {areaRow.total === 1 ? "tópico disponível" : "tópicos disponíveis"}
           </p>
         </div>
       </div>

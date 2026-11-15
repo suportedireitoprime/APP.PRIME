@@ -76,7 +76,7 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
         <span className="relative z-10 w-full bg-emerald-600 text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
-          RESUMO
+          TÓPICO
         </span>
       </div>
 
