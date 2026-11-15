@@ -1,19 +1,48 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { 
+  ArrowLeft, Search, X, BarChart3, History, Bookmark, Flame, Play 
+} from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { 
   TRILHAS_CRONOLOGICAS, 
   getDisciplinasDaFase 
 } from '@/data/aulasTrilhasCronologicas';
-import { AulasInterativasHero } from './AulasInterativasHero';
 import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
 import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
-import { AulasMateriaCard } from './AulasMateriaCard';
 import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
-import { haptic } from '@/lib/nativeHaptics';
+
+/** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
+const NOMES_CAPA: Record<string, string> = {
+  'DIREITO PENAL': 'PENAL',
+  'DIREITO CIVIL': 'CIVIL',
+  'DIREITO CONSTITUCIONAL': 'CONSTITUCIONAL',
+  'DIREITO ADMINISTRATIVO': 'ADMINISTRATIVO',
+  'DIREITO DO TRABALHO': 'TRABALHO',
+  'DIREITO PROCESSUAL CIVIL': 'PROC. CIVIL',
+  'DIREITO PROCESSUAL PENAL': 'PROC. PENAL',
+  'DIREITO TRIBUTÁRIO': 'TRIBUTÁRIO',
+  'DIREITO EMPRESARIAL': 'EMPRESARIAL',
+  'DIREITO AMBIENTAL': 'AMBIENTAL',
+  'DIREITO PREVIDENCIÁRIO': 'PREVIDENCIÁRIO',
+  'DIREITO PROCESSUAL DO TRABALHO': 'PROC. TRABALHO',
+  'DIREITO FINANCEIRO': 'FINANCEIRO',
+  'DIREITO INTERNACIONAL PRIVADO': 'INT. PRIVADO',
+  'DIREITO URBANÍSTICO': 'URBANÍSTICO',
+  'DIREITOS HUMANOS': 'DIR. HUMANOS',
+  'LEI PENAL ESPECIAL': 'LEIS ESPECIAIS',
+  'TEORIA E FILOSOFIA DO DIREITO': 'FILOSOFIA',
+  'DIREITO DESPORTIVO': 'DESPORTIVO',
+  'POLÍTICAS PÚBLICAS': 'POL. PÚBLICAS',
+  'PORTUGUÊS JURÍDICO': 'PORTUGUÊS JUR.',
+  'FORMAÇÃO COMPLEMENTAR': 'FORMAÇÃO',
+};
 
 interface AulasCoverflowHomeProps {
   disciplinasFiltradas: DisciplinaItem[];
@@ -52,6 +81,8 @@ interface AulasCoverflowHomeProps {
 
 export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   disciplinasFiltradas,
+  loopedDisciplinas,
+  activeCarouselIndex = 0,
   onSelectCurrent,
   onSelectDisciplina,
   onCardClick,
@@ -60,17 +91,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   handleVoltar,
   buscaTermo,
   setBuscaTermo,
+  abaAtiva,
   setAbaAtiva,
   porcentagemGeral,
   totalAulas,
   aulasCatalogo,
+  carouselScrollerRef,
+  handleCarouselScroll,
+  handlePointerDown,
+  handlePointerMove,
+  handlePointerUp,
+  scrollCarouselToIndex,
 }) => {
   const [faseSelecionadaId, setFaseSelecionadaId] = useState<string | null>(null);
   const [recentesModalOpen, setRecentesModalOpen] = useState(false);
   const [emAltaModalOpen, setEmAltaModalOpen] = useState(false);
   const [trilhasListaModalOpen, setTrilhasListaModalOpen] = useState(false);
+  const [buscaAberta, setBuscaAberta] = useState(false);
 
-  // Procura aula em andamento para o banner "Continuar de onde parou" abaixo do painel
+  // Procura aula em andamento para o banner "Continuar de onde parou"
   const aulaParaContinuar = useMemo(() => {
     if (aulasCatalogo.length === 0) return null;
     if (calcularProgressoCiclo) {
@@ -80,7 +119,6 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
       });
       if (emAndamento.length > 0) return emAndamento[0];
     }
-    // Fallback gracioso: 1ª aula do acervo
     return aulasCatalogo[0] || null;
   }, [aulasCatalogo, calcularProgressoCiclo]);
 
@@ -93,13 +131,12 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
     }).length;
   }, [aulasCatalogo, calcularProgressoCiclo]);
 
-  // Matérias filtradas por fase e busca
-  const materiasExibidas = useMemo(() => {
-    let base = disciplinasFiltradas;
+  // Matérias da fase selecionada ou todas as filtradas
+  const disciplinasExibidas = useMemo(() => {
     if (faseSelecionadaId) {
-      base = getDisciplinasDaFase(faseSelecionadaId, base);
+      return getDisciplinasDaFase(faseSelecionadaId, disciplinasFiltradas);
     }
-    return base;
+    return disciplinasFiltradas;
   }, [disciplinasFiltradas, faseSelecionadaId]);
 
   const faseAtiva = useMemo(() => {
@@ -107,11 +144,41 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
     return TRILHAS_CRONOLOGICAS.find((t) => t.id === faseSelecionadaId) || null;
   }, [faseSelecionadaId]);
 
-  const handleMateriaClick = (disc: DisciplinaItem, index: number) => {
-    if (onSelectDisciplina) {
+  // Lista de itens do carrossel (com looping para scroll contínuo e suave)
+  const itensParaCarrossel = useMemo(() => {
+    if (faseSelecionadaId) {
+      if (disciplinasExibidas.length <= 1) return disciplinasExibidas;
+      return [
+        ...disciplinasExibidas,
+        ...disciplinasExibidas,
+        ...disciplinasExibidas,
+      ];
+    }
+    if (loopedDisciplinas && loopedDisciplinas.length > 0) {
+      return loopedDisciplinas;
+    }
+    if (disciplinasFiltradas.length <= 1) return disciplinasFiltradas;
+    return [
+      ...disciplinasFiltradas,
+      ...disciplinasFiltradas,
+      ...disciplinasFiltradas,
+    ];
+  }, [faseSelecionadaId, disciplinasExibidas, loopedDisciplinas, disciplinasFiltradas]);
+
+  const totalDisciplinas = disciplinasExibidas.length;
+  const safeIdx = totalDisciplinas > 0 
+    ? ((activeCarouselIndex % totalDisciplinas) + totalDisciplinas) % totalDisciplinas
+    : 0;
+  const activeDisc = disciplinasExibidas[safeIdx] || disciplinasExibidas[0];
+  const activeTheme = activeDisc ? getDisciplinaVisualTheme(activeDisc.id) : null;
+  const activeCorTema = activeTheme?.primary || activeDisc?.corDestaque || '#f59e0b';
+  const activeCorHighlight = activeTheme?.highlight || '#fef08a';
+
+  const handleCardItemClick = (disc: DisciplinaItem, idx: number) => {
+    if (onCardClick) {
+      onCardClick(disc, idx);
+    } else if (onSelectDisciplina) {
       onSelectDisciplina(disc.id);
-    } else if (onCardClick) {
-      onCardClick(disc, index);
     } else if (onSelectCurrent) {
       onSelectCurrent();
     }
@@ -124,180 +191,458 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white flex flex-col relative z-10">
-      {/* ── 1. PAINEL DE TOPO COM ONDA ESMERALDA E ATALHOS DE FUNÇÕES (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO) ── */}
-      <AulasInterativasHero
-        onVoltar={handleVoltar}
-        buscaTermo={buscaTermo}
-        setBuscaTermo={setBuscaTermo}
-        totalAulas={totalAulas}
-        totalMaterias={disciplinasFiltradas.length}
-        porcentagemGeral={porcentagemGeral}
-        onRecentes={() => setRecentesModalOpen(true)}
-        onFavoritos={() => setAbaAtiva('favoritos')}
-        onEmAlta={() => setEmAltaModalOpen(true)}
-        onDesempenho={() => setAbaAtiva('estatisticas')}
-        badgeRecentes={totalEmAndamento}
-      />
-
-      {/* ── 2. BOTÃO CONTINUAR DE ONDE PAROU ABAIXO DO PAINEL (IGUAL AO CONTINUAR LEITURA) ── */}
-      {aulaParaContinuar && (
-        <AulasContinuarAulaBanner
-          aula={aulaParaContinuar}
-          onIniciarAula={handleIniciarAulaSegura}
-          calcularProgressoCiclo={calcularProgressoCiclo}
+    <>
+      {/* ── FUNDO GRÉCIA ANTIGA COM FILÓSOFOS (RESTABELECIDO CONFORME PEDIDO DO USUÁRIO) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
+        <img
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga e Filósofos"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.92] contrast-[1.08]"
         />
-      )}
-
-      {/* ── 3. CARROSSEL DE TRILHAS EM CARDS REDUZIDOS COM DEGRADÊ ── */}
-      <div className="w-full max-w-5xl lg:max-w-7xl mx-auto">
-        <AulasTrilhasCarousel
-          disciplinas={disciplinasFiltradas}
-          aulas={aulasCatalogo}
-          faseSelecionadaId={faseSelecionadaId}
-          onSelectFase={setFaseSelecionadaId}
-          onOpenTodasTrilhas={() => setTrilhasListaModalOpen(true)}
-          calcularProgressoCiclo={calcularProgressoCiclo}
-        />
+        {/* Vinheta atmosférica suave preservando os detalhes dos templos e filósofos */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/85 pointer-events-none" />
       </div>
 
-      {/* ── 4. LISTA DE MATÉRIAS NORMAIS COM CAPAS (PADRÃO ÁUDIO AULAS) ── */}
-      <section className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mt-2 pb-28">
-        {/* Cabeçalho da Seção com Barra Estilizada Oficial da Paleta */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 px-1">
-          <div className="min-w-0 flex-1">
-            <h2 className="font-display text-white text-[15px] sm:text-[17px] font-bold flex items-center gap-2 uppercase tracking-widest">
-              <span className="w-[3px] sm:w-[3.5px] h-4.5 sm:h-5 rounded-full bg-gradient-to-b from-[#5eead4] via-[#0d9488] to-[#042f2e] shadow-[0_0_8px_rgba(45,212,191,0.6)] shrink-0" />
-              <span>
-                {faseAtiva ? `Matérias • ${faseAtiva.nome}` : 'Todas as Matérias'}
-              </span>
-            </h2>
-            <p className="font-sans text-zinc-400 text-[11.5px] sm:text-[12px] leading-snug ml-3.5 mt-0.5">
-              {faseAtiva
-                ? `Mostrando ${materiasExibidas.length} matérias deste módulo`
-                : 'Toque em uma matéria para acessar suas aulas e atividades'}
-            </p>
-          </div>
+      {/* ── CONTAINER PRINCIPAL COM ROLAGEM VERTICAL FLUIDA E ELEMENTOS RESPONSIVOS ── */}
+      <div className="relative z-10 w-full min-h-screen flex flex-col pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overflow-x-hidden">
+        
+        {/* ── 1. CABEÇALHO SUPERIOR (VOLTAR + TÍTULO COM BADGE + BUSCA) ── */}
+        <header className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 mb-2 z-20 shrink-0">
+          <div className="w-full flex items-center justify-between gap-2 mb-1 xs:mb-1.5">
+            {/* Botão Voltar Circular Padrão Premium */}
+            <button
+              type="button"
+              onClick={handleVoltar}
+              className="w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg shrink-0"
+              aria-label="Voltar"
+            >
+              <ArrowLeft className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-white stroke-[2.4]" />
+            </button>
 
-          {/* Filtros em Pílula */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {/* Título Imperial Centralizado */}
+            <div className="text-center px-2 flex-1 min-w-0">
+              <h1 className="inline-flex items-center justify-center gap-1.5 xs:gap-2 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-xl text-[10.5px] xs:text-xs sm:text-sm font-mono font-black text-amber-300 bg-black/80 border border-amber-500/50 shadow-inner tracking-wider">
+                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'}
+                </span>
+                <span className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+                  Aulas em Trilha
+                </span>
+              </h1>
+              <p className="text-[10px] xs:text-[11px] sm:text-xs font-serif italic text-zinc-300/85 mt-0.5 truncate">
+                Metodologia ativa cronológica • 22 matérias
+              </p>
+            </div>
+
+            {/* Botão de Pesquisa Rápida */}
             <button
               type="button"
               onClick={() => {
                 try { haptic.selection(); } catch {}
-                setFaseSelecionadaId(null);
+                setBuscaAberta(!buscaAberta);
               }}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                faseSelecionadaId === null
-                  ? 'bg-[#0d9488] text-white shadow-md shadow-teal-950/60 border border-teal-400/40'
-                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
-              }`}
+              className={cn(
+                "w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
+                buscaAberta || buscaTermo
+                  ? "bg-teal-600/30 border-teal-400/60 text-[#2dd4bf]"
+                  : "bg-black/60 text-white/90 border-white/20 hover:bg-black/80"
+              )}
+              aria-label="Pesquisar"
             >
-              Todas ({disciplinasFiltradas.length})
+              <Search className="w-5.5 h-5.5 xs:w-6 xs:h-6 stroke-[2.2]" />
             </button>
-            {TRILHAS_CRONOLOGICAS.map((fase) => {
-              const isSelected = faseSelecionadaId === fase.id;
-              return (
-                <button
-                  key={fase.id}
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFaseSelecionadaId(isSelected ? null : fase.id);
-                  }}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                    isSelected
-                      ? 'text-white shadow-md'
-                      : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
-                  }`}
-                  style={isSelected ? {
-                    backgroundColor: fase.accentColor,
-                    color: '#fff',
-                    boxShadow: `0 4px 14px ${fase.accentColor}50`,
-                  } : undefined}
-                >
-                  Módulo {fase.faseNumero} ({fase.disciplinasIds.length})
-                </button>
-              );
-            })}
           </div>
-        </div>
 
-        {/* Lista Vertical de Matérias */}
-        {materiasExibidas.length === 0 ? (
-          <div className="py-12 text-center rounded-2xl bg-zinc-900/40 border border-zinc-800/80 p-8 my-4">
-            <p className="text-zinc-400 text-sm">Nenhuma matéria encontrada para a busca.</p>
+          {/* Campo Expansível de Pesquisa */}
+          {(buscaAberta || buscaTermo) && (
+            <div className="w-full max-w-md sm:max-w-xl mx-auto px-1 mt-1 mb-2 animate-in fade-in duration-200">
+              <div className="relative w-full">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400/90 pointer-events-none">
+                  <Search className="w-4 h-4 stroke-[2.2]" />
+                </div>
+                <input
+                  type="text"
+                  value={buscaTermo}
+                  onChange={(e) => setBuscaTermo(e.target.value)}
+                  placeholder="Buscar área ou matéria (ex: Penal, Civil)..."
+                  className="w-full h-10 xs:h-11 pl-10 pr-10 rounded-full text-xs xs:text-sm text-white placeholder:text-zinc-400 bg-black/80 backdrop-blur-md border border-white/20 focus:border-amber-400/60 focus:outline-none shadow-inner"
+                  autoFocus
+                />
+                {buscaTermo && (
+                  <button
+                    type="button"
+                    onClick={() => setBuscaTermo('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </header>
+
+        {/* ── 2. PAINEL FLUTUANTE DE FUNÇÕES (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO) ── */}
+        <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-3 z-20 shrink-0">
+          <div className="rounded-[32px] sm:rounded-[36px] bg-black/75 border border-white/15 backdrop-blur-xl shadow-2xl p-1.5 xs:p-2 sm:p-2.5 flex items-center justify-between gap-1 xs:gap-1.5">
+            {/* Recentes */}
             <button
               type="button"
               onClick={() => {
-                setBuscaTermo('');
-                setFaseSelecionadaId(null);
+                try { haptic.selection(); } catch {}
+                setRecentesModalOpen(true);
               }}
-              className="mt-3 px-4 py-1.5 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/30 text-xs font-semibold hover:bg-rose-600/30 transition-colors cursor-pointer"
+              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              aria-label="Aulas Recentes"
             >
-              Limpar Filtros
+              <div className="relative inline-flex items-center justify-center">
+                <History className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                {totalEmAndamento > 0 && (
+                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
+                    {totalEmAndamento}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                Recentes
+              </span>
+            </button>
+
+            {/* Favoritos (Ícone Bookmark, conforme diretriz do usuário) */}
+            <button
+              type="button"
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                setAbaAtiva('favoritos');
+              }}
+              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              aria-label="Aulas Favoritas"
+            >
+              <div className="relative inline-flex items-center justify-center">
+                <Bookmark className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                Favoritos
+              </span>
+            </button>
+
+            {/* Em Alta */}
+            <button
+              type="button"
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                setEmAltaModalOpen(true);
+              }}
+              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              aria-label="Aulas Em Alta"
+            >
+              <div className="relative inline-flex items-center justify-center">
+                <Flame className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                Em Alta
+              </span>
+            </button>
+
+            {/* Desempenho */}
+            <button
+              type="button"
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                setAbaAtiva('estatisticas');
+              }}
+              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              aria-label="Desempenho e Estatísticas"
+            >
+              <div className="relative inline-flex items-center justify-center">
+                <BarChart3 className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                {porcentagemGeral > 0 && (
+                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
+                    {porcentagemGeral}%
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                Desempenho
+              </span>
             </button>
           </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-3"
-          >
-            {materiasExibidas.map((disc, index) => {
-              const discAulas = aulasCatalogo.filter((a) => a.disciplinaId === disc.id);
-              let concluidas = 0;
-              if (calcularProgressoCiclo && discAulas.length > 0) {
-                concluidas = discAulas.filter((a) => {
-                  const p = calcularProgressoCiclo(a);
-                  return p.aulaTerminada || p.porcentagemTotal >= 100;
-                }).length;
-              }
-              const pct = discAulas.length > 0 ? Math.round((concluidas / discAulas.length) * 100) : 0;
+        </div>
 
+        {/* ── 3. BOTÃO CONTINUAR DE ONDE PAROU ABAIXO DO PAINEL ── */}
+        {aulaParaContinuar && (
+          <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-3 z-20 shrink-0">
+            <AulasContinuarAulaBanner
+              aula={aulaParaContinuar}
+              onIniciarAula={handleIniciarAulaSegura}
+              calcularProgressoCiclo={calcularProgressoCiclo}
+            />
+          </div>
+        )}
+
+        {/* ── 4. CARROSSEL DE TRILHAS (MÓDULOS CRONOLÓGICOS COM "VER TODAS") ── */}
+        <div className="w-full max-w-5xl lg:max-w-7xl mx-auto mb-4 z-20 shrink-0">
+          <AulasTrilhasCarousel
+            disciplinas={disciplinasFiltradas}
+            aulas={aulasCatalogo}
+            faseSelecionadaId={faseSelecionadaId}
+            onSelectFase={setFaseSelecionadaId}
+            onOpenTodasTrilhas={() => setTrilhasListaModalOpen(true)}
+            calcularProgressoCiclo={calcularProgressoCiclo}
+          />
+        </div>
+
+        {/* ── 5. CARROSSEL DAS ÁREAS EM COVERFLOW COM CAPAS (RESTABELECIDO A PEDIDO DO USUÁRIO) ── */}
+        <section className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-6 mb-6 flex flex-col items-center z-20">
+          {/* Cabeçalho da Seção de Áreas */}
+          <div className="w-full flex items-center justify-between gap-2 mb-2 px-1">
+            <div className="min-w-0 flex-1">
+              <h2 className="font-display text-white text-[15px] sm:text-[16.5px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                <span className="w-[3px] sm:w-[3.5px] h-4.5 sm:h-5 rounded-full bg-gradient-to-b from-[#5eead4] via-[#0d9488] to-[#042f2e] shadow-[0_0_8px_rgba(45,212,191,0.6)] shrink-0" />
+                <span>
+                  {faseAtiva ? `Áreas • Módulo ${faseAtiva.faseNumero}` : 'Áreas do Direito'}
+                </span>
+              </h2>
+              <p className="font-sans text-zinc-400 text-[11px] sm:text-[11.5px] leading-snug ml-3.5 truncate">
+                {faseAtiva 
+                  ? `${disciplinasExibidas.length} matérias selecionadas neste módulo`
+                  : 'Navegue no carrossel e escolha a matéria para acessar'}
+              </p>
+            </div>
+
+            {faseSelecionadaId && (
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  setFaseSelecionadaId(null);
+                }}
+                className="text-[10px] sm:text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-full bg-teal-500/20 text-[#2dd4bf] hover:bg-teal-500/30 border border-teal-500/30 transition-all cursor-pointer"
+              >
+                Todas ({disciplinasFiltradas.length})
+              </button>
+            )}
+          </div>
+
+          {/* Área do Carrossel Coverflow com Balança Sutil de Fundo */}
+          {totalDisciplinas === 0 ? (
+            <div className="py-10 text-center w-full max-w-md rounded-2xl bg-black/60 border border-white/10 p-6 my-4">
+              <p className="text-zinc-400 text-sm">Nenhuma disciplina encontrada para "{buscaTermo}".</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setBuscaTermo('');
+                  setFaseSelecionadaId(null);
+                }}
+                className="mt-3 px-4 py-1.5 rounded-full bg-teal-600/30 text-[#2dd4bf] border border-teal-500/40 text-xs font-semibold hover:bg-teal-600/40 transition-colors cursor-pointer"
+              >
+                Limpar Filtros
+              </button>
+            </div>
+          ) : (
+            <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-1 select-none overflow-hidden">
+              {/* Balança da Justiça sutil em marca d'água */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[48%] pointer-events-none z-0 select-none opacity-20 transform rotate-[-2deg]">
+                <svg width="280" height="280" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] drop-shadow-[0_12px_40px_rgba(251,191,36,0.2)]">
+                  <rect x="248" y="70" width="16" height="350" rx="5" fill="#f59e0b"/>
+                  <rect x="170" y="405" width="172" height="22" rx="11" fill="#d97706"/>
+                  <rect x="200" y="392" width="112" height="18" rx="5" fill="#f59e0b"/>
+                  <circle cx="256" cy="72" r="20" fill="#fbbf24"/>
+                  <rect x="70" y="64" width="372" height="14" rx="7" fill="#fbbf24"/>
+                  <line x1="105" y1="78" x2="105" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
+                  <line x1="407" y1="78" x2="407" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
+                  <ellipse cx="105" cy="208" rx="65" ry="16" fill="#fbbf24"/>
+                  <path d="M40 208 Q50 245 105 250 Q160 245 170 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
+                  <ellipse cx="407" cy="208" rx="65" ry="16" fill="#fbbf24"/>
+                  <path d="M342 208 Q352 245 407 250 Q462 245 472 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
+                </svg>
+              </div>
+
+              {/* Scroller Horizontal de Capas */}
+              <div
+                ref={carouselScrollerRef}
+                onScroll={handleCarouselScroll}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                className="relative w-full flex items-center gap-3.5 xs:gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation px-[calc(50vw-82px)] xs:px-[calc(50vw-92px)] sm:px-[calc(50vw-107px)] md:px-[calc(50vw-125px)]"
+              >
+                {itensParaCarrossel.map((disc, idx) => {
+                  const isActive = idx === activeCarouselIndex;
+                  const discTheme = getDisciplinaVisualTheme(disc.id);
+                  const discAulas = aulasCatalogo.filter((a) => a.disciplinaId === disc.id);
+                  const capaUrl = discTheme.fundoAssetUrl;
+                  const corTema = discTheme.primary || disc.corDestaque || '#f59e0b';
+                  const corTemaHighlight = discTheme.highlight || '#fef08a';
+
+                  return (
+                    <div
+                      key={`${disc.id}-${idx}`}
+                      onClick={() => handleCardItemClick(disc, idx)}
+                      className="snap-center shrink-0 w-[165px] xs:w-[185px] sm:w-[215px] md:w-[250px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
+                    >
+                      {/* Quantidade de aulas acima da capa */}
+                      <div className="mb-1.5 xs:mb-2 flex items-center justify-center select-none">
+                        <div 
+                          className={cn(
+                            "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
+                            isActive
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
+                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
+                          )}
+                          style={isActive ? {
+                            color: corTemaHighlight,
+                            borderColor: `${corTema}60`,
+                          } : undefined}
+                        >
+                          <span>{discAulas.length} AULAS</span>
+                        </div>
+                      </div>
+
+                      {/* Card da Capa em 3/4 */}
+                      <div
+                        className={cn(
+                          "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] sm:max-h-[42vh] md:max-h-[46vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
+                          isActive
+                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-white/10"
+                            : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
+                        )}
+                        style={{
+                          borderColor: isActive ? corTema : `${corTema}40`,
+                          boxShadow: isActive
+                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 0 22px ${corTema}45, inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4)`
+                            : `0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
+                        }}
+                      >
+                        <img
+                          src={capaUrl}
+                          alt={disc.nome}
+                          loading={idx < 6 ? "eager" : "lazy"}
+                          decoding="async"
+                          fetchPriority={isActive ? "high" : "auto"}
+                          className={cn(
+                            "w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-400 ease-out rounded-2xl",
+                            isActive 
+                              ? "scale-105 filter brightness-110 contrast-105 saturate-105" 
+                              : "scale-100 filter brightness-95 contrast-100 saturate-100"
+                          )}
+                        />
+
+                        {/* Nome da disciplina dentro da capa */}
+                        <div className="absolute inset-x-0 bottom-0 pointer-events-none select-none">
+                          <div 
+                            className="px-2 xs:px-2.5 sm:px-3 pb-2.5 xs:pb-3 sm:pb-3.5 pt-8 xs:pt-10 sm:pt-12"
+                            style={{
+                              background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.70) 40%, rgba(0,0,0,0.25) 75%, transparent 100%)',
+                            }}
+                          >
+                            <h2 
+                              className={cn(
+                                "font-serif font-black uppercase leading-[1.1] text-center break-words transition-all duration-300",
+                                isActive 
+                                  ? "text-[13px] xs:text-[14.5px] sm:text-[17px] md:text-[19px] tracking-[0.06em]" 
+                                  : "text-[10px] xs:text-[11px] sm:text-[13px] tracking-[0.04em]"
+                              )}
+                              style={{ 
+                                color: '#fff',
+                                textShadow: `0 2px 12px rgba(0,0,0,0.95), 0 0 20px ${corTema}50`,
+                              }}
+                            >
+                              {NOMES_CAPA[disc.nome] || disc.nome}
+                            </h2>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 4 Pontos Indicadores do Carrossel */}
+          <div className="flex items-center justify-center gap-1.5 mt-2 mb-3 z-20 shrink-0">
+            {[0, 1, 2, 3].map((dotIdx) => {
+              const isDotActive = dotIdx === (safeIdx % 4);
               return (
-                <AulasMateriaCard
-                  key={disc.id}
-                  disciplina={disc}
-                  totalAulas={discAulas.length}
-                  concluidas={concluidas}
-                  pct={pct}
-                  index={index}
-                  onClick={() => handleMateriaClick(disc, index)}
+                <button
+                  key={dotIdx}
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    if (scrollCarouselToIndex) {
+                      const currentBlock = Math.floor(activeCarouselIndex / (totalDisciplinas || 1));
+                      const targetIdx = currentBlock * (totalDisciplinas || 1) + dotIdx;
+                      scrollCarouselToIndex(targetIdx);
+                    }
+                  }}
+                  className={cn(
+                    "transition-all duration-300 rounded-full cursor-pointer",
+                    isDotActive 
+                      ? "w-5 xs:w-6 h-1.5 xs:h-2 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.55)]" 
+                      : "w-1.5 xs:w-2 h-1.5 xs:h-2 bg-white/20 hover:bg-white/40"
+                  )}
+                  aria-label={`Ir para área ${dotIdx + 1}`}
                 />
               );
             })}
-          </motion.div>
-        )}
-      </section>
+          </div>
 
-      {/* ── 5. MODAIS SECUNDÁRIOS RÁPIDOS ── */}
-      <AulasRecentesModal
-        isOpen={recentesModalOpen}
-        onClose={() => setRecentesModalOpen(false)}
-        aulas={aulasCatalogo}
-        calcularProgressoCiclo={calcularProgressoCiclo}
-        onIniciarAula={handleIniciarAulaSegura}
-      />
+          {/* Botão Acessar Primário Ergonômico */}
+          <div className="w-full max-w-[240px] xs:max-w-[260px] sm:max-w-[290px] mx-auto px-4 z-20 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                try { haptic.impact('medium'); } catch {}
+                if (activeDisc && onSelectDisciplina) {
+                  onSelectDisciplina(activeDisc.id);
+                } else if (onSelectCurrent) {
+                  onSelectCurrent();
+                }
+              }}
+              className="w-full h-11 xs:h-11.5 sm:h-12 rounded-full flex items-center justify-center font-sans font-black text-xs xs:text-[13px] sm:text-sm tracking-[0.22em] uppercase text-zinc-950 shadow-[0_8px_24px_rgba(0,0,0,0.85),inset_0_1.5px_1px_rgba(255,255,255,0.7)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/50"
+              style={{
+                background: `linear-gradient(135deg, ${activeCorHighlight} 0%, ${activeCorTema} 100%)`,
+                boxShadow: `0 8px 24px -4px ${activeCorTema}80, 0 12px 30px rgba(0,0,0,0.9), inset 0 1.5px 1px rgba(255,255,255,0.65)`,
+              }}
+            >
+              <span>Acessar</span>
+            </button>
+          </div>
+        </section>
 
-      <AulasEmAltaModal
-        isOpen={emAltaModalOpen}
-        onClose={() => setEmAltaModalOpen(false)}
-        aulas={aulasCatalogo}
-        onIniciarAula={handleIniciarAulaSegura}
-      />
+        {/* ── 6. MODAIS SECUNDÁRIOS RÁPIDOS ── */}
+        <AulasRecentesModal
+          isOpen={recentesModalOpen}
+          onClose={() => setRecentesModalOpen(false)}
+          aulas={aulasCatalogo}
+          calcularProgressoCiclo={calcularProgressoCiclo}
+          onIniciarAula={handleIniciarAulaSegura}
+        />
 
-      <AulasTrilhasListaModal
-        isOpen={trilhasListaModalOpen}
-        onClose={() => setTrilhasListaModalOpen(false)}
-        disciplinas={disciplinasFiltradas}
-        aulas={aulasCatalogo}
-        faseSelecionadaId={faseSelecionadaId}
-        onSelectFase={setFaseSelecionadaId}
-        calcularProgressoCiclo={calcularProgressoCiclo}
-      />
-    </div>
+        <AulasEmAltaModal
+          isOpen={emAltaModalOpen}
+          onClose={() => setEmAltaModalOpen(false)}
+          aulas={aulasCatalogo}
+          onIniciarAula={handleIniciarAulaSegura}
+        />
+
+        <AulasTrilhasListaModal
+          isOpen={trilhasListaModalOpen}
+          onClose={() => setTrilhasListaModalOpen(false)}
+          disciplinas={disciplinasFiltradas}
+          aulas={aulasCatalogo}
+          faseSelecionadaId={faseSelecionadaId}
+          onSelectFase={setFaseSelecionadaId}
+          calcularProgressoCiclo={calcularProgressoCiclo}
+        />
+      </div>
+    </>
   );
 };
+
 export default AulasCoverflowHome;
