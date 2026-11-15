@@ -228,12 +228,18 @@ export function PlayerAulaNativo({
 
     if (slideAtual?.audio && baseFolder) {
       if (slideAtual.audio.startsWith('http')) return slideAtual.audio;
-      return `${baseFolder}/${slideAtual.audio}`;
+      return `${baseFolder}/${slideAtual.audio.replace(/^\//, '')}`;
     }
-    if (!aulaData?.audioBaseUrl) {
-      return baseFolder ? `${baseFolder}/assets/audio/s${String(idx + 1).padStart(2, '0')}.mp3` : null;
+
+    let baseUrl = aulaData?.audioBaseUrl;
+    if (baseUrl) {
+      if (!baseUrl.startsWith('http') && baseFolder) {
+        baseUrl = `${baseFolder}/${baseUrl.replace(/^\//, '')}`;
+      }
+      return `${baseUrl}${String(idx + 1).padStart(2, '0')}.mp3`;
     }
-    return `${aulaData.audioBaseUrl}${String(idx + 1).padStart(2, '0')}.mp3`;
+
+    return baseFolder ? `${baseFolder}/assets/audio/s${String(idx + 1).padStart(2, '0')}.mp3` : null;
   }, [slideAtual?.audioUrl, slideAtual?.audio, aulaData?.audioBaseUrl, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aula.urlJsonR2, aula.urlHtmlR2, idx]);
 
   // URL da imagem cinematográfica da etapa atual
@@ -400,53 +406,38 @@ export function PlayerAulaNativo({
     }
     window.scrollTo(0, 0);
 
+    // Cancelar qualquer síntese de voz residual
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
+    const wasPlaying = tocando || (audioRef.current ? !audioRef.current.paused : false);
+
     // Se temos áudio MP3 gravado no R2
     if (currentAudioSrc && audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = currentAudioSrc;
-      audioRef.current.load();
-      audioRef.current.playbackRate = velocidade;
-      const playPromise = audioRef.current.play();
-      if (playPromise) {
-        playPromise
-          .then(() => setTocando(true))
-          .catch(() => {
-            // MP3 indisponível (404/bloqueio) -> fallback imediato para TTS nativo
-            if (slideAtual?.narr && window.speechSynthesis) {
-              window.speechSynthesis.cancel();
-              const utterFallback = new SpeechSynthesisUtterance(slideAtual.narr);
-              utterFallback.lang = 'pt-BR';
-              utterFallback.rate = 1.05 * velocidade;
-              utterFallback.onstart = () => setTocando(true);
-              utterFallback.onend = () => {
-                setTocando(false);
-                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
-              };
-              utterFallback.onerror = () => setTocando(false);
-              window.speechSynthesis.speak(utterFallback);
-            } else {
-              setTocando(false);
-            }
-          });
+      if (audioRef.current.src !== currentAudioSrc) {
+        audioRef.current.src = currentAudioSrc;
+        audioRef.current.load();
       }
-    } else if (slideAtual?.narr && window.speechSynthesis) {
-      // Fallback para síntese TTS nativa em português caso não haja MP3 gravado
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(slideAtual.narr);
-      utter.lang = 'pt-BR';
-      utter.rate = 1.05 * velocidade;
-      utter.onstart = () => setTocando(true);
-      utter.onend = () => {
-        setTocando(false);
-        // Autoplay contínuo: avançar automaticamente apenas em conteúdo puro
-        if (!isInterativo && idx < total - 1) {
-          setIdx(prev => prev + 1);
+      audioRef.current.playbackRate = velocidade;
+
+      // Autoplay contínuo apenas se o usuário já estava no fluxo com áudio ativo
+      if (wasPlaying) {
+        const playPromise = audioRef.current.play();
+        if (playPromise) {
+          playPromise
+            .then(() => setTocando(true))
+            .catch((err) => {
+              // Bloqueio de autoplay do navegador: pausar normalmente sem voz sintética
+              console.log('Autoplay bloqueado pelo navegador, aguardando clique do usuário:', err);
+              setTocando(false);
+            });
         }
-      };
-      utter.onerror = () => setTocando(false);
-      window.speechSynthesis.speak(utter);
+      }
+    } else {
+      setTocando(false);
     }
-  }, [idx, currentAudioSrc, slideAtual?.narr, total, isInterativo, velocidade]);
+  }, [idx, currentAudioSrc, total, isInterativo, velocidade]);
 
   // Sincronização em Nuvem (Supabase) e Persistência Local (IndexedDB)
   useEffect(() => {
@@ -487,14 +478,25 @@ export function PlayerAulaNativo({
         img.src = proxImg;
       }
       // Preload do áudio
+      const baseFolder = (aulaData?.urlJsonR2 || aula.urlJsonR2 || aulaData?.urlHtmlR2 || aula.urlHtmlR2 || '')
+        .replace(/\/(?:aula\.json|aula\.html).*$/, '');
+      let nextAudioUrl: string | null = null;
       if (aulaData?.audioBaseUrl) {
-        const proxAudioUrl = `${aulaData.audioBaseUrl}${String(proxIdx + 1).padStart(2, '0')}.mp3`;
+        let b = aulaData.audioBaseUrl;
+        if (!b.startsWith('http') && baseFolder) {
+          b = `${baseFolder}/${b.replace(/^\//, '')}`;
+        }
+        nextAudioUrl = `${b}${String(proxIdx + 1).padStart(2, '0')}.mp3`;
+      } else if (baseFolder) {
+        nextAudioUrl = `${baseFolder}/assets/audio/s${String(proxIdx + 1).padStart(2, '0')}.mp3`;
+      }
+      if (nextAudioUrl) {
         const a = new Audio();
         a.preload = 'auto';
-        a.src = proxAudioUrl;
+        a.src = nextAudioUrl;
       }
     }
-  }, [idx, slides, total, aulaData?.audioBaseUrl, aulaData?.imagens]);
+  }, [idx, slides, total, aulaData?.audioBaseUrl, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aula.urlJsonR2, aula.urlHtmlR2, aulaData?.imagens]);
 
   // Alternar velocidade de reprodução da narração (1.0x, 1.25x, 1.5x, 2.0x)
   const velocidades = [1, 1.25, 1.5, 2];
@@ -567,45 +569,40 @@ export function PlayerAulaNativo({
 
   const toggleAudio = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     if (currentAudioSrc && audioRef.current) {
       if (tocando) {
         audioRef.current.pause();
         setTocando(false);
       } else {
+        if (audioRef.current.src !== currentAudioSrc) {
+          audioRef.current.src = currentAudioSrc;
+          audioRef.current.load();
+        }
+        audioRef.current.playbackRate = velocidade;
         audioRef.current.play()
           .then(() => setTocando(true))
-          .catch(() => {
-            // MP3 indisponível -> acionar TTS pelo botão
-            if (slideAtual?.narr && window.speechSynthesis) {
-              window.speechSynthesis.cancel();
-              const utterBtn = new SpeechSynthesisUtterance(slideAtual.narr);
-              utterBtn.lang = 'pt-BR';
-              utterBtn.rate = 1.05 * velocidade;
-              utterBtn.onstart = () => setTocando(true);
-              utterBtn.onend = () => {
-                setTocando(false);
-                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
-              };
-              utterBtn.onerror = () => setTocando(false);
-              window.speechSynthesis.speak(utterBtn);
-            } else {
-              setTocando(false);
-            }
+          .catch((err) => {
+            console.warn('Erro ao reproduzir narração em áudio:', err);
+            setTocando(false);
           });
       }
-    } else if (window.speechSynthesis) {
+    } else if (slideAtual?.narr && window.speechSynthesis) {
       if (tocando) {
         window.speechSynthesis.cancel();
         setTocando(false);
-      } else if (slideAtual?.narr) {
+      } else {
         const utter = new SpeechSynthesisUtterance(slideAtual.narr);
         utter.lang = 'pt-BR';
-        utter.rate = 1.05;
+        utter.rate = 1.05 * velocidade;
         utter.onstart = () => setTocando(true);
         utter.onend = () => {
           setTocando(false);
-          if (idx < total - 1) setIdx(prev => prev + 1);
+          if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
         };
+        utter.onerror = () => setTocando(false);
         window.speechSynthesis.speak(utter);
       }
     }
@@ -1086,6 +1083,7 @@ export function PlayerAulaNativo({
       {/* Elemento de áudio oculto com captura imediata de metadados e duração real */}
       <audio
         ref={audioRef}
+        src={currentAudioSrc || undefined}
         onLoadedMetadata={handleLoadedMetadata}
         onDurationChange={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
@@ -1491,29 +1489,19 @@ export function PlayerAulaNativo({
                         key={fi}
                         onClick={() => {
                           haptic.selection();
+                          if (window.speechSynthesis) {
+                            window.speechSynthesis.cancel();
+                          }
                           if (audioRef.current && duracao > 0 && faixasKaraoke[fi]) {
                             audioRef.current.currentTime = faixasKaraoke[fi].start * duracao;
                             if (!tocando) {
+                              audioRef.current.playbackRate = velocidade;
                               audioRef.current.play()
-          .then(() => setTocando(true))
-          .catch(() => {
-            // MP3 indisponível -> acionar TTS pelo botão
-            if (slideAtual?.narr && window.speechSynthesis) {
-              window.speechSynthesis.cancel();
-              const utterBtn = new SpeechSynthesisUtterance(slideAtual.narr);
-              utterBtn.lang = 'pt-BR';
-              utterBtn.rate = 1.05 * velocidade;
-              utterBtn.onstart = () => setTocando(true);
-              utterBtn.onend = () => {
-                setTocando(false);
-                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
-              };
-              utterBtn.onerror = () => setTocando(false);
-              window.speechSynthesis.speak(utterBtn);
-            } else {
-              setTocando(false);
-            }
-          });
+                                .then(() => setTocando(true))
+                                .catch((err) => {
+                                  console.warn('Erro ao tocar áudio no clique do karaokê:', err);
+                                  setTocando(false);
+                                });
                             }
                           }
                         }}
