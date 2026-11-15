@@ -221,7 +221,7 @@ interface Props {
 export default function NotificationsSheet({ open, onClose }: Props) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'pessoal' | 'curadoria'>('pessoal');
+  const [activeTab, setActiveTab] = useState<'curadoria' | 'pessoal'>('curadoria');
 
   const [userItems, setUserItems] = useState<UserNotifItem[]>([]);
   const [curatedItems, setCuratedItems] = useState<CuratedItem[]>([]);
@@ -274,13 +274,6 @@ export default function NotificationsSheet({ open, onClose }: Props) {
             createdAt: n.created_at,
           }));
           setUserItems(mapped);
-
-          // Se não houver pushes pessoais ainda, muda suavemente para a aba de curadoria
-          if (mapped.length === 0) {
-            setActiveTab('curadoria');
-          } else {
-            setActiveTab('pessoal');
-          }
         }
       }
 
@@ -435,42 +428,56 @@ export default function NotificationsSheet({ open, onClose }: Props) {
           </div>
 
           {/* TABS SELECTOR */}
-          <div className="px-4 pb-3 flex gap-2">
-            <button
-              onClick={() => setActiveTab('pessoal')}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                activeTab === 'pessoal'
-                  ? 'bg-red-600/20 text-red-400 border border-red-500/30'
-                  : 'bg-zinc-900/60 text-zinc-400 border border-transparent hover:text-zinc-200'
-              }`}
-            >
-              <Bell className="w-3.5 h-3.5" />
-              Para Você
-              {unreadCount > 0 && (
-                <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab('curadoria')}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                activeTab === 'curadoria'
-                  ? 'bg-red-600/20 text-red-400 border border-red-500/30'
-                  : 'bg-zinc-900/60 text-zinc-400 border border-transparent hover:text-zinc-200'
-              }`}
-            >
-              <Scale className="w-3.5 h-3.5" />
-              Novidades de Hoje
-              {curatedItems.length > 0 && (
-                <span className="text-[10px] opacity-75 font-mono">({curatedItems.length})</span>
-              )}
-            </button>
+          <div className="px-4 pb-3">
+            <div className="p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/90 flex gap-1 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setActiveTab('curadoria')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all min-h-[40px] ${
+                  activeTab === 'curadoria'
+                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50 border border-transparent'
+                }`}
+              >
+                <Scale className="w-3.5 h-3.5 shrink-0" />
+                <span>Novidades</span>
+                {curatedItems.length > 0 && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none font-bold ${
+                      activeTab === 'curadoria'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-zinc-800 text-zinc-400'
+                    }`}
+                  >
+                    {curatedItems.length}
+                  </span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('pessoal')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all min-h-[40px] ${
+                  activeTab === 'pessoal'
+                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50 border border-transparent'
+                }`}
+              >
+                <Bell className="w-3.5 h-3.5 shrink-0" />
+                <span>Para Você</span>
+                {unreadCount > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none font-bold bg-red-600 text-white shadow-sm shadow-red-900/60 animate-pulse">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
           {activeTab === 'pessoal' && unreadCount > 0 && (
             <div className="px-4 pb-2.5 flex justify-end">
               <button
                 onClick={markAllRead}
-                className="text-xs font-medium text-zinc-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 transition-colors"
+                className="text-xs font-semibold text-zinc-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 transition-colors shadow-sm"
               >
                 <CheckCheck className="w-3.5 h-3.5 text-red-500" />
                 Marcar todas como lidas
@@ -505,7 +512,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 text-xs font-semibold hover:bg-red-600/30 transition-colors"
                   >
                     <Scale className="w-3.5 h-3.5" />
-                    Ver novidades legislativas do dia
+                    Ver Novidades
                   </button>
                 </div>
               ) : (

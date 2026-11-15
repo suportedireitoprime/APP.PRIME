@@ -6,7 +6,7 @@ interface CarouselDotsProps {
   activeColor?: string;
 }
 
-const CarouselDots = ({ total, activeIndex, activeColor = 'bg-emerald-500' }: CarouselDotsProps) => {
+const CarouselDots = ({ total, activeIndex, activeColor = 'bg-rose-600' }: CarouselDotsProps) => {
   if (total <= 1) return null;
 
   const count = Math.min(total, 8);
