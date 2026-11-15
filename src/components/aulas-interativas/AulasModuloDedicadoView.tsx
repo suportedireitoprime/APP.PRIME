@@ -156,13 +156,25 @@ export const AulasModuloDedicadoView: React.FC<AulasModuloDedicadoViewProps> = (
                 {/* Conteúdo da Aula com Tipografia Mais Confortável */}
                 <div className="flex-1 min-w-0 py-0.5">
                   <h4 className="font-sans font-bold text-white text-sm sm:text-[16px] group-hover:text-teal-300 transition-colors line-clamp-1 leading-snug">
-                    {aula.aulaNumeroOuTitulo}
+                    {aula.titulo || aula.aulaNumeroOuTitulo}
                   </h4>
-                  {aula.sobre && (
-                    <p className="text-xs sm:text-[13px] text-zinc-400 font-sans line-clamp-2 mt-1 leading-relaxed">
-                      {aula.sobre}
-                    </p>
-                  )}
+                  <div className="flex items-center gap-1.5 sm:gap-2 mt-1 text-xs text-zinc-400 font-sans flex-wrap">
+                    <span className="font-mono text-zinc-400">
+                      {aula.numeroAula || `Aula ${String(aIdx + 1).padStart(2, '0')}`}
+                    </span>
+                    {aula.tema && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-400 truncate max-w-[180px] sm:max-w-xs">{aula.tema}</span>
+                      </>
+                    )}
+                    {aula.etapas > 0 && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="font-mono text-teal-400/80 font-medium">{aula.etapas} etapas</span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Botão de Play da Aula Maior e Tátil */}

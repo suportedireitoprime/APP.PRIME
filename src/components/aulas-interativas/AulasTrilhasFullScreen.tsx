@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   X, Layers, ChevronRight, CheckCircle2, Sparkles, BookOpen, Search, 
   ArrowLeft, Filter, BookMarked, Award, Check
@@ -48,6 +48,15 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
     }
     return null;
   });
+
+  useEffect(() => {
+    if (moduloInicialId && isOpen) {
+      const found = TRILHAS_MODULOS_OFICIAIS.find(m => m.id === moduloInicialId) || null;
+      setModuloDedicado(found);
+    } else if (!isOpen) {
+      setModuloDedicado(null);
+    }
+  }, [moduloInicialId, isOpen]);
 
   // Cálculo de Progresso Geral da Trilha
   const { totalConcluidasGeral, totalAulasGeral, pctGeral } = useMemo(() => {
