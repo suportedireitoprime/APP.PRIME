@@ -93,7 +93,10 @@ export default function ResumosJuridicosTemas() {
     (async () => {
       // 1. Tentar catálogo offline imediatamente (0ms)
       try {
-        const { getResumosCatalog, matchAreaInCatalog } = await import("@/services/resumosCatalog");
+        const { getResumosCatalog, matchAreaInCatalog, getOrFetchMateriaContent } = await import("@/services/resumosCatalog");
+        // Pré-carrega a matéria completa (com markdowns) em segundo plano
+        void getOrFetchMateriaContent(decodedArea);
+
         const catalog = await getResumosCatalog();
         const areaObj = matchAreaInCatalog(catalog, decodedArea);
         if (areaObj && areaObj.temas && areaObj.temas.length > 0) {
@@ -196,19 +199,23 @@ export default function ResumosJuridicosTemas() {
         <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
           <PageHeader
             title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
-            subtitle={rows.length > 0 ? `Área • ${rows.reduce((acc, row) => acc + row.total, 0)} resumos` : "Área"}
+            subtitle={rows.length > 0 ? `Área • ${rows.reduce((acc, row) => acc + row.total, 0)} tópicos` : "Área"}
             onBack={() => navigate("/resumos-juridicos")}
             className="border-b-0 pb-1"
           />
           
           <div className="max-w-5xl mx-auto px-4 mt-2 space-y-3">
           <div className="relative flex items-center group">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" />
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" style={{ color: palette.primary }} />
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
               placeholder="Pesquisar"
-              className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all" 
+              style={{
+                backgroundColor: `${palette.primary}14`,
+                borderColor: `${palette.primary}55`,
+              }}
+              className="pl-12 pr-12 h-14 rounded-2xl backdrop-blur-md text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all focus:border-primary/80" 
             />
             <button
               onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
@@ -407,7 +414,7 @@ export default function ResumosJuridicosTemas() {
                             <div>
                               <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
                                 <span className="truncate">
-                                  {r.total} resumos
+                                  {r.total} tópicos
                                 </span>
                                 <span className="font-semibold font-sans ml-1">{pct}%</span>
                               </div>
@@ -457,7 +464,7 @@ export default function ResumosJuridicosTemas() {
                             </span>
                             <span className="w-1 h-1 rounded-full bg-white/25" />
                             <span className="text-[9.5px] sm:text-[11px] font-light text-zinc-400">
-                              {r.total} resumos
+                              {r.total} tópicos
                             </span>
                           </div>
                           <h3 className="font-sans font-light text-[13.5px] xs:text-[15px] sm:text-[17px] md:text-[19px] lg:text-[20px] leading-snug break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-sm line-clamp-3 sm:line-clamp-4">

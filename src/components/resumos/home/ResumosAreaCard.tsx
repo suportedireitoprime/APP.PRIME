@@ -43,7 +43,10 @@ export const ResumosAreaCard: React.FC<ResumosAreaCardProps> = ({
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-          <span className="absolute bottom-1 right-1 px-1 rounded bg-black/85 text-[8.5px] font-black text-emerald-400 leading-none shadow font-sans">
+          <span 
+            className="absolute bottom-1 right-1 px-1 rounded bg-black/85 text-[8.5px] font-black leading-none shadow font-sans"
+            style={{ color: visualTheme?.accent || visualTheme?.primary || "#10b981" }}
+          >
             {numeroIndice}
           </span>
         </div>
