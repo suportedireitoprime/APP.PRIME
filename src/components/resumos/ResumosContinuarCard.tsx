@@ -49,8 +49,8 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
 
   const titulo = recente ? recente.subtema || recente.tema : 'Direitos e Garantias Fundamentais';
   const subtitulo = recente
-    ? `${recente.area} · Toque para continuar lendo`
-    : 'Direito Constitucional · Toque para começar a estudar';
+    ? recente.area
+    : 'Direito Constitucional';
 
   return (
     <motion.button
