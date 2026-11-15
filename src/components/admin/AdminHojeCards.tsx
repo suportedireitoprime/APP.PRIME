@@ -649,11 +649,12 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+          const isStartedAntes = startedTime > 0 && startedTime < new Date(startIso).getTime();
           const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           // 1. Novo assinante de HOJE (1º mês):
-          // A assinatura foi criada hoje OU o ciclo atual iniciou hoje e é o primeiro mês (< 20 dias da criação)
-          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
+          // A assinatura iniciou no período de hoje (se started_at é anterior a hoje, trata-se de assinatura vinculada/migrada, nunca nova venda)
+          if (!isStartedAntes && (createdInPeriod || startedInPeriod)) {
             subUsers.set(uid, { plano: planName, valor });
             renewUsers.delete(uid);
           }
@@ -1108,14 +1109,15 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+          const isStartedAntes = startedTime > 0 && startedTime < new Date(startIso).getTime();
           const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           if (isRenovou) {
             // "Renovou": estritamente MENSAL de assinatura antiga (2º mês em diante) cujo ciclo renovou hoje
             if (!isMensal || !startedInPeriod || !isCriadaAntes || !isSegundoMesOuMais) return;
           } else {
-            // "Assinou": assinaturas do 1º mês (criadas no período de hoje ou novo assinante)
-            if (!(createdInPeriod || (!isCriadaAntes && startedInPeriod))) return;
+            // "Assinou": assinaturas do 1º mês (iniciadas no período de hoje, excluindo assinaturas antigas vinculadas)
+            if (isStartedAntes || !(createdInPeriod || startedInPeriod)) return;
           }
 
           allLists.push({
