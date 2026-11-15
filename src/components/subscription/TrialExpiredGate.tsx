@@ -2,74 +2,53 @@ import React, { useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSubscription, calcTrial } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
-import { TrialExpiredModal } from '@/components/TrialExpiredModal';
-import { haptic } from '@/lib/nativeHaptics';
+import { isAdminEmail } from '@/lib/adminEmails';
+import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 
 export const TrialExpiredGate = memo(function TrialExpiredGate() {
   const { user } = useAuth();
   const location = useLocation();
   const sub = useSubscription();
-  const [modalOpen, setModalOpen] = useState(false);
 
-  // Se for assinante pago ou admin, nunca bloqueia
+  // Assinante pago ou administrador nunca é bloqueado
   const isPaidSubscriber =
     sub.isAdminOverride ||
-    (sub.isPremium && !sub.isTrial && (sub.source === 'asaas' || sub.source === 'play' || sub.source === 'apple'));
+    isAdminEmail(user?.email) ||
+    (sub.isPremium && !sub.isTrial);
 
   // Rotas isentas de bloqueio para permitir cadastro, login e pagamento
   const isExemptRoute =
     location.pathname === '/auth' ||
     location.pathname === '/landing' ||
     location.pathname === '/assinatura' ||
-    location.pathname === '/planos/ativos';
+    location.pathname === '/planos/ativos' ||
+    location.pathname === '/termos' ||
+    location.pathname === '/privacidade' ||
+    location.pathname.startsWith('/admin');
 
-  // Verifica expiração dos 3 dias
+  // Monitoramento contínuo do relógio para acionar no segundo exato dos 3 dias
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    if (isPaidSubscriber || !user) return;
+    const trial = calcTrial(user?.created_at || sub.startedAt);
+    if (trial.inTrial && trial.trialRemainingMs > 0) {
+      const timer = setTimeout(() => {
+        setTick((t) => t + 1);
+      }, trial.trialRemainingMs + 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isPaidSubscriber, user, sub.startedAt]);
+
+  // Recálculo do status de trial (3 dias = 72 horas)
   const trialInfo = calcTrial(user?.created_at || sub.startedAt);
   const isExpired = !!user && !isPaidSubscriber && (trialInfo.trialExpired || sub.isTrialExpired);
 
-  useEffect(() => {
-    if (!isExpired || isExemptRoute) return;
-
-    const handleGlobalClickCapture = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-
-      // Permite cliques dentro de elementos marcados explicitamente com data-allow-trial-click
-      // ou elementos dentro de diálogos e modais de checkout
-      if (
-        target.closest('[data-allow-trial-click="true"]') ||
-        target.closest('[role="dialog"]') ||
-        target.closest('.trial-modal-content') ||
-        target.closest('[data-radix-portal]') ||
-        target.closest('button[aria-label="Fechar"]')
-      ) {
-        return;
-      }
-
-      // Intercepta qualquer clique em elementos interativos ou conteúdo
-      const interactive = target.closest('button, a, input, select, textarea, [role="button"], [data-track], .cursor-pointer');
-      if (interactive) {
-        e.preventDefault();
-        e.stopPropagation();
-        haptic.impact('medium');
-        setModalOpen(true);
-      }
-    };
-
-    window.addEventListener('click', handleGlobalClickCapture, true);
-    return () => {
-      window.removeEventListener('click', handleGlobalClickCapture, true);
-    };
-  }, [isExpired, isExemptRoute]);
-
+  // Se não estiver expirado, se for assinante, ou se estiver na tela de assinatura/auth, não bloqueia
   if (!isExpired || isExemptRoute) {
     return null;
   }
 
-  return (
-    <div data-allow-trial-click="true">
-      <TrialExpiredModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </div>
-  );
+  // Apresenta a tela pós-trial oficial diretamente para o usuário expirado
+  return <TelaPosTrialView />;
 });
-
