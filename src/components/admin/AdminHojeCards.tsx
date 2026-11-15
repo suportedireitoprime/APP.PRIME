@@ -1846,13 +1846,13 @@ export function AdminHojeCards() {
             const rProv = rProvInfo?.provider || (finalAvatar?.includes('googleusercontent.com') ? 'google' : r.provider);
             const calcAcessos = acessosMap.get(rUid) || (rEm ? acessosMap.get(rEm) : undefined);
             const subData = subInfoMap.get(rUid);
+            const isSubInPeriod = subData?.planTag?.expires_at ? new Date(subData.planTag.expires_at).getTime() > Date.now() : false;
             const isSubAtiva = subData
-              ? ['ACTIVE', 'ACTIVE_GRACE', 'CONFIRMED', 'RECEIVED', 'PAGA'].includes(
+              ? (['ACTIVE', 'ACTIVE_GRACE', 'CONFIRMED', 'RECEIVED', 'PAGA'].includes(
                   String(subData.planTag?.status || '').toUpperCase().trim()
-                )
+                ) || isSubInPeriod)
               : false;
-            // A coroa 👑 e o status de assinante ativo só são concedidos se a assinatura estiver ATIVA ou se profiles.is_premium for true.
-            // PIX ou checkout PENDENTE, CANCELADO ou ATRASADO jamais concedem isPremium.
+            // A coroa 👑 e o status de assinante ativo são concedidos se a assinatura estiver ATIVA ou dentro do período pago (expires_at no futuro) ou se profiles.is_premium for true.
             const isUserPrem = Boolean(profData?.is_premium || isSubAtiva);
             let finalPlanTag = r.planTag || subData?.planTag;
             let finalPlanValue = r.planValue || subData?.planValue;

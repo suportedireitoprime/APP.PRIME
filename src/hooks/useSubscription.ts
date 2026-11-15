@@ -270,7 +270,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
           supabase.from('play_subscriptions').select('product_id, status, expires_at, created_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time, created_at').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at, created_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
+          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at, created_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE', 'CANCELED']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
           supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle(),
           supabase.from('legacy_subscribers' as any).select('tipo, expires_at, created_at').or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`).limit(1).maybeSingle(),
         ]);
@@ -323,16 +323,19 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         if (legadoRes.data) {
           const l = legadoRes.data as any;
           const isAntigo = isAnualAntigo(l.plano, l.started_at, l.expires_at, l.created_at);
-          persist({
-            isPremium: true, loading: false,
-            plano: isAntigo ? 'vitalicio' : l.plano,
-            expiresAt: isAntigo ? null : l.expires_at,
-            startedAt: l.started_at, source: 'asaas',
-            status: isAntigo ? 'ACTIVE' : l.status,
-            isAdminOverride: false, isTrial: false,
-            isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
-          });
-          return true;
+          const hasExpired = l.expires_at ? new Date(l.expires_at).getTime() < Date.now() : false;
+          if (!hasExpired || isAntigo) {
+            persist({
+              isPremium: true, loading: false,
+              plano: isAntigo ? 'vitalicio' : l.plano,
+              expiresAt: isAntigo ? null : l.expires_at,
+              startedAt: l.started_at, source: 'asaas',
+              status: isAntigo ? 'ACTIVE' : l.status,
+              isAdminOverride: false, isTrial: false,
+              isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
+            });
+            return true;
+          }
         }
 
         // 3.1. Fallback de Segurança Máxima: se profiles.is_premium for true, garante que o usuário nunca seja bloqueado
