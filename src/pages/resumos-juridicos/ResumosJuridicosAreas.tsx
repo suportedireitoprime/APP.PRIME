@@ -72,7 +72,7 @@ export default function ResumosJuridicosAreas() {
                 </span>
               </h2>
               <p className="font-sans text-white/60 text-[12px] sm:text-[12.5px] leading-snug ml-3">
-                Toque em uma matéria para abrir os temas e resumos completos.
+                Acervo completo de temas e resumos organizados.
               </p>
             </div>
           </div>
