@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Flame, X } from 'lucide-react';
+import { ArrowRight, BookOpen, Flame } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
@@ -9,7 +9,6 @@ import { haptic } from '@/lib/nativeHaptics';
 interface AulasContinuarAulaBannerProps {
   aula: AulaItem;
   onIniciarAula: (aula: AulaItem) => void;
-  onFechar?: () => void;
   calcularProgressoCiclo?: (aula: AulaItem) => {
     etapaAtual: number;
     totalEtapas: number;
@@ -19,7 +18,7 @@ interface AulasContinuarAulaBannerProps {
 }
 
 export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> = React.memo(
-  function AulasContinuarAulaBanner({ aula, onIniciarAula, onFechar, calcularProgressoCiclo }) {
+  function AulasContinuarAulaBanner({ aula, onIniciarAula, calcularProgressoCiclo }) {
     const disc = DISCIPLINAS_CATALOGO.find((d) => d.id === aula.disciplinaId);
     const discTheme = getDisciplinaVisualTheme(aula.disciplinaId);
     const capaUrl = discTheme?.fundoAssetUrl || disc?.capaHeroUrl;
@@ -37,7 +36,7 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
     };
 
     return (
-      <div className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mb-4 select-none">
+      <div className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mt-3 sm:mt-4 mb-5 select-none">
         {/* Título fora do botão com a mesma tipografia e cor */}
         <div className="flex items-center gap-1.5 mb-2 px-1">
           <Flame className="w-3.5 h-3.5 text-[#2dd4bf] fill-[#2dd4bf] drop-shadow-[0_0_6px_rgba(45,212,191,0.5)] shrink-0" />
@@ -48,23 +47,6 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
 
         {/* Card Interativo Minimalista */}
         <div className="relative group">
-          {/* Botão de Fechar na quina superior direita */}
-          {onFechar && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                try { haptic.selection(); } catch {}
-                onFechar();
-              }}
-              title="Dispensar"
-              aria-label="Dispensar continuar aula"
-              className="absolute top-2.5 right-2.5 z-30 w-7 h-7 rounded-full bg-black/70 hover:bg-black/95 border border-white/20 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-lg active:scale-95"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-
           <motion.button
             type="button"
             initial={{ opacity: 0, y: -6 }}
@@ -99,7 +81,7 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
             </div>
 
             {/* Conteúdo Central Minimalista e SEM ABREVIAÇÃO */}
-            <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-11 sm:py-3.5 sm:pl-3.5 sm:pr-12 flex flex-col justify-center">
+            <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-2 sm:py-3.5 sm:pl-3.5 sm:pr-3 flex flex-col justify-center">
               {/* Título Completo sem abreviação */}
               <h3 className="font-serif italic text-[15px] sm:text-[16.5px] font-bold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
                 {aula.titulo}

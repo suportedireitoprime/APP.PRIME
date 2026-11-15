@@ -23,7 +23,7 @@ export const VideoaulasActionShortcuts: React.FC<Props> = ({
   favoritosCount = 0,
 }) => {
   return (
-    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
+    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
       {SHORTCUTS.map((item) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;
@@ -36,7 +36,7 @@ export const VideoaulasActionShortcuts: React.FC<Props> = ({
               haptic.selection();
               onSelectTab(isActive ? 'todos' : item.id);
             }}
-            className={`flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden ${
+            className={`flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden ${
               isActive
                 ? 'bg-rose-500/20 border border-rose-500/40 shadow-[0_0_16px_rgba(244,63,94,0.3)]'
                 : 'hover:bg-white/5 active:bg-white/10 border border-transparent'

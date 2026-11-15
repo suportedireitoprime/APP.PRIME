@@ -12,6 +12,7 @@ import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
 import { AulasMateriaCard } from './AulasMateriaCard';
 import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
+import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AulasCoverflowHomeProps {
@@ -67,7 +68,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   const [faseSelecionadaId, setFaseSelecionadaId] = useState<string | null>(null);
   const [recentesModalOpen, setRecentesModalOpen] = useState(false);
   const [emAltaModalOpen, setEmAltaModalOpen] = useState(false);
-  const [bannerDispensado, setBannerDispensado] = useState(false);
+  const [trilhasListaModalOpen, setTrilhasListaModalOpen] = useState(false);
 
   // Procura aula em andamento para o banner "Continuar de onde parou" abaixo do painel
   const aulaParaContinuar = useMemo(() => {
@@ -140,11 +141,10 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
       />
 
       {/* ── 2. BOTÃO CONTINUAR DE ONDE PAROU ABAIXO DO PAINEL (IGUAL AO CONTINUAR LEITURA) ── */}
-      {aulaParaContinuar && !bannerDispensado && (
+      {aulaParaContinuar && (
         <AulasContinuarAulaBanner
           aula={aulaParaContinuar}
           onIniciarAula={handleIniciarAulaSegura}
-          onFechar={() => setBannerDispensado(true)}
           calcularProgressoCiclo={calcularProgressoCiclo}
         />
       )}
@@ -156,24 +156,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           aulas={aulasCatalogo}
           faseSelecionadaId={faseSelecionadaId}
           onSelectFase={setFaseSelecionadaId}
+          onOpenTodasTrilhas={() => setTrilhasListaModalOpen(true)}
           calcularProgressoCiclo={calcularProgressoCiclo}
         />
       </div>
 
       {/* ── 4. LISTA DE MATÉRIAS NORMAIS COM CAPAS (PADRÃO ÁUDIO AULAS) ── */}
       <section className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mt-2 pb-28">
-        {/* Cabeçalho da Seção com Barra Vermelha Oficial da Paleta */}
+        {/* Cabeçalho da Seção com Barra Estilizada Oficial da Paleta */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 px-1">
           <div className="min-w-0 flex-1">
             <h2 className="font-display text-white text-[15px] sm:text-[17px] font-bold flex items-center gap-2 uppercase tracking-widest">
-              <span className="w-1.5 h-4.5 rounded-full bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.7)] shrink-0" />
+              <span className="w-[3px] sm:w-[3.5px] h-4.5 sm:h-5 rounded-full bg-gradient-to-b from-[#5eead4] via-[#0d9488] to-[#042f2e] shadow-[0_0_8px_rgba(45,212,191,0.6)] shrink-0" />
               <span>
                 {faseAtiva ? `Matérias • ${faseAtiva.nome}` : 'Todas as Matérias'}
               </span>
             </h2>
             <p className="font-sans text-zinc-400 text-[11.5px] sm:text-[12px] leading-snug ml-3.5 mt-0.5">
               {faseAtiva
-                ? `Mostrando ${materiasExibidas.length} matérias desta fase cronológica`
+                ? `Mostrando ${materiasExibidas.length} matérias deste módulo`
                 : 'Toque em uma matéria para acessar suas aulas e atividades'}
             </p>
           </div>
@@ -188,7 +189,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
               }}
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 faseSelecionadaId === null
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-950/60'
+                  ? 'bg-[#0d9488] text-white shadow-md shadow-teal-950/60 border border-teal-400/40'
                   : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
               }`}
             >
@@ -215,7 +216,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                     boxShadow: `0 4px 14px ${fase.accentColor}50`,
                   } : undefined}
                 >
-                  Fase {fase.faseNumero} ({fase.disciplinasIds.length})
+                  Módulo {fase.faseNumero} ({fase.disciplinasIds.length})
                 </button>
               );
             })}
@@ -285,6 +286,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         onClose={() => setEmAltaModalOpen(false)}
         aulas={aulasCatalogo}
         onIniciarAula={handleIniciarAulaSegura}
+      />
+
+      <AulasTrilhasListaModal
+        isOpen={trilhasListaModalOpen}
+        onClose={() => setTrilhasListaModalOpen(false)}
+        disciplinas={disciplinasFiltradas}
+        aulas={aulasCatalogo}
+        faseSelecionadaId={faseSelecionadaId}
+        onSelectFase={setFaseSelecionadaId}
+        calcularProgressoCiclo={calcularProgressoCiclo}
       />
     </div>
   );

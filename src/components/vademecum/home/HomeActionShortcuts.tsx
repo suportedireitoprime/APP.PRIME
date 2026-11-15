@@ -17,7 +17,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
+    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
@@ -36,7 +36,7 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible"
+            className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible"
           >
             <div className="relative flex items-center justify-center">
               {item.tag && (

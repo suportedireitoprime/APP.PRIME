@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { History, Flame, BarChart3, Heart } from 'lucide-react';
+import { History, Flame, BarChart3, Bookmark } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AudioActionShortcutsProps {
@@ -64,7 +64,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
       {
         id: 'favoritos',
         label: 'Favoritos',
-        icon: Heart,
+        icon: Bookmark,
         color: isSalmon ? '#FFA285' : '#F43F5E',
         badge: badgeFavoritos > 0 ? badgeFavoritos : badgeTrilhas,
         badgeColor: isSalmon ? '#D94D2E' : '#E11D48',
@@ -74,7 +74,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
 
     return (
       <div
-        className={`flex items-center justify-between gap-1.5 sm:gap-2 mx-1 mt-2.5 sm:mt-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl relative z-10 ${className}`}
+        className={`flex items-center justify-between gap-1.5 sm:gap-2 mx-1 mt-2.5 sm:mt-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl relative z-10 ${className}`}
       >
         {ITEMS.map((item) => {
           const Icon = item.icon;
@@ -86,7 +86,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
                 haptic.selection();
                 item.action();
               }}
-              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer"
+              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer"
               aria-label={item.label}
             >
               <div className="relative inline-flex items-center justify-center">
