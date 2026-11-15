@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  ArrowLeft, Search, X, BarChart3, History, Bookmark, Flame, Play 
+  ArrowLeft, Search, X, BarChart3, History, Bookmark, Flame, Play, ChevronRight 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
@@ -650,28 +650,6 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 />
               );
             })}
-          </div>
-
-          {/* Botão Acessar Primário Ergonômico */}
-          <div className="w-full max-w-[240px] xs:max-w-[260px] sm:max-w-[290px] mx-auto px-4 z-20 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.impact('medium'); } catch {}
-                if (activeDisc && onSelectDisciplina) {
-                  onSelectDisciplina(activeDisc.id);
-                } else if (onSelectCurrent) {
-                  onSelectCurrent();
-                }
-              }}
-              className="w-full h-11 xs:h-11.5 sm:h-12 rounded-full flex items-center justify-center font-sans font-black text-xs xs:text-[13px] sm:text-sm tracking-[0.22em] uppercase text-zinc-950 shadow-[0_8px_24px_rgba(0,0,0,0.85),inset_0_1.5px_1px_rgba(255,255,255,0.7)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/50"
-              style={{
-                background: `linear-gradient(135deg, ${activeCorHighlight} 0%, ${activeCorTema} 100%)`,
-                boxShadow: `0 8px 24px -4px ${activeCorTema}80, 0 12px 30px rgba(0,0,0,0.9), inset 0 1.5px 1px rgba(255,255,255,0.65)`,
-              }}
-            >
-              <span>Acessar</span>
-            </button>
           </div>
         </section>
 

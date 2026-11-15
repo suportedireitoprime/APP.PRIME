@@ -12,6 +12,7 @@ export interface AulasTrilhasListaModalProps {
   faseSelecionadaId: string | null;
   onSelectFase: (faseId: string | null) => void;
   onIniciarAula?: (aulaItem: TrilhaModuloAula | AulaItem) => void;
+  moduloInicialId?: string | null;
   calcularProgressoCiclo?: (aula: AulaItem) => {
     aulaTerminada: boolean;
     porcentagemTotal: number;
