@@ -125,6 +125,8 @@ import { Route as QuestoesRevisarRouteImport } from './routes/questoes.revisar'
 import { Route as RadarProposicoesRouteImport } from './routes/radar.proposicoes'
 import { Route as ResumosJuridicosAreaRouteImport } from './routes/resumos-juridicos.$area'
 import { Route as ResumosJuridicosFavoritosRouteImport } from './routes/resumos-juridicos.favoritos'
+import { Route as ResumosJuridicosJurisprudenciaRouteImport } from './routes/resumos-juridicos.jurisprudencia'
+import { Route as ResumosJuridicosLeisRouteImport } from './routes/resumos-juridicos.leis'
 import { Route as ResumosJuridicosMateriasRouteImport } from './routes/resumos-juridicos.materias'
 import { Route as ResumosJuridicosRecentesRouteImport } from './routes/resumos-juridicos.recentes'
 import { Route as SimuladosEstatisticasRouteImport } from './routes/simulados.estatisticas'
@@ -147,6 +149,7 @@ import { Route as PilulasDeckDeckIdRouteImport } from './routes/pilulas.deck.$de
 import { Route as QuestoesAreaSlugRouteImport } from './routes/questoes.area.$slug'
 import { Route as QuestoesDesafiosConquistasRouteImport } from './routes/questoes.desafios.conquistas'
 import { Route as RadarProposicoesDateRouteImport } from './routes/radar.proposicoes.$date'
+import { Route as ResumosJuridicosAreaTemaRouteImport } from './routes/resumos-juridicos.$area.$tema'
 import { Route as VideoaulasCatalogoAreaRouteImport } from './routes/videoaulas.$catalogo.$area'
 import { Route as JurisprudenciaProntasTribunalSlugRouteImport } from './routes/jurisprudencia.prontas.$tribunal.$slug'
 import { Route as LegislacaoEstadualUfLeiSlugRouteImport } from './routes/legislacao-estadual.$uf.lei.$slug'
@@ -742,6 +745,17 @@ const ResumosJuridicosFavoritosRoute =
     path: '/favoritos',
     getParentRoute: () => ResumosJuridicosRoute,
   } as any)
+const ResumosJuridicosJurisprudenciaRoute =
+  ResumosJuridicosJurisprudenciaRouteImport.update({
+    id: '/jurisprudencia',
+    path: '/jurisprudencia',
+    getParentRoute: () => ResumosJuridicosRoute,
+  } as any)
+const ResumosJuridicosLeisRoute = ResumosJuridicosLeisRouteImport.update({
+  id: '/leis',
+  path: '/leis',
+  getParentRoute: () => ResumosJuridicosRoute,
+} as any)
 const ResumosJuridicosMateriasRoute =
   ResumosJuridicosMateriasRouteImport.update({
     id: '/materias',
@@ -858,6 +872,12 @@ const RadarProposicoesDateRoute = RadarProposicoesDateRouteImport.update({
   path: '/$date',
   getParentRoute: () => RadarProposicoesRoute,
 } as any)
+const ResumosJuridicosAreaTemaRoute =
+  ResumosJuridicosAreaTemaRouteImport.update({
+    id: '/$tema',
+    path: '/$tema',
+    getParentRoute: () => ResumosJuridicosAreaRoute,
+  } as any)
 const VideoaulasCatalogoAreaRoute = VideoaulasCatalogoAreaRouteImport.update({
   id: '/$area',
   path: '/$area',
@@ -1008,8 +1028,10 @@ export interface FileRoutesByFullPath {
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
-  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
+  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
+  '/resumos-juridicos/jurisprudencia': typeof ResumosJuridicosJurisprudenciaRoute
+  '/resumos-juridicos/leis': typeof ResumosJuridicosLeisRoute
   '/resumos-juridicos/materias': typeof ResumosJuridicosMateriasRoute
   '/resumos-juridicos/recentes': typeof ResumosJuridicosRecentesRoute
   '/simulados/estatisticas': typeof SimuladosEstatisticasRoute
@@ -1032,6 +1054,7 @@ export interface FileRoutesByFullPath {
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
+  '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
@@ -1154,8 +1177,10 @@ export interface FileRoutesByTo {
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
-  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
+  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
+  '/resumos-juridicos/jurisprudencia': typeof ResumosJuridicosJurisprudenciaRoute
+  '/resumos-juridicos/leis': typeof ResumosJuridicosLeisRoute
   '/resumos-juridicos/materias': typeof ResumosJuridicosMateriasRoute
   '/resumos-juridicos/recentes': typeof ResumosJuridicosRecentesRoute
   '/simulados/estatisticas': typeof SimuladosEstatisticasRoute
@@ -1178,6 +1203,7 @@ export interface FileRoutesByTo {
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
+  '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
@@ -1301,8 +1327,10 @@ export interface FileRoutesById {
   '/questoes/praticar': typeof QuestoesPraticarRoute
   '/questoes/revisar': typeof QuestoesRevisarRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
-  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRoute
+  '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
+  '/resumos-juridicos/jurisprudencia': typeof ResumosJuridicosJurisprudenciaRoute
+  '/resumos-juridicos/leis': typeof ResumosJuridicosLeisRoute
   '/resumos-juridicos/materias': typeof ResumosJuridicosMateriasRoute
   '/resumos-juridicos/recentes': typeof ResumosJuridicosRecentesRoute
   '/simulados/estatisticas': typeof SimuladosEstatisticasRoute
@@ -1325,6 +1353,7 @@ export interface FileRoutesById {
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
+  '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
@@ -1451,6 +1480,8 @@ export interface FileRouteTypes {
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
+    | '/resumos-juridicos/jurisprudencia'
+    | '/resumos-juridicos/leis'
     | '/resumos-juridicos/materias'
     | '/resumos-juridicos/recentes'
     | '/simulados/estatisticas'
@@ -1473,6 +1504,7 @@ export interface FileRouteTypes {
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
+    | '/resumos-juridicos/$area/$tema'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
@@ -1597,6 +1629,8 @@ export interface FileRouteTypes {
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
+    | '/resumos-juridicos/jurisprudencia'
+    | '/resumos-juridicos/leis'
     | '/resumos-juridicos/materias'
     | '/resumos-juridicos/recentes'
     | '/simulados/estatisticas'
@@ -1619,6 +1653,7 @@ export interface FileRouteTypes {
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
+    | '/resumos-juridicos/$area/$tema'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
@@ -1743,6 +1778,8 @@ export interface FileRouteTypes {
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
+    | '/resumos-juridicos/jurisprudencia'
+    | '/resumos-juridicos/leis'
     | '/resumos-juridicos/materias'
     | '/resumos-juridicos/recentes'
     | '/simulados/estatisticas'
@@ -1765,6 +1802,7 @@ export interface FileRouteTypes {
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
+    | '/resumos-juridicos/$area/$tema'
     | '/videoaulas/$catalogo/$area'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
@@ -2655,6 +2693,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResumosJuridicosFavoritosRouteImport
       parentRoute: typeof ResumosJuridicosRoute
     }
+    '/resumos-juridicos/jurisprudencia': {
+      id: '/resumos-juridicos/jurisprudencia'
+      path: '/jurisprudencia'
+      fullPath: '/resumos-juridicos/jurisprudencia'
+      preLoaderRoute: typeof ResumosJuridicosJurisprudenciaRouteImport
+      parentRoute: typeof ResumosJuridicosRoute
+    }
+    '/resumos-juridicos/leis': {
+      id: '/resumos-juridicos/leis'
+      path: '/leis'
+      fullPath: '/resumos-juridicos/leis'
+      preLoaderRoute: typeof ResumosJuridicosLeisRouteImport
+      parentRoute: typeof ResumosJuridicosRoute
+    }
     '/resumos-juridicos/materias': {
       id: '/resumos-juridicos/materias'
       path: '/materias'
@@ -2808,6 +2860,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/radar/proposicoes/$date'
       preLoaderRoute: typeof RadarProposicoesDateRouteImport
       parentRoute: typeof RadarProposicoesRoute
+    }
+    '/resumos-juridicos/$area/$tema': {
+      id: '/resumos-juridicos/$area/$tema'
+      path: '/$tema'
+      fullPath: '/resumos-juridicos/$area/$tema'
+      preLoaderRoute: typeof ResumosJuridicosAreaTemaRouteImport
+      parentRoute: typeof ResumosJuridicosAreaRoute
     }
     '/videoaulas/$catalogo/$area': {
       id: '/videoaulas/$catalogo/$area'
@@ -3164,16 +3223,31 @@ const QuestoesRouteWithChildren = QuestoesRoute._addFileChildren(
   QuestoesRouteChildren,
 )
 
+interface ResumosJuridicosAreaRouteChildren {
+  ResumosJuridicosAreaTemaRoute: typeof ResumosJuridicosAreaTemaRoute
+}
+
+const ResumosJuridicosAreaRouteChildren: ResumosJuridicosAreaRouteChildren = {
+  ResumosJuridicosAreaTemaRoute: ResumosJuridicosAreaTemaRoute,
+}
+
+const ResumosJuridicosAreaRouteWithChildren =
+  ResumosJuridicosAreaRoute._addFileChildren(ResumosJuridicosAreaRouteChildren)
+
 interface ResumosJuridicosRouteChildren {
-  ResumosJuridicosAreaRoute: typeof ResumosJuridicosAreaRoute
+  ResumosJuridicosAreaRoute: typeof ResumosJuridicosAreaRouteWithChildren
   ResumosJuridicosFavoritosRoute: typeof ResumosJuridicosFavoritosRoute
+  ResumosJuridicosJurisprudenciaRoute: typeof ResumosJuridicosJurisprudenciaRoute
+  ResumosJuridicosLeisRoute: typeof ResumosJuridicosLeisRoute
   ResumosJuridicosMateriasRoute: typeof ResumosJuridicosMateriasRoute
   ResumosJuridicosRecentesRoute: typeof ResumosJuridicosRecentesRoute
 }
 
 const ResumosJuridicosRouteChildren: ResumosJuridicosRouteChildren = {
-  ResumosJuridicosAreaRoute: ResumosJuridicosAreaRoute,
+  ResumosJuridicosAreaRoute: ResumosJuridicosAreaRouteWithChildren,
   ResumosJuridicosFavoritosRoute: ResumosJuridicosFavoritosRoute,
+  ResumosJuridicosJurisprudenciaRoute: ResumosJuridicosJurisprudenciaRoute,
+  ResumosJuridicosLeisRoute: ResumosJuridicosLeisRoute,
   ResumosJuridicosMateriasRoute: ResumosJuridicosMateriasRoute,
   ResumosJuridicosRecentesRoute: ResumosJuridicosRecentesRoute,
 }
