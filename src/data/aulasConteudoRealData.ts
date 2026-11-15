@@ -8403,7 +8403,7 @@ export const AULAS_CONTEUDO_REAL: Record<string, AulaData> = {
       "fim": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/imagens/fim.webp",
       "panorama": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/imagens/panorama.webp"
     },
-    "audioBaseUrl": ""
+    "audioBaseUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/assets/audio/s"
   },
   "penal-01-02": {
     "aulaId": "penal-01-02",
