@@ -47,7 +47,7 @@ export const ResumosTemaCard: React.FC<ResumosTemaCardProps> = ({
           </h3>
 
           <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans">
-            Tema completo com resumo doutrinário
+            Tema completo com tópicos doutrinários
           </p>
         </div>
       </div>

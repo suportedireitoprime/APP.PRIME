@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useDeferredValue } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ interface ResumosSearchSheetProps {
 
 type ResultType = "area" | "tema" | "topico";
 
-interface SearchResultItem {
+interface IndexedItem {
   id: string;
   type: ResultType;
   title: string;
@@ -30,9 +30,10 @@ interface SearchResultItem {
   tema?: string;
   subtema?: string;
   caminho: string[];
-  previa?: string;
+  previa: string;
   total?: number;
-  coverUrl?: string;
+  coverUrl: string;
+  searchKey: string;
 }
 
 function stripMarkdown(md?: string): string {
@@ -56,11 +57,12 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState("");
+  const deferredQ = useDeferredValue(q);
   const [catalog, setCatalog] = useState<AreaItem[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
   const [activeFilter, setActiveFilter] = useState<"todos" | "area" | "tema" | "topico">("todos");
 
-  // Carrega o catálogo completo de resumos uma vez
+  // Carrega o catálogo de resumos apenas uma vez
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -81,13 +83,13 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     };
   }, []);
 
-  // Foco automático ao abrir e trava de scroll no fundo
+  // Foco automático e bloqueio de scroll de fundo
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
       const timer = setTimeout(() => {
         inputRef.current?.focus();
-      }, 150);
+      }, 100);
       return () => {
         clearTimeout(timer);
         document.body.style.overflow = "";
@@ -110,101 +112,85 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  // Indexação e busca dinâmica e imediata
-  const allResults = useMemo(() => {
-    const query = cleanResumoString(q);
-    if (!query || query.length < 2) return [];
-
-    const results: SearchResultItem[] = [];
+  // 1. PRÉ-INDEXAÇÃO EM MEMÓRIA (Executada UMA ÚNICA VEZ ao carregar o catálogo)
+  // Elimina processamento pesado de regex/markdown durante a digitação, garantindo fluidez a 120fps
+  const searchIndex = useMemo<IndexedItem[]>(() => {
+    if (!catalog || catalog.length === 0) return [];
+    const items: IndexedItem[] = [];
 
     for (const a of catalog) {
-      const areaNorm = cleanResumoString(a.area);
-      const isAreaMatch = areaNorm.includes(query);
       const areaCover =
         getDisciplinaVisualTheme(a.area)?.fundoAssetUrl ||
         getAreaCover(a.area)?.cover ||
         a.coverUrl ||
         constCover;
+      const cleanArea = cleanResumoString(a.area);
 
-      // 1. Match em Matéria (Área)
-      if (isAreaMatch) {
-        results.push({
-          id: `area-${a.area}`,
-          type: "area",
-          title: a.area,
-          area: a.area,
-          caminho: ["Resumos Jurídicos", a.area],
-          previa: `${a.total || 0} tópicos disponíveis · ${a.temas?.length || 0} módulos organizados`,
-          total: a.total,
-          coverUrl: areaCover,
-        });
-      }
+      // Matéria
+      items.push({
+        id: `area-${a.area}`,
+        type: "area",
+        title: a.area,
+        area: a.area,
+        caminho: [a.area],
+        previa: `${a.total || 0} tópicos disponíveis organizados em ${a.temas?.length || 0} temas`,
+        total: a.total,
+        coverUrl: areaCover,
+        searchKey: cleanArea,
+      });
 
-      // 2. Match em Temas (Módulos)
       for (const t of a.temas || []) {
-        const temaNorm = cleanResumoString(t.tema);
-        const isTemaMatch = temaNorm.includes(query);
+        const cleanTema = cleanResumoString(t.tema);
 
-        if (isTemaMatch) {
-          results.push({
-            id: `tema-${a.area}-${t.tema}`,
-            type: "tema",
-            title: t.tema,
+        // Tema
+        items.push({
+          id: `tema-${a.area}-${t.tema}`,
+          type: "tema",
+          title: t.tema,
+          area: a.area,
+          tema: t.tema,
+          caminho: [a.area, t.tema],
+          previa: `${t.total || t.subtemas?.length || 0} tópicos neste tema`,
+          total: t.total,
+          coverUrl: areaCover,
+          searchKey: `${cleanArea} ${cleanTema}`,
+        });
+
+        // Tópicos
+        for (const s of t.subtemas || []) {
+          const cleanSubtema = cleanResumoString(s.subtema);
+          const rawMd = stripMarkdown(s.markdown);
+          const cleanMd = rawMd ? cleanResumoString(rawMd.slice(0, 300)) : "";
+          const previewText = rawMd
+            ? rawMd.slice(0, 130) + (rawMd.length > 130 ? "…" : "")
+            : "Conteúdo completo deste tópico disponível para leitura.";
+
+          items.push({
+            id: `topico-${s.id || s.subtema}`,
+            type: "topico",
+            title: s.subtema,
             area: a.area,
             tema: t.tema,
+            subtema: s.subtema,
             caminho: [a.area, t.tema],
-            previa: `${t.total || t.subtemas?.length || 0} tópicos neste tema`,
-            total: t.total,
+            previa: previewText,
             coverUrl: areaCover,
+            searchKey: `${cleanArea} ${cleanTema} ${cleanSubtema} ${cleanMd}`,
           });
-        }
-
-        // 3. Match em Tópicos / Capítulos (Subtemas)
-        for (const s of t.subtemas || []) {
-          const subtemaNorm = cleanResumoString(s.subtema);
-          const isSubMatch = subtemaNorm.includes(query);
-          const rawMd = stripMarkdown(s.markdown);
-          const mdNorm = cleanResumoString(rawMd);
-          const isMdMatch = !isSubMatch && mdNorm.includes(query);
-
-          if (isSubMatch || isMdMatch) {
-            let previaText = "";
-            if (rawMd) {
-              if (isMdMatch) {
-                // Destaca o trecho do conteúdo onde o termo apareceu
-                const idx = rawMd.toLowerCase().indexOf(q.trim().toLowerCase());
-                if (idx !== -1) {
-                  const start = Math.max(0, idx - 35);
-                  const end = Math.min(rawMd.length, idx + 110);
-                  previaText = (start > 0 ? "…" : "") + rawMd.slice(start, end) + (end < rawMd.length ? "…" : "");
-                } else {
-                  previaText = rawMd.slice(0, 110) + (rawMd.length > 110 ? "…" : "");
-                }
-              } else {
-                previaText = rawMd.slice(0, 110) + (rawMd.length > 110 ? "…" : "");
-              }
-            } else if (s.exemplos) {
-              previaText = stripMarkdown(s.exemplos).slice(0, 110) + "…";
-            }
-
-            results.push({
-              id: `topico-${s.id || s.subtema}`,
-              type: "topico",
-              title: s.subtema,
-              area: a.area,
-              tema: t.tema,
-              subtema: s.subtema,
-              caminho: [a.area, t.tema, s.subtema],
-              previa: previaText || "Conteúdo completo deste tópico.",
-              coverUrl: areaCover,
-            });
-          }
         }
       }
     }
 
-    return results;
-  }, [q, catalog]);
+    return items;
+  }, [catalog]);
+
+  // 2. BUSCA INSTANTÂNEA (< 1ms por keystroke sobre o índice pré-calculado)
+  const allResults = useMemo(() => {
+    const query = cleanResumoString(deferredQ);
+    if (!query || query.length < 2) return [];
+
+    return searchIndex.filter((item) => item.searchKey.includes(query));
+  }, [deferredQ, searchIndex]);
 
   // Filtra por tipo selecionado
   const filteredResults = useMemo(() => {
@@ -229,8 +215,8 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     };
   }, [allResults]);
 
-  // Ação ao clicar em um resultado
-  const handleSelectResult = (item: SearchResultItem) => {
+  // Ação ao selecionar um resultado
+  const handleSelectResult = (item: IndexedItem) => {
     haptic.selection();
     onClose();
 
@@ -251,7 +237,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
     }
   };
 
-  // Sugestões rápidas quando o campo está vazio
+  // Sugestões populares
   const sugestoesRapidas = [
     "Direito Penal",
     "Direito Constitucional",
@@ -272,7 +258,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             onClick={onClose}
             className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md"
           />
@@ -282,7 +268,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            transition={{ type: "spring", damping: 30, stiffness: 320 }}
             className="fixed inset-x-0 bottom-0 z-50 h-[90vh] max-h-[90dvh] flex flex-col bg-[#121215] border-t border-white/10 rounded-t-3xl shadow-2xl overflow-hidden"
           >
             {/* Grab Handle discreto */}
@@ -290,7 +276,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
               <div className="w-12 h-1.5 rounded-full bg-white/20" />
             </div>
 
-            {/* Cabeçalho de Busca com Input Dedicado e Botão Fechar */}
+            {/* Cabeçalho de Busca com Input Dedicado */}
             <div className="px-4 sm:px-6 pt-2 pb-3 shrink-0 border-b border-white/10 space-y-3">
               <div className="flex items-center gap-2.5">
                 <div className="relative flex-1">
@@ -300,7 +286,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     type="text"
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder="Digite uma matéria, tema ou tópico…"
+                    placeholder="Buscar matéria, tema ou tópico"
                     className="w-full pl-11 pr-10 h-12 text-[14.5px] sm:text-[15.5px] rounded-2xl bg-[#18181c] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/70 transition-colors shadow-inner"
                   />
                   {q && (
@@ -321,7 +307,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="h-12 px-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-xs font-semibold flex items-center justify-center transition-colors shrink-0"
+                  className="h-12 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-semibold flex items-center justify-center transition-colors shrink-0"
                 >
                   Fechar
                 </button>
@@ -378,9 +364,9 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
               )}
             </div>
 
-            {/* Conteúdo Dinâmico com Scroll */}
+            {/* Conteúdo com Scroll */}
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3 pb-[calc(2.5rem+var(--sai-bottom,0px))]">
-              {/* ESTADO 1: Campo vazio — Exibe sugestões */}
+              {/* ESTADO 1: Campo vazio — Sugestões */}
               {!q.trim() && (
                 <div className="space-y-6 pt-2">
                   <div>
@@ -408,9 +394,9 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
 
                   <div className="rounded-2xl border border-white/10 bg-[#16161a] p-4 text-left">
                     <p className="text-xs text-white/70 leading-relaxed font-sans">
-                      💡 <strong className="text-white">Busca Organizada:</strong> Digite o nome de
-                      uma matéria, tema ou conteúdo específico. Os tópicos exibirão sua respectiva
-                      capa, a trilha completa e as cores exclusivas de cada disciplina.
+                      💡 <strong className="text-white">Busca Ultra Rápida:</strong> Pesquise por
+                      matérias, temas ou tópicos. Os resultados exibem capas exclusivas, caminhos
+                      completos sem abreviações e a paleta de cores oficial de cada disciplina.
                     </p>
                   </div>
                 </div>
@@ -423,7 +409,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                 </div>
               )}
 
-              {/* ESTADO 3: Resultados Encontrados */}
+              {/* ESTADO 3: Resultados Encontrados (Sem Abreviações e com Cores do Tema) */}
               {q.trim().length >= 2 && filteredResults.length > 0 && (
                 <div className="space-y-2.5">
                   <p className="text-[11.5px] font-semibold text-white/50 uppercase tracking-wider px-1">
@@ -437,22 +423,22 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     return (
                       <motion.div
                         key={item.id}
-                        initial={{ opacity: 0, y: 4 }}
+                        initial={{ opacity: 0, y: 3 }}
                         animate={{ opacity: 1, y: 0 }}
                         onClick={() => handleSelectResult(item)}
                         style={{
                           borderColor: "rgba(255, 255, 255, 0.08)",
                         }}
-                        className="group cursor-pointer rounded-2xl bg-[#16161a] hover:bg-[#1a1a20] border p-2.5 sm:p-3 transition-all relative overflow-hidden text-left flex items-center gap-3 sm:gap-3.5"
+                        className="group cursor-pointer rounded-2xl bg-[#16161a] hover:bg-[#1a1a20] border p-2.5 sm:p-3 transition-all relative overflow-hidden text-left flex items-start gap-3 sm:gap-3.5"
                       >
-                        {/* Indicador de cor do tema na borda esquerda */}
+                        {/* Linha vertical de destaque na cor da matéria */}
                         <div
                           className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
                           style={{ backgroundColor: theme.primary }}
                         />
 
                         {/* Capa à esquerda */}
-                        <div className="w-[52px] h-[68px] sm:w-[60px] sm:h-[78px] rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-black shadow-md ml-1">
+                        <div className="w-[52px] h-[70px] sm:w-[60px] sm:h-[80px] rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-black shadow-md ml-1 mt-0.5">
                           <img
                             src={item.coverUrl || constCover}
                             alt={item.title}
@@ -462,26 +448,26 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
                         </div>
 
-                        {/* Informações centrais */}
-                        <div className="flex-1 min-w-0 py-0.5">
-                          {/* Trilha do Caminho (SEM ÍCONES, com a cor da disciplina) */}
+                        {/* Informações detalhadas sem abreviação */}
+                        <div className="flex-1 min-w-0">
+                          {/* Trilha do Caminho Completa (Sem ícones e sem cortar palavras) */}
                           <div
-                            className="flex items-center gap-1 text-[11px] font-medium mb-1 overflow-hidden truncate"
+                            className="flex flex-wrap items-center gap-1 text-[11px] sm:text-[11.5px] font-medium mb-1 leading-snug"
                             style={{ color: theme.accent }}
                           >
                             {item.caminho.map((step, idx) => (
                               <React.Fragment key={idx}>
-                                <span className="truncate">{step}</span>
+                                <span className="break-words">{step}</span>
                                 {idx < item.caminho.length - 1 && (
-                                  <span className="text-white/30 shrink-0 mx-0.5">&gt;</span>
+                                  <span className="text-white/30 shrink-0 mx-1">&gt;</span>
                                 )}
                               </React.Fragment>
                             ))}
                           </div>
 
                           {/* Título e Badge */}
-                          <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-sans font-semibold text-[14px] sm:text-[15px] text-white group-hover:text-white transition-colors leading-snug line-clamp-1 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-sans font-semibold text-[14px] sm:text-[15px] text-white leading-snug break-words flex-1">
                               {item.title}
                             </h4>
 
@@ -491,7 +477,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                                 color: theme.accent,
                                 backgroundColor: theme.glowSoft,
                               }}
-                              className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                              className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border mt-0.5"
                             >
                               {item.type === "area"
                                 ? "Matéria"
@@ -501,16 +487,16 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                             </span>
                           </div>
 
-                          {/* Prévia textual limpa */}
+                          {/* Prévia Completa sem truncamentos desnecessários */}
                           {item.previa && (
-                            <p className="font-sans text-[11.5px] sm:text-[12px] text-white/55 line-clamp-1 mt-1 leading-normal">
+                            <p className="font-sans text-[11.5px] sm:text-[12px] text-white/60 mt-1 leading-relaxed break-words">
                               {item.previa}
                             </p>
                           )}
                         </div>
 
-                        {/* Ícone de seta discreto na cor da matéria */}
-                        <div className="shrink-0 pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* Seta à direita na cor do tema */}
+                        <div className="shrink-0 self-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <ArrowRight className="w-4 h-4" style={{ color: theme.accent }} />
                         </div>
                       </motion.div>

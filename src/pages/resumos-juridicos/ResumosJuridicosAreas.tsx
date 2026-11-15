@@ -74,7 +74,7 @@ export default function ResumosJuridicosAreas() {
                 </span>
               </h2>
               <p className="font-sans text-white/60 text-[12px] sm:text-[12.5px] leading-snug ml-3">
-                Acervo completo de temas e resumos organizados.
+                Acervo completo de temas e tópicos organizados.
               </p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function ResumosJuridicosAreas() {
             <input
               type="text"
               readOnly
-              placeholder="Buscar matéria, tema ou resumo…"
+              placeholder="Buscar matéria, tema ou tópico"
               className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none group-hover:border-emerald-500/50 transition-colors shadow-sm cursor-pointer"
             />
           </div>
