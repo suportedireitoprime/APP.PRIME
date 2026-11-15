@@ -1,7 +1,7 @@
 import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 
 // Chunks dinâmicos por disciplina para code splitting sob demanda
-const DISCIPLINA_LOADERS: Record<string, () => Promise<{ default: AulaItem[] }>> = {
+const DISCIPLINA_LOADERS: Record<string, () => Promise<{ default: any }>> = {
   administrativo: () => import('@/data/aulas-disciplinas/administrativo.json'),
   ambiental: () => import('@/data/aulas-disciplinas/ambiental.json'),
   civil: () => import('@/data/aulas-disciplinas/civil.json'),
@@ -69,7 +69,7 @@ export async function carregarAulasPorDisciplina(disciplinaId: string): Promise<
   const promessa = (async () => {
     try {
       const modulo = await loader();
-      const aulas = modulo.default || [];
+      const aulas = (modulo.default || []) as AulaItem[];
       cacheMemoriaAulas.set(chave, aulas);
       return aulas;
     } catch (err) {

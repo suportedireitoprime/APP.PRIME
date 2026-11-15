@@ -248,19 +248,19 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
             )}
 
             {/* Listagem de Matérias ou Resultados */}
-            {q.trim() && state.buscando ? (
+            {q.trim() && state.loading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
                 <Loader2 className="w-6 h-6 animate-spin text-red-500" />
                 <p className="text-xs font-sans">Buscando aulas e matérias…</p>
               </div>
-            ) : q.trim() && state.resultadosAulas.length > 0 ? (
+            ) : q.trim() && state.aulasFiltradas.length > 0 ? (
               <div className="space-y-3 pt-1">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-sans">
-                  {state.resultadosAulas.length} {state.resultadosAulas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
+                  {state.aulasFiltradas.length} {state.aulasFiltradas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
                 </p>
                 <div className="space-y-2">
-                  {state.resultadosAulas.map((aula) => (
-                    <VideoaulasAulaResultCard key={aula.id} aula={aula} />
+                  {state.aulasFiltradas.map((aula) => (
+                    <VideoaulasAulaResultCard key={aula.videoId} aula={aula} />
                   ))}
                 </div>
               </div>
@@ -303,11 +303,8 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
       {/* Sheet de Desempenho */}
       <VideoaulasDesempenhoSheet
         open={state.showDesempenho}
-        onOpenChange={state.setShowDesempenho}
-        data={state.data}
-        horasAssistidas={horasAssistidas}
-        c={c}
-        dash={dash}
+        onClose={() => state.setShowDesempenho(false)}
+        horasTotais={horasAssistidas}
       />
     </div>
   );
