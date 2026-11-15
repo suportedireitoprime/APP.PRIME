@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  ArrowLeft, Search, BarChart3, History, Heart, Flame, X 
+  ArrowLeft, Search, BarChart3, History, Bookmark, Flame, X 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import aulasHeroCover from '@/assets/aulas-interativas-hero-cover.jpg';
@@ -160,8 +160,8 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
           {/* ══════════════════════════════════════════════════════════════════════════
               PAINEL DE FUNÇÕES RÁPIDAS (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO)
               ══════════════════════════════════════════════════════════════════════════ */}
-          <div className="relative z-10 px-3 sm:px-5 pt-1 pb-3.5">
-            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mx-auto max-w-md bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl">
+          <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
+            <div className="flex items-center justify-between gap-2 sm:gap-3 mx-auto max-w-md bg-black/60 backdrop-blur-md border border-white/15 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3.5 sm:px-4 shadow-2xl">
               {/* Recentes */}
               <button
                 type="button"
@@ -169,7 +169,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                   try { haptic.selection(); } catch {}
                   onRecentes();
                 }}
-                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
                 aria-label="Aulas Recentes"
               >
                 <div className="relative inline-flex items-center justify-center">
@@ -192,11 +192,11 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                   try { haptic.selection(); } catch {}
                   onFavoritos();
                 }}
-                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
                 aria-label="Aulas Favoritas"
               >
                 <div className="relative inline-flex items-center justify-center">
-                  <Heart className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  <Bookmark className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
                   {badgeFavoritos > 0 && (
                     <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
                       {badgeFavoritos}
@@ -215,7 +215,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                   try { haptic.selection(); } catch {}
                   onEmAlta();
                 }}
-                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
                 aria-label="Aulas Em Alta"
               >
                 <div className="relative inline-flex items-center justify-center">
@@ -233,7 +233,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                   try { haptic.selection(); } catch {}
                   onDesempenho();
                 }}
-                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
                 aria-label="Desempenho e Estatísticas"
               >
                 <div className="relative inline-flex items-center justify-center">

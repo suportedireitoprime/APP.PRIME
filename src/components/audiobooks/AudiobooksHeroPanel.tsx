@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import {
   Headphones,
   ArrowLeft,
-  Heart,
+  Bookmark,
   History,
   BarChart3,
   BookOpen,
@@ -123,8 +123,8 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
       </div>
 
       {/* ── 4 Botões de Ação Rápida no Padrão Vade Mecum: Favoritos, Recentes, Estatísticas e Outros ── */}
-      <div className="relative z-10 px-3 sm:px-6 md:px-8 pb-3.5 pt-1">
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2 bg-[#120B24]/80 backdrop-blur-md border border-purple-500/25 rounded-2xl p-1.5 shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
+      <div className="relative z-10 px-4 sm:px-6 md:px-8 pt-2.5 pb-5 sm:pb-6">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#120B24]/80 backdrop-blur-md border border-purple-500/25 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
           {/* Botão 1: Favoritos */}
           <button
             type="button"
@@ -132,10 +132,10 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
               haptic.selection();
               onSelectAction('favoritos');
             }}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
             aria-label="Abrir Favoritos"
           >
-            <Heart
+            <Bookmark
               className="w-5 h-5 text-rose-500 fill-rose-500/20 group-hover:fill-rose-500 transition-all duration-200 group-hover:scale-110 drop-shadow-md"
               strokeWidth={2}
             />
@@ -151,7 +151,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
               haptic.selection();
               onSelectAction('recentes');
             }}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
             aria-label="Abrir Recentes"
           >
             <History
@@ -170,7 +170,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
               haptic.selection();
               onSelectAction('estatisticas');
             }}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
             aria-label="Abrir Estatísticas"
           >
             <BarChart3
@@ -189,7 +189,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
               haptic.selection();
               onSelectAction('resumos');
             }}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
             aria-label="Abrir Trilha de Resumos"
           >
             <BookOpen

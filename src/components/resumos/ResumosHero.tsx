@@ -1,7 +1,7 @@
 import { useState, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  ArrowLeft, BookOpen, Layers, Library, Heart, History, 
+  ArrowLeft, BookOpen, Layers, Library, Bookmark, History, 
   BarChart3, Sparkles, X, ChevronRight, Scale, Landmark 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -101,8 +101,8 @@ const ResumosHero = ({
         </div>
 
         {/* ── 4 Atalhos Rápidos no Rodapé do Painel (Padrão Vidro Fosco Pílulas) ── */}
-        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
-          <div className="flex items-center justify-between gap-1.5 sm:gap-2 bg-black/45 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
+        <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
+          <div className="flex items-center justify-between gap-2 sm:gap-3 bg-black/45 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
             {/* Botão 1: Favoritos */}
             <button
               type="button"
@@ -110,10 +110,10 @@ const ResumosHero = ({
                 haptic.selection();
                 navigate('/resumos-juridicos/favoritos');
               }}
-              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
               aria-label="Abrir Favoritos"
             >
-              <Heart
+              <Bookmark
                 className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
@@ -129,7 +129,7 @@ const ResumosHero = ({
                 haptic.selection();
                 navigate('/resumos-juridicos/recentes');
               }}
-              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
               aria-label="Abrir Recentes"
             >
               <History
@@ -148,7 +148,7 @@ const ResumosHero = ({
                 haptic.selection();
                 setStatsOpen(true);
               }}
-              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
               aria-label="Abrir Estatísticas"
             >
               <BarChart3
@@ -167,7 +167,7 @@ const ResumosHero = ({
                 haptic.selection();
                 setOutrosOpen(true);
               }}
-              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
               aria-label="Outros Recursos"
             >
               <Sparkles

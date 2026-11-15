@@ -1,13 +1,13 @@
 import { memo } from 'react';
 import { useNavigate, type NavigateFunction } from 'react-router-dom';
-import { BookOpen, Map, Heart, HardDrive } from 'lucide-react';
+import { BookOpen, Map, Bookmark, HardDrive } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 
 const SHORTCUT_ITEMS = [
   { label: 'Leitura',     icon: BookOpen,   action: () => abrirAtalhoBiblioteca('leitura'),       color: '#FACC15' },
   { label: 'Trilhas',     icon: Map,        action: (navigate: NavigateFunction) => navigate('/bibliotecas/trilhas'), color: '#38BDF8' },
-  { label: 'Favoritos',   icon: Heart,      action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#F43F5E' },
+  { label: 'Favoritos',   icon: Bookmark,   action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#F43F5E' },
   { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#A855F7' },
 ];
 
@@ -20,7 +20,7 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
 
   return (
     <div
-      className={`flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl ${className}`}
+      className={`flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl ${className}`}
     >
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
@@ -33,7 +33,7 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
               item.action(navigate);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             <Icon
               className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"

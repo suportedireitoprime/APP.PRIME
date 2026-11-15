@@ -157,7 +157,7 @@ const HomeHeaderHero = ({
         </div>
 
         {/* Atalhos Rápidos — dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
+        <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
           <HomeActionShortcuts />
         </div>
       </div>

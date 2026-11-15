@@ -191,7 +191,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
           </div>
 
           {/* Atalhos Rápidos flutuando sobre a onda laranja salmão */}
-          <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3">
+          <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
             <AudioActionShortcuts
               colorScheme="salmon"
               onRecentes={() => {

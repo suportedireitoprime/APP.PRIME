@@ -111,7 +111,7 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
       </div>
 
       {/* 4 Atalhos Rápidos flutuando sobre a onda */}
-      <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3">
+      <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
         <BibliotecaActionShortcuts />
       </div>
 
