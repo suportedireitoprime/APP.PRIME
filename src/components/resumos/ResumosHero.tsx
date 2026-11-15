@@ -2,7 +2,7 @@ import { useState, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, BookOpen, Layers, Library, Bookmark, History, 
-  BarChart3, Sparkles, X, ChevronRight, Scale, Landmark 
+  BarChart3, Sparkles, X, ChevronRight, Scale, Landmark, Flame 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import resumosHeroImg from '@/assets/covers/resumos-juristas-jardim.webp';
@@ -22,7 +22,7 @@ const ResumosHero = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [statsOpen, setStatsOpen] = useState(false);
-  const [outrosOpen, setOutrosOpen] = useState(false);
+  const [emAltaOpen, setEmAltaOpen] = useState(false);
   const isMapas = location.pathname.startsWith('/mapas-mentais') || location.pathname.startsWith('/visuais') || location.pathname.startsWith('/mapas');
 
   return (
@@ -160,22 +160,22 @@ const ResumosHero = ({
               </span>
             </button>
 
-            {/* Botão 4: Outros */}
+            {/* Botão 4: Em Alta */}
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
-                setOutrosOpen(true);
+                setEmAltaOpen(true);
               }}
               className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1.5 text-center cursor-pointer select-none"
-              aria-label="Outros Recursos"
+              aria-label="Resumos Em Alta"
             >
-              <Sparkles
+              <Flame
                 className="w-5 h-5 text-[#86efac] group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
                 strokeWidth={2}
               />
               <span className="text-[10.5px] sm:text-[11px] font-medium tracking-tight whitespace-nowrap text-white/85 group-hover:text-white drop-shadow-sm">
-                Outros
+                Em Alta
               </span>
             </button>
           </div>
@@ -227,81 +227,62 @@ const ResumosHero = ({
         </>
       )}
 
-      {/* Modal / Sheet de Outros Recursos */}
-      {outrosOpen && (
+      {/* Modal / Sheet de Resumos em Alta */}
+      {emAltaOpen && (
         <>
           <div
-            onClick={() => setOutrosOpen(false)}
+            onClick={() => setEmAltaOpen(false)}
             className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm animate-in fade-in"
           />
           <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#141416] border-t border-white/15 rounded-t-[32px] p-6 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] max-w-lg mx-auto shadow-2xl animate-in slide-in-from-bottom duration-200">
             <div className="w-12 h-1.5 bg-zinc-700/60 rounded-full mx-auto mb-4" />
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-display font-bold text-lg text-white">Recursos Complementares</h3>
+                <Flame className="w-5 h-5 text-amber-400" />
+                <h3 className="font-display font-bold text-lg text-white">Resumos em Alta</h3>
               </div>
               <button
-                onClick={() => setOutrosOpen(false)}
+                onClick={() => setEmAltaOpen(false)}
                 className="w-8 h-8 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-2.5">
-              <button
-                onClick={() => {
-                  haptic.selection();
-                  setOutrosOpen(false);
-                  navigate('/resumos-juridicos/materias');
-                }}
-                className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Library className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-white">Resumos por Matérias</p>
-                  <p className="text-xs text-zinc-400">Navegue pelas 30 grandes disciplinas do Direito</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500" />
-              </button>
 
-              <button
-                onClick={() => {
-                  haptic.selection();
-                  setOutrosOpen(false);
-                  navigate('/resumos-juridicos/leis');
-                }}
-                className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-white">Resumos de Leis e Códigos</p>
-                  <p className="text-xs text-zinc-400">Esquematização de diplomas legais e artigos-chave</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500" />
-              </button>
+            <p className="text-xs text-zinc-400 mb-3">
+              Disciplinas fundamentais e com maior procura para estudo diário e concursos:
+            </p>
 
-              <button
-                onClick={() => {
-                  haptic.selection();
-                  setOutrosOpen(false);
-                  navigate('/resumos-juridicos/jurisprudencia');
-                }}
-                className="w-full flex items-center gap-3.5 p-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Landmark className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-white">Jurisprudência em Teses</p>
-                  <p className="text-xs text-zinc-400">Súmulas e julgados do STF e STJ organizados</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500" />
-              </button>
+            <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+              {[
+                { nome: 'Direito Constitucional', sub: 'Direitos fundamentais, controle de constitucionalidade e poderes' },
+                { nome: 'Direito Penal', sub: 'Teoria do crime, tipicidade, penas e crimes em espécie' },
+                { nome: 'Direito Administrativo', sub: 'Atos, licitações, improbidade administrativa e agentes públicos' },
+                { nome: 'Direito Processual Penal', sub: 'Inquérito policial, provas, recursos e prisão' },
+                { nome: 'Direito Civil', sub: 'Parte geral, obrigações, contratos, responsabilidade e família' },
+                { nome: 'Direito Processual Civil', sub: 'Petição inicial, tutela provisória, recursos e execução' },
+                { nome: 'Direito Tributário', sub: 'Sistema tributário, competência, imunidades e CTN' },
+                { nome: 'Direito do Trabalho', sub: 'CLT, jornada, remuneração, estabilidade e rescisão' },
+              ].map((item) => (
+                <button
+                  key={item.nome}
+                  onClick={() => {
+                    haptic.selection();
+                    setEmAltaOpen(false);
+                    navigate(`/resumos-juridicos/${encodeURIComponent(item.nome)}`);
+                  }}
+                  className="w-full flex items-center gap-3.5 p-3 rounded-2xl bg-zinc-900 hover:bg-zinc-800/80 border border-white/10 text-left transition cursor-pointer group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Flame className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-white group-hover:text-amber-300 transition-colors">{item.nome}</p>
+                    <p className="text-xs text-zinc-400 truncate">{item.sub}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                </button>
+              ))}
             </div>
           </div>
         </>

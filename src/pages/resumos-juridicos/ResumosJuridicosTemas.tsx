@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Search, ChevronRight, Mic, Layers, Play } from "lucide-react";
+import { Loader2, Search, ChevronRight, Mic, Layers, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { cn } from "@/lib/utils";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
 
@@ -28,7 +29,9 @@ export default function ResumosJuridicosTemas() {
   const navigate = useNavigate();
   
   const areaCover = useMemo(() => {
-    return getAreaCover(decodedArea)?.cover || "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp";
+    const visualTheme = getDisciplinaVisualTheme(decodedArea);
+    const coverObj = getAreaCover(decodedArea);
+    return visualTheme?.fundoAssetUrl || coverObj?.cover || "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp";
   }, [decodedArea]);
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
@@ -241,10 +244,10 @@ export default function ResumosJuridicosTemas() {
                     setOrdem(o.id);
                   }}
                   className={cn(
-                    "relative flex-1 flex justify-center items-center rounded-t-2xl transition-all duration-300 ease-out border-x border-t border-white/5 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider",
+                    "relative flex-1 h-full flex justify-center items-center rounded-t-2xl border-x border-t font-bold text-[9px] sm:text-[10px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
                     ativo 
-                      ? "h-full bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)]" 
-                      : "h-[75%] bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white"
+                      ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-white/10" 
+                      : "bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/5 opacity-80"
                   )}
                   style={{
                     zIndex,
@@ -254,17 +257,17 @@ export default function ResumosJuridicosTemas() {
                   <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
                     {ativo && <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 opacity-50" />}
                   </div>
-                  <span className={cn("relative z-10 transition-transform duration-300", ativo ? "scale-105" : "scale-100")} style={{ color: ativo ? palette.primary : undefined }}>{o.label}</span>
+                  <span className={cn("relative z-10 transition-transform duration-200", ativo ? "scale-105 font-black" : "scale-100")} style={{ color: ativo ? palette.primary : undefined }}>{o.label}</span>
                   {ativo && (
                     <motion.div 
                       layoutId="activeFolderTabTemas"
                       className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
                       style={{
-                        borderColor: `${palette.primary}80`,
-                        boxShadow: `inset 0 2px 10px ${palette.primary}26`
+                        borderColor: `${palette.primary}99`,
+                        boxShadow: `inset 0 2px 10px ${palette.primary}33`
                       }}
                       initial={false}
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      transition={{ type: "spring", stiffness: 480, damping: 36, mass: 0.8 }}
                     />
                   )}
                 </button>
@@ -318,7 +321,7 @@ export default function ResumosJuridicosTemas() {
                 const lidosCount = recentes.filter(x => x.area === decodedArea && x.tema === r.tema).length;
                 const pct = r.total > 0 ? Math.min(100, Math.round((lidosCount / r.total) * 100)) : 0;
                 const ordemStr = String(i + 1).padStart(2, '0');
-                const badgeLabel = `Módulo ${ordemStr}`;
+                const badgeLabel = `Matéria ${ordemStr}`;
 
                 return (
                   <div key={r.tema} className="w-full flex flex-col">
@@ -333,7 +336,7 @@ export default function ResumosJuridicosTemas() {
                           haptic.selection();
                           navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}`);
                         }}
-                        className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                        className="relative shrink-0 w-[145px] xs:w-[160px] sm:w-[185px] md:w-[210px] aspect-[3/4] h-auto cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                       >
                         <div
                           className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform duration-300 group-hover:scale-110"
@@ -420,12 +423,7 @@ export default function ResumosJuridicosTemas() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-black/10 to-[#0d0f12]/50 pointer-events-none z-0" />
 
-                          <div className="flex items-center justify-start z-[1] w-full pt-1">
-                            <span className="inline-flex items-center text-[9.5px] sm:text-[11px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md bg-black/50 text-white/95 border border-white/20 shadow-sm whitespace-nowrap">
-                              <span>{badgeLabel}</span>
-                            </span>
-                          </div>
-
+                          {/* Centro da capa com botão de seta de navegação elegante */}
                           <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
                             <div className="relative flex items-center justify-center">
                               <div
@@ -433,7 +431,7 @@ export default function ResumosJuridicosTemas() {
                                 style={{ backgroundColor: `${palette.primary}50` }}
                               />
                               <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]">
-                                <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
+                                <ArrowRight className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 stroke-[2.4] transition-colors" />
                               </div>
                             </div>
                           </div>
