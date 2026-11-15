@@ -10,7 +10,6 @@ import { haptic } from "@/lib/nativeHaptics";
 import { resumosLocal } from "@/lib/resumosLocal";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
-import { useTypewriter } from "@/hooks/useTypewriter";
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
@@ -172,14 +171,6 @@ export default function ResumosJuridicosTemas() {
     return () => { cancelled = true; };
   }, [decodedArea]);
 
-  const placeholderWords = useMemo(() => {
-    const areaName = decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
-    if (rows.length === 0) return [`Pesquisar matéria de ${areaName}...`];
-    return rows.map(r => `Pesquisar ${r.tema.toLowerCase()}...`);
-  }, [rows, decodedArea]);
-
-  const placeholderText = useTypewriter(placeholderWords, 50, 20, 2500);
-
   const filteredTemas = useMemo(() => {
     let result = rows;
     if (q.trim()) {
@@ -197,7 +188,7 @@ export default function ResumosJuridicosTemas() {
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-35">
         <ShapeGrid />
       </div>
 
@@ -216,7 +207,7 @@ export default function ResumosJuridicosTemas() {
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
-              placeholder={placeholderText || "Pesquisar..."}
+              placeholder="Pesquisar"
               className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all" 
             />
             <button
@@ -298,22 +289,6 @@ export default function ResumosJuridicosTemas() {
           </div>
         ) : (
           <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-            <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-              <img
-                src="/images/gamificacao/deusa_temis_vazada.webp"
-                alt=""
-                aria-hidden="true"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-                style={{
-                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                }}
-              />
-            </div>
-
             <div className="w-full min-w-0 relative z-[2] flex flex-col">
               {filteredTemas.map((r, i) => {
                 const isLeft = i % 2 === 0;

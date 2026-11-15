@@ -11,7 +11,6 @@ import { resumosLocal } from "@/lib/resumosLocal";
 import { haptic } from "@/lib/nativeHaptics";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
-import { useTypewriter } from "@/hooks/useTypewriter";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
 import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
@@ -216,14 +215,6 @@ export default function ResumosJuridicosSubtemas() {
     return result;
   }, [rows, ordem, favs, q]);
 
-  const placeholderWords = useMemo(() => {
-    if (rows.length === 0) return [`Pesquisar em ${decodedTema}...`];
-    // Pegamos alguns subtemas para exibir no placeholder
-    return rows.slice(0, 10).map(r => `Pesquisar ${r.subtema ? r.subtema.toLowerCase() : r.tema.toLowerCase()}...`);
-  }, [rows, decodedTema]);
-
-  const placeholderText = useTypewriter(placeholderWords, 50, 20, 2500);
-
   const openReader = (r: ResumoRow, metodo: Metodo, deveGerar?: boolean) => {
     resumosLocal.registrarRecente({
       id: r.id,
@@ -238,7 +229,7 @@ export default function ResumosJuridicosSubtemas() {
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-35">
         <ShapeGrid />
       </div>
 
@@ -257,7 +248,7 @@ export default function ResumosJuridicosSubtemas() {
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
-              placeholder={placeholderText || "Pesquisar..."}
+              placeholder="Pesquisar"
               className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all" 
             />
             <button
@@ -344,22 +335,6 @@ export default function ResumosJuridicosSubtemas() {
           </div>
         ) : (
           <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-            <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-              <img
-                src="/images/gamificacao/deusa_temis_vazada.webp"
-                alt=""
-                aria-hidden="true"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-                style={{
-                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                }}
-              />
-            </div>
-
             <div className="relative space-y-4 ml-3 sm:ml-4 pb-20 z-[2]">
               <AnimatePresence mode="popLayout">
                 {subtemasOrdenados.map((r, i) => {

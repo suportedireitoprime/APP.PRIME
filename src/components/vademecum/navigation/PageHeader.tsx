@@ -56,14 +56,14 @@ export function PageHeader({
 
       {leading && <div className="shrink-0">{leading}</div>}
 
-      <div className="flex-1 min-w-0 text-center">
+      <div className="flex-1 min-w-0 text-center px-1">
         <h1
-          className={`text-[17px] sm:text-[18px] font-bold ${textColor} truncate`}
+          className={`font-sans font-light text-[15px] xs:text-[16px] sm:text-[18px] md:text-[19px] tracking-normal ${textColor} truncate leading-tight antialiased`}
         >
           {title}
         </h1>
         {subtitle && (
-          <p className={`text-xs md:text-[11px] font-body ${mutedColor} truncate mt-1`}>
+          <p className={`text-[11px] sm:text-[12px] font-sans font-extralight tracking-wider ${mutedColor} truncate mt-0.5`}>
             {subtitle}
           </p>
         )}
