@@ -36,22 +36,23 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto">
       
-      {/* ── FUNDO EM IMAGEM IGUAL AO DE AULAS (COM DESFOQUE E VINHETA ESCURA) ── */}
+      {/* ── FUNDO EM IMAGEM IGUAL AO DE AULAS (GRÉCIA ANTIGA NÍTIDA E ILUMINADA) ── */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
         <img
           src={greciaFilosofosFundo}
-          alt="Fundo Clássico"
+          alt="Grécia Antiga e Filósofos"
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[3.5px] brightness-[0.45] contrast-[1.08] scale-105"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.92] contrast-[1.08] scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/90 pointer-events-none" />
+        {/* Vinheta atmosférica suave preservando os detalhes dos templos e filósofos */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/85 pointer-events-none" />
       </div>
 
       {/* ── BARRA SUPERIOR PARA MODO LABORATÓRIO ── */}
       {isLabMode && (
-        <div className="fixed top-3 inset-x-4 max-w-sm mx-auto z-50 flex items-center justify-between px-3.5 py-1.5 rounded-full bg-black/80 border border-white/10 text-xs backdrop-blur-md shadow-xl">
+        <div className="fixed top-3 inset-x-4 max-w-sm mx-auto z-50 flex items-center justify-between px-3.5 py-1.5 rounded-full bg-black/80 border border-white/15 text-xs backdrop-blur-md shadow-xl">
           <span className="font-mono font-bold text-amber-300 text-[11px] uppercase tracking-wide">
             Simulador Pós-Trial
           </span>
@@ -73,21 +74,21 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
           type="button"
           onClick={onVoltar}
           aria-label="Fechar"
-          className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all cursor-pointer active:scale-95"
+          className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/90 hover:text-white transition-all cursor-pointer active:scale-95 backdrop-blur-md"
         >
           <X className="w-5 h-5" />
         </button>
       )}
 
-      {/* ── CARD MINIMALISTA CENTRALIZADO POR CIMA ── */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-zinc-950/85 border border-white/10 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95)] backdrop-blur-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
+      {/* ── CARD MINIMALISTA CENTRALIZADO POR CIMA DO FUNDO ── */}
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-zinc-950/90 border border-white/15 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95)] backdrop-blur-xl text-center space-y-4 animate-in zoom-in-95 duration-200">
         
-        {/* Logo Oficial do App */}
+        {/* Logo Oficial do App Grande e com Destaque */}
         <div className="flex justify-center pt-1">
           <img 
             src={appLogo} 
             alt="Direito Prime" 
-            className="h-10 sm:h-12 w-auto object-contain drop-shadow"
+            className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
           />
         </div>
 
