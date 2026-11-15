@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { 
@@ -26,6 +26,7 @@ interface PlayerAulaNativoProps {
   aula: AulaItem;
   disciplinaNome: string;
   corDestaque: string;
+  etapaInicial?: number;
   onVoltar: () => void;
   onConcluir: (totalEtapas: number) => void;
   onProgresso?: (etapaAtual: number, totalEtapas: number) => void;
@@ -76,13 +77,14 @@ export function PlayerAulaNativo({
   aula,
   disciplinaNome,
   corDestaque,
+  etapaInicial,
   onVoltar,
   onConcluir,
   onProgresso
 }: PlayerAulaNativoProps) {
   const [aulaData, setAulaData] = useState<AulaData | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(etapaInicial !== undefined ? etapaInicial : 0);
 
   // Estados de Áudio e Karaokê
   const [tocando, setTocando] = useState(false);
@@ -163,13 +165,19 @@ export function PlayerAulaNativo({
   useEffect(() => {
     let ativo = true;
     setCarregando(true);
-    setIdx(0);
+    setIdx(etapaInicial !== undefined ? etapaInicial : 0);
     setTocando(false);
 
     loadAulaData(aula).then(async (data) => {
       if (ativo) {
         setAulaData(data);
         setCarregando(false);
+
+        // Se uma etapa inicial foi explicitamente solicitada (ex: Laboratório), respeita ela
+        if (etapaInicial !== undefined) {
+          setIdx(etapaInicial);
+          return;
+        }
 
         // Restaurar onde parou (IndexedDB + Supabase)
         try {
@@ -1056,6 +1064,547 @@ export function PlayerAulaNativo({
         }
         .karaoke .sent.done {
           color: #f8edef;
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           COMPONENTES VISUAIS DE ALTA RETENÇÃO (LABORATÓRIO & DIAGRAMAÇÃO)
+           ══════════════════════════════════════════════════════════════════ */
+
+        /* 1. FLUXOGRAMA DE DECISÃO COM SETAS */
+        .aula-html-tipografia .fluxo-container {
+          margin: 20px 0;
+          padding: 16px;
+          background: linear-gradient(180deg, rgba(28, 12, 18, 0.9) 0%, rgba(14, 6, 9, 0.95) 100%);
+          border: 1px solid rgba(226, 62, 87, 0.35);
+          border-radius: 18px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .aula-html-tipografia .fluxo-header {
+          text-align: center;
+          margin-bottom: 14px;
+        }
+        .aula-html-tipografia .fluxo-tag {
+          display: inline-block;
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          color: #e9cd6d;
+          background: rgba(212, 175, 55, 0.12);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          padding: 3px 10px;
+          border-radius: 99px;
+          margin-bottom: 6px;
+        }
+        .aula-html-tipografia .fluxo-titulo {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 20px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia .fluxo-pergunta {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px dashed rgba(255, 255, 255, 0.15);
+          border-radius: 12px;
+          padding: 12px 14px;
+          margin: 12px 0 16px;
+        }
+        .aula-html-tipografia .fluxo-icon-box {
+          font-size: 24px;
+          flex-shrink: 0;
+        }
+        .aula-html-tipografia .fluxo-pergunta-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 1.4px;
+          color: #e9cd6d;
+          margin: 0 0 2px;
+          text-transform: uppercase;
+        }
+        .aula-html-tipografia .fluxo-pergunta-txt {
+          font-size: 14.5px;
+          font-weight: 600;
+          color: #ffffff;
+          margin: 0;
+          line-height: 1.35;
+        }
+        .aula-html-tipografia .fluxo-setas-split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 6px;
+          text-align: center;
+        }
+        .aula-html-tipografia .seta-lado {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+        }
+        .aula-html-tipografia .seta-label {
+          font-size: 10.5px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          padding: 3px 8px;
+          border-radius: 6px;
+        }
+        .aula-html-tipografia .seta-label.sim {
+          color: #f87171;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+        .aula-html-tipografia .seta-label.nao {
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.15);
+          border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        .aula-html-tipografia .seta-glyph {
+          font-size: 18px;
+          font-weight: 700;
+          color: #e9cd6d;
+          animation: bounceSeta 1.8s infinite ease-in-out;
+        }
+        @keyframes bounceSeta {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(4px); }
+        }
+        .aula-html-tipografia .fluxo-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        @media (min-width: 640px) {
+          .aula-html-tipografia .fluxo-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        .aula-html-tipografia .fluxo-card {
+          padding: 14px;
+          border-radius: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .aula-html-tipografia .fluxo-card.crime {
+          border: 1px solid rgba(239, 68, 68, 0.45);
+          background: linear-gradient(180deg, rgba(239, 68, 68, 0.14) 0%, rgba(20, 6, 10, 0.85) 100%);
+        }
+        .aula-html-tipografia .fluxo-card.atipico {
+          border: 1px solid rgba(16, 185, 129, 0.45);
+          background: linear-gradient(180deg, rgba(16, 185, 129, 0.14) 0%, rgba(6, 20, 14, 0.85) 100%);
+        }
+        .aula-html-tipografia .fluxo-card-badge {
+          display: inline-block;
+          align-self: flex-start;
+          font-size: 10.5px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          padding: 2px 8px;
+          border-radius: 99px;
+        }
+        .aula-html-tipografia .fluxo-card-badge.red {
+          color: #fca5a5;
+          background: rgba(239, 68, 68, 0.25);
+          border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .aula-html-tipografia .fluxo-card-badge.green {
+          color: #6ee7b7;
+          background: rgba(16, 185, 129, 0.25);
+          border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        .aula-html-tipografia .fluxo-card-title {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 16.5px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia .fluxo-card-desc {
+          font-size: 13.5px;
+          color: #e4d5d8;
+          line-height: 1.45;
+          margin: 0;
+          flex-grow: 1;
+        }
+        .aula-html-tipografia .fluxo-card-footer {
+          margin-top: 4px;
+          padding-top: 8px;
+          border-top: 1px dashed rgba(255, 255, 255, 0.1);
+          font-size: 12.5px;
+        }
+        .aula-html-tipografia .fluxo-card-footer.red {
+          color: #fca5a5;
+        }
+        .aula-html-tipografia .fluxo-card-footer.green {
+          color: #6ee7b7;
+        }
+
+        /* 2. CARD PENSE ASSIM (ANALOGIA) */
+        .aula-html-tipografia .card-insight {
+          margin: 18px 0;
+          padding: 16px;
+          background: linear-gradient(135deg, rgba(38, 22, 12, 0.85) 0%, rgba(20, 10, 15, 0.95) 100%);
+          border: 1px solid rgba(234, 179, 8, 0.35);
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+        .aula-html-tipografia .card-insight-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 10px;
+        }
+        .aula-html-tipografia .card-insight-icon {
+          font-size: 24px;
+          flex-shrink: 0;
+        }
+        .aula-html-tipografia .card-insight-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          color: #fde047;
+          display: block;
+        }
+        .aula-html-tipografia .card-insight-title {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 16.5px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia .card-insight-text {
+          font-size: 14.5px;
+          line-height: 1.6;
+          color: #f5e8ea;
+          margin: 0;
+        }
+        .aula-html-tipografia .card-insight-destaque {
+          display: block;
+          margin-top: 8px;
+          padding: 8px 12px;
+          background: rgba(234, 179, 8, 0.12);
+          border-left: 3px solid #eab308;
+          border-radius: 6px;
+          font-weight: 600;
+          color: #fef08a;
+          font-size: 13.5px;
+        }
+
+        /* 3. TABELA SINÓPTICA COMPARATIVA */
+        .aula-html-tipografia .tabela-sinoptica-wrap {
+          margin: 22px 0;
+          background: rgba(22, 9, 14, 0.8);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+        }
+        .aula-html-tipografia .tabela-header {
+          padding: 12px 16px;
+          background: rgba(226, 62, 87, 0.18);
+          border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+        }
+        .aula-html-tipografia .tabela-tag {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 1.6px;
+          color: #e9cd6d;
+          display: block;
+          margin-bottom: 2px;
+        }
+        .aula-html-tipografia .tabela-title {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 16px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia table.tabela-sinoptica {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13.5px;
+        }
+        .aula-html-tipografia table.tabela-sinoptica th {
+          background: rgba(0, 0, 0, 0.3);
+          color: #e9cd6d;
+          font-weight: 700;
+          font-size: 11px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          padding: 10px 12px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          text-align: left;
+        }
+        .aula-html-tipografia table.tabela-sinoptica td {
+          padding: 11px 12px;
+          border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+          color: #f8edef;
+          line-height: 1.45;
+          vertical-align: middle;
+        }
+        .aula-html-tipografia table.tabela-sinoptica tr:last-child td {
+          border-bottom: none;
+        }
+        .aula-html-tipografia .sub-txt {
+          font-size: 11.5px;
+          color: #b59ba0;
+        }
+        .aula-html-tipografia .badge-art {
+          display: inline-block;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          padding: 2px 7px;
+          border-radius: 6px;
+          white-space: nowrap;
+        }
+        .aula-html-tipografia .badge-pena {
+          display: inline-block;
+          font-size: 11.5px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 6px;
+          white-space: nowrap;
+        }
+        .aula-html-tipografia .badge-pena.red {
+          color: #fca5a5;
+          background: rgba(239, 68, 68, 0.18);
+          border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+        .aula-html-tipografia .badge-pena.orange {
+          color: #fed7aa;
+          background: rgba(249, 115, 22, 0.18);
+          border: 1px solid rgba(249, 115, 22, 0.35);
+        }
+        .aula-html-tipografia .badge-pena.green {
+          color: #a7f3d0;
+          background: rgba(16, 185, 129, 0.18);
+          border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        .aula-html-tipografia .badge-pena.blue {
+          color: #bae6fd;
+          background: rgba(14, 165, 233, 0.18);
+          border: 1px solid rgba(14, 165, 233, 0.35);
+        }
+
+        /* 4. GRID DO TRIPÉ (3 PILARES DOURADOS) */
+        .aula-html-tipografia .bloco-tripe-section {
+          margin: 24px 0;
+        }
+        .aula-html-tipografia .tripe-header {
+          text-align: center;
+          margin-bottom: 14px;
+        }
+        .aula-html-tipografia .tripe-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          color: #e9cd6d;
+          background: rgba(212, 175, 55, 0.12);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          padding: 3px 10px;
+          border-radius: 99px;
+          display: inline-block;
+          margin-bottom: 6px;
+        }
+        .aula-html-tipografia .tripe-title {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 20px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 4px;
+        }
+        .aula-html-tipografia .tripe-sub {
+          font-size: 13.5px;
+          color: #c9a7ad;
+          margin: 0;
+        }
+        .aula-html-tipografia .grid-tripe {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+          margin-top: 12px;
+        }
+        @media (min-width: 640px) {
+          .aula-html-tipografia .grid-tripe {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        .aula-html-tipografia .card-tripe {
+          position: relative;
+          background: linear-gradient(180deg, rgba(38, 16, 23, 0.85) 0%, rgba(18, 7, 11, 0.95) 100%);
+          border: 1px solid rgba(212, 175, 55, 0.35);
+          border-radius: 16px;
+          padding: 18px 14px 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+        .aula-html-tipografia .tripe-num {
+          position: absolute;
+          top: -10px;
+          left: 14px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #d4af37;
+          color: #1a080d;
+          font-weight: 800;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+        .aula-html-tipografia .tripe-icon {
+          font-size: 26px;
+          margin-bottom: 2px;
+        }
+        .aula-html-tipografia .tripe-card-title {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 16px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia .tripe-card-desc {
+          font-size: 13px;
+          color: #d8c0c4;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        /* 5. CARD CASO REAL (JULGADO) */
+        .aula-html-tipografia .card-caso-real {
+          margin: 22px 0;
+          background: linear-gradient(180deg, rgba(30, 14, 20, 0.85) 0%, rgba(16, 7, 11, 0.95) 100%);
+          border: 1px solid rgba(226, 62, 87, 0.35);
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+        }
+        .aula-html-tipografia .caso-header {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding-bottom: 10px;
+          margin-bottom: 12px;
+        }
+        .aula-html-tipografia .caso-badge-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 4px;
+        }
+        .aula-html-tipografia .caso-badge {
+          font-size: 10.5px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          color: #e9cd6d;
+          background: rgba(212, 175, 55, 0.12);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          padding: 2px 8px;
+          border-radius: 99px;
+        }
+        .aula-html-tipografia .caso-data {
+          font-size: 11px;
+          color: #c9a7ad;
+        }
+        .aula-html-tipografia .caso-origem {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 15.5px;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0;
+        }
+        .aula-html-tipografia .caso-body p {
+          font-size: 14px;
+          line-height: 1.55;
+          color: #e8d9dc;
+          margin: 0 0 10px;
+        }
+        .aula-html-tipografia .caso-tese-box {
+          background: rgba(0, 0, 0, 0.4);
+          border-left: 3px solid #e9cd6d;
+          border-radius: 8px;
+          padding: 10px 12px;
+          margin-top: 10px;
+        }
+        .aula-html-tipografia .tese-label {
+          font-size: 10.5px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          color: #e9cd6d;
+          display: block;
+          margin-bottom: 4px;
+        }
+        .aula-html-tipografia .tese-text {
+          font-size: 13.5px;
+          color: #ffffff;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        /* 6. FECHAMENTO VISUAL */
+        .aula-html-tipografia .fimbloco-visual {
+          margin: 22px 0;
+          background: #240d14;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: 16px;
+          padding: 16px;
+        }
+        .aula-html-tipografia .fimbloco-head {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+        .aula-html-tipografia .fimbloco-icon {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: #e9cd6d;
+          color: #1a080d;
+          font-weight: 800;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .aula-html-tipografia .fimbloco-label {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1.8px;
+          color: #e9cd6d;
+        }
+        .aula-html-tipografia .fimbloco-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .aula-html-tipografia .fimbloco-item {
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+          background: rgba(0, 0, 0, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 10px;
+          padding: 10px 12px;
+          font-size: 13.5px;
+          line-height: 1.45;
+          color: #f8edef;
+        }
+        .aula-html-tipografia .fim-num {
+          font-family: "Playfair Display", Georgia, serif;
+          font-weight: 700;
+          font-size: 13px;
+          color: #e9cd6d;
+          flex-shrink: 0;
         }
 
         /* Animação Cinematográfica de Flip 3D para Flashcards */

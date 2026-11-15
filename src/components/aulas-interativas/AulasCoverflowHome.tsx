@@ -10,6 +10,7 @@ import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { 
   TRILHAS_CRONOLOGICAS, 
+  TRILHAS_MODULOS_OFICIAIS,
   getDisciplinasDaFase 
 } from '@/data/aulasTrilhasCronologicas';
 import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
@@ -107,6 +108,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   const [recentesModalOpen, setRecentesModalOpen] = useState(false);
   const [emAltaModalOpen, setEmAltaModalOpen] = useState(false);
   const [trilhasListaModalOpen, setTrilhasListaModalOpen] = useState(false);
+  const [moduloInicialAbertoId, setModuloInicialAbertoId] = useState<string | null>(null);
   const [buscaAberta, setBuscaAberta] = useState(false);
 
   // Procura aula em andamento para o banner "Continuar de onde parou"
@@ -226,14 +228,14 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             <div className="text-center px-2 flex-1 min-w-0">
               <h1 className="inline-flex items-center justify-center gap-1.5 xs:gap-2 flex-wrap">
                 <span className="px-2.5 py-0.5 rounded-xl text-[10.5px] xs:text-xs sm:text-sm font-mono font-black text-amber-300 bg-black/80 border border-amber-500/50 shadow-inner tracking-wider">
-                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'}
+                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.192'}
                 </span>
                 <span className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
                   Aulas em Trilha
                 </span>
               </h1>
               <p className="text-[10px] xs:text-[11px] sm:text-xs font-serif italic text-zinc-300/85 mt-0.5 truncate">
-                Metodologia ativa cronológica • 22 matérias
+                Metodologia ativa cronológica • 106 módulos • 22 matérias
               </p>
             </div>
 
@@ -383,17 +385,75 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
         )}
 
-        {/* ── 4. CARROSSEL DE TRILHAS (MÓDULOS CRONOLÓGICOS COM "VER TODAS") ── */}
-        <div className="w-full max-w-5xl lg:max-w-7xl mx-auto mb-4 z-20 shrink-0">
+        {/* ── 4. CARROSSEL DE TRILHAS (MÓDULOS CRONOLÓGICOS EM FORMATO 1:1) ── */}
+        <div className="w-full max-w-5xl lg:max-w-7xl mx-auto mb-3 z-20 shrink-0">
           <AulasTrilhasCarousel
             disciplinas={disciplinasFiltradas}
             aulas={aulasCatalogo}
             faseSelecionadaId={faseSelecionadaId}
             onSelectFase={setFaseSelecionadaId}
-            onOpenTodasTrilhas={() => setTrilhasListaModalOpen(true)}
+            onOpenTodasTrilhas={() => {
+              setModuloInicialAbertoId(null);
+              setTrilhasListaModalOpen(true);
+            }}
+            onOpenModuloDedicado={(modId) => {
+              setModuloInicialAbertoId(modId);
+              setTrilhasListaModalOpen(true);
+            }}
             calcularProgressoCiclo={calcularProgressoCiclo}
           />
         </div>
+
+        {/* Banner de Destaque do Módulo Ativo Selecionado */}
+        {faseAtiva && (
+          <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-4 z-20 shrink-0 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="rounded-2xl bg-zinc-900/90 border border-teal-500/40 p-3 flex items-center justify-between gap-3 shadow-xl backdrop-blur-md">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {faseAtiva.capaUrl ? (
+                  <img
+                    src={faseAtiva.capaUrl}
+                    alt={faseAtiva.nome}
+                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-white/20 shadow"
+                  />
+                ) : (
+                  <div 
+                    className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center text-white font-mono font-bold text-xs shadow"
+                    style={{ background: faseAtiva.gradientBg }}
+                  >
+                    #{faseAtiva.faseNumero}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9.5px] font-mono font-black text-[#2dd4bf] uppercase tracking-wider">
+                      Módulo {faseAtiva.faseNumero} Ativo
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-mono">
+                      • {faseAtiva.totalAulas || 30} aulas
+                    </span>
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-serif font-bold text-white truncate">
+                    {faseAtiva.nome}
+                  </h4>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModuloInicialAbertoId(faseAtiva.id);
+                    setTrilhasListaModalOpen(true);
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold text-[11px] flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow"
+                >
+                  <span>Ver Aulas</span>
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── 5. CARROSSEL DAS ÁREAS EM COVERFLOW COM CAPAS (RESTABELECIDO A PEDIDO DO USUÁRIO) ── */}
         <section className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-6 mb-6 flex flex-col items-center z-20">
@@ -633,11 +693,39 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
         <AulasTrilhasListaModal
           isOpen={trilhasListaModalOpen}
-          onClose={() => setTrilhasListaModalOpen(false)}
+          onClose={() => {
+            setTrilhasListaModalOpen(false);
+            setModuloInicialAbertoId(null);
+          }}
           disciplinas={disciplinasFiltradas}
           aulas={aulasCatalogo}
           faseSelecionadaId={faseSelecionadaId}
           onSelectFase={setFaseSelecionadaId}
+          onIniciarAula={(item) => {
+            if ('etapas' in item) {
+              handleIniciarAulaSegura(item as AulaItem);
+            } else {
+              const mod = TRILHAS_MODULOS_OFICIAIS.find(m => m.moduloNumero === item.moduloNumero);
+              const discId = mod?.disciplinasIds[0] || 'penal';
+              const synthesizedAula: AulaItem = {
+                id: item.id,
+                numeroAula: item.aulaNumeroOuTitulo,
+                titulo: item.aulaNumeroOuTitulo,
+                descricao: item.sobre,
+                slug: item.id,
+                etapas: 10,
+                audioQtd: 1,
+                imagensQtd: 1,
+                urlHtmlR2: '',
+                capaUrl: mod?.capaUrl || '',
+                status: 'pronto',
+                disciplinaId: discId,
+                materiaId: `mat-${discId}-01`,
+              };
+              handleIniciarAulaSegura(synthesizedAula);
+            }
+          }}
+          moduloInicialId={moduloInicialAbertoId}
           calcularProgressoCiclo={calcularProgressoCiclo}
         />
       </div>
