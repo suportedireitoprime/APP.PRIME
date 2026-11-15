@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, ChevronRight } from 'lucide-react';
-import { useInAppPushStore } from '@/store/inAppPushStore';
+import { useInAppPushStore } from '@/stores/inAppPushStore';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 

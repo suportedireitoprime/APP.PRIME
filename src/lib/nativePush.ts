@@ -271,7 +271,7 @@ export async function ensureNativePushListeners() {
       }
 
       try {
-        const { useInAppPushStore } = await import('@/store/inAppPushStore');
+        const { useInAppPushStore } = await import('@/stores/inAppPushStore');
         useInAppPushStore.getState().showPush({
           title: notif.title ?? data.title ?? 'OAB na Risca',
           body: notif.body ?? data.body ?? '',
