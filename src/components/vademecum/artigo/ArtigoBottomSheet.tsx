@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Compass, Layers, ChevronDown, ChevronUp, Mic } from "lucide-react";
 import { extractArtigoDispositivos, type ArtigoDispositivoLandmark } from "./artigoTextUtils";
 const QuizView = lazyWithRetry(() => import("@/components/estudar/QuizView"));
-const JurisprudenciaArtigoView = lazyWithRetry(() => import("@/pages/JurisprudenciaArtigo"));
+const JurisprudenciaArtigoView = lazyWithRetry(() => import("@/pages/jurisprudencia/JurisprudenciaArtigo"));
 import ArtigoSidePanel from "@/components/vademecum/artigo/ArtigoSidePanel";
 import GrifoVoicePanel, {
   type GrifoVoicePanelHandle,

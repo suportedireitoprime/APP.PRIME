@@ -15,7 +15,7 @@ export function warmQuestoesStartup(): void {
     try {
       // 1) Pré-carrega o chunk JS da rota
       try {
-        import('@/pages/Questoes.tsx');
+        import('@/pages/questoes/Questoes.tsx');
       } catch {
         /* noop */
       }

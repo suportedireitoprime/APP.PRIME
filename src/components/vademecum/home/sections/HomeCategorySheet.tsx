@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Search, Mic, MicOff, ChevronRight, X, BookMarked } from 'lucide-react';
-import { ESTADOS } from '@/pages/LegislacaoEstadual';
+import { ESTADOS } from '@/pages/legislacao-estadual/LegislacaoEstadual';
 import { bandeiraUF } from '@/data/estadoFlags';
 import { LEI_ICON_MAP } from '@/lib/leiIcons';
 import { leiPath } from '@/lib/legislacaoSlugs';

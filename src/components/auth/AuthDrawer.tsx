@@ -77,7 +77,7 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
 
   useEffect(() => {
     if (mode === 'signup' || mode === 'login') {
-      import('@/pages/Onboarding').catch(() => {});
+      import('@/pages/auth/Onboarding').catch(() => {});
       import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
       import('@/components/onboarding/NotificacoesPermissaoStep').catch(() => {});
     }

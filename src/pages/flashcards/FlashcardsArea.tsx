@@ -38,7 +38,7 @@ import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { formatarNomeArea } from '@/pages/Flashcards';
+import { formatarNomeArea } from '@/pages/flashcards/Flashcards';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
   AULAS_CATALOGO_COMPLETO,

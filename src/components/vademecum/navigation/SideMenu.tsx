@@ -60,8 +60,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     window.dispatchEvent(new CustomEvent('sidemenu-state', { detail: { open } }));
     if (open) {
       document.body.dataset.sideMenuOpen = 'true';
-      import('@/pages/Assinatura.tsx').catch(() => {});
-      import('@/pages/Perfil.tsx').catch(() => {});
+      import('@/pages/assinatura/Assinatura.tsx').catch(() => {});
+      import('@/pages/perfil/Perfil.tsx').catch(() => {});
     } else delete document.body.dataset.sideMenuOpen;
     return () => { delete document.body.dataset.sideMenuOpen; };
   }, [open]);
@@ -203,8 +203,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                     Free
                   </span>
                   <button
-                    onMouseEnter={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
-                    onPointerDown={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
+                    onMouseEnter={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+                    onPointerDown={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
                     onClick={() => { navigate('/assinatura'); onClose(); }}
                     className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform shadow-sm"
                   >

@@ -25,7 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getLeiByTabela, LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { getRecentes, type LeiRecente } from '@/lib/leisRecentes';
-import VadeMecumFavoritos from '@/pages/VadeMecumFavoritos';
+import VadeMecumFavoritos from '@/pages/vademecum/VadeMecumFavoritos';
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
 import { parseDispositivoAlteracao } from '@/data/leiAlteracoesScraped';
 

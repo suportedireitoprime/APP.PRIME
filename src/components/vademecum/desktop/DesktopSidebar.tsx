@@ -198,7 +198,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
               </p>
             )}
             <button
-              onPointerDown={() => { import('@/pages/AdminFuncoes.tsx').catch(() => {}); }}
+              onPointerDown={() => { import('@/pages/admin/AdminFuncoes.tsx').catch(() => {}); }}
               onClick={() => navigate('/admin-funcoes')}
               title={collapsed ? 'Funções Admin' : undefined}
               className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}

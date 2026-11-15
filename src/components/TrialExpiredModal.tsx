@@ -20,7 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Pré-carregamento imediato no módulo para transição a 0ms
 if (typeof window !== "undefined") {
-  import("@/pages/Assinatura").catch(() => {});
+  import("@/pages/assinatura/Assinatura").catch(() => {});
 }
 
 import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
@@ -125,7 +125,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   useEffect(() => {
     // Pré-carregamento instantâneo em background da página de assinatura e checkout (Padrão 0ms)
     if (typeof window !== "undefined") {
-      import("@/pages/Assinatura").catch(() => {});
+      import("@/pages/assinatura/Assinatura").catch(() => {});
     }
     
     return () => {
@@ -273,8 +273,8 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <button
               disabled={isNavigating}
               onClick={handleAcessar}
-              onPointerDown={() => { import("@/pages/Assinatura").catch(() => {}); }}
-              onMouseEnter={() => { import("@/pages/Assinatura").catch(() => {}); }}
+              onPointerDown={() => { import("@/pages/assinatura/Assinatura").catch(() => {}); }}
+              onMouseEnter={() => { import("@/pages/assinatura/Assinatura").catch(() => {}); }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase disabled:opacity-85"
             >
               {isNavigating ? (

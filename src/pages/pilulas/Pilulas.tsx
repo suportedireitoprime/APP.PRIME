@@ -8,8 +8,8 @@ import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotec
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Skeleton } from '@/components/ui/skeleton';
 import { haptic } from '@/lib/nativeHaptics';
-import { PilulaClassicoItem } from './pilulas/components/PilulaClassicoItem';
-import { containerVariants, itemVariants } from './pilulas/data/pilulaAnimations';
+import { PilulaClassicoItem } from '@/pages/pilulas/components/PilulaClassicoItem';
+import { containerVariants, itemVariants } from '@/pages/pilulas/data/pilulaAnimations';
 
 export default function Pilulas() {
   const navigate = useNavigate();

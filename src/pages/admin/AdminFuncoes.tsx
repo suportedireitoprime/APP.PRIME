@@ -68,7 +68,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-horus": () => import("./AdminHorus"),
   "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
   "/admin-rotas": () => import("./AdminRotas"),
-  "/explicacao-lei": () => import("./ExplicacaoLei"),
+  "/explicacao-lei": () => import("@/pages/vademecum/ExplicacaoLei"),
 };
 const prefetched = new Set<string>();
 const prefetching = new Map<string, Promise<unknown>>();
