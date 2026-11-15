@@ -106,18 +106,13 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </div>
 
         {/* Badge Minimalista */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] font-mono font-bold tracking-wider">
-          <Clock className="w-3 h-3 text-amber-400" />
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] font-mono font-bold tracking-wider">
+          <Clock className="w-3.5 h-3.5 text-amber-400" />
           <span>SEU TESTE DE 3 DIAS ACABOU</span>
         </div>
 
-        {/* Título Minimalista */}
-        <h2 className="font-serif font-black text-xl sm:text-2xl text-white tracking-tight leading-snug">
-          Seus 3 Dias Gratuitos Chegaram ao Fim
-        </h2>
-
         {/* Descrição Direta e Persuasiva */}
-        <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans max-w-xs sm:max-w-sm mx-auto">
+        <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans max-w-xs sm:max-w-sm mx-auto pt-1">
           {nomeAluno ? `${nomeAluno}, sua` : 'Sua'} degustação gratuita de 3 dias terminou. Para <strong className="text-amber-300 font-bold">continuar os seus estudos</strong> com acesso ilimitado, <strong className="text-white font-bold">escolha um plano</strong>.
         </p>
 
