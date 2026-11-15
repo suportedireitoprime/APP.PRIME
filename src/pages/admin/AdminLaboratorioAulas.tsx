@@ -20,7 +20,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
-import horusBalanca from '@/assets/horus/03_coruja_balanca_justica.webp';
+import appLogo from '@/assets/logo-direitoprime-v2.webp';
 
 // Code Splitting do Player Nativo
 const PlayerAulaNativo = lazy(() => 
@@ -158,14 +158,14 @@ export default function AdminLaboratorioAulas() {
             <div className="rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/20 via-zinc-900/60 to-zinc-900/40 p-4 sm:p-5 shadow-xl backdrop-blur-md transition-all hover:border-amber-400/50">
               <div className="flex items-start gap-3.5 sm:gap-4.5">
                 
-                {/* Capa Minimalista 1:1 */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/30 relative bg-zinc-950 shadow-md">
+                {/* Logo Minimalista 1:1 */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/30 relative bg-zinc-950 shadow-md flex items-center justify-center p-2">
                   <img 
-                    src={horusBalanca} 
-                    alt="Balança da Justiça"
-                    className="w-full h-full object-cover" 
+                    src={appLogo} 
+                    alt="Direito Prime"
+                    className="w-full h-full object-contain" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
                     PÓS-TRIAL
                   </span>
