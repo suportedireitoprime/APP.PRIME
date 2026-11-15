@@ -49,7 +49,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
     return null;
   });
 
-  // Cálculo de Progresso Geral
+  // Cálculo de Progresso Geral da Trilha
   const { totalConcluidasGeral, totalAulasGeral, pctGeral } = useMemo(() => {
     const total = 3192;
     if (!calcularProgressoCiclo || aulas.length === 0) {
@@ -77,41 +77,47 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
     return { concluidas, total: mod.totalAulas, pct };
   };
 
-  // Categorias do menu de alternância superior
+  // ── MENU DE ALTERNÂNCIA SUPERIOR ORGANIZADO POR MÓDULOS (NÃO POR ÁREAS) ──
   const categoriasAlternancia = [
-    { id: 'todos', label: 'Todos (106)' },
-    { id: 'penal', label: 'Penal' },
-    { id: 'civil', label: 'Civil' },
-    { id: 'constitucional', label: 'Constitucional' },
-    { id: 'trabalho', label: 'Trabalho' },
-    { id: 'administrativo', label: 'Administrativo' },
-    { id: 'tributario', label: 'Tributário' },
-    { id: 'processual-civil', label: 'Proc. Civil' },
-    { id: 'processual-penal', label: 'Proc. Penal' },
-    { id: 'empresarial', label: 'Empresarial' },
+    { id: 'todos', label: 'Todos os Módulos (106)' },
+    { id: '1-20', label: 'Módulos 1–20' },
+    { id: '21-40', label: 'Módulos 21–40' },
+    { id: '41-60', label: 'Módulos 41–60' },
+    { id: '61-80', label: 'Módulos 61–80' },
+    { id: '81-106', label: 'Módulos 81–106' },
+    { id: 'em-andamento', label: 'Em Andamento' },
+    { id: 'concluidos', label: 'Concluídos' },
   ];
 
-  // Filtro de Módulos
+  // Filtro de Módulos focado estritamente na identidade dos módulos
   const modulosExibidos = useMemo(() => {
     return TRILHAS_MODULOS_OFICIAIS.filter((mod) => {
-      // 1. Busca textual
+      // 1. Busca textual (nome do módulo, número ou tema)
       const matchesSearch = 
         !searchTerm ||
         mod.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
         mod.moduloNumero.toString() === searchTerm.trim() ||
-        mod.areas.some(a => a.toLowerCase().includes(searchTerm.toLowerCase())) ||
         mod.temas.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())) ||
         mod.sobre.toLowerCase().includes(searchTerm.toLowerCase());
 
-      // 2. Menu de alternância por área
-      const matchesCategoria = 
-        abaAtiva === 'todos' ||
-        mod.disciplinasIds.includes(abaAtiva) ||
-        mod.areas.some(a => a.toLowerCase().includes(abaAtiva));
+      // 2. Menu de alternância por Módulo / Etapa
+      let matchesCategoria = true;
+      if (abaAtiva === '1-20') matchesCategoria = mod.moduloNumero >= 1 && mod.moduloNumero <= 20;
+      else if (abaAtiva === '21-40') matchesCategoria = mod.moduloNumero >= 21 && mod.moduloNumero <= 40;
+      else if (abaAtiva === '41-60') matchesCategoria = mod.moduloNumero >= 41 && mod.moduloNumero <= 60;
+      else if (abaAtiva === '61-80') matchesCategoria = mod.moduloNumero >= 61 && mod.moduloNumero <= 80;
+      else if (abaAtiva === '81-106') matchesCategoria = mod.moduloNumero >= 81 && mod.moduloNumero <= 106;
+      else if (abaAtiva === 'em-andamento') {
+        const prog = getModuloProgress(mod);
+        matchesCategoria = prog.pct > 0 && prog.pct < 100;
+      } else if (abaAtiva === 'concluidos') {
+        const prog = getModuloProgress(mod);
+        matchesCategoria = prog.pct >= 100;
+      }
 
       return matchesSearch && matchesCategoria;
     });
-  }, [searchTerm, abaAtiva]);
+  }, [searchTerm, abaAtiva, aulas, calcularProgressoCiclo]);
 
   if (!isOpen) return null;
 
@@ -140,7 +146,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
         variant="dark"
       />
 
-      {/* ── SEÇÃO SUPERIOR: PROGRESSO GERAL DAS TRILHAS COM BARRA ── */}
+      {/* ── SEÇÃO SUPERIOR: PROGRESSO GERAL DA TRILHA COM BARRA ── */}
       <div className="shrink-0 bg-zinc-950/95 border-b border-zinc-800/80 px-4 sm:px-6 py-3.5 backdrop-blur-md space-y-3">
         {/* Card do Progresso Geral */}
         <div className="max-w-4xl mx-auto rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-950 to-zinc-900 border border-white/10 p-3.5 sm:p-4 shadow-xl">
@@ -173,14 +179,14 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
           </div>
         </div>
 
-        {/* Campo de Busca Rápida */}
+        {/* Campo de Busca Rápida de Módulos */}
         <div className="relative w-full max-w-xl mx-auto">
           <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar módulo, matéria ou tema..."
+            placeholder="Pesquisar módulo pelo nome, número ou tema..."
             className="w-full pl-10 pr-9 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500/50 transition-colors shadow-inner"
           />
           {searchTerm && (
@@ -194,7 +200,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
           )}
         </div>
 
-        {/* Menu Horizontal de Alternância por Área */}
+        {/* ── MENU DE ALTERNÂNCIA EM CIMA POR MÓDULOS (NÃO POR ÁREAS) ── */}
         <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5 max-w-4xl mx-auto">
           {categoriasAlternancia.map((cat) => {
             const isCatActive = abaAtiva === cat.id;
@@ -246,7 +252,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                     : 'border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/60 hover:bg-zinc-900'
                 }`}
               >
-                {/* Thumbnail 1:1 Quadrado Limpo sem Contorno Colorido */}
+                {/* Thumbnail 1:1 Quadrado Limpo */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 aspect-square border border-white/10 relative shadow-md bg-zinc-950">
                   {mod.capaUrl ? (
                     <>
@@ -274,15 +280,15 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                   </span>
                 </div>
 
-                {/* Conteúdo Textual Minimalista */}
+                {/* Conteúdo Textual Minimalista Focado no Módulo */}
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/10 leading-none">
+                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30 leading-none">
                       Módulo {mod.moduloNumero}
                     </span>
 
-                    <span className="text-[11px] font-sans font-medium text-zinc-400 truncate">
-                      {mod.areas.join(' • ')}
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      {mod.totalAulas} aulas • {mod.temas.length} temas
                     </span>
                   </div>
 
