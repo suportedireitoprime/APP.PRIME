@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2, Search, X } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -6,6 +6,7 @@ import ResumosHero from "@/components/resumos/ResumosHero";
 import ResumosContinuarCard from "@/components/resumos/ResumosContinuarCard";
 import { useResumosAreasData } from "@/components/resumos/hooks/useResumosAreasData";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
@@ -27,6 +28,13 @@ export default function ResumosJuridicosAreas() {
     totalCalculatedAreas,
     totalCalculatedTemas,
   } = useResumosAreasData();
+
+  const activeAreaCover = useMemo(() => {
+    if (activeTab === "Todos") return undefined;
+    const visualTheme = getDisciplinaVisualTheme(activeTab);
+    const coverObj = getAreaCover(activeTab);
+    return visualTheme?.fundoAssetUrl || coverObj?.cover;
+  }, [activeTab]);
 
   useEffect(() => {
     resetGlobalScroll();
@@ -146,7 +154,7 @@ export default function ResumosJuridicosAreas() {
                     key={tema}
                     tema={tema}
                     index={index}
-                    coverUrl={getAreaCover(activeTab)?.cover}
+                    coverUrl={activeAreaCover}
                     onClick={() => {
                       const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
                       navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);

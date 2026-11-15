@@ -285,8 +285,11 @@ export default function ResumosJuridicosSubtemas() {
                     setOrdem(o.id);
                   }}
                   className={cn(
+                    "relative flex-1 flex justify-center items-center rounded-t-2xl transition-all duration-300 ease-out border-x border-t border-white/5 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider",
                     "relative flex-1 h-full flex justify-center items-center rounded-t-2xl border-x border-t font-bold text-[9px] sm:text-[10px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
                     ativo 
+                      ? "h-full bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)]" 
+                      : "h-[75%] bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white"
                       ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-white/10" 
                       : "bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/5 opacity-80"
                   )}
@@ -315,6 +318,7 @@ export default function ResumosJuridicosSubtemas() {
               );
             })}
           </div>
+          <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: `0 -1px 0 ${materiaColor}4D` }} />
           <div className="w-full h-px bg-[#1A1A1A] relative z-20" style={{ boxShadow: `0 -1px 0 ${materiaColor}4D` }} />
         </div>
       </div>
@@ -407,7 +411,7 @@ export default function ResumosJuridicosSubtemas() {
                         openReader(r, "conceitos");
                       }}
                       className={cn(
-                        'relative min-h-[64px] sm:min-h-[72px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-md active:scale-[0.99] cursor-pointer select-none',
+                        'relative h-[76px] sm:h-[82px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-3.5 px-3.5 sm:px-4 rounded-2xl border transition-all text-left group shadow-md active:scale-[0.99] cursor-pointer select-none',
                         isLocked
                           ? 'border-amber-500/30 bg-[#161410] hover:border-amber-400/50'
                           : isFav
@@ -415,22 +419,32 @@ export default function ResumosJuridicosSubtemas() {
                           : 'border-white/10 bg-[#141416] hover:border-white/20 hover:bg-[#19191d]'
                       )}
                     >
-                      {/* Risco lateral no formato original com traço fino e tom suave da matéria */}
+                      {/* Risco lateral elegante que acompanha a curvatura rounded-2xl do card */}
                       <div 
-                        className="absolute inset-y-0 left-0 w-[2.5px] opacity-80 group-hover:opacity-100 transition-opacity" 
+                        className="absolute inset-y-0 left-0 w-1 rounded-l-2xl pointer-events-none opacity-90 transition-opacity" 
                         style={{ 
                           background: isLocked 
-                            ? 'linear-gradient(to bottom, #fde047, transparent)' 
+                            ? 'linear-gradient(to bottom, #fde047 0%, rgba(253, 224, 71, 0.4) 70%, transparent 100%)' 
                             : isFav 
-                            ? 'linear-gradient(to bottom, #fde047, transparent)' 
-                            : `linear-gradient(to bottom, ${materiaColor}, transparent)` 
+                            ? 'linear-gradient(to bottom, #fde047 0%, rgba(253, 224, 71, 0.4) 70%, transparent 100%)' 
+                            : `linear-gradient(to bottom, ${materiaColor} 0%, ${materiaColor}66 70%, transparent 100%)`,
+                          boxShadow: `0 0 8px ${isLocked ? 'rgba(253, 224, 71, 0.3)' : `${materiaColor}33`}`,
                         }} 
                       />
+
+                      {/* Ícone de resumo elegante e compacto */}
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 group-hover:border-white/20 transition-all shrink-0">
+                        {isLocked ? (
+                          <Crown className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                        ) : (
+                          <FileText className="w-4 h-4 text-zinc-400 group-hover:text-zinc-100 transition-colors" strokeWidth={1.6} />
+                        )}
+                      </div>
                       
-                      {/* Título sem ícone interno para máximo aproveitamento de espaço */}
-                      <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-0.5 pl-1 pr-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-[16px] sm:text-[18px] font-normal font-sans text-zinc-100 group-hover:text-white break-words whitespace-normal leading-snug transition-colors">
+                      {/* Título com tamanho uniforme e alinhamento perfeito */}
+                      <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="text-[14.5px] sm:text-[15.5px] font-normal font-sans text-zinc-100 group-hover:text-white break-words line-clamp-2 leading-snug transition-colors">
                             {cleanTitulo(r.subtema || r.tema)}
                           </h3>
                           {isLocked && (
