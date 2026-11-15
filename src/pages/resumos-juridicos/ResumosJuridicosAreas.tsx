@@ -10,11 +10,13 @@ import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
+import { ResumosSearchSheet } from "@/components/resumos/ResumosSearchSheet";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 export default function ResumosJuridicosAreas() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchSheetOpen, setSearchSheetOpen] = useState(false);
   const {
     rows,
     loading,
@@ -77,25 +79,18 @@ export default function ResumosJuridicosAreas() {
             </div>
           </div>
 
-          {/* Campo de Busca Rápida Idêntico a Audiobooks */}
-          <div className="relative">
-            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Campo de Busca Rápida: ao clicar, abre a busca dedicada que surge de baixo para cima (90% da tela) */}
+          <div
+            onClick={() => setSearchSheetOpen(true)}
+            className="relative cursor-pointer group"
+          >
+            <Search className="w-5 h-5 text-emerald-400/70 group-hover:text-emerald-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" />
             <input
               type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
+              readOnly
               placeholder="Buscar matéria, tema ou resumo…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/60 transition-colors shadow-sm"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none group-hover:border-emerald-500/50 transition-colors shadow-sm cursor-pointer"
             />
-            {q && (
-              <button
-                type="button"
-                onClick={() => setQ("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
           </div>
 
           {/* Abas e Chips de Filtragem de Matérias */}
@@ -166,6 +161,13 @@ export default function ResumosJuridicosAreas() {
           </div>
         </section>
       </main>
+
+      {/* Painel de Busca Dedicado de 90% da tela que surge de baixo para cima com Caminho e Prévia */}
+      <ResumosSearchSheet
+        open={searchSheetOpen}
+        onClose={() => setSearchSheetOpen(false)}
+        onSelectAreaTab={(area) => setActiveTab(area)}
+      />
     </div>
   );
 }
