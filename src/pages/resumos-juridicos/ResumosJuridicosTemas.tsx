@@ -423,17 +423,9 @@ export default function ResumosJuridicosTemas() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-black/10 to-[#0d0f12]/50 pointer-events-none z-0" />
 
-                          {/* Centro da capa com botão de seta de navegação elegante */}
-                          <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
-                            <div className="relative flex items-center justify-center">
-                              <div
-                                className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                                style={{ backgroundColor: `${palette.primary}50` }}
-                              />
-                              <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]">
-                                <ArrowRight className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 stroke-[2.4] transition-colors" />
-                              </div>
-                            </div>
+                          {/* Seta discreta e fina no canto superior direito da capa */}
+                          <div className="absolute top-2.5 right-2.5 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/75 group-hover:text-white group-hover:border-white/40 group-hover:bg-black/60 transition-all shadow-md">
+                            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.5] transition-transform duration-300 group-hover:translate-x-0.5" />
                           </div>
 
                           <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
