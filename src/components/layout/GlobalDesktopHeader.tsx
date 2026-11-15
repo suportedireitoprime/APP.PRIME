@@ -17,7 +17,7 @@ const EXCLUDED_EXACT = new Set<string>([
   '/onboarding',
 ]);
 
-const EXCLUDED_PREFIXES = ['/desktop-link/', '/aprender/aula/', '/questoes/praticar', '/questoes/revisar', '/questoes/simulado'];
+const EXCLUDED_PREFIXES = ['/desktop-link/', '/aprender/aula/', '/questoes/praticar', '/questoes/revisar'];
 
 const GlobalDesktopHeader = memo(function GlobalDesktopHeader() {
   const isDesktop = useIsDesktop();

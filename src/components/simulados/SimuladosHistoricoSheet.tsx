@@ -81,7 +81,7 @@ export const SimuladosHistoricoSheet = ({
         </div>
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-auto px-5 py-3 space-y-2.5 no-scrollbar">
+        <div className="flex-1 overflow-y-auto px-5 pt-3 pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-2.5 no-scrollbar">
           {historicoList.length === 0 ? (
             <div className="text-center py-16 text-zinc-500 text-xs space-y-2">
               <Clock className="w-8 h-8 mx-auto text-zinc-600" />

@@ -20,7 +20,7 @@ import { shouldBypassAsAdmin, isSimulatingExpired, isDevSimulatorEligible } from
 import { useSubscription } from '@/hooks/useSubscription';
 import { TrialExpiredModal } from '@/components/TrialExpiredModal';
 import { PRECO_MENSAL, PRECO_ANUAL, brl } from '@/lib/precos';
-import logoCoruja from '@/assets/logo-coruja.png';
+import logoCoruja from '@/assets/logo-coruja.webp';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';

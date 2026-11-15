@@ -55,7 +55,7 @@ export default function QuestoesHistorico() {
   const virtualizer = useVirtualizer({
     count: flatItens.length,
     getScrollElement: () => typeof document !== 'undefined' ? (document.getElementById('root') || document.body) : null,
-    estimateSize: (index) => flatItens[index].type === 'header' ? 36 : 142,
+    estimateSize: (index) => flatItens[index]?.type === 'header' ? 36 : 142,
     overscan: 5,
   });
 
@@ -76,6 +76,7 @@ export default function QuestoesHistorico() {
           <div ref={listRef} style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const item = flatItens[virtualItem.index];
+              if (!item) return null;
 
               if (item.type === 'header') {
                 return (

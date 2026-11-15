@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -24,6 +24,9 @@ import story4Socrates from '@/assets/onboarding/story_4_socrates.webp';
 import story4Voce from '@/assets/onboarding/story_4_voce.webp';
 
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, parcelamento } from '@/lib/precos';
+import { Crown, Zap, ShieldCheck } from 'lucide-react';
 export type CadastroResult = {
   persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
   personaLabel: string | null;
@@ -110,7 +113,26 @@ const staggerItem = {
 };
 
 export default function TriagemModerna({ initialName = '', onComplete, previewMode = false }: TriagemModernaProps) {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const navigate = useNavigate();
+  const [planoSelecionado, setPlanoSelecionado] = useState<'anual' | 'vitalicio' | 'mensal'>('anual');
+
+  const concluirComDados = React.useCallback(() => {
+    haptic.success();
+    const currentPersona = personaRef.current;
+    const selectedPersonaObj = PERSONAS.find(p => p.id === currentPersona);
+
+    onCompleteRef.current?.({
+      persona: currentPersona || 'oab',
+      personaLabel: selectedPersonaObj?.label || 'Direito',
+      faixa: faixaRef.current || '25 a 30 anos',
+      nome: nomeRef.current.trim() || 'Doutor(a)',
+      areas: ['Direito Constitucional'],
+      interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
+      dores: [],
+      whatsapp: null,
+    });
+  }, []);
   const [introIndex, setIntroIndex] = useState(0);
   const [nome, setNome] = useState(initialName || '');
   const [faixa, setFaixa] = useState('');
@@ -143,19 +165,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       if (isFinished) return;
       isFinished = true;
       haptic.success();
-      const currentPersona = personaRef.current;
-      const selectedPersonaObj = PERSONAS.find(p => p.id === currentPersona);
-      
-      onCompleteRef.current?.({
-        persona: currentPersona || 'oab',
-        personaLabel: selectedPersonaObj?.label || 'Direito',
-        faixa: faixaRef.current || '25 a 30 anos',
-        nome: nomeRef.current.trim() || 'Doutor(a)',
-        areas: ['Direito Constitucional'],
-        interesses: ['leis', 'leis-comentadas', 'questoes', 'resumos'],
-        dores: [],
-        whatsapp: null,
-      });
+      setStep(5);
     };
 
     haptic.impact('medium');
@@ -498,6 +508,162 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                   animate={{ width: `${(calculatingPhase + 1) * 25}%` }}
                   transition={{ duration: 0.4 }}
                 />
+              </div>
+            </motion.div>
+          )}
+
+          {/* PASSO 5: ESCOLHA DE PLANOS OU INICIAR 3 DIAS GRÁTIS */}
+          {step === 5 && (
+            <motion.div
+              key="step5"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-5 pb-28 pt-2"
+            >
+              <div className="text-center space-y-1.5 px-2">
+                <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-[10px] font-sans font-bold tracking-[0.2em] uppercase text-amber-300">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  ACESSO LIBERADO
+                </div>
+                <h3 className="font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                  Parabéns, {nome.trim() || 'Doutor(a)'}!
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-sm mx-auto">
+                  Escolha como prefere acessar o acervo completo da plataforma.
+                </p>
+              </div>
+
+              {/* 3 Planos Oficiais */}
+              <div className="grid grid-cols-1 gap-2.5 max-w-md mx-auto pt-1">
+                {/* Plano Anual - Mais Popular */}
+                <div
+                  onClick={() => { haptic.selection(); setPlanoSelecionado('anual'); }}
+                  className={`relative p-3.5 sm:p-4 rounded-2xl cursor-pointer transition-all border ${
+                    planoSelecionado === 'anual'
+                      ? 'bg-neutral-900 border-primary ring-1 ring-primary/60 shadow-[0_4px_25px_rgba(224,31,71,0.25)]'
+                      : 'bg-neutral-950/70 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <span className="absolute -top-2.5 right-4 bg-primary text-primary-foreground font-black text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
+                    Mais Escolhido
+                  </span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                        planoSelecionado === 'anual' ? 'border-primary bg-primary text-primary-foreground' : 'border-white/30'
+                      }`}>
+                        {planoSelecionado === 'anual' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
+                          Plano Anual
+                        </h4>
+                        <p className="text-[11px] text-neutral-400">
+                          {parcelamento(6, PRECO_ANUAL).parcelas}x de {brl(parcelamento(6, PRECO_ANUAL).parcela)} ou {brl(PRECO_ANUAL)}/ano
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-black text-base text-white font-mono">
+                        {brl(PRECO_ANUAL)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Plano Vitalício - Melhor Valor */}
+                <div
+                  onClick={() => { haptic.selection(); setPlanoSelecionado('vitalicio'); }}
+                  className={`relative p-3.5 sm:p-4 rounded-2xl cursor-pointer transition-all border ${
+                    planoSelecionado === 'vitalicio'
+                      ? 'bg-neutral-900 border-amber-500 ring-1 ring-amber-500/60 shadow-[0_4px_25px_rgba(245,158,11,0.25)]'
+                      : 'bg-neutral-950/70 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <span className="absolute -top-2.5 right-4 bg-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
+                    Acesso Único
+                  </span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                        planoSelecionado === 'vitalicio' ? 'border-amber-500 bg-amber-500 text-slate-950' : 'border-white/30'
+                      }`}>
+                        {planoSelecionado === 'vitalicio' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
+                          Plano Vitalício
+                        </h4>
+                        <p className="text-[11px] text-neutral-400">
+                          Pague uma única vez e nunca mais renove
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-black text-base text-white font-mono">
+                        {brl(PRECO_VITALICIO)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Plano Mensal */}
+                <div
+                  onClick={() => { haptic.selection(); setPlanoSelecionado('mensal'); }}
+                  className={`relative p-3.5 sm:p-4 rounded-2xl cursor-pointer transition-all border ${
+                    planoSelecionado === 'mensal'
+                      ? 'bg-neutral-900 border-white/50 ring-1 ring-white/30'
+                      : 'bg-neutral-950/70 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                        planoSelecionado === 'mensal' ? 'border-white bg-white text-black' : 'border-white/30'
+                      }`}>
+                        {planoSelecionado === 'mensal' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-white">
+                          Plano Mensal
+                        </h4>
+                        <p className="text-[11px] text-neutral-400">
+                          Cobrado todo mês com cancelamento simples
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-black text-base text-white font-mono">
+                        {brl(PRECO_MENSAL)}/mês
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões de Ação na Base: Iniciar 3 Dias Grátis vs Ver Planos */}
+              <div className="pt-2 space-y-2.5 max-w-md mx-auto">
+                <button
+                  type="button"
+                  onClick={concluirComDados}
+                  className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(245,158,11,0.35)] cursor-pointer"
+                >
+                  <Sparkles className="w-5 h-5 text-slate-950 fill-slate-950" />
+                  <span>INICIAR 3 DIAS GRÁTIS</span>
+                  <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    concluirComDados();
+                    navigate('/assinatura');
+                  }}
+                  className="w-full h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/90 font-bold text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  <span>Ver Detalhes dos Planos</span>
+                </button>
               </div>
             </motion.div>
           )}

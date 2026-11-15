@@ -13,7 +13,7 @@ export function recoverChunkLoad(): boolean {
   if (typeof window === 'undefined' || !navigator.onLine) return false;
   try {
     const previous = Number(sessionStorage.getItem(RECOVERY_KEY) || '0');
-    if (Date.now() - previous < 60_000) return false;
+    if (Date.now() - previous < 3_000) return false;
     sessionStorage.setItem(RECOVERY_KEY, String(Date.now()));
     sessionStorage.removeItem('chunk_reload');
   } catch {

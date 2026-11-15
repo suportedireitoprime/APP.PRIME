@@ -76,7 +76,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     label: 'Monitoramento',
     hint: 'Acompanhe alterações legislativas e notícias',
     tools: [
-      { id: 'radar-concursos', label: 'Radar de Concursos', desc: 'Alertas por cargo, estado e Hórus IA', icon: Bell, route: '/radar-concursos', color: '#10B981' },
       { id: 'radares', label: 'Radares de Leis', desc: 'Alterações de leis e projetos monitorados', icon: Radar, route: '/radares', color: '#0EA5E9' },
       { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, route: '/noticias', color: '#EC4899' },
     ],

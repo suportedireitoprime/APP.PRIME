@@ -1,17 +1,17 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Loader2, Scale, Landmark, Building, Building2, BookText } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { Search, X, Loader2, ChevronRight } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
+import { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
 import { VideoaulasEmAltaCarousel } from './VideoaulasEmAltaCarousel';
 import { VideoaulasAreaChips } from './VideoaulasAreaChips';
 import { VideoaulasAreaCard, type VideoaulaAreaItem } from './VideoaulasAreaCard';
-import { VideoaulasEspeciaisCard, type EspecialCardItem } from './VideoaulasEspeciaisCard';
 import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
+import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface VideoaulasMobileViewProps {
@@ -21,71 +21,8 @@ interface VideoaulasMobileViewProps {
   horasAssistidas: number;
 }
 
-const ITENS_LEI_SECA: EspecialCardItem[] = [
-  {
-    id: 'lei-seca-vade',
-    title: 'Vade Mecum em Vídeo',
-    subtitle: 'Códigos e leis com leitura e comentários em vídeo',
-    badgeText: 'LEI SECA',
-    route: '/videoaulas/lei-seca',
-    icon: Scale,
-    iconColor: '#f59e0b',
-    bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.05))',
-  },
-  {
-    id: 'lei-seca-estatutos',
-    title: 'Estatutos e Legislação Especial',
-    subtitle: 'Estatuto da OAB, ECA, Servidores e Microempresa',
-    badgeText: 'ESTATUTOS',
-    route: '/videoaulas/lei-seca/categoria/estatutos',
-    icon: Landmark,
-    iconColor: '#10b981',
-    bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05))',
-  },
-  {
-    id: 'jurisprudencia-video',
-    title: 'Jurisprudência em Vídeo',
-    subtitle: 'Súmulas e teses comentadas dos tribunais superiores',
-    badgeText: 'JURISPRUDÊNCIA',
-    route: '/jurisprudencia',
-    icon: BookText,
-    iconColor: '#8b5cf6',
-    bgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.05))',
-  },
-];
-
-const ITENS_TRES_PODERES: EspecialCardItem[] = [
-  {
-    id: 'stf',
-    title: 'STF - Supremo Tribunal Federal',
-    subtitle: 'Transmissões plenárias, julgamentos e repertório',
-    badgeText: 'JUDICIÁRIO',
-    route: '/videoaulas/canal/stf',
-    icon: Landmark,
-    iconColor: '#60a5fa',
-    bgGradient: 'linear-gradient(135deg, rgba(96, 165, 250, 0.25), rgba(96, 165, 250, 0.05))',
-  },
-  {
-    id: 'senado',
-    title: 'Senado Federal',
-    subtitle: 'Sessões deliberativas, audiências públicas e comissões',
-    badgeText: 'LEGISLATIVO',
-    route: '/videoaulas/canal/senado',
-    icon: Building,
-    iconColor: '#34d399',
-    bgGradient: 'linear-gradient(135deg, rgba(52, 211, 153, 0.25), rgba(52, 211, 153, 0.05))',
-  },
-  {
-    id: 'camara',
-    title: 'Câmara dos Deputados',
-    subtitle: 'Debates, votações em plenário e CCJ ao vivo',
-    badgeText: 'LEGISLATIVO',
-    route: '/videoaulas/canal/camara',
-    icon: Building2,
-    iconColor: '#fbbf24',
-    bgGradient: 'linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.05))',
-  },
-];
+const STORAGE_FAV_KEY = 'videoaulas_fav_areas_v1';
+const STORAGE_RECENTES_KEY = 'videoaulas_recentes_v1';
 
 export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   state,
@@ -94,8 +31,19 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   horasAssistidas,
 }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Todos');
+  const [heroTab, setHeroTab] = useState<VideoaulasHeroTab>('todos');
+  const [activeChipTab, setActiveChipTab] = useState('Todos');
   const [q, setQ] = useState('');
+
+  // Favoritos
+  const [favoritosSet, setFavoritosSet] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_FAV_KEY);
+      return saved ? new Set(JSON.parse(saved)) : new Set(['Direito Penal', 'Direito Constitucional']);
+    } catch {
+      return new Set(['Direito Penal', 'Direito Constitucional']);
+    }
+  });
 
   const handleSearchChange = (val: string) => {
     setQ(val);
@@ -108,25 +56,52 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   };
 
   const areasItens: VideoaulaAreaItem[] = useMemo(() => {
-    return state.areasDireito.map((a) => ({
-      area: a.area,
-      slug: a.slug,
-      total: a.total,
-      concluidas: a.concluidas,
-      pct: a.pct,
-    }));
+    return state.areasDireito.map((a) => {
+      const display = simplificarNomeArea(a.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
+      return {
+        area: a.area,
+        slug: a.slug,
+        total: a.total,
+        concluidas: a.concluidas,
+        pct: a.pct,
+        displayArea: display || a.area,
+      };
+    });
   }, [state.areasDireito]);
 
-  // Filtragem de áreas por texto e aba ativa
+  // Filtragem combinada por Aba do Hero (Favoritos, Em Alta, Recentes, Playlist) e Chips
   const filteredAreas = useMemo(() => {
     let list = areasItens;
 
-    if (activeTab === 'Em Andamento') {
+    // Filtros do Hero (4 Funções)
+    if (heroTab === 'favoritos') {
+      list = list.filter((a) => favoritosSet.has(a.area) || favoritosSet.has(a.slug));
+    } else if (heroTab === 'emalta') {
+      // Prioridade das matérias mais acessadas
+      list = [...list].sort((a, b) => b.total - a.total);
+    } else if (heroTab === 'recentes') {
+      // Itens em andamento ou iniciados
       list = list.filter((a) => a.pct > 0);
-    } else if (activeTab !== 'Todos' && activeTab !== 'Lei Seca' && activeTab !== 'Três Poderes') {
-      list = list.filter((a) => a.area.toLowerCase() === activeTab.toLowerCase());
+      if (list.length === 0) list = areasItens.slice(0, 5);
+    } else if (heroTab === 'playlist') {
+      // Matérias fundamentais para trilha contínua
+      list = list.filter((a) => a.total > 20);
     }
 
+    // Filtros de chips
+    if (activeChipTab === 'Em Andamento') {
+      list = list.filter((a) => a.pct > 0);
+    } else if (activeChipTab !== 'Todos') {
+      const tabLower = activeChipTab.toLowerCase();
+      list = list.filter(
+        (a) =>
+          a.area.toLowerCase() === tabLower ||
+          a.slug.toLowerCase() === tabLower ||
+          (a.displayArea && a.displayArea.toLowerCase() === tabLower)
+      );
+    }
+
+    // Filtro de busca textual
     if (q.trim()) {
       const termos = normalizeTexto(q).split(/\s+/).filter(Boolean);
       list = list.filter((a) => {
@@ -136,7 +111,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     }
 
     return list;
-  }, [areasItens, activeTab, q]);
+  }, [areasItens, heroTab, activeChipTab, q, favoritosSet]);
 
   const handleAreaClick = useCallback(
     (slug: string) => {
@@ -148,10 +123,8 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
   return (
     <div className="relative z-10">
-      <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
-
       <div className="mx-auto w-full max-w-4xl pb-32">
-        {/* Painel Hero Preservado Rigorosamente ("menos o painel") */}
+        {/* Painel Hero Idêntico ao de Pílulas com 4 Atalhos: Favoritos, Em Alta, Recentes e Playlist */}
         <VideoaulasHero
           data={state.data}
           heroIdx={state.heroIdx}
@@ -161,15 +134,22 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           horasAssistidas={horasAssistidas}
           c={c}
           dash={dash}
+          activeHeroTab={heroTab}
+          onSelectHeroTab={setHeroTab}
+          onOpenSearch={() => {
+            const input = document.getElementById('busca-videoaulas-input');
+            input?.focus();
+          }}
+          favoritosCount={favoritosSet.size}
         />
 
-        {/* Conteúdo Principal com Layout Minimalista e Detalhista Estilo Resumos */}
-        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
-          {/* Card Dinâmico "Continuar Assistindo" */}
+        {/* Conteúdo Principal */}
+        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-5 space-y-5">
+          {/* Card Dinâmico "Continuar Assistindo" Sem Abreviar */}
           <VideoaulasContinuarCard />
 
-          {/* Seção "EM ALTA" (Carrossel Horizontal com Snap) */}
-          {activeTab === 'Todos' && !q && (
+          {/* Seção "EM ALTA" (Carrossel Horizontal Fluido com Capas de Aulas Interativas) */}
+          {heroTab === 'todos' && activeChipTab === 'Todos' && !q && (
             <VideoaulasEmAltaCarousel
               areas={areasItens}
               onSelectArea={handleAreaClick}
@@ -177,37 +157,65 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           )}
 
           {/* Seção Catálogo de Videoaulas */}
-          <section className="pt-2 space-y-4">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
-                CATÁLOGO DE VIDEOAULAS
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="w-1 h-6 rounded-full bg-rose-500" />
-                <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-                  {activeTab === 'Todos' ? 'Todas as Matérias' : activeTab}
-                </h2>
+          <section className="pt-1 space-y-3.5">
+            <div className="flex items-start justify-between px-1 gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-red-500" />
+                  <h2 className="font-sans text-lg sm:text-xl font-black text-white uppercase tracking-wider leading-tight">
+                    {heroTab === 'favoritos'
+                      ? 'Matérias Favoritas'
+                      : heroTab === 'emalta'
+                      ? 'Matérias em Alta'
+                      : heroTab === 'recentes'
+                      ? 'Matérias Recentes'
+                      : heroTab === 'playlist'
+                      ? 'Playlists de Aulas'
+                      : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
+                      ? `Matéria: ${activeChipTab}`
+                      : 'Todas as Matérias'}
+                  </h2>
+                </div>
+                <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
+                  {heroTab === 'favoritos'
+                    ? 'Suas áreas jurídicas salvas para estudo contínuo.'
+                    : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
+                    ? 'Toque na matéria para abrir os módulos e aulas completas.'
+                    : 'Toque em qualquer matéria para abrir os módulos e aulas completas.'}
+                </p>
               </div>
-              <p className="text-sm text-white/60 mt-1 ml-3 leading-snug">
-                Toque em qualquer matéria para abrir os módulos e videoaulas completas.
-              </p>
+
+              {(heroTab !== 'todos' || activeChipTab !== 'Todos') && (
+                <button
+                  onClick={() => {
+                    haptic.selection();
+                    setHeroTab('todos');
+                    setActiveChipTab('Todos');
+                  }}
+                  className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-md shadow-red-600/30 transition-all active:scale-95"
+                >
+                  <span>Ver todas</span>
+                  <ChevronRight className="w-4 h-4 stroke-[2.6]" />
+                </button>
+              )}
             </div>
 
-            {/* Campo de Busca Rápida Idêntico a Resumos e Audiobooks */}
+            {/* Campo de Busca Rápida Ergonômico */}
             <div className="relative">
-              <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-5 h-5 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                id="busca-videoaulas-input"
                 type="text"
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500/50 transition-colors shadow-sm font-sans"
               />
               {q && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer active:scale-95"
                   aria-label="Limpar busca"
                 >
                   <X className="w-4 h-4" />
@@ -215,96 +223,91 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               )}
             </div>
 
-            {/* Chips de Filtragem de Matérias e Categorias */}
+            {/* Menu de Alternância de Áreas & Matérias */}
             <VideoaulasAreaChips
               areas={areasItens}
-              activeTab={activeTab}
-              onSelectTab={setActiveTab}
+              activeTab={activeChipTab}
+              onSelectTab={setActiveChipTab}
+              onOpenArea={handleAreaClick}
               emAndamentoCount={state.emAndamentoCount}
             />
 
-            {/* Conteúdo do Grid Conforme a Aba Selecionada */}
-            <div className="pt-2">
-              {state.loading ? (
-                <div className="flex items-center justify-center py-16 text-white/50">
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando videoaulas...
-                </div>
-              ) : activeTab === 'Lei Seca' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {ITENS_LEI_SECA.map((item) => (
-                    <VideoaulasEspeciaisCard key={item.id} item={item} />
-                  ))}
-                </div>
-              ) : activeTab === 'Três Poderes' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {ITENS_TRES_PODERES.map((item) => (
-                    <VideoaulasEspeciaisCard key={item.id} item={item} />
-                  ))}
-                </div>
-              ) : q.trim() && state.buscaAulas.length > 0 ? (
-                <div className="space-y-4">
-                  {filteredAreas.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs uppercase font-bold text-white/50 tracking-wider">
-                        Disciplinas correspondentes
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {filteredAreas.map((r) => (
-                          <VideoaulasAreaCard
-                            key={r.slug}
-                            area={r}
-                            onClick={handleAreaClick}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+            {/* Banner de Acesso Rápido quando uma área específica está selecionada */}
+            {activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento' && filteredAreas.length > 0 && (
+              <div className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 shadow-md">
+                <span className="text-xs sm:text-[13px] font-medium">Toque para abrir os módulos e aulas completas</span>
+                <button
+                  type="button"
+                  onClick={() => handleAreaClick(filteredAreas[0].slug)}
+                  className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1 shadow-md shadow-rose-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
+                >
+                  <span>Abrir Matéria</span>
+                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+            )}
 
-                  <div className="space-y-2 pt-2">
-                    <p className="text-xs uppercase font-bold text-white/50 tracking-wider">
-                      Videoaulas encontradas ({state.buscaAulas.length})
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {state.buscaAulas.slice(0, 30).map((aula) => (
-                        <VideoaulasAulaResultCard key={aula.videoId} aula={aula} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : filteredAreas.length === 0 ? (
-                <div className="text-center py-16 text-white/50 text-sm space-y-3">
-                  <p>Nenhuma videoaula encontrada para "{q}".</p>
-                  {q && (
-                    <button
-                      onClick={handleClearSearch}
-                      className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition cursor-pointer"
-                    >
-                      Limpar filtro
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {filteredAreas.map((r) => (
-                    <VideoaulasAreaCard
-                      key={r.slug}
-                      area={r}
-                      onClick={handleAreaClick}
-                    />
+            {/* Listagem de Matérias ou Resultados */}
+            {q.trim() && state.buscando ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
+                <Loader2 className="w-6 h-6 animate-spin text-red-500" />
+                <p className="text-xs font-sans">Buscando aulas e matérias…</p>
+              </div>
+            ) : q.trim() && state.resultadosAulas.length > 0 ? (
+              <div className="space-y-3 pt-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-sans">
+                  {state.resultadosAulas.length} {state.resultadosAulas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
+                </p>
+                <div className="space-y-2">
+                  {state.resultadosAulas.map((aula) => (
+                    <VideoaulasAulaResultCard key={aula.id} aula={aula} />
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            ) : filteredAreas.length > 0 ? (
+              <div className="space-y-3 pt-1">
+                {filteredAreas.map((area) => (
+                  <VideoaulasAreaCard
+                    key={area.slug}
+                    area={area}
+                    onClick={handleAreaClick}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 rounded-2xl bg-zinc-900/40 border border-white/5 p-6">
+                <p className="text-sm font-semibold text-white font-sans">
+                  {heroTab === 'favoritos' ? 'Nenhuma matéria favoritada' : 'Nenhuma matéria encontrada'}
+                </p>
+                <p className="text-xs text-zinc-400 mt-1 font-sans">
+                  {heroTab === 'favoritos'
+                    ? 'Toque no coração de qualquer matéria para salvá-la aqui.'
+                    : 'Tente buscar por outro termo ou limpe o filtro.'}
+                </p>
+              </div>
+            )}
           </section>
         </main>
       </div>
 
-      <VideoaulasBottomNav />
+      {/* Navegação Inferior de Videoaulas */}
+      <VideoaulasBottomNav
+        activeTab="home"
+        onOpenBusca={() => {
+          const input = document.getElementById('busca-videoaulas-input');
+          input?.focus();
+        }}
+        onOpenDesempenho={() => state.setShowDesempenho(true)}
+      />
 
+      {/* Sheet de Desempenho */}
       <VideoaulasDesempenhoSheet
         open={state.showDesempenho}
-        onClose={() => state.setShowDesempenho(false)}
-        horasTotais={horasAssistidas}
+        onOpenChange={state.setShowDesempenho}
+        data={state.data}
+        horasAssistidas={horasAssistidas}
+        c={c}
+        dash={dash}
       />
     </div>
   );

@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import { History, Flame, BarChart3, Route } from 'lucide-react';
+import { History, Flame, BarChart3, Heart } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AudioActionShortcutsProps {
-  colorScheme?: 'purple' | 'blue';
+  colorScheme?: 'purple' | 'blue' | 'salmon';
   onRecentes?: () => void;
   onFavoritos?: () => void; // compatibilidade legada
   onEmAlta: () => void;
@@ -29,6 +29,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
     className = '',
   }) {
     const isPurple = colorScheme === 'purple';
+    const isSalmon = colorScheme === 'salmon';
     const acaoRecentes = onRecentes || onFavoritos || (() => {});
     const badgeRecentesFinal = badgeRecentes !== undefined ? badgeRecentes : badgeFavoritos;
 
@@ -37,37 +38,37 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
         id: 'recentes',
         label: 'Recentes',
         icon: History,
-        color: isPurple ? '#C084FC' : '#d4d4d8',
+        color: isSalmon ? '#FFA285' : isPurple ? '#C084FC' : '#d4d4d8',
         badge: badgeRecentesFinal,
-        badgeColor: isPurple ? '#9333EA' : '#52525b',
+        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#9333EA' : '#52525b',
         action: acaoRecentes,
       },
       {
         id: 'em_alta',
         label: 'Em alta',
         icon: Flame,
-        color: '#FB923C',
+        color: isSalmon ? '#FF7E5F' : '#FB923C',
         badge: 0,
-        badgeColor: '#EA580C',
+        badgeColor: isSalmon ? '#D94D2E' : '#EA580C',
         action: onEmAlta,
       },
       {
         id: 'estatistica',
         label: 'Estatística',
         icon: BarChart3,
-        color: isPurple ? '#A78BFA' : '#d4d4d8',
+        color: isSalmon ? '#FFB49A' : isPurple ? '#A78BFA' : '#d4d4d8',
         badge: 0,
-        badgeColor: isPurple ? '#7C3AED' : '#52525b',
+        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#7C3AED' : '#52525b',
         action: onEstatistica,
       },
       {
-        id: 'trilhas',
-        label: 'Trilhas',
-        icon: Route,
-        color: '#FACC15',
-        badge: badgeTrilhas,
-        badgeColor: '#CA8A04',
-        action: onTrilhas,
+        id: 'favoritos',
+        label: 'Favoritos',
+        icon: Heart,
+        color: isSalmon ? '#FFA285' : '#F43F5E',
+        badge: badgeFavoritos > 0 ? badgeFavoritos : badgeTrilhas,
+        badgeColor: isSalmon ? '#D94D2E' : '#E11D48',
+        action: onFavoritos || onTrilhas || (() => {}),
       },
     ];
 
@@ -90,12 +91,12 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
             >
               <div className="relative inline-flex items-center justify-center">
                 <Icon
-                  className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
                   style={{
                     color: item.color,
                     filter: 'saturate(1.2) drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
                   }}
-                  strokeWidth={1.8}
+                  strokeWidth={2}
                 />
                 {item.badge > 0 && (
                   <span
@@ -107,7 +108,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
                 )}
               </div>
 
-              <span className="font-sans text-white/95 text-[11px] sm:text-[12px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
+              <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-semibold leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
                 {item.label}
               </span>
             </button>

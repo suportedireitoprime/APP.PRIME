@@ -24,8 +24,6 @@ const Bibliotecas = () => {
     setMateriaAberta,
     livroAberto,
     setLivroAberto,
-    livroModoInicial,
-    setLivroModoInicial,
     customPdfUrl,
     setCustomPdfUrl,
     customPdfTitle,
@@ -50,10 +48,7 @@ const Bibliotecas = () => {
       <div className="relative z-10">
         <BibliotecaMobileContent
           counts={counts}
-          onAbrirLivro={(l, modo) => {
-            setLivroModoInicial(modo);
-            setLivroAberto(l);
-          }}
+          onAbrirLivro={(l) => setLivroAberto(l)}
           onAbrirCustomPdf={(titulo, url) => {
             setCustomPdfTitle(titulo);
             setCustomPdfUrl(url);
@@ -65,15 +60,8 @@ const Bibliotecas = () => {
           materiaAberta={materiaAberta}
           onCloseMateria={() => setMateriaAberta(null)}
           livroAberto={livroAberto}
-          initialMode={livroModoInicial}
-          onCloseLivro={() => {
-            setLivroAberto(null);
-            setLivroModoInicial(undefined);
-          }}
-          onAbrirLivro={(l) => {
-            setLivroModoInicial(undefined);
-            setLivroAberto(l);
-          }}
+          onCloseLivro={() => setLivroAberto(null)}
+          onAbrirLivro={(l) => setLivroAberto(l)}
           customPdfUrl={customPdfUrl}
           customPdfTitle={customPdfTitle}
           onCloseCustomPdf={() => {

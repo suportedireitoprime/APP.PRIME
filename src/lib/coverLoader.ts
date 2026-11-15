@@ -30,6 +30,16 @@ import eoab from '@/assets/lei-cover-eoab.webp';
 import ctn from '@/assets/lei-cover-ctn.webp';
 import ctb from '@/assets/lei-cover-ctb.webp';
 
+// Capas WebP dos Heros principais para pré-aquecimento instantâneo (0ms)
+import audioaulasOnibusCover from '@/assets/audioaulas-onibus-cover.webp';
+import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.webp';
+import pilulasHeroCover from '@/assets/covers/pilulas-hero-cover.webp';
+import resumosHeroImg from '@/assets/covers/resumos-juristas-jardim.webp';
+import videoaulasHeroCover from '@/assets/videoaulas-hero-cover.webp';
+import heroConstituicaoImg from '@/assets/covers/hero-vademecum-constituicao.webp';
+import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.webp';
+import logoCorujaWebp from '@/assets/logo-coruja.webp';
+
 const isNative =
   typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
@@ -85,6 +95,17 @@ export const PILULAS_COVERS: readonly string[] = [
   'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.webp'
 ];
 
+export const TOP_HERO_WEBP_COVERS: readonly string[] = [
+  heroConstituicaoImg,
+  videoaulasHeroCover,
+  audioaulasOnibusCover,
+  bibliotecaFilosofoCover,
+  pilulasHeroCover,
+  resumosHeroImg,
+  greciaTrilhaRodape,
+  logoCorujaWebp,
+];
+
 type IdleWindow = Window & {
   requestIdleCallback?: (
     cb: () => void,
@@ -112,14 +133,16 @@ export const prefetchImages = (urls: (string | null | undefined)[]): void => {
 
 /**
  * Warm the browser HTTP cache for lei covers and heavy CDN images.
- * No-op on native (already bundled) and on mobile viewports
- * (spare data / CPU on small devices).
+ * Pre-fetches bundled WebP hero covers and most accessed items.
  */
 export function warmCoverCache() {
   if (typeof window === 'undefined') return;
   const isDesktop = window.matchMedia?.('(min-width: 1024px)').matches ?? false;
 
   whenIdle(() => {
+    // Preload WebP hero covers em memória (carregamento instantâneo a 0ms)
+    TOP_HERO_WEBP_COVERS.forEach((url) => prefetchImage(url));
+
     // Preload fast covers
     if (!isNative) {
       Object.values(COVERS).forEach((url) => prefetchImage(url));

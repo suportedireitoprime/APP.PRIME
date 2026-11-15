@@ -191,7 +191,7 @@ export default function Simulados() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
+      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:pb-12">
         <div className="space-y-6">
           {/* ── Banner de Desempenho (Hero Roxo Oficial #7c3aed) ───────────────── */}
           <div className="w-full">
@@ -594,7 +594,7 @@ export default function Simulados() {
               </div>
             </div>
 
-            <div className="pt-3">
+            <div className="pt-3 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
               <button
                 type="button"
                 onClick={() => {

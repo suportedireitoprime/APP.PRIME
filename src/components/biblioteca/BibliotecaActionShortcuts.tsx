@@ -19,7 +19,9 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
   const navigate = useNavigate();
 
   return (
-    <div className={`flex items-center justify-between gap-1 sm:gap-2 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl ${className}`}>
+    <div
+      className={`flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl ${className}`}
+    >
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
@@ -34,11 +36,11 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
             className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
             <Icon
-              className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+              className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
               style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-              strokeWidth={2}
+              strokeWidth={2.1}
             />
-            <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>

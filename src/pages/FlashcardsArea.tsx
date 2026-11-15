@@ -34,7 +34,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import direitoAdministrativoFundo from '@/assets/direito-administrativo-fundo.webp';
-import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
+import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';
@@ -903,7 +903,7 @@ const FlashcardsArea = () => {
       {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
       <FallingLotusPetals />
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
+      <div className="relative z-10 w-full max-w-[720px] mx-auto px-2 xs:px-3 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
         {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
@@ -1006,7 +1006,7 @@ const FlashcardsArea = () => {
                     const isLast = matIdx === materiasComTemas.length - 1;
                     // Apenas a matéria atual que a pessoa está estudando fica destacada (mais clara), sem mudar com o scroll
                     const isActive = matIdx === 0;
-                    const isLocked = matIdx > 0;
+                    const isLocked = false;
                     // Título conciso sem redundâncias ("do Direito Administrativo" etc)
                     const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
 

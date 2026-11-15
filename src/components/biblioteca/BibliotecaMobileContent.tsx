@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, Layers } from 'lucide-react';
+import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, ArrowUpRight, Library } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
-import { directImg, prefetchImages } from '@/lib/cdnImg';
+import { directImg, cdnImg, prefetchImages } from '@/lib/cdnImg';
 import { assetUrl } from '@/lib/assetUrl';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
@@ -22,86 +22,82 @@ import {
 } from '@/lib/bibliotecaTracking';
 import { styleForArea } from '@/lib/bibliotecaIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import BibliotecaHero from './BibliotecaHero';
 import BibliotecaAtalhosBar from './BibliotecaAtalhosBar';
 import BibliotecaContinuarLeituraBanner from './BibliotecaContinuarLeituraBanner';
 import FerramentasLivrosCarrossel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 
 import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
-import salvosImg from '@/assets/covers/resumos-philosophers-hero.webp';
 
-interface CategoryItem {
+// Categorias com alternância de menu e design em cards idênticos aos Clássicos
+interface CategoriaAcervoConfig {
   id: string;
-  label: string;
+  tabLabel: string;
   title: string;
   subtitle: string;
-  coverImg: string;
+  badgeLabel: string;
+  gradient: string;
+  accentColor: string;
+  glowColor: string;
+  badgeBg: string;
 }
 
-const getCategoryCover = (id: string): string => {
-  if (id === 'juridico') return bibliotecaCoverImg;
-  if (id === 'salvos') return salvosImg;
-  const col = findColecao(id);
-  return col?.cover || bibliotecaCoverImg;
-};
-
-// Categorias complementares do acervo (abaixo de Áreas do Direito e Clássicos)
-const CATEGORIES: CategoryItem[] = [
-  {
-    id: 'oab',
-    label: 'OAB & Preparatório',
-    title: 'OAB & Preparatório',
-    subtitle: 'Doutrina esquematizada, prática forense e os pontos mais exigidos no Exame de Ordem.',
-    coverImg: getCategoryCover('oab'),
-  },
+const CATEGORIAS_ACERVO: CategoriaAcervoConfig[] = [
   {
     id: 'fora-da-toga',
-    label: 'Fora da Toga',
-    title: 'Fora da Toga',
-    subtitle: 'Filosofia, psicologia, história, literatura e comportamento para formar juristas de alta cultura.',
-    coverImg: getCategoryCover('fora-da-toga'),
+    tabLabel: 'Fora da Toga',
+    title: 'FORA DA TOGA',
+    subtitle: 'Leituras além do Direito para enriquecer sua formação humana e intelectual.',
+    badgeLabel: 'Fora da Toga',
+    gradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%)', // Indigo / Noite
+    accentColor: '#818cf8',
+    glowColor: 'rgba(129, 140, 248, 0.4)',
+    badgeBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
   },
   {
     id: 'lideranca',
-    label: 'Liderança',
-    title: 'Liderança & Gestão',
-    subtitle: 'Estratégia, inteligência emocional e autoridade para advogados, servidores e magistrados.',
-    coverImg: getCategoryCover('lideranca'),
+    tabLabel: 'Liderança',
+    title: 'LIDERANÇA & GESTÃO',
+    subtitle: 'Estratégia, inteligência emocional e autoridade profissional',
+    badgeLabel: 'Liderança',
+    gradient: 'linear-gradient(135deg, #14532d 0%, #166534 55%, #052e16 100%)', // Verde Imperial
+    accentColor: '#4ade80',
+    glowColor: 'rgba(74, 222, 128, 0.4)',
+    badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
   },
   {
     id: 'portugues',
-    label: 'Português',
-    title: 'Português Forense',
-    subtitle: 'Redação jurídica de alto nível, gramática forense, pontuação e clareza para petições e provas.',
-    coverImg: getCategoryCover('portugues'),
-  },
-  {
-    id: 'pesquisa',
-    label: 'Pesquisa',
-    title: 'Pesquisa Acadêmica',
-    subtitle: 'Normas ABNT, elaboração de teses, dissertações e artigos científicos de excelência.',
-    coverImg: getCategoryCover('pesquisa'),
+    tabLabel: 'Português Forense',
+    title: 'PORTUGUÊS FORENSE',
+    subtitle: 'Redação jurídica de alto nível, gramática e clareza',
+    badgeLabel: 'Português',
+    gradient: 'linear-gradient(135deg, #78350f 0%, #92400e 55%, #451a03 100%)', // Âmbar Dourado
+    accentColor: '#fbbf24',
+    glowColor: 'rgba(251, 191, 36, 0.4)',
+    badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
   },
   {
     id: 'oratoria',
-    label: 'Oratória',
-    title: 'Oratória Jurídica',
-    subtitle: 'Retórica clássica, sustentação oral em tribunais e técnicas avançadas de persuasão.',
-    coverImg: getCategoryCover('oratoria'),
+    tabLabel: 'Oratória',
+    title: 'ORATÓRIA JURÍDICA',
+    subtitle: 'Retórica clássica, sustentação oral e persuasão',
+    badgeLabel: 'Oratória',
+    gradient: 'linear-gradient(135deg, #581c87 0%, #6b21a8 55%, #3b0764 100%)', // Púrpura Nobre
+    accentColor: '#c084fc',
+    glowColor: 'rgba(192, 132, 252, 0.4)',
+    badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
   },
   {
-    id: 'salvos',
-    label: 'Salvos',
-    title: 'Sua Estante',
-    subtitle: 'Livros e manuais que você favoritou para leitura contínua e consulta diária.',
-    coverImg: salvosImg,
-  },
-  {
-    id: 'juridico',
-    label: 'Todas as Áreas',
-    title: 'Grandes Áreas do Direito',
-    subtitle: 'Visão em lista de todas as 27 matérias e doutrinas jurídicas.',
-    coverImg: bibliotecaCoverImg,
+    id: 'pesquisa',
+    tabLabel: 'Pesquisa Acadêmica',
+    title: 'PESQUISA ACADÊMICA',
+    subtitle: 'Normas ABNT, teses, dissertações e artigos científicos',
+    badgeLabel: 'Pesquisa',
+    gradient: 'linear-gradient(135deg, #0e7490 0%, #155e75 55%, #083344 100%)', // Ciano / Oceano
+    accentColor: '#22d3ee',
+    glowColor: 'rgba(34, 211, 238, 0.4)',
+    badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
   },
 ];
 
@@ -147,11 +143,6 @@ function norm(s: string | null | undefined): string {
     .trim();
 }
 
-const getColecaoNome = (colecaoId: string): string => {
-  const c = findColecao(colecaoId);
-  return c?.label || 'Obra';
-};
-
 interface BibliotecaMobileContentProps {
   counts: Record<string, number>;
   onAbrirLivro: (livro: LivroNormalizado, modoInicial?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura') => void;
@@ -165,22 +156,22 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   onAbrirCustomPdf,
   onAbrirMateria,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('oab');
+  const [activeTab, setActiveTab] = useState<string>('fora-da-toga');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [visibleLimit, setVisibleLimit] = useState<number>(30);
+  const [visibleLimit, setVisibleLimit] = useState<number>(24);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
   const colecoesVisiveis = useVisibleColecoes();
 
-  // Reset do limite visível ao trocar de categoria ou pesquisa
+  // Reset do limite visível ao alternar menu ou pesquisa
   useEffect(() => {
-    setVisibleLimit(30);
-  }, [activeCategory, searchQuery]);
+    setVisibleLimit(24);
+  }, [activeTab, searchQuery]);
 
   // Categoria ativa atual
-  const currentCategory = useMemo(() => {
-    return CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
-  }, [activeCategory]);
+  const activeCategoria = useMemo(() => {
+    return CATEGORIAS_ACERVO.find((c) => c.id === activeTab) || CATEGORIAS_ACERVO[0];
+  }, [activeTab]);
 
   // Sincronização dos favoritos
   useEffect(() => {
@@ -255,6 +246,23 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     return Object.values(booksByColecao).flat();
   }, [booksByColecao]);
 
+  // Livros da categoria selecionada com suporte à busca
+  const livrosDaCategoria = useMemo(() => {
+    const list = booksByColecao[activeCategoria.id] || [];
+    if (!searchQuery.trim()) return list;
+
+    const q = norm(searchQuery);
+    const tokens = q.split(' ').filter(Boolean);
+    return list.filter((l) => {
+      const target = norm(`${l.titulo} ${l.autor || ''} ${l.sobre || ''}`);
+      return tokens.every((t) => target.includes(t));
+    });
+  }, [booksByColecao, activeCategoria.id, searchQuery]);
+
+  const visibleLivros = useMemo(() => {
+    return livrosDaCategoria.slice(0, visibleLimit);
+  }, [livrosDaCategoria, visibleLimit]);
+
   // Lista dinâmica e atualizada das Áreas do Direito
   const areasList = useMemo(() => {
     const areasLivros = booksByColecao['areas'] || [];
@@ -281,8 +289,8 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   // Pré-aquecimento das capas das Áreas do Direito (0ms)
   useEffect(() => {
     areasList.slice(0, 14).forEach((item) => {
-      const coverData = getAreaCover(item.name);
-      const url = coverData?.cover || bibliotecaCoverImg;
+      const discTheme = getDisciplinaVisualTheme(item.name);
+      const url = discTheme?.fundoAssetUrl || getAreaCover(item.name)?.cover || bibliotecaCoverImg;
       if (url) {
         const img = new Image();
         img.src = url;
@@ -290,53 +298,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     });
   }, [areasList]);
 
-  // Filtragem das Áreas no modo de lista
-  const filteredAreas = useMemo(() => {
-    if (!searchQuery.trim()) return areasList;
-    const q = norm(searchQuery);
-    const tokens = q.split(' ').filter(Boolean);
-    return areasList.filter((a) => {
-      const target = norm(a.name);
-      return tokens.every((t) => target.includes(t));
-    });
-  }, [areasList, searchQuery]);
-
-  // Filtragem dos livros nas demais categorias
-  const filteredLivros = useMemo(() => {
-    if (activeCategory === 'juridico') return [];
-
-    let list: LivroNormalizado[] = [];
-    if (activeCategory === 'salvos') {
-      list = allLivros.filter((l) => favoriteIds.has(`${l.colecaoId}:${l.id}`));
-    } else {
-      list = booksByColecao[activeCategory] || [];
-    }
-
-    if (searchQuery.trim()) {
-      const q = norm(searchQuery);
-      const tokens = q.split(' ').filter(Boolean);
-      list = list.filter((l) => {
-        const haystack = `${norm(l.titulo)} ${norm(l.autor)} ${norm(l.area)} ${norm(l.sobre)}`;
-        return tokens.every((t) => haystack.includes(t));
-      });
-    }
-
-    return list;
-  }, [activeCategory, allLivros, booksByColecao, favoriteIds, searchQuery]);
-
-  const visibleLivros = useMemo(() => {
-    return filteredLivros.slice(0, visibleLimit);
-  }, [filteredLivros, visibleLimit]);
-
-  // Pré-aquecimento das capas dos livros visíveis
+  // Pré-aquecimento das capas dos livros da categoria ativa
   useEffect(() => {
-    if (!visibleLivros || visibleLivros.length === 0) return;
-    const urls = visibleLivros
-      .slice(0, 20)
+    if (!livrosDaCategoria || livrosDaCategoria.length === 0) return;
+    const urls = livrosDaCategoria
+      .slice(0, 16)
       .map((l) => (l.capa ? directImg(l.capa) : null))
       .filter(Boolean) as string[];
     prefetchImages(urls);
-  }, [visibleLivros]);
+  }, [livrosDaCategoria]);
 
   const handleToggleFavorite = useCallback((livro: LivroNormalizado) => {
     haptic.selection();
@@ -356,13 +326,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
       {/* Hero Padrão Resumos / Audiobooks com Painel Vermelho e 4 Atalhos */}
       <BibliotecaHero onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')} />
 
-      {/* Conteúdo Principal com Estrutura Fluida e Organizada */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
-        {/* Banner Continuar Leitura */}
-        <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
+      {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem idêntica à Home do app) */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-7 sm:mt-8 space-y-5 sm:space-y-6">
+        {/* Banner Continuar Leitura no modelo de Resumos com capa flush */}
+        <div className="mb-3 sm:mb-4">
+          <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
+        </div>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 1: ÁREAS DO DIREITO (Onde no Resumos fica EM ALTA) */}
+        {/* SEÇÃO 1: ÁREAS DO DIREITO (Carrossel Horizontal 3:4)     */}
         {/* ======================================================== */}
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-2 px-1">
@@ -377,11 +349,17 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             </div>
           </div>
 
-          {/* Carrossel Horizontal Fluido com Capas 3:4 */}
-          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+          {/* Carrossel Horizontal Fluido com Capas 3:4 das Aulas Interativas */}
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
             {areasList.map((item, idx) => {
-              const coverData = getAreaCover(item.name);
-              const coverUrl = coverData?.cover || bibliotecaCoverImg;
+              const discTheme = getDisciplinaVisualTheme(item.name);
+              const coverUrl = discTheme?.fundoAssetUrl || getAreaCover(item.name)?.cover || bibliotecaCoverImg;
+              const corTema = discTheme?.primary || '#e11d48';
+              const corHighlight = discTheme?.highlight || '#ffe4e6';
+              const AreaIcon = styleForArea(item.name).icon || BookOpen;
+
+              // Remove a palavra "Direito" do nome completo sem abreviar nada (ex: "Direito Processual Penal" -> "Processual Penal")
+              const nomeLimpo = item.name.replace(/^Direito\s+/i, '').trim();
 
               return (
                 <div
@@ -390,9 +368,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                     haptic.selection();
                     onAbrirMateria(item.name);
                   }}
-                  className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  className="snap-start shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                 >
-                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                  <div 
+                    className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transition-all duration-300 shadow-md group-hover:shadow-xl"
+                    style={{
+                      borderColor: `${corTema}55`,
+                      boxShadow: `0 10px 24px -4px rgba(0,0,0,0.85), 0 0 16px ${corTema}30, inset 0 1px 1px rgba(255,255,255,0.15)`,
+                    }}
+                  >
                     <img
                       src={coverUrl}
                       alt={item.name}
@@ -400,15 +384,44 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
-                  </div>
 
-                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
-                    {item.name}
-                  </p>
-                  <p className="text-[10.5px] text-white/50 truncate mt-0.5">
-                    {item.count ? `${item.count} ${item.count === 1 ? 'obra' : 'obras'}` : 'Acervo completo'}
-                  </p>
+                    {/* Gradiente de profundidade para legibilidade e visual das Aulas Interativas */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/40" />
+
+                    {/* Ícone SVG de Livro no Topo à Esquerda com Pill Translúcida */}
+                    <div className="absolute top-2.5 left-2.5 z-10">
+                      <div 
+                        className="w-7 h-7 rounded-xl bg-black/65 backdrop-blur-md border flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+                        style={{
+                          borderColor: `${corTema}60`,
+                        }}
+                      >
+                        <AreaIcon className="w-3.5 h-3.5 text-white drop-shadow-sm" strokeWidth={2.2} />
+                      </div>
+                    </div>
+
+                    {/* Seta no Topo à Direita para Ação Direta */}
+                    <div className="absolute top-2.5 right-2.5 z-10">
+                      <div 
+                        className="w-7 h-7 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg group-hover:border-white/40 group-hover:bg-black/80 transition-all"
+                      >
+                        <ArrowUpRight className="w-3.5 h-3.5 text-white/90 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.4} />
+                      </div>
+                    </div>
+
+                    {/* Título e Badge Estilo Aulas Interativas no Rodapé da Capa (Sem 'Direito' e Sem Abreviar) */}
+                    <div className="absolute inset-x-0 bottom-0 p-2.5 z-10 flex flex-col justify-end">
+                      <span 
+                        className="self-start text-[9px] font-mono font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-black/75 border border-white/10 mb-1"
+                        style={{ color: corHighlight }}
+                      >
+                        {item.count ? `${item.count} ${item.count === 1 ? 'OBRA' : 'OBRAS'}` : 'ACERVO'}
+                      </span>
+                      <h4 className="font-serif font-black text-xs sm:text-[13px] text-white uppercase leading-tight line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                        {nomeLimpo}
+                      </h4>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -416,50 +429,48 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         </section>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 2: CARROSSEL VERMELHO ANTIGO DE CLÁSSICOS          */}
+        {/* SEÇÃO 2: CARROSSEL VERMELHO DE CLÁSSICOS                  */}
         {/* ======================================================== */}
         <section className="pt-1">
           <FerramentasLivrosCarrossel onAbrirLivro={onAbrirLivro} />
         </section>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 3: OUTRAS CATEGORIAS DO ACERVO                     */}
+        {/* SEÇÃO 3: LISTA COM MENU DE ALTERNÂNCIA & CARDS CLÁSSICOS */}
         {/* ======================================================== */}
-        <section className="pt-2 space-y-4">
+        <section className="pt-2 space-y-4 pb-12">
+          {/* Cabeçalho da Categoria com Indicador e Contador */}
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
+              <p className="text-[10px] uppercase tracking-[0.22em] font-bold" style={{ color: activeCategoria.accentColor }}>
                 OUTRAS CATEGORIAS DO ACERVO
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="w-1 h-6 rounded-full bg-rose-500" />
+                <span 
+                  className="w-1 h-6 rounded-full shrink-0" 
+                  style={{ backgroundColor: activeCategoria.accentColor }} 
+                />
                 <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-                  {currentCategory.title}
+                  {activeCategoria.title}
                 </h2>
               </div>
-              <p className="text-sm text-white/60 mt-1 ml-3 leading-snug">
-                {currentCategory.subtitle}
+              <p className="text-xs sm:text-sm text-white/60 mt-1 ml-3 leading-snug truncate">
+                {activeCategoria.subtitle}
               </p>
             </div>
             <span className="text-xs sm:text-sm font-semibold text-zinc-400 font-sans self-end pb-1 shrink-0">
-              {activeCategory === 'juridico'
-                ? `${filteredAreas.length} áreas`
-                : `${filteredLivros.length} obras`}
+              {`${livrosDaCategoria.length} ${livrosDaCategoria.length === 1 ? 'obra' : 'obras'}`}
             </span>
           </div>
 
-          {/* Campo de Busca Rápida Idêntico a Resumos */}
+          {/* Campo de Busca Rápida na Categoria */}
           <div className="relative">
             <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={
-                activeCategory === 'juridico'
-                  ? 'Buscar área jurídica...'
-                  : `Buscar em ${currentCategory.label} ou acervo…`
-              }
+              placeholder={`Buscar em ${activeCategoria.tabLabel}...`}
               className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
             />
             {searchQuery && (
@@ -474,208 +485,166 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             )}
           </div>
 
-          {/* Abas e Chips de Filtragem de Categorias */}
+          {/* Menu de Alternância de Categorias (Abas em Pills com Cores Exclusivas) */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.id;
+            {CATEGORIAS_ACERVO.map((cat) => {
+              const isActive = activeTab === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => {
                     haptic.selection();
-                    setActiveCategory(cat.id);
+                    setActiveTab(cat.id);
                   }}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
+                  style={{
+                    backgroundColor: isActive ? `${cat.accentColor}26` : undefined,
+                    borderColor: isActive ? `${cat.accentColor}80` : undefined,
+                    color: isActive ? cat.accentColor : undefined,
+                  }}
+                  className={`px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer border ${
                     isActive
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 shadow-md font-bold'
-                      : 'bg-[#18181B] text-zinc-300 hover:text-white border border-white/10 hover:bg-zinc-800'
+                      ? 'shadow-md font-bold'
+                      : 'bg-[#18181B] text-zinc-300 hover:text-white border-white/10 hover:bg-zinc-800'
                   }`}
                 >
-                  {cat.label}
+                  {cat.tabLabel}
                 </button>
               );
             })}
           </div>
 
-          {/* Conteúdo da Categoria Selecionada */}
-          <div className="pt-1">
-            {activeCategory === 'juridico' ? (
-              /* LISTAGEM DE TODAS AS ÁREAS DO DIREITO */
-              <div className="divide-y divide-white/[0.08]">
-                {filteredAreas.length === 0 ? (
-                  <div className="py-14 text-center px-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
-                      <Search className="w-6 h-6" />
-                    </div>
-                    <p className="text-sm font-medium text-zinc-300">
-                      Nenhuma área encontrada para "{searchQuery}"
-                    </p>
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 transition"
-                    >
-                      Limpar busca
-                    </button>
-                  </div>
-                ) : (
-                  filteredAreas.map((area) => {
-                    const s = styleForArea(area.name);
-                    const Icon = s.icon;
-                    return (
-                      <div
-                        key={area.name}
-                        onClick={() => {
-                          haptic.selection();
-                          onAbrirMateria(area.name);
-                        }}
-                        className="flex items-center gap-3.5 sm:gap-4 py-3.5 sm:py-4 cursor-pointer group hover:bg-white/[0.04] px-2 rounded-2xl transition-all active:scale-[0.99]"
-                      >
-                        <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#27272A] transition-all shadow-sm">
-                          <Icon className="w-5 h-5" style={{ color: s.color }} strokeWidth={1.8} />
-                        </div>
-
-                        <div className="flex-1 min-w-0 pr-1">
-                          <h4 className="font-bold text-[15px] sm:text-base text-white leading-snug truncate group-hover:text-rose-200 transition-colors font-sans">
-                            {area.name}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/5">
-                              {area.count ? `${area.count} ${area.count === 1 ? 'obra' : 'obras'}` : 'Acervo completo'}
-                            </span>
-                            <span className="text-xs text-zinc-400 font-medium truncate">
-                              Doutrina e prática forense
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="shrink-0 flex items-center text-zinc-500 group-hover:text-zinc-300 group-hover:translate-x-1 transition-all">
-                          <ChevronRight className="w-5 h-5" />
-                        </div>
-                      </div>
-                    );
-                  })
+          {/* Grid / Lista com os Cards Idênticos ao Design de Clássicos com a Cor da Categoria */}
+          <div className="pt-2">
+            {livrosDaCategoria.length === 0 ? (
+              <div className="py-14 text-center px-4 rounded-2xl bg-[#141416] border border-white/5">
+                <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-medium text-zinc-300">
+                  {searchQuery
+                    ? `Nenhum livro encontrado para "${searchQuery}".`
+                    : `Nenhum livro disponível em ${activeCategoria.tabLabel}.`}
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 transition cursor-pointer"
+                  >
+                    Limpar busca
+                  </button>
                 )}
               </div>
             ) : (
-              /* LISTAGEM DOS LIVROS (OAB, Fora da Toga, Liderança, Português, Salvos, etc.) */
-              <div className="divide-y divide-white/[0.08]">
-                {filteredLivros.length === 0 ? (
-                  <div className="py-14 text-center px-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <p className="text-sm font-medium text-zinc-300">
-                      {activeCategory === 'salvos'
-                        ? 'Você ainda não possui livros salvos na sua estante.'
-                        : `Nenhum livro encontrado para "${searchQuery}".`}
-                    </p>
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 transition"
-                      >
-                        Limpar busca
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  visibleLivros.map((livro, idx) => {
-                    const isSaved = favoriteIds.has(`${livro.colecaoId}:${livro.id}`);
-                    const localCover = livro.capa ? assetUrl(livro.capa) : null;
-                    const isLocal = Boolean(localCover && !/^https?:\/\//i.test(localCover));
-                    const coverSrc = isLocal ? localCover! : (livro.capa ? directImg(livro.capa) : bibliotecaCoverImg);
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {visibleLivros.map((livro, idx) => {
+                  const meta = livro.minutosLeitura
+                    ? `${livro.minutosLeitura} min de leitura`
+                    : livro.paginas
+                    ? `${livro.paginas} páginas`
+                    : (livro.autor || activeCategoria.badgeLabel);
 
-                    return (
+                  return (
+                    <div
+                      key={`${livro.colecaoId}:${livro.id}-${idx}`}
+                      onClick={() => {
+                        haptic.selection();
+                        onAbrirLivro(livro);
+                      }}
+                      className="cursor-pointer active:scale-[0.99] text-left group"
+                    >
                       <div
-                        key={`${livro.colecaoId}:${livro.id}`}
-                        onClick={() => {
-                          haptic.selection();
-                          onAbrirLivro(livro);
+                        style={{
+                          background: activeCategoria.gradient,
+                          borderColor: `${activeCategoria.accentColor}40`,
+                          boxShadow: `0 8px 20px -6px rgba(0,0,0,0.7), 0 0 16px ${activeCategoria.accentColor}18`,
                         }}
-                        className="flex items-center gap-3.5 sm:gap-4 py-3.5 sm:py-4 cursor-pointer group hover:bg-white/[0.04] px-2 rounded-2xl transition-all active:scale-[0.99]"
+                        className="relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform border shadow-md group-hover:scale-[1.01]"
                       >
-                        {/* Capa em miniatura (proporção 3:4) */}
-                        <div className="relative w-[56px] h-[74px] sm:w-[64px] sm:h-[84px] shrink-0 rounded-xl overflow-hidden bg-[#18181B] border border-white/10 shadow-md">
+                        {/* SVGs jurídicos decorativos ao fundo idênticos a Clássicos */}
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 200 200"
+                          className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                          <path d="M35 95 Q55 135 75 95 Z" />
+                          <path d="M125 95 Q145 135 165 95 Z" />
+                        </svg>
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 100 100"
+                          className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                        >
+                          <path d="M18 78 L58 38" />
+                          <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                          <path d="M10 88 H50" />
+                        </svg>
+
+                        {/* Capa do livro à esquerda com sombra profunda */}
+                        <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <Library className="w-8 h-8 text-white/20" />
+                          </div>
                           <img
-                            src={coverSrc}
+                            src={livro.capa ? cdnImg(livro.capa, 240) : (findColecao(activeCategoria.id)?.cover || bibliotecaCoverImg)}
                             alt={livro.titulo}
-                            loading={idx < 8 ? 'eager' : 'lazy'}
-                            fetchPriority={idx < 4 ? 'high' : 'auto'}
+                            loading={idx < 6 ? 'eager' : 'lazy'}
+                            fetchPriority={idx < 2 ? 'high' : 'auto'}
                             decoding="async"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src = bibliotecaCoverImg;
+                              const fallback = findColecao(activeCategoria.id)?.cover || bibliotecaCoverImg;
+                              if (e.currentTarget.src !== fallback) {
+                                e.currentTarget.src = fallback;
+                              }
+                            }}
+                            className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300 shadow-md"
+                            style={{
+                              boxShadow:
+                                '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
                             }}
                           />
                         </div>
 
-                        {/* Detalhes do Livro */}
-                        <div className="flex-1 min-w-0 pr-1">
-                          <h4 className="font-bold text-sm sm:text-base text-white leading-snug line-clamp-2 group-hover:text-rose-200 transition-colors font-sans">
+                        {/* Detalhes à direita: Selo, Tempo/Autor, Título e Seta */}
+                        <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3.5 pb-3 pt-3 z-[1]">
+                          <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/35 backdrop-blur-sm">
+                            <Library className="w-2.5 h-2.5" />
+                            {activeCategoria.badgeLabel}
+                          </span>
+                          <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85 font-medium">
+                            <Clock className="w-3 h-3 shrink-0" />
+                            <span className="truncate">{meta}</span>
+                          </div>
+                          <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm group-hover:text-white/95">
                             {livro.titulo}
-                          </h4>
-                          <p className="text-xs text-zinc-400 font-medium mt-1 truncate font-sans">
-                            {livro.autor || livro.area || getColecaoNome(livro.colecaoId)}
                           </p>
-                          <div className="flex items-center gap-2.5 mt-1.5 text-xs text-zinc-400 font-sans">
-                            <span className="flex items-center gap-1 text-zinc-400">
-                              <Clock className="w-3.5 h-3.5 text-zinc-500" />
-                              <span>
-                                {livro.minutosLeitura
-                                  ? `${livro.minutosLeitura} min`
-                                  : livro.paginas
-                                  ? `${livro.paginas} págs`
-                                  : '15 min'}
-                              </span>
-                            </span>
-                            <span className="text-zinc-600">•</span>
-                            <span className="flex items-center gap-1 font-semibold text-zinc-300">
-                              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                              <span>4.9</span>
-                            </span>
-                            {livro.area && (
-                              <>
-                                <span className="text-zinc-600">•</span>
-                                <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10.5px] text-zinc-300 border border-white/5 truncate max-w-[120px]">
-                                  {livro.area}
-                                </span>
-                              </>
-                            )}
+                          <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md group-hover:bg-white/30 group-hover:scale-105 transition-all">
+                            <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
                           </div>
                         </div>
-
-                        {/* Botão de Salvar na Estante */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleFavorite(livro);
-                          }}
-                          aria-label="Salvar livro"
-                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 hover:bg-white/10 active:scale-90 text-zinc-400 hover:text-white transition-all cursor-pointer"
-                        >
-                          <Bookmark
-                            className={`w-5 h-5 transition-colors ${
-                              isSaved ? 'fill-amber-400 text-amber-400' : 'text-zinc-500 hover:text-zinc-300'
-                            }`}
-                          />
-                        </button>
                       </div>
-                    );
-                  })
-                )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
             {/* Paginação fluida para carregar mais obras */}
-            {activeCategory !== 'juridico' && filteredLivros.length > visibleLimit && (
+            {livrosDaCategoria.length > visibleLimit && (
               <div className="pt-6 pb-4 flex justify-center">
                 <button
                   type="button"
-                  onClick={() => setVisibleLimit((prev) => prev + 30)}
+                  onClick={() => setVisibleLimit((prev) => prev + 24)}
                   className="px-6 py-2.5 rounded-full bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-white/10 text-xs sm:text-sm font-semibold active:scale-95 transition-all shadow-md cursor-pointer"
                 >
-                  Carregar mais obras ({filteredLivros.length - visibleLimit} restantes)
+                  Carregar mais obras ({livrosDaCategoria.length - visibleLimit} restantes)
                 </button>
               </div>
             )}

@@ -18,6 +18,18 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action } = body;
 
+    // Desativação preventiva de jobs e chamadas acidentais para poupar conexões e CPU do banco
+    const isManual = req.headers.get("x-manual-import") === "true" || body?.manual === true;
+    if (!isManual && action !== "stats") {
+      return new Response(
+        JSON.stringify({
+          message: "Importação desativada. Envie 'manual: true' para acionar pontualmente.",
+          status: "disabled"
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    }
+
     // 0. Estatísticas atuais
     if (action === "stats") {
       const { count: cardsCount } = await admin.from("flashcards_cards").select("id", { count: "exact", head: true });

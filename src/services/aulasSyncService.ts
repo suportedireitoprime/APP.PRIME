@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 
 const ANONYMOUS_USER_KEY = 'aulas_trilhas_anon_user_id';
 const LOCAL_PROGRESSO_KEY = 'aulas_interativas_progresso_v1';

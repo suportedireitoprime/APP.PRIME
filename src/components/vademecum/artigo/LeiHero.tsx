@@ -1,17 +1,13 @@
 // @ts-nocheck
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History, Feather, Info } from 'lucide-react';
+import { ArrowLeft, ScrollText, Heart, Radar, ListMusic, Feather } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getLeiCover, getLeiColor, shade } from '@/lib/leiTheme';
-import { isFavorito as isLeiFavorita } from '@/lib/leisFavoritos';
+import { getLeiCover, getLeiColor } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
-import brasaoImgAsset from '@/assets/brasao-republica.webp';
-import ShapeGrid from '@/components/ui/ShapeGrid';
+import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
 import fallbackTrilhas from '@/data/lei-seca-trilhas.json';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
-
-const brasaoImg = brasaoImgAsset;
 
 interface LeiHeroProps {
   isDesktop: boolean;
@@ -61,16 +57,12 @@ const LeiHero: React.FC<LeiHeroProps> = ({
 
   const cover = getLeiCover(selectedLeiId, tipo);
   const leiColor = getLeiColor(selectedLeiId, tipo);
-  const bgGradient = `linear-gradient(135deg, ${shade(leiColor, -0.85)} 0%, ${shade(leiColor, -0.6)} 40%, ${leiColor} 100%)`;
-  
-  const selectedLei = leis.find((l) => l.id === selectedLeiId);
-  const planaltoUrl = selectedLei?.url_planalto;
 
   return (
     <>
       {/* Shell sólido com cantos inferiores arredondados idêntico ao painel do Vade Mecum */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 min-h-[300px] xs:min-h-[315px] sm:min-h-[330px]"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
@@ -83,36 +75,20 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           aria-hidden="true"
         />
 
-        {/* Imagem de Capa à Direita sem degradê cobrindo a arte */}
+        {/* Imagem de Capa Temática à Direita */}
         <img
           src={cover}
           alt={`Capa — ${selectedLeiNome}`}
           loading="eager"
           decoding="async"
-          fetchpriority="high"
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
         />
 
-        {/* Overlay vermelho com gradiente de marca e corte diagonal poligonal idêntico ao Vade Mecum */}
-        <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            filter:
-              'drop-shadow(25px 0 25px rgba(0,0,0,0.85)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))',
-          }}
-        >
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-          >
-            <div className="absolute inset-0" style={{ backgroundImage: bgGradient }} />
-            <div className="absolute inset-0 opacity-15 mix-blend-overlay">
-              <ShapeGrid />
-            </div>
-          </div>
-        </div>
+        {/* Onda Fluida e Animada em Cetim 3D na Cor do Tema da Lei (idêntica à do Vade Mecum) */}
+        <HeroAnimatedWave themeColor={leiColor} />
 
-        {/* Barra superior de navegação: Botão Voltar à esquerda e Planalto à direita */}
+        {/* Barra superior de navegação: Botão Voltar */}
         <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-1.5 flex items-center justify-between min-h-[64px]">
           <div>
             {!hideBackButton && (
@@ -126,24 +102,11 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               </button>
             )}
           </div>
-
-          <div className="flex items-center gap-2">
-            {/* Botões movidos para LeiDetailView */}
-          </div>
+          <div className="flex items-center gap-2" />
         </header>
 
-        {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda (sobre a área vermelha, alinhado à Home) */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start px-3 sm:px-4 ml-1 sm:ml-2 min-h-[120px] w-[48%] max-w-[190px]">
-          {/* Brasão watermark sutil atrás do texto */}
-          <img
-            src={brasaoImg}
-            alt=""
-            aria-hidden
-            className="absolute left-2 top-0 pointer-events-none select-none w-[90px] sm:w-[110px] opacity-[0.14] mix-blend-luminosity z-[-1]"
-          />
-
-
-
+        {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda alinhado ao padrão Vade Mecum */}
+        <div className="relative z-10 pt-4 sm:pt-6 flex-1 flex flex-col justify-start px-4 sm:px-5 ml-1 sm:ml-2 min-h-[110px] w-[55%] max-w-[240px]">
           <h1 className="font-display text-white text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight mt-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
             {selectedLeiNome}
           </h1>
@@ -153,119 +116,149 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               {selectedLeiDescricao}
             </p>
           )}
+
+          {/* Traço de destaque da marca na cor temática da lei */}
+          <div 
+            className="w-10 h-1 rounded-full mt-2.5 transition-all duration-300" 
+            style={{ 
+              backgroundColor: leiColor,
+              boxShadow: `0 0 10px ${leiColor}99`
+            }} 
+          />
         </div>
 
-        {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
-        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3 w-full max-w-lg mx-auto">
+        {/* Atalhos Rápidos na Base do Painel: FAVORITO, LIÇÕES, RADAR, PLAYLIST com ícones e badges na cor do tema da lei */}
+        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3 w-full max-w-lg mx-auto">
           <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
-              {/* FAVORITOS DE ARTIGOS */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onOpenOverlay?.('fav');
-                }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
-              >
-                {favCount > 0 && (
-                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
-                    {favCount > 99 ? '99+' : favCount}
-                  </span>
-                )}
-                <Heart
-                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
-                  style={{ color: '#F43F5E', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-                  strokeWidth={2}
-                />
-                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
-                  Favorito
+            {/* 1. FAVORITOS DE ARTIGOS */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('fav');
+              }}
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            >
+              {favCount > 0 && (
+                <span 
+                  className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 pointer-events-none"
+                  style={{ backgroundColor: leiColor }}
+                >
+                  {favCount > 99 ? '99+' : favCount}
                 </span>
-              </button>
+              )}
+              <Heart
+                className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                style={{ 
+                  color: leiColor, 
+                  filter: `drop-shadow(0 2px 6px ${leiColor}99) drop-shadow(0 1px 2px rgba(0,0,0,0.8))` 
+                }}
+                strokeWidth={2.2}
+              />
+              <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                Favorito
+              </span>
+            </button>
 
-              {/* LIÇÕES (LEI SECA) */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  const catalogItem = LEIS_CATALOG.find((l) => l.id === selectedLeiId);
-                  const trilha = fallbackTrilhas.find(
-                    (t) => t.sigla.toLowerCase() === catalogItem?.sigla.toLowerCase()
-                  );
-                  const targetSlug = trilha ? trilha.slug : selectedLeiId;
-                  navigate(`/lei-seca/${targetSlug}`, { state: { returnToLei: selectedLeiId } });
+            {/* 2. LIÇÕES (LEI SECA) */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                const catalogItem = LEIS_CATALOG.find((l) => l.id === selectedLeiId);
+                const trilha = fallbackTrilhas.find(
+                  (t) => t.sigla.toLowerCase() === catalogItem?.sigla.toLowerCase()
+                );
+                const targetSlug = trilha ? trilha.slug : selectedLeiId;
+                navigate(`/lei-seca/${targetSlug}`, { state: { returnToLei: selectedLeiId } });
+              }}
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            >
+              <Feather
+                className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                style={{ 
+                  color: leiColor, 
+                  filter: `drop-shadow(0 2px 6px ${leiColor}99) drop-shadow(0 1px 2px rgba(0,0,0,0.8))` 
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
-              >
-                <Feather
-                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
-                  style={{ color: '#FACC15', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-                  strokeWidth={2}
-                />
-                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
-                  Lições
-                </span>
-              </button>
+                strokeWidth={2.2}
+              />
+              <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                Lições
+              </span>
+            </button>
 
-              {/* RADAR */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onOpenOverlay?.('radar');
-                }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
-              >
-                {radarCount > 0 && (
-                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
-                    {radarCount > 99 ? '99+' : radarCount}
-                  </span>
-                )}
-                <Radar
-                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
-                  style={{ color: '#38BDF8', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-                  strokeWidth={2}
-                />
-                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
-                  Radar
+            {/* 3. RADAR */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('radar');
+              }}
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            >
+              {radarCount > 0 && (
+                <span 
+                  className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 pointer-events-none"
+                  style={{ backgroundColor: leiColor }}
+                >
+                  {radarCount > 99 ? '99+' : radarCount}
                 </span>
-              </button>
+              )}
+              <Radar
+                className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                style={{ 
+                  color: leiColor, 
+                  filter: `drop-shadow(0 2px 6px ${leiColor}99) drop-shadow(0 1px 2px rgba(0,0,0,0.8))` 
+                }}
+                strokeWidth={2.2}
+              />
+              <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                Radar
+              </span>
+            </button>
 
-              {/* PLAYLIST */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onOpenOverlay?.('playlist');
-                }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
-              >
-                {playlistCount > 0 && (
-                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">
-                    {playlistCount > 99 ? '99+' : playlistCount}
-                  </span>
-                )}
-                <ListMusic
-                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
-                  style={{ color: '#A855F7', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
-                  strokeWidth={2}
-                />
-                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
-                  Playlist
+            {/* 4. PLAYLIST */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('playlist');
+              }}
+              className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            >
+              {playlistCount > 0 && (
+                <span 
+                  className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 pointer-events-none"
+                  style={{ backgroundColor: leiColor }}
+                >
+                  {playlistCount > 99 ? '99+' : playlistCount}
                 </span>
-              </button>
+              )}
+              <ListMusic
+                className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                style={{ 
+                  color: leiColor, 
+                  filter: `drop-shadow(0 2px 6px ${leiColor}99) drop-shadow(0 1px 2px rgba(0,0,0,0.8))` 
+                }}
+                strokeWidth={2.2}
+              />
+              <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                Playlist
+              </span>
+            </button>
           </div>
         </div>
       </div>
 
       <Dialog open={showEmentaDialog} onOpenChange={setShowEmentaDialog}>
-        <DialogContent className="max-w-lg border-red-400/30 bg-gradient-to-b from-red-950/40 to-background/95 backdrop-blur-xl">
+        <DialogContent className="max-w-lg border-white/10 bg-gradient-to-b from-zinc-950/95 to-background/95 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-200">
+            <DialogTitle className="flex items-center gap-2 text-white" style={{ color: leiColor }}>
               <ScrollText className="w-4 h-4" />
               Ementa
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm md:text-[15px] italic leading-relaxed text-red-100/95 whitespace-pre-line">
+          <p className="text-sm md:text-[15px] italic leading-relaxed text-zinc-200 whitespace-pre-line">
             {selectedLeiEmenta}
           </p>
         </DialogContent>

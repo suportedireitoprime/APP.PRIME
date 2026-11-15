@@ -100,7 +100,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
         <SheetHeader className="p-0 border-b border-white/5 relative flex flex-col pt-[var(--sai-top,env(safe-area-inset-top,0px))]">
           <div className="p-6 pb-4 relative">
             <SheetTitle className="text-xl font-display font-bold flex items-center gap-2">
-              <History className="w-5 h-5 text-primary" />
+              <History className="w-5 h-5 text-emerald-400" />
               Acessos Recentes
             </SheetTitle>
             <button 
@@ -126,7 +126,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
                   onClick={() => setSelectedDate(ts)}
                   className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                     isSelected
-                      ? 'bg-primary text-white'
+                      ? 'bg-emerald-500 text-black font-extrabold shadow-sm'
                       : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-white'
                   }`}
                 >

@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getCache } from "@/lib/pessoalCache";
 import { fetchPessoalArtigos, PESSOAL_KEYS } from "@/services/pessoalPrefetch";
 import { useGoBack } from '@/hooks/useGoBack';
+import { getLeiByTabela } from "@/data/leisCatalog";
 
 type Fav = {
   id: string;

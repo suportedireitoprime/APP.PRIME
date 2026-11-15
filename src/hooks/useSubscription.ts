@@ -120,7 +120,6 @@ interface Options {
 export function useSubscription(options: Options = {}): SubscriptionState {
   const { pollOnMount = false } = options;
   const { user } = useAuth();
-  const wasPremium = useRef(false);
   // Snapshot offline: hidrata imediatamente do cache local para não travar telas
   // premium quando o dispositivo está sem rede.
   const cacheKey = user ? `direitoprime:sub:${user.id}` : null;
@@ -487,16 +486,20 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       }
     })();
 
-    // Realtime: qualquer INSERT/UPDATE em play_subscriptions, apple_subscriptions,
-    // asaas_subscriptions, profiles ou legacy_subscribers dispara re-fetch imediato.
+    // Realtime: escuta reativa estrita em profiles (tabela mestre com PK id) para revalidar assinatura
+    // Evita timeouts e erros de REPLICA IDENTITY causados por múltiplos filtros em tabelas secundárias
     const channel = supabase
-      .channel(`sub-${user.id}-${Math.random().toString(36).slice(2, 10)}`)
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'play_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'asaas_subscriptions', filter: `user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'legacy_subscribers', filter: `claimed_user_id=eq.${user.id}` }, () => { void fetchOnce(); })
-      .subscribe();
+      .channel(`sub-profiles-${user.id}`)
+      .on(
+        'postgres_changes' as any, 
+        { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, 
+        () => { void fetchOnce(); }
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.debug('[useSubscription] Realtime fallback para polling:', status);
+        }
+      });
 
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
     // renovações e o caso de concluir a compra fora do app.
@@ -525,40 +528,6 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       supabase.removeChannel(channel);
     };
   }, [user, nonce, pollOnMount]);
-
-  // GA4 / Telemetria: dispara `assinatura_ativada` APENAS para compras novas em tempo real (< 15 minutos)
-  // Assinantes existentes que apenas abrem o app NUNCA disparam evento de nova compra (previne eventos fantasmas).
-  useEffect(() => {
-    if (!state.isPremium || state.loading || state.isAdminOverride || state.isTrial) return;
-    if (wasPremium.current) return;
-    
-    // Se a assinatura começou há mais de 15 minutos, é um usuário pré-existente — NUNCA gerar evento de nova compra
-    const startTime = state.startedAt ? new Date(state.startedAt).getTime() : 0;
-    const isRecentPurchase = startTime > 0 && (Date.now() - startTime < 15 * 60 * 1000);
-
-    if (!isRecentPurchase) {
-      wasPremium.current = true;
-      return;
-    }
-
-    const startedAtSuffix = state.startedAt ? `:${state.startedAt.split('T')[0]}` : '';
-    const localKey = `direitoprime:sub_logged_v2:${user?.id}:${state.plano}${startedAtSuffix}`;
-    
-    if (typeof window !== 'undefined') {
-      try {
-        if (window.localStorage.getItem(localKey)) {
-          wasPremium.current = true;
-          return;
-        }
-        window.localStorage.setItem(localKey, '1');
-      } catch {}
-    }
-
-    wasPremium.current = true;
-    import('@/lib/appEvents').then(({ appEvents }) =>
-      appEvents.assinaturaAtivada({ plano: state.plano, source: state.source })
-    ).catch(() => {});
-  }, [state.isPremium, state.loading, state.isAdminOverride, state.isTrial, state.plano, state.source, state.startedAt, user?.id]);
 
   // Atualização reativa instantânea (0ms) ao alternar perfil no Simulador de Desenvolvedor
   useEffect(() => {

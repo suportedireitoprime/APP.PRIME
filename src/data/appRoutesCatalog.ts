@@ -3,6 +3,8 @@
 // Inclui métricas e estimativas reais de peso de bundle, dependências e consumo de memória
 
 export type RouteWeightLevel = 'muito_pesada' | 'pesada' | 'media' | 'leve' | 'zero';
+export type RouteHealthStatus = 'estavel' | 'com_bug' | 'pouco_usada' | 'em_revisao';
+export type RouteUsageLevel = 'alta' | 'media' | 'baixa' | 'rara';
 
 export interface AppRouteItem {
   path: string;
@@ -19,6 +21,9 @@ export interface AppRouteItem {
   weightLevel: RouteWeightLevel;
   weightEstimate: string;
   weightReasons: string[];
+  healthStatus?: RouteHealthStatus;
+  healthReason?: string;
+  usageLevel?: RouteUsageLevel;
 }
 
 export const APP_ROUTES_CATALOG: AppRouteItem[] = [
@@ -71,13 +76,33 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": true,
     "component": "AdminAulasInterativas",
     "exampleUrl": "/admin-aulas-interativas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~180 KB",
     "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
+      "Code Splitting dinâmico por disciplina",
+      "Cache instantâneo em memória 0ms",
+      "Sincronizador SRT sob demanda"
+    ]
+  },
+  {
+    "path": "/admin-lousa-magica",
+    "group": "Administração",
+    "label": "Lousa Mágica",
+    "description": "Aulas interativas narradas com animação de lousa, giz e timeline",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": true,
+    "component": "AdminLousaMagica",
+    "exampleUrl": "/admin-lousa-magica",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~65 KB",
+    "weightReasons": [
+      "Iframe isolado de alta performance",
+      "Player de lousa com áudio integrado",
+      "Recursos de tela cheia e controle de aula"
     ]
   },
   {
@@ -117,6 +142,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Painel administrativo",
       "Tabelas e queries Supabase"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Painel administrativo legado de testes do assistente Horus",
+    "usageLevel": "baixa"
   },
   {
     "path": "/admin-omniroute",
@@ -129,14 +158,18 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": true,
     "component": "AdminOmniRouteTeste",
     "exampleUrl": "/admin-omniroute",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~2.1 MB",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~180 KB",
     "weightReasons": [
-      "Componente 130KB",
+      "Code-Splitting isolado sob demanda",
       "Player de áudio dinâmico",
-      "Integração Gemini AI"
+      "Integração Gemini AI (lazy)"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Ferramenta diagnóstica interna de testes de áudio; uso de desenvolvimento",
+    "usageLevel": "baixa"
   },
   {
     "path": "/admin-push",
@@ -156,6 +189,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Painel administrativo",
       "Tabelas e queries Supabase"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Disparo manual de notificações push; uso estritamente operacional",
+    "usageLevel": "baixa"
   },
   {
     "path": "/ajustes/excluir-conta",
@@ -175,6 +212,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Ação crítica e rara; mantida apenas para conformidade LGPD e Apple HIG",
+    "usageLevel": "rara"
   },
   {
     "path": "/assinatura",
@@ -225,13 +266,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Audioaulas",
     "exampleUrl": "/audioaulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
+      "Player nativo de áudio",
+      "Streaming R2 sob demanda"
     ]
   },
   {
@@ -245,13 +285,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Audiobooks",
     "exampleUrl": "/audiobooks",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~250 KB",
     "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
+      "Player imersivo",
+      "Sincronizador de leitura"
     ]
   },
   {
@@ -303,13 +342,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Bibliotecas",
     "exampleUrl": "/bibliotecas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~95 KB",
     "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
+      "Vitrine de obras jurídicas",
+      "Capas otimizadas WebP"
     ]
   },
   {
@@ -323,13 +361,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "BibliotecaCategoria",
     "exampleUrl": "/bibliotecas/classicos",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~95 KB",
     "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
+      "Vitrine de obras jurídicas",
+      "Capas otimizadas WebP"
     ]
   },
   {
@@ -343,13 +380,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "BibliotecaCategoria",
     "exampleUrl": "/bibliotecas/classicos/direito-penalSlug",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~95 KB",
     "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
+      "Vitrine de obras jurídicas",
+      "Capas otimizadas WebP"
     ]
   },
   {
@@ -363,13 +399,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "BibliotecaTrilhas",
     "exampleUrl": "/bibliotecas/trilhas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~95 KB",
     "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
+      "Vitrine de obras jurídicas",
+      "Capas otimizadas WebP"
     ]
   },
   {
@@ -428,6 +463,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Seção de boletins estáticos com baixa frequência de atualização",
+    "usageLevel": "baixa"
   },
   {
     "path": "/chat-juridico",
@@ -466,6 +505,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Página receptora de links compartilhados externos; tráfego esporádico",
+    "usageLevel": "rara"
   },
   {
     "path": "/desktop-link/:token",
@@ -485,6 +528,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Acesso esporádico (apenas no emparelhamento com o app desktop)",
+    "usageLevel": "rara"
   },
   {
     "path": "/estudos",
@@ -572,12 +619,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsRouteWrapper",
     "exampleUrl": "/flashcards",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -591,12 +638,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsArea",
     "exampleUrl": "/flashcards/area/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -610,12 +657,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsCargos",
     "exampleUrl": "/flashcards/cargos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -629,12 +676,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsCargosDetalhes",
     "exampleUrl": "/flashcards/cargos/1",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -648,12 +695,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsDecks",
     "exampleUrl": "/flashcards/decks",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -667,12 +714,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsDesafios",
     "exampleUrl": "/flashcards/desafios",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -686,12 +733,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsDesafiosTimeline",
     "exampleUrl": "/flashcards/desafios/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -705,12 +752,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsEstudo",
     "exampleUrl": "/flashcards/estudo",
-    "weightScore": 3,
+    "weightScore": 2,
     "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightEstimate": "~220 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Motor de repetição espaçada",
+      "Modo foco tátil"
     ]
   },
   {
@@ -724,12 +771,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsHistorico",
     "exampleUrl": "/flashcards/historico",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -743,12 +790,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Suspense",
     "exampleUrl": "/flashcards/jurisprudencia",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -762,12 +809,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsLeis",
     "exampleUrl": "/flashcards/leis",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -781,12 +828,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsMaterias",
     "exampleUrl": "/flashcards/materias",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -800,12 +847,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsProgresso",
     "exampleUrl": "/flashcards/progresso",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -819,12 +866,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsRevisar",
     "exampleUrl": "/flashcards/revisar",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -838,12 +885,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsTrilhas",
     "exampleUrl": "/flashcards/trilhas",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
+      "Efeito 3D CSS nativo",
+      "Cards sob demanda"
     ]
   },
   {
@@ -864,6 +911,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Sub-rota interna de métricas legadas com baixíssimo tráfego",
+    "usageLevel": "baixa"
   },
   {
     "path": "/ir/*",
@@ -883,6 +934,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Redirecionador interno de links curtos antigos",
+    "usageLevel": "rara"
   },
   {
     "path": "/jurisprudencia",
@@ -1123,12 +1178,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "LegislacaoEstadual",
     "exampleUrl": "/legislacao-estadual",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1142,12 +1197,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "EstadoDetalhe",
     "exampleUrl": "/legislacao-estadual/sp",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1161,13 +1216,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "LeiEstadualView",
     "exampleUrl": "/legislacao-estadual/sp/lei/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Leis estaduais específicas com baixo volume de consulta",
+    "usageLevel": "baixa"
   },
   {
     "path": "/legislacao/:tipo",
@@ -1180,12 +1239,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "CategoriaLegislacao",
     "exampleUrl": "/legislacao/codigo",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1199,12 +1258,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "CategoriaLegislacao",
     "exampleUrl": "/legislacao/codigo/cp",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1218,12 +1277,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "CategoriaLegislacao",
     "exampleUrl": "/legislacao/codigo/cp/121",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1237,12 +1296,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1256,12 +1315,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1275,12 +1334,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/cp/parte-geral",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1294,12 +1353,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/cp/parte-geral/licao/1",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1313,12 +1372,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/favoritos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1332,12 +1391,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/lembretes",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1351,12 +1410,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ErrorBoundary",
     "exampleUrl": "/lei-seca/recentes",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~160 KB",
     "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
+      "Artigos dinâmicos",
+      "Virtualização leve de leitura"
     ]
   },
   {
@@ -1396,6 +1455,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Cards de usuário",
       "Atalhos leves"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Configuração de alarme local; integrado na tela principal de lembretes",
+    "usageLevel": "baixa"
   },
   {
     "path": "/mapas-mentais",
@@ -1408,13 +1471,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "VisualJuridico",
     "exampleUrl": "/mapas-mentais",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.9 MB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Motor 3D Three.js",
+      "Grafos conceituais"
     ]
   },
   {
@@ -1428,13 +1490,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "VisualJuridico",
     "exampleUrl": "/mapas-mentais",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.9 MB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Motor 3D Three.js",
+      "Grafos conceituais"
     ]
   },
   {
@@ -1505,13 +1566,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ModoOfflineAudioaulas",
     "exampleUrl": "/modo-offline/audioaulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
     "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
+      "Gerenciador offline",
+      "Armazenamento IndexedDB"
     ]
   },
   {
@@ -1770,14 +1830,18 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasHome",
     "exampleUrl": "/pilulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~85 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Carrossel em leque Framer Motion",
+      "Canvas ShapeGrid 2D acelerado",
+      "Cards de áudios das matérias"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Estável: Carrossel 3D e ShapeGrid acelerados por hardware 0ms",
+    "usageLevel": "alta"
   },
   {
     "path": "/pilulas/:id",
@@ -1790,13 +1854,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasPlayer",
     "exampleUrl": "/pilulas/1",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1810,13 +1873,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLeiSeca",
     "exampleUrl": "/pilulas/cc",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1830,13 +1892,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLeiSeca",
     "exampleUrl": "/pilulas/cf",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1850,14 +1911,18 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Pilulas",
     "exampleUrl": "/pilulas/classicos",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~75 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards de clássicos",
+      "Consulta Supabase com cache",
+      "Player de áudio nativo"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Estável: Lista de clássicos com cache local e player de áudio nativo",
+    "usageLevel": "media"
   },
   {
     "path": "/pilulas/clt",
@@ -1870,13 +1935,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLeiSeca",
     "exampleUrl": "/pilulas/clt",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1890,13 +1954,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLeiSeca",
     "exampleUrl": "/pilulas/cp",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1910,13 +1973,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLeiSeca",
     "exampleUrl": "/pilulas/cpp",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1930,13 +1992,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasViewer",
     "exampleUrl": "/pilulas/deck/1",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1950,13 +2011,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "PilulasLista",
     "exampleUrl": "/pilulas/lista",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~110 KB",
     "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
+      "Cards explicativos",
+      "UI minimalista de alta performance"
     ]
   },
   {
@@ -1977,6 +2037,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Suporte a preview de administradores e gestão de plano ativo",
+    "usageLevel": "media"
   },
   {
     "path": "/privacidade",
@@ -2008,13 +2072,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Questoes",
     "exampleUrl": "/questoes",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~75 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Hub de questões",
+      "Filtros rápidos"
     ]
   },
   {
@@ -2028,13 +2091,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesArea",
     "exampleUrl": "/questoes/area/direito-penal",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2048,13 +2110,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesAreas",
     "exampleUrl": "/questoes/areas",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2068,13 +2129,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesCadernos",
     "exampleUrl": "/questoes/cadernos",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2088,13 +2148,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesDesafios",
     "exampleUrl": "/questoes/desafios",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2108,13 +2167,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesConquistas",
     "exampleUrl": "/questoes/desafios/conquistas",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2128,13 +2186,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesDesempenho",
     "exampleUrl": "/questoes/desempenho",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2148,14 +2205,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesHistorico",
     "exampleUrl": "/questoes/historico",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Proteção contra índices indefinidos no virtualizador e rolagem estável",
+    "usageLevel": "media"
   },
   {
     "path": "/questoes/lembretes",
@@ -2168,13 +2228,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesLembretes",
     "exampleUrl": "/questoes/lembretes",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2188,13 +2247,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesPraticar",
     "exampleUrl": "/questoes/praticar",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~350 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Resolução interativa",
+      "Comentários e gabarito comentados"
     ]
   },
   {
@@ -2208,73 +2266,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "QuestoesRevisar",
     "exampleUrl": "/questoes/revisar",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~90 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/questoes/simulado",
-    "group": "Questões & Simulados",
-    "label": "Questoes Simulado",
-    "description": "Página correspondente ao componente QuestoesSimulado",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesSimulado",
-    "exampleUrl": "/questoes/simulado",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/questoes/simulado/:cargoId",
-    "group": "Questões & Simulados",
-    "label": "QUESTOES (:cargoId)",
-    "description": "Página correspondente ao componente QuestoesSimuladoCargoConfig",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesSimuladoCargoConfig",
-    "exampleUrl": "/questoes/simulado/geral",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/questoes/trilhas",
-    "group": "Questões & Simulados",
-    "label": "Questoes Trilhas",
-    "description": "Página correspondente ao componente QuestoesTrilhas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "QuestoesTrilhas",
-    "exampleUrl": "/questoes/trilhas",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Navegação modular",
+      "Dados leves sob demanda"
     ]
   },
   {
@@ -2288,51 +2285,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Radar360",
     "exampleUrl": "/radar-360",
-    "weightScore": 3,
+    "weightScore": 2,
     "weightLevel": "media",
-    "weightEstimate": "~950 KB",
+    "weightEstimate": "~280 KB",
     "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
+      "Gráficos estatísticos",
+      "Filtros dinâmicos"
     ]
-  },
-  {
-    "path": "/radar-concursos",
-    "group": "Radares",
-    "label": "Radar Concursos",
-    "description": "Radar de Concursos com filtros por cargo, estado e banca examinadora",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "RadarConcursos",
-    "exampleUrl": "/radar-concursos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~950 KB",
-    "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
-    ]
-  },
-  {
-    "path": "/radar-concursos/estatisticas",
-    "group": "Radares",
-    "label": "Radar Concursos Estatisticas",
-    "description": "Estatísticas e métricas de matérias mais cobradas em concursos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "RadarEstatisticas",
-    "exampleUrl": "/radar-concursos/estatisticas",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~950 KB",
-    "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
-    ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Radar legislativo com baixo engajamento dos usuários",
+    "usageLevel": "baixa"
   },
   {
     "path": "/radar/proposicoes",
@@ -2345,13 +2308,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "RadarProposicoes",
     "exampleUrl": "/radar/proposicoes",
-    "weightScore": 3,
+    "weightScore": 2,
     "weightLevel": "media",
-    "weightEstimate": "~950 KB",
+    "weightEstimate": "~280 KB",
     "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
+      "Gráficos estatísticos",
+      "Filtros dinâmicos"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Fallback automático para API pública da Câmara dos Deputados",
+    "usageLevel": "media"
   },
   {
     "path": "/radar/proposicoes/:date",
@@ -2364,13 +2331,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "RadarProposicoesDia",
     "exampleUrl": "/radar/proposicoes/2026-11-05",
-    "weightScore": 3,
+    "weightScore": 2,
     "weightLevel": "media",
-    "weightEstimate": "~950 KB",
+    "weightEstimate": "~280 KB",
     "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
+      "Gráficos estatísticos",
+      "Filtros dinâmicos"
     ]
+  ,
+    "healthStatus": "estavel",
+    "healthReason": "Corrigido: Consulta resiliente por data com tratamento de estado vazio",
+    "usageLevel": "media"
   },
   {
     "path": "/radares",
@@ -2383,12 +2354,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Radares",
     "exampleUrl": "/radares",
-    "weightScore": 3,
+    "weightScore": 2,
     "weightLevel": "media",
-    "weightEstimate": "~950 KB",
+    "weightEstimate": "~280 KB",
     "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
+      "Gráficos estatísticos",
+      "Filtros dinâmicos"
     ]
   },
   {
@@ -2421,12 +2392,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosJuridicosRouteWrapper",
     "exampleUrl": "/resumos-juridicos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
+      "Estrutura esquematizada",
+      "Navegação por tópicos"
     ]
   },
   {
@@ -2440,12 +2411,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosJuridicosRouteWrapper",
     "exampleUrl": "/resumos-juridicos/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
+      "Estrutura esquematizada",
+      "Navegação por tópicos"
     ]
   },
   {
@@ -2459,12 +2430,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosJuridicosLista",
     "exampleUrl": "/resumos-juridicos/favoritos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
+      "Estrutura esquematizada",
+      "Navegação por tópicos"
     ]
   },
   {
@@ -2478,12 +2449,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosMaterias",
     "exampleUrl": "/resumos-juridicos/materias",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
+      "Estrutura esquematizada",
+      "Navegação por tópicos"
     ]
   },
   {
@@ -2497,12 +2468,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosJuridicosLista",
     "exampleUrl": "/resumos-juridicos/recentes",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~140 KB",
     "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
+      "Estrutura esquematizada",
+      "Navegação por tópicos"
     ]
   },
   {
@@ -2516,13 +2487,12 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Simulados",
     "exampleUrl": "/simulados",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~80 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Hub de simulados",
+      "Carregamento sob demanda via Supabase"
     ]
   },
   {
@@ -2536,14 +2506,17 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "SimuladosEstatisticas",
     "exampleUrl": "/simulados/estatisticas",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~75 KB",
     "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
+      "Gráficos de aproveitamento",
+      "Histórico do estudante"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Sub-rota secundária; a maioria visualiza estatísticas direto no término do simulado",
+    "usageLevel": "baixa"
   },
   {
     "path": "/sobre",
@@ -2601,6 +2574,10 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Página padrão leve",
       "Carga instantânea 0ms"
     ]
+  ,
+    "healthStatus": "pouco_usada",
+    "healthReason": "Página de suporte deslogado; usuários utilizam o suporte logado",
+    "usageLevel": "baixa"
   },
   {
     "path": "/termos",

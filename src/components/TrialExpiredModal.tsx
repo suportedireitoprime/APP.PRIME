@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
@@ -169,7 +169,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   if (ocultarParaAssinante) return null;
 
   return (
-    <div data-allow-trial-click="true" className="trial-modal-content fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/85 p-4 py-8">
+    <div data-allow-trial-click="true" className="trial-modal-content fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/90 backdrop-blur-2xl p-4 py-8 select-none">
 
 
       <CheckoutModal
@@ -284,7 +284,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
                 </>
               ) : (
                 <>
-                  <span>SEJA PREMIUM</span>
+                  <span>VER PLANOS</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}

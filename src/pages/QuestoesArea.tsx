@@ -28,11 +28,11 @@ import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO } from '@/components/ques
 import GalaxyBackground from '@/components/questoes/GalaxyBackground';
 
 // ── CAPAS DE LIVROS CLÁSSICOS & JURÍDICOS (PADRÃO DRUNO) ──
-import capaDosDelitos from '@/assets/covers/dos_delitos_e_das_penas_manual.jpg';
-import capaVigiarEPunir from '@/assets/covers/vigiar_e_punir_nascimento_da_prisao_manual.jpg';
+import capaDosDelitos from '@/assets/covers/dos_delitos_e_das_penas_manual.webp';
+import capaVigiarEPunir from '@/assets/covers/vigiar_e_punir_nascimento_da_prisao_manual.webp';
 import capaCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
-import capaOProcesso from '@/assets/covers/o_processo_manual.jpg';
-import capaTeoriaPura from '@/assets/covers/teoria_pura_do_direito_manual.jpg';
+import capaOProcesso from '@/assets/covers/o_processo_manual.webp';
+import capaTeoriaPura from '@/assets/covers/teoria_pura_do_direito_manual.webp';
 import capaVademecumJudge from '@/assets/covers/vademecum-judge.webp';
 import capaAdvogadosTribunal from '@/assets/covers/hero-advogados-tribunal.webp';
 import capaSocratesThemis from '@/assets/covers/socrates-themis-hero.webp';
@@ -41,11 +41,11 @@ import capaOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.web
 import capaHistoriaLegislacao from '@/assets/covers/historia-da-legislacao.webp';
 import capaFundamentosDaLei from '@/assets/covers/fundamentos-da-lei.webp';
 import capaEstruturaEstado from '@/assets/covers/estrutura-do-estado.webp';
-import capaEticaNicomaco from '@/assets/covers/etica_a_nicomaco_manual.jpg';
-import capaOPrincipe from '@/assets/covers/o_principe_manual.jpg';
-import capaAcessoJustica from '@/assets/covers/acesso_a_justica_manual.jpg';
+import capaEticaNicomaco from '@/assets/covers/etica_a_nicomaco_manual.webp';
+import capaOPrincipe from '@/assets/covers/o_principe_manual.webp';
+import capaAcessoJustica from '@/assets/covers/acesso_a_justica_manual.webp';
 import capaSobreLiberdade from '@/assets/covers/sobre_a_liberdade_manual.webp';
-import capaExploradoresCavernas from '@/assets/covers/o_caso_dos_exploradores_de_cavernas_manual.jpg';
+import capaExploradoresCavernas from '@/assets/covers/o_caso_dos_exploradores_de_cavernas_manual.webp';
 
 const CURATED_BOOK_COVERS = [
   capaDosDelitos,

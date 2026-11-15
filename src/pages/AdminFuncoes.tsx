@@ -52,6 +52,7 @@ import {
   FileSpreadsheet,
   Gauge,
   Route as RouteIcon,
+  Presentation,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -62,6 +63,7 @@ import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
+  "/admin-lousa-magica": () => import("./AdminLousaMagica"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
   "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
@@ -169,6 +171,22 @@ const CATEGORIES: Category[] = [
         icon: Sparkles,
         desc: "Aulas completas em HTML com narração e ilustrações",
         route: "/admin-aulas-interativas",
+      },
+    ],
+  },
+  {
+    id: "lousa-magica-cat",
+    title: "Lousa Mágica",
+    desc: "Aulas narradas com lousa animada, traços em giz e ilustrações",
+    icon: Presentation,
+    route: "/admin-lousa-magica",
+    items: [
+      {
+        id: "lousa-magica",
+        label: "Lousa Mágica",
+        icon: Presentation,
+        desc: "Lousa interativa sobre Teoria Pura do Direito e Escolas Penais",
+        route: "/admin-lousa-magica",
       },
     ],
   },

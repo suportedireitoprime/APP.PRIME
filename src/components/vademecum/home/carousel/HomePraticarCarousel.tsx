@@ -169,11 +169,11 @@ const HomePraticarCarousel = () => {
       {/* Cabeçalho "PRATICAR" */}
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0 flex-1">
-          <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-[#E11D48] shrink-0" />
+          <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
+            <span className="w-1 h-4 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
             <span className="truncate">PRATICAR</span>
           </h3>
-          <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+          <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
             Treine com questões, simulados, flashcards e lições
           </p>
         </div>
@@ -253,11 +253,11 @@ const HomePraticarCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-end mt-auto">
-                  <div className="flex flex-col">
-                    <span className="font-display text-white text-[19px] sm:text-[21px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                  <div className="flex flex-col w-full pr-1">
+                    <span className="text-white text-[13px] sm:text-[14px] font-black tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-none whitespace-nowrap">
                       {item.title}
                     </span>
-                    <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                    <span className="text-white/90 text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] leading-none whitespace-nowrap">
                       {item.subtitle}
                     </span>
                   </div>

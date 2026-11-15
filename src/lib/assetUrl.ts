@@ -42,6 +42,43 @@ const bundledMap: Record<string, string> = (() => {
   return byName;
 })();
 
+const LOCAL_MANUAL_CAPAS = new Set([
+  '1984_manual.jpg',
+  'acesso_a_justica_manual.jpg',
+  'a_arte_da_guerra_manual.jpg',
+  'a_era_dos_direitos_manual.jpg',
+  'a_luta_pelo_direito_manual.jpg',
+  'a_meta_um_processo_de_melhoria_continua_manual.jpg',
+  'a_republica_manual.jpg',
+  'a_riqueza_das_nacoes.jpg',
+  'a_teoria_das_formas_de_governo_manual.jpg',
+  'como_as_democracias_morrem_manual.jpg',
+  'dos_delitos_e_das_penas_manual.jpg',
+  'eles_os_juizes_vistos_por_nos_os_advogados_manual.jpg',
+  'etica_a_nicomaco_manual.jpg',
+  'filosofia_do_direito.jpg',
+  'introducao_ao_estudo_do_direito.jpg',
+  'justica_o_que_e_fazer_a_coisa_certa_manual.jpg',
+  'licoes_preliminares_de_direito.jpg',
+  'o_advogado_do_diabo.jpg',
+  'o_caso_dos_exploradores_de_cavernas_manual.jpg',
+  'o_contrato_social_manual.jpg',
+  'o_espirito_das_leis_manual.jpg',
+  'o_futuro_da_democracia_manual.jpg',
+  'o_leviata_manual.jpg',
+  'o_monge_e_o_executivo_manual.jpg',
+  'o_mundo_assombrado_pelos_demonios_manual.jpg',
+  'o_mundo_de_sofia_manual.jpg',
+  'o_principe_manual.jpg',
+  'o_processo_manual.jpg',
+  'o_que_e_direito_primeiros_passos_manual.jpg',
+  'o_ultimo_dia_de_um_condenado_manual.jpg',
+  'sobre_a_liberdade_manual.jpg',
+  'teoria_pura_do_direito_manual.jpg',
+  'vigiar_e_punir_nascimento_da_prisao_manual.jpg',
+  'virando_a_propria_mesa_manual.jpg',
+]);
+
 type AssetJson = { url?: string; original_filename?: string };
 
 /** Devolve a versão nativa (bundled) quando disponível; senão, cai no CDN. */
@@ -52,9 +89,11 @@ function resolveBundled(nameOrUrl: string | undefined | null): string | undefine
   if (name && bundledMap[name]) return bundledMap[name];
   if (normalized.includes('biblioteca-obras/capas/')) {
     const filename = normalized.split('biblioteca-obras/capas/')[1]?.split('?')[0]?.split('#')[0];
-    if (filename) {
+    if (filename && !filename.includes('/')) {
       if (bundledMap[filename]) return bundledMap[filename];
-      return `/biblioteca-obras/capas/${filename}`;
+      if (LOCAL_MANUAL_CAPAS.has(filename)) {
+        return `/biblioteca-obras/capas/${filename}`;
+      }
     }
   }
   return undefined;

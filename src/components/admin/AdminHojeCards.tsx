@@ -14,6 +14,9 @@ type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
 
+// Cache em memória para métricas de datas passadas (evita recalcular dias imutáveis no Postgres)
+const pastDaysMetricasCache = new Map<string, any>();
+
 interface Row {
   key: string;
   title: string;
@@ -296,6 +299,8 @@ export function AdminHojeCards() {
   const [provRows, setProvRows] = useState<Row[]>([]);
   const [provLoading, setProvLoading] = useState(false);
   const rowsCache = useRef<Record<string, Row[]>>({});
+  const prevCountsRef = useRef<Record<string, number>>({});
+  const [pulsingCards, setPulsingCards] = useState<Record<string, boolean>>({});
 
 
   const abrirProvider = useCallback(
@@ -388,8 +393,19 @@ export function AdminHojeCards() {
 
     try {
       const datas = getDatasPeriodo(periodo);
+      const hojeIso = isoDate(datas[0]);
       
-      const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
+      const metricasPromises = datas.map(async (d) => {
+        const diaIso = isoDate(d);
+        if (diaIso !== hojeIso && pastDaysMetricasCache.has(diaIso)) {
+          return { data: pastDaysMetricasCache.get(diaIso), error: null };
+        }
+        const res = await (supabase.rpc('admin_metricas_dia' as any, { _dia: diaIso }) as any);
+        if (diaIso !== hojeIso && res && res.data && !res.error) {
+          pastDaysMetricasCache.set(diaIso, res.data);
+        }
+        return res;
+      });
       const [metricasResults, list5mResult, listOnlineResult, listCadastrosResult] = await Promise.allSettled([
         Promise.allSettled(metricasPromises),
         supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) }),
@@ -682,7 +698,7 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
-          if (createdInPeriod) {
+          if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
           } else if (isMensal && createdInPeriod && isCriadaAntes) {
@@ -708,7 +724,7 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
-          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
+          if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
           } else if (isMensal && startedInPeriod && isCriadaAntes) {
@@ -745,36 +761,32 @@ export function AdminHojeCards() {
           if (!inPeriod(e.created_at)) return;
 
           const meta = e.metadata || {};
-          // Blindagem contra eventos fantasmas de telemetria client-side:
-          // Apenas aceita eventos confirmados financeiramente com payment_id, transaction_id da adquirente ou valor real positivo
-          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || (typeof meta.value === 'number' && meta.value > 0));
-          if (!isRealFinancialEvent) return;
+          const valorReal = typeof meta.value === 'number' && meta.value > 0 ? meta.value : 0;
+          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || valorReal > 0);
+          if (!isRealFinancialEvent || valorReal <= 0) return;
 
           const plano = (meta.plano || 'anual').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício') || plano.includes('vital'));
           const isMensal = !isVit && !isAnual;
-          const valor = typeof meta.value === 'number' && meta.value > 0
-            ? meta.value
-            : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
 
           const hadPriorSub = hasPriorSubscription(e.user_id, em);
 
           if (isMensal && hadPriorSub) {
             if (!renewUsers.has(uid) && !subUsers.has(uid)) {
-              renewUsers.set(uid, { plano: planName, valor });
-            } else if (renewUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
-              renewUsers.set(uid, { plano: planName, valor });
+              renewUsers.set(uid, { plano: planName, valor: valorReal });
+            } else if (renewUsers.has(uid) && valorReal > 0) {
+              renewUsers.set(uid, { plano: planName, valor: valorReal });
             }
-          } else {
-            // Nova compra de hoje (1º mês do usuário)
+          } else if (!hadPriorSub) {
+            // Nova compra de hoje (1º mês do usuário real sem assinatura prévia)
             renewUsers.delete(uid);
             if (!subUsers.has(uid)) {
-              subUsers.set(uid, { plano: planName, valor });
-            } else if (typeof meta.value === 'number' && meta.value > 0) {
-              subUsers.set(uid, { plano: planName, valor });
+              subUsers.set(uid, { plano: planName, valor: valorReal });
+            } else if (valorReal > 0) {
+              subUsers.set(uid, { plano: planName, valor: valorReal });
             }
           }
         });
@@ -814,6 +826,31 @@ export function AdminHojeCards() {
         renovou: totalRenovou || 0,
         renovouValor: Number.isFinite(totalRenovouValor) ? totalRenovouValor : 0,
       };
+
+      // Detecta aumento em tempo real para disparar efeito de pulso neon verde nos cards
+      const prev = prevCountsRef.current;
+      if (Object.keys(prev).length > 0 && periodo === 'hoje') {
+        const novosPulsando: Record<string, boolean> = {};
+        let teveAumento = false;
+        (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial', 'renovou'] as CardId[]).forEach((cid) => {
+          if (typeof prev[cid] === 'number' && novos[cid] > prev[cid]) {
+            novosPulsando[cid] = true;
+            teveAumento = true;
+          }
+        });
+        if (teveAumento) {
+          setPulsingCards((curr) => ({ ...curr, ...novosPulsando }));
+          setTimeout(() => {
+            setPulsingCards((curr) => {
+              const updated = { ...curr };
+              Object.keys(novosPulsando).forEach((k) => delete updated[k]);
+              return updated;
+            });
+          }, 2000);
+        }
+      }
+      prevCountsRef.current = { ...novos };
+
       setCounts(novos);
     
     if (periodo === 'hoje') {
@@ -930,6 +967,11 @@ export function AdminHojeCards() {
       .on(
         'postgres_changes' as any,
         { event: '*', schema: 'public', table: 'asaas_subscriptions' },
+        triggerDebouncedLoad
+      )
+      .on(
+        'postgres_changes' as any,
+        { event: 'INSERT', schema: 'public', table: 'app_events' },
         triggerDebouncedLoad
       )
       .subscribe((status) => {
@@ -1144,18 +1186,16 @@ export function AdminHojeCards() {
           if (!uid || existingUserIds.has(uid)) return;
 
           const meta = e.metadata || {};
-          // Blindagem contra eventos fantasmas de telemetria client-side
-          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || (typeof meta.value === 'number' && meta.value > 0));
-          if (!isRealFinancialEvent) return;
+          const valorReal = typeof meta.value === 'number' && meta.value > 0 ? meta.value : 0;
+          const isRealFinancialEvent = !!(meta.payment_id || (meta.transaction_id && String(meta.transaction_id).startsWith('pay_')) || valorReal > 0);
+          if (!isRealFinancialEvent || valorReal <= 0) return;
 
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício') || planoLower.includes('vital'));
           const isMensal = !isVit && !isAnual;
-          const planValor = typeof meta.value === 'number' && meta.value > 0
-            ? meta.value
-            : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
+          const planValor = valorReal;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
 
           // Renovou é ESTRITAMENTE MENSAL!
@@ -1938,15 +1978,26 @@ export function AdminHojeCards() {
     const isFinancial = id === 'trial' || id === 'renovou';
     const rawVal = id === 'trial' ? counts.trialValor : counts.renovouValor;
     const valorFinanceiro = typeof rawVal === 'number' && Number.isFinite(rawVal) ? rawVal : 0;
+    const isPulsing = !!pulsingCards[id];
 
     return (
       <button
         key={id}
         onClick={() => openCard(id)}
-        className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[72px] sm:min-h-[76px]"
+        className={cn(
+          "group relative rounded-xl border p-2 sm:p-3 text-left transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[72px] sm:min-h-[76px]",
+          isPulsing
+            ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
+            : "border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98]"
+        )}
       >
         <div className="flex items-start justify-between w-full">
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+          <div className={cn(
+            "w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-colors shrink-0",
+            isPulsing
+              ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 animate-pulse"
+              : "bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20"
+          )}>
             <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
 
@@ -1959,7 +2010,7 @@ export function AdminHojeCards() {
               )}
               <span className={cn(
                 "font-['Plus_Jakarta_Sans',sans-serif] text-lg sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
-                isZero ? "text-zinc-600" : "text-foreground"
+                isPulsing ? "text-emerald-300" : isZero ? "text-zinc-600" : "text-foreground"
               )}>
                 {cardCount}
               </span>
@@ -1970,6 +2021,16 @@ export function AdminHojeCards() {
                 valorFinanceiro === 0 ? "text-zinc-600" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
+              </span>
+            )}
+            {id === 'paywall' && (
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8.5px] sm:text-[9.5px] font-bold mt-0.5 text-zinc-500 truncate" title="Início do funil de vendas">
+                1º passo
+              </span>
+            )}
+            {id === 'viu_planos' && (
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8.5px] sm:text-[9.5px] font-bold mt-0.5 text-sky-400 truncate" title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
+                {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
             )}
           </div>
@@ -2035,8 +2096,53 @@ export function AdminHojeCards() {
       </div>
 
       {/* Linha 2: 4 cards de Conversão, Vendas e Renovações na mesma linha */}
-      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-3">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2">
         {CARDS.slice(3).map(renderCardButton)}
+      </div>
+
+      {/* Régua Visual do Funil de Conversão (Item 4) */}
+      <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/20 border border-border/40 backdrop-blur-sm text-[10px] sm:text-[11px]">
+        <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-muted-foreground overflow-x-auto scrollbar-none py-0.5">
+          <span className="font-semibold text-zinc-400 shrink-0">Funil:</span>
+          
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">1.</span> {counts.paywall} telas
+          </span>
+
+          <span className="text-zinc-600 shrink-0">➔</span>
+
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">2.</span> {counts.viu_planos} checkout
+            <span className={cn(
+              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
+              counts.paywall > 0 && counts.viu_planos > 0 ? "bg-sky-500/15 text-sky-400 border border-sky-500/30" : "text-zinc-600"
+            )}>
+              {counts.paywall > 0 ? `${((counts.viu_planos / counts.paywall) * 100).toFixed(1)}%` : '0%'}
+            </span>
+          </span>
+
+          <span className="text-zinc-600 shrink-0">➔</span>
+
+          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
+            <span className="text-zinc-500">3.</span> {counts.trial} assinou
+            <span className={cn(
+              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
+              counts.viu_planos > 0 && counts.trial > 0 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "text-zinc-600"
+            )}>
+              {counts.viu_planos > 0 ? `${((counts.trial / counts.viu_planos) * 100).toFixed(1)}%` : '0%'}
+            </span>
+          </span>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-1 shrink-0 pl-2 border-l border-border/40 text-[10.5px]">
+          <span className="text-zinc-500">Conversão Geral:</span>
+          <span className={cn(
+            "font-extrabold tabular-nums",
+            counts.paywall > 0 && counts.trial > 0 ? "text-emerald-400" : "text-zinc-500"
+          )}>
+            {counts.paywall > 0 ? `${((counts.trial / counts.paywall) * 100).toFixed(1)}%` : '0.0%'}
+          </span>
+        </div>
       </div>
 
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>

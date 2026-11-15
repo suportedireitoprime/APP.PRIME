@@ -108,19 +108,19 @@ const Ferramentas = lazy(() => import("./pages/Ferramentas.tsx"));
 const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 // Lazy loaded
-const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
-const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const PilulasLista = lazyWithRetry(() => import("./pages/pilulas/PilulasLista.tsx"));
+const SmartLink = lazyWithRetry(() => import("./pages/SmartLink.tsx"));
+const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword.tsx"));
 
-const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
-const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
-const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
-const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
-const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
+const QuestoesHistorico = lazyWithRetry(() => import("./pages/QuestoesHistorico.tsx"));
+const AdminFuncoes = lazyWithRetry(() => import("./pages/AdminFuncoes.tsx"));
+const AdminAssinantes = lazyWithRetry(() => import("./pages/AdminAssinantes.tsx"));
+const AdminPush = lazyWithRetry(() => import("./pages/AdminPush.tsx"));
+const AdminRotas = lazyWithRetry(() => import("./pages/AdminRotas.tsx"));
 
-const Simulados = lazy(() => import("./pages/Simulados.tsx"));
-const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
-const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
+const Simulados = lazyWithRetry(() => import("./pages/Simulados.tsx"));
+const SimuladosEstatisticas = lazyWithRetry(() => import("./pages/SimuladosEstatisticas.tsx"));
+const SimuladosResolver = lazyWithRetry(() => import("./pages/SimuladosResolver.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -134,8 +134,6 @@ const PessoalLeis = lazy(() => import("./pages/pessoal/Leis.tsx"));
 const PessoalAnotacoes = lazy(() => import("./pages/pessoal/Anotacoes.tsx"));
 const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
-const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
-const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
 const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 
 const MeExplique = lazy(routePrefetch.meExplique);
@@ -174,14 +172,14 @@ const FlashcardsMaterias = lazy(() => import("./pages/flashcards/FlashcardsMater
 const FlashcardsLeis = lazy(() => import("./pages/flashcards/FlashcardsLeis.tsx"));
 const FlashcardsJurisprudencia = lazy(() => import("./pages/flashcards/FlashcardsJurisprudencia.tsx"));
 const FlashcardsRouteWrapper = lazy(() => import("@/components/flashcards/FlashcardsRouteWrapper"));
-const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
-const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
+const VideoaulasLeiSeca = lazyWithRetry(() => import('./pages/VideoaulasLeiSeca.tsx'));
+const VideoaulasLeiSecaArtigos = lazyWithRetry(() => import('./pages/VideoaulasLeiSecaArtigos.tsx'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
 const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 
-const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo"));
+const JurisprudenciaArtigo = lazyWithRetry(() => import("./pages/JurisprudenciaArtigo.tsx"));
 const Jurisprudencia = lazy(() => import("./pages/Jurisprudencia.tsx"));
 const PesquisasProntasLista = lazy(() => import("./pages/PesquisasProntasLista.tsx"));
 const SumulasVinculantes = lazy(() => import("./pages/SumulasTribunal.tsx").then(m => ({ default: m.SumulasVinculantes })));
@@ -192,19 +190,16 @@ const InformativosSTF = lazy(() => import("./pages/InformativosTribunal.tsx").th
 const TesesSTJ = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTJ })));
 const TesesSTF = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTF })));
 const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx"));
-const Questoes = lazy(() => import("./pages/Questoes.tsx"));
-const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
-const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
-const QuestoesSimulado = lazy(() => import("./pages/QuestoesSimulado.tsx"));
-const QuestoesSimuladoCargoConfig = lazy(() => import("./pages/QuestoesSimuladoCargoConfig.tsx"));
-const QuestoesRevisar = lazy(() => import("./pages/QuestoesRevisar.tsx"));
-const QuestoesDesafios = lazy(() => import("./pages/QuestoesDesafios.tsx"));
-const QuestoesTrilhas = lazy(() => import("./pages/QuestoesTrilhas.tsx"));
-const QuestoesLembretes = lazy(() => import('./pages/QuestoesLembretes'));
-const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
-const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
+const Questoes = lazyWithRetry(() => import("./pages/Questoes.tsx"));
+const QuestoesAreas = lazyWithRetry(() => import("./pages/QuestoesAreas.tsx"));
+const QuestoesPraticar = lazyWithRetry(() => import("./pages/QuestoesPraticar.tsx"));
+const QuestoesRevisar = lazyWithRetry(() => import("./pages/QuestoesRevisar.tsx"));
+const QuestoesDesafios = lazyWithRetry(() => import("./pages/QuestoesDesafios.tsx"));
+const QuestoesLembretes = lazyWithRetry(() => import("./pages/QuestoesLembretes.tsx"));
+const QuestoesCadernos = lazyWithRetry(() => import("./pages/QuestoesCadernos.tsx"));
+const QuestoesConquistas = lazyWithRetry(() => import("./pages/QuestoesConquistas.tsx"));
 
-const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
+const QuestoesDesempenho = lazyWithRetry(() => import("./pages/QuestoesDesempenho.tsx"));
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosDesktop = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosDesktop.tsx"));
 const ResumosMaterias = lazy(() => import("./pages/resumos-juridicos/ResumosMaterias.tsx"));
@@ -278,16 +273,17 @@ const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
 const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
 const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
-const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminHorus = lazy(() => import('./pages/AdminHorus'));
-const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
+const AdminAulasInterativas = lazyWithRetry(() => import("./pages/AdminAulasInterativas.tsx"));
+const AdminLousaMagica = lazyWithRetry(() => import("./pages/AdminLousaMagica.tsx"));
+const AdminHorus = lazyWithRetry(() => import("./pages/AdminHorus.tsx"));
+const AdminOmniRouteTeste = lazyWithRetry(() => import("./pages/AdminOmniRouteTeste.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
-const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
-const PlanosAtivos = lazy(() => import("./pages/PlanosAtivos.tsx"));
-const NovidadesRadarOverlay = lazy(() => import("./components/NovidadesRadarOverlay"));
-const GlobalDesktopHeader = lazy(() => import("./components/layout/GlobalDesktopHeader"));
-const DesktopFileDropOverlay = lazy(() => import("./components/desktop/DesktopFileDropOverlay"));
+const Assinatura = lazyWithRetry(() => import("./pages/Assinatura.tsx"));
+const PlanosAtivos = lazyWithRetry(() => import("./pages/PlanosAtivos.tsx"));
+const NovidadesRadarOverlay = lazyWithRetry(() => import("./components/NovidadesRadarOverlay.tsx"));
+const GlobalDesktopHeader = lazyWithRetry(() => import("./components/layout/GlobalDesktopHeader.tsx"));
+const DesktopFileDropOverlay = lazyWithRetry(() => import("./components/desktop/DesktopFileDropOverlay.tsx"));
 const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
@@ -296,6 +292,8 @@ const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 const Pilulas = lazy(() => import("./pages/Pilulas.tsx"));
 const PilulasLeiSeca = lazy(() => import("./pages/PilulasLeiSeca.tsx"));
+const PilulasDireitoPenal = lazy(() => import("./pages/pilulas/PilulasDireitoPenal.tsx"));
+const PilulasPenalPlayer = lazy(() => import("./pages/pilulas/PilulasPenalPlayer.tsx"));
 const PilulasPlayer = lazy(() => import("./pages/pilulas/PilulasPlayer.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
@@ -829,8 +827,6 @@ function AnimatedRoutes() {
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug/:artigoNumero" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition instant><Boletins /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
@@ -845,7 +841,6 @@ function AnimatedRoutes() {
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/radar-concursos" element={<Navigate to="/radar-concursos" replace />} />
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
@@ -902,7 +897,9 @@ function AnimatedRoutes() {
           <Route path="/aulas" element={<ProtectedRoute><PageTransition instant><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cp" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/penal/player/:topicId" element={<ProtectedRoute><PageTransition instant><PilulasPenalPlayer /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/penal" element={<ProtectedRoute><PageTransition><PilulasDireitoPenal /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasDireitoPenal /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cf" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cf" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cc" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cc" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
@@ -930,12 +927,9 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/simulados/resolver/:id" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition instant><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition instant><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition instant><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition instant><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition instant><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition instant><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/trilhas" element={<ProtectedRoute><PageTransition instant><QuestoesTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/cadernos" element={<ProtectedRoute><PageTransition instant><QuestoesCadernos /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition instant><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/desafios/conquistas" element={<ProtectedRoute><PageTransition instant><QuestoesConquistas /></PageTransition></ProtectedRoute>} />
@@ -957,6 +951,7 @@ function AnimatedRoutes() {
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-lousa-magica" element={<ProtectedRoute><PageTransition><AdminLousaMagica /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
@@ -966,6 +961,7 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />

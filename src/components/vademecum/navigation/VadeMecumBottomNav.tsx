@@ -69,10 +69,10 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               <button
                 onClick={() => handleOpenSheet('codigos')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'text-emerald-400 md:bg-emerald-500/15 md:ring-1 md:ring-emerald-500/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'scale-110 text-emerald-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Códigos</span>
               </button>
 
@@ -80,10 +80,10 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               <button
                 onClick={() => handleOpenSheet('estatutos')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'text-emerald-400 md:bg-emerald-500/15 md:ring-1 md:ring-emerald-500/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Landmark className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Landmark className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'scale-110 text-emerald-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Estatutos</span>
               </button>
 
@@ -92,9 +92,9 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 <button
                   onClick={handlePesquisar}
                   aria-label="Abrir busca"
-                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] active:scale-95 transition-transform cursor-pointer pointer-events-auto`}
+                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 shadow-[0_10px_26px_rgba(16,185,129,0.55),0_0_20px_rgba(16,185,129,0.35)] active:scale-95 transition-transform cursor-pointer pointer-events-auto`}
                 >
-                  <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-white/90 drop-shadow-lg -scale-x-100" aria-hidden="true" strokeWidth={1.2} />
+                  <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-emerald-400 drop-shadow-lg -scale-x-100" aria-hidden="true" strokeWidth={1.2} />
                   <span
                     aria-hidden
                     className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite] md:hidden"
@@ -103,7 +103,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8 md:hidden" />
                 <button 
                   onClick={handlePesquisar} 
-                  className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/80 hover:text-white cursor-pointer active:opacity-70 pointer-events-auto"
+                  className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/80 hover:text-emerald-300 cursor-pointer active:opacity-70 pointer-events-auto"
                 >
                   Pesquisar
                 </button>
@@ -113,10 +113,10 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               <button
                 onClick={() => handleOpenSheet('sumulas')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'text-emerald-400 md:bg-emerald-500/15 md:ring-1 md:ring-emerald-500/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'scale-110 text-emerald-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Súmulas</span>
               </button>
 
@@ -124,10 +124,10 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               <button
                 onClick={() => handleOpenSheet('mais')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  activeSheet === 'mais' ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'mais' ? 'text-emerald-400 md:bg-emerald-500/15 md:ring-1 md:ring-emerald-500/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Menu className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'mais' ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Menu className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'mais' ? 'scale-110 text-emerald-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Mais Leis</span>
               </button>
 

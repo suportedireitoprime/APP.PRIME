@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+﻿import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { 
@@ -410,7 +410,24 @@ export function PlayerAulaNativo({
       if (playPromise) {
         playPromise
           .then(() => setTocando(true))
-          .catch(() => setTocando(false));
+          .catch(() => {
+            // MP3 indisponível (404/bloqueio) -> fallback imediato para TTS nativo
+            if (slideAtual?.narr && window.speechSynthesis) {
+              window.speechSynthesis.cancel();
+              const utterFallback = new SpeechSynthesisUtterance(slideAtual.narr);
+              utterFallback.lang = 'pt-BR';
+              utterFallback.rate = 1.05 * velocidade;
+              utterFallback.onstart = () => setTocando(true);
+              utterFallback.onend = () => {
+                setTocando(false);
+                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
+              };
+              utterFallback.onerror = () => setTocando(false);
+              window.speechSynthesis.speak(utterFallback);
+            } else {
+              setTocando(false);
+            }
+          });
       }
     } else if (slideAtual?.narr && window.speechSynthesis) {
       // Fallback para síntese TTS nativa em português caso não haja MP3 gravado
@@ -555,7 +572,26 @@ export function PlayerAulaNativo({
         audioRef.current.pause();
         setTocando(false);
       } else {
-        audioRef.current.play().then(() => setTocando(true)).catch(() => {});
+        audioRef.current.play()
+          .then(() => setTocando(true))
+          .catch(() => {
+            // MP3 indisponível -> acionar TTS pelo botão
+            if (slideAtual?.narr && window.speechSynthesis) {
+              window.speechSynthesis.cancel();
+              const utterBtn = new SpeechSynthesisUtterance(slideAtual.narr);
+              utterBtn.lang = 'pt-BR';
+              utterBtn.rate = 1.05 * velocidade;
+              utterBtn.onstart = () => setTocando(true);
+              utterBtn.onend = () => {
+                setTocando(false);
+                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
+              };
+              utterBtn.onerror = () => setTocando(false);
+              window.speechSynthesis.speak(utterBtn);
+            } else {
+              setTocando(false);
+            }
+          });
       }
     } else if (window.speechSynthesis) {
       if (tocando) {
@@ -1458,7 +1494,26 @@ export function PlayerAulaNativo({
                           if (audioRef.current && duracao > 0 && faixasKaraoke[fi]) {
                             audioRef.current.currentTime = faixasKaraoke[fi].start * duracao;
                             if (!tocando) {
-                              audioRef.current.play().then(() => setTocando(true)).catch(() => {});
+                              audioRef.current.play()
+          .then(() => setTocando(true))
+          .catch(() => {
+            // MP3 indisponível -> acionar TTS pelo botão
+            if (slideAtual?.narr && window.speechSynthesis) {
+              window.speechSynthesis.cancel();
+              const utterBtn = new SpeechSynthesisUtterance(slideAtual.narr);
+              utterBtn.lang = 'pt-BR';
+              utterBtn.rate = 1.05 * velocidade;
+              utterBtn.onstart = () => setTocando(true);
+              utterBtn.onend = () => {
+                setTocando(false);
+                if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
+              };
+              utterBtn.onerror = () => setTocando(false);
+              window.speechSynthesis.speak(utterBtn);
+            } else {
+              setTocando(false);
+            }
+          });
                             }
                           }
                         }}

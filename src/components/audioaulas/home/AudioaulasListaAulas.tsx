@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Play,
   Pause,
@@ -27,6 +28,8 @@ import { PageHeader } from "@/components/vademecum/navigation/PageHeader";
 import { Input } from "@/components/ui/input";
 import { BotaoDownloadAudio } from "./BotaoDownloadAudio";
 import { capaDaArea, decomporTituloCapitulo } from "@/lib/audioaulasHelper";
+import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { type AulaAudio, audioIdOf, useAudioaulasPlayer } from "@/contexts/AudioaulasPlayerContext";
 import { useAudioaulasProgresso, type ProgressoAulaItem } from "@/lib/audioaulaProgresso";
 import { CapaOtimizada } from "./CapaOtimizada";
@@ -174,7 +177,11 @@ const LinhaAula = React.memo(function LinhaAula({
       >
         <span className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
           <CapaOtimizada
-            src={capaDaArea(a.area || "")}
+            src={
+              getDisciplinaVisualTheme(a.area || "")?.fundoAssetUrl ||
+              getAreaCover(a.area || "")?.cover ||
+              capaDaArea(a.area || "")
+            }
             alt=""
             className="transition-transform group-hover:scale-105"
           />
@@ -388,7 +395,7 @@ const TrilhaZigueZagueCapitulos = React.memo(function TrilhaZigueZagueCapitulos(
                           className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
                           style={{ backgroundColor: `${palette.primary}50` }}
                         />
-                        <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-[0_0_22px_rgba(239,68,68,0.6)]">
+                        <div className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-[#ffa285] group-hover:bg-[#ff6b4a] group-hover:text-white group-hover:shadow-[0_0_22px_rgba(255,107,74,0.6)]">
                           <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
                         </div>
                       </div>
@@ -759,8 +766,8 @@ const TrilhaZigueZagueAulas = React.memo(function TrilhaZigueZagueAulas({
                           className={cn(
                             "relative w-11 h-11 sm:w-13 sm:h-13 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
                             estaTocando
-                              ? "bg-primary border-primary text-primary-foreground shadow-[0_0_24px_rgba(239,68,68,0.7)]"
-                              : "bg-black/60 border-white/30 text-white group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-[0_0_22px_rgba(239,68,68,0.6)]",
+                              ? "bg-gradient-to-tr from-[#ff6b4a] to-[#ffa285] border-[#ffa285] text-white shadow-[0_0_24px_rgba(255,107,74,0.7)]"
+                              : "bg-black/60 border-white/30 text-white group-hover:border-[#ffa285] group-hover:bg-[#ff6b4a] group-hover:text-white group-hover:shadow-[0_0_22px_rgba(255,107,74,0.6)]",
                           )}
                         >
                           {estaTocando ? (
@@ -1154,6 +1161,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   capituloSelecionado: capituloExterno,
   setCapituloSelecionado: setCapituloExterno,
 }: AudioaulasListaAulasProps) {
+  const navigate = useNavigate();
   const { isPremium } = useSubscription();
   const { mapa: mapaProgresso, alternarConcluida } = useAudioaulasProgresso();
   const {
@@ -1192,7 +1200,12 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   );
 
   const palette = useMemo(() => getAreaThemePalette(areaAtual || "geral"), [areaAtual]);
-  const coverUrl = useMemo(() => capaDaArea(areaAtual || ""), [areaAtual]);
+  const coverUrl = useMemo(() => {
+    if (!areaAtual) return capaDaArea("");
+    const visualTheme = getDisciplinaVisualTheme(areaAtual);
+    const areaCover = getAreaCover(areaAtual);
+    return visualTheme?.fundoAssetUrl || areaCover?.cover || capaDaArea(areaAtual);
+  }, [areaAtual]);
 
   const capituloSelecionado = capituloExterno !== undefined ? capituloExterno : capituloLocal;
   const setCapituloSelecionado = setCapituloExterno || setCapituloLocal;
@@ -1501,6 +1514,22 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
     return (
       <div className="relative mx-auto w-full max-w-350 px-4 space-y-3.5 sm:space-y-4 mt-1 sm:mt-2 lg:px-10 2xl:max-w-[1600px] pb-24">
+        {/* Header fixo da página da matéria quando estiver na lista de capítulos (sem o painel/hero) */}
+        {capituloSelecionado === null && (
+          <div className="sticky top-0 z-20 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-white/10 shadow-sm pb-3 -mx-4 px-4 sm:-mx-10 sm:px-10">
+            <PageHeader
+              title={areaAtual.startsWith("Direito") ? areaAtual : `Direito ${areaAtual}`}
+              subtitle={`${metricasArea.total} aulas disponíveis`}
+              onBack={() => {
+                haptic.light();
+                resetGlobalScroll();
+                navigate("/audioaulas");
+              }}
+              className="border-b-0 pb-1"
+            />
+          </div>
+        )}
+
         {/* Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha (Apenas no Hub) */}
         {capituloSelecionado === null && (
           <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
@@ -1673,7 +1702,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                 <div className="mb-3 flex items-center justify-between gap-3 flex-wrap">
                   <div>
                     <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                      <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#ffa285] to-[#ff6b4a] shadow-[0_0_10px_rgba(255,107,74,0.65)] shrink-0" />
                       <span className="break-words">
                         {modoVisualizacao === "recentes"
                           ? "Aulas Recentes"
@@ -1702,7 +1731,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "trilha"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar em Trilha Serpenteante"
@@ -1719,7 +1748,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "lista"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar em Grade Tradicional"
@@ -1736,7 +1765,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       className={cn(
                         "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition",
                         modoVisualizacao === "recentes"
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "bg-gradient-to-r from-[#ff6b4a] to-[#ffa285] text-white shadow-sm shadow-[#ff6b4a]/30"
                           : "text-zinc-400 hover:text-white",
                       )}
                       title="Visualizar Aulas Ouvidas Recentemente"
