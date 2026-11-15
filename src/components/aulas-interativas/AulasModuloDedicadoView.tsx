@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { 
   ArrowLeft, BookOpen, BookMarked, Play, CheckCircle2, 
-  Sparkles, Layers, ChevronRight, Share2, Award
+  Sparkles, Layers, ChevronRight
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { TrilhaModuloOficial, TrilhaModuloAula } from '@/data/aulasTrilhasModulosOficiais';
@@ -50,19 +50,14 @@ export const AulasModuloDedicadoView: React.FC<AulasModuloDedicadoViewProps> = (
 
       {/* ── CONTEÚDO SCROLLÁVEL ── */}
       <div 
-        className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-6 max-w-4xl mx-auto w-full [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-5 max-w-4xl mx-auto w-full [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         style={{ paddingBottom: 'calc(4rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))' }}
       >
-        {/* ── HERO DO MÓDULO (CAPA 1:1 + INFORMAÇÕES DIDÁTICAS) ── */}
-        <div className="relative overflow-hidden rounded-[26px] sm:rounded-[30px] bg-gradient-to-br from-zinc-900 via-zinc-950 to-black border border-white/15 p-5 sm:p-7 shadow-2xl backdrop-blur-xl">
-          <div 
-            className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20"
-            style={{ backgroundColor: modulo.accentColor }}
-          />
-
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            {/* Capa em Proporção 1:1 */}
-            <div className="w-28 h-28 xs:w-32 xs:h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shrink-0 aspect-square border border-white/20 shadow-2xl relative bg-zinc-950">
+        {/* ── HERO DO MÓDULO (TÍTULO DO LADO DA CAPA 1:1 E MINIMALISTA) ── */}
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-900/70 border border-white/10 p-3.5 sm:p-5 shadow-xl backdrop-blur-xl">
+          <div className="flex items-center gap-3.5 sm:gap-5">
+            {/* Capa em Proporção 1:1 Compacta */}
+            <div className="w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden shrink-0 aspect-square border border-white/10 relative shadow-md bg-zinc-950">
               {modulo.capaUrl ? (
                 <>
                   <img
@@ -70,63 +65,49 @@ export const AulasModuloDedicadoView: React.FC<AulasModuloDedicadoViewProps> = (
                     alt={modulo.nome}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                 </>
               ) : (
                 <div 
-                  className="w-full h-full flex flex-col items-center justify-center p-3 text-center"
+                  className="w-full h-full flex flex-col items-center justify-center p-2 text-center"
                   style={{ background: modulo.gradientBg }}
                 >
-                  <BookOpen className="w-12 h-12 text-white/90" />
+                  <BookOpen className="w-8 h-8 text-white/90" />
                 </div>
               )}
 
               {/* Badge do Número do Módulo */}
-              <span className="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-mono font-black bg-black/80 text-white border border-white/20 shadow">
+              <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black bg-black/80 text-white border border-white/20 shadow">
                 #{modulo.moduloNumero}
               </span>
             </div>
 
-            {/* Informações Textuais */}
+            {/* Título e Metadados do Lado da Capa (Minimalista) */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span 
-                  className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase text-white border border-white/20 shadow-sm"
-                  style={{ backgroundColor: `${modulo.accentColor}40` }}
-                >
-                  Módulo {modulo.moduloNumero} Oficial
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider bg-white/10 text-teal-300 border border-white/10">
+                  Módulo {modulo.moduloNumero}
                 </span>
-                <span className="text-xs font-mono text-zinc-400">
-                  {modulo.totalAulas} aulas totais
-                </span>
-                <span className="text-xs font-mono text-zinc-400">•</span>
-                <span className="text-xs font-mono text-zinc-400">
-                  {Object.keys(aulasPorTema).length} temas
+                <span className="text-[10.5px] font-mono text-zinc-400">
+                  • {modulo.totalAulas} aulas
                 </span>
               </div>
 
-              <h2 className="font-serif font-black text-xl sm:text-2xl text-white leading-snug">
+              <h2 className="font-serif font-black text-base xs:text-lg sm:text-xl text-white leading-snug line-clamp-2">
                 {modulo.nome}
               </h2>
 
-              <p 
-                className="text-xs sm:text-[13px] font-sans font-semibold mt-1"
-                style={{ color: modulo.highlightColor }}
-              >
+              <p className="text-[11px] sm:text-xs text-zinc-400 font-sans truncate mt-0.5">
                 {modulo.areas.join(' • ')}
               </p>
 
-              <p className="text-xs sm:text-[13px] text-zinc-300 font-sans leading-relaxed mt-2.5">
-                {modulo.sobre}
-              </p>
-
-              {/* Ações Rápidas */}
-              <div className="mt-4 flex items-center gap-2.5 flex-wrap">
+              {/* Ações Rápidas Minimalistas */}
+              <div className="mt-2.5 flex items-center gap-2">
                 {modulo.aulas.length > 0 && (
                   <button
                     type="button"
                     onClick={() => handlePlayAula(modulo.aulas[0])}
-                    className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     <span>Iniciar Aula 01</span>
@@ -141,20 +122,27 @@ export const AulasModuloDedicadoView: React.FC<AulasModuloDedicadoViewProps> = (
                       onSelecionarNoCatalogo(modulo.id);
                       onVoltar();
                     }}
-                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-zinc-300 font-medium text-xs border border-white/10 flex items-center gap-1 transition-all active:scale-95 cursor-pointer"
                   >
-                    <span>Filtrar no Catálogo</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>Filtrar</span>
+                    <ChevronRight className="w-3 h-3 text-zinc-500" />
                   </button>
                 )}
               </div>
             </div>
           </div>
+
+          {/* Breve Descrição Didática Minimalista */}
+          {modulo.sobre && (
+            <p className="text-xs text-zinc-400 font-sans leading-relaxed line-clamp-2 mt-3 pt-2.5 border-t border-white/5">
+              {modulo.sobre}
+            </p>
+          )}
         </div>
 
         {/* ── LISTA DE AULAS DIVIDIDAS POR TEMA (IDENTICO À PLANILHA OFICIAL) ── */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5 px-1">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-2 px-1">
             <h3 className="font-serif font-bold text-white text-base sm:text-lg flex items-center gap-2">
               <BookMarked className="w-4.5 h-4.5 text-[#2dd4bf]" />
               <span>Grade de Aulas ({modulo.totalAulas})</span>
@@ -191,7 +179,7 @@ export const AulasModuloDedicadoView: React.FC<AulasModuloDedicadoViewProps> = (
                     className="p-3.5 sm:p-4 flex items-start gap-3.5 hover:bg-zinc-800/40 active:bg-zinc-800/60 transition-colors cursor-pointer group"
                   >
                     {/* Badge do Número da Aula */}
-                    <div className="w-9 h-9 rounded-xl bg-white/5 group-hover:bg-teal-500/20 border border-white/10 group-hover:border-teal-500/40 flex items-center justify-center text-xs font-mono font-black text-zinc-300 group-hover:text-teal-300 shrink-0 mt-0.5 transition-colors">
+                    <div className="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-teal-500/20 border border-white/10 group-hover:border-teal-500/40 flex items-center justify-center text-xs font-mono font-black text-zinc-300 group-hover:text-teal-300 shrink-0 mt-0.5 transition-colors">
                       {String(aIdx + 1).padStart(2, '0')}
                     </div>
 
