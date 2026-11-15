@@ -301,12 +301,12 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
             <div className="min-w-0 flex-1 pr-1">
               <div className="flex items-center gap-1.5 truncate">
                 <BarChart3 className="w-4 h-4 text-amber-400 shrink-0 hidden xs:inline-block" />
-                <h1 className="text-sm xs:text-base sm:text-lg font-serif font-black uppercase tracking-wider text-white truncate drop-shadow-sm">
-                  Estatísticas & Desempenho
+                <h1 className="text-sm xs:text-base font-serif font-black uppercase tracking-wider text-white truncate drop-shadow-sm">
+                  Desempenho
                 </h1>
               </div>
               <p className="text-[10px] xs:text-[11px] text-zinc-400 font-sans truncate">
-                Diagnóstico de retenção e acertos em aulas
+                Diagnóstico de retenção e acertos
               </p>
             </div>
           </div>
@@ -347,134 +347,126 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
         </div>
       </div>
 
-      {/* ── 4 CARDS DE RESUMO EM NÚMEROS (LAYOUT PREMIUM REFINADO) ── */}
+      {/* ── 4 CARDS DE RESUMO EM NÚMEROS (LAYOUT LIMPO SEM FUNDO NOS ÍCONES) ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 xs:gap-2.5 sm:gap-3">
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-red-500/30 transition-all">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 mb-1.5 shadow-sm">
-            <BookOpen className="w-4 h-4" />
-          </div>
-          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Aulas Feitas</span>
-          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-white/20 transition-all">
+          <BookOpen className="w-5 h-5 text-red-400 mb-1.5 shrink-0" />
+          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate w-full">Aulas Feitas</span>
+          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5 truncate w-full">
             {totalAulasFeitas}
             <span className="text-[11px] text-zinc-500 font-normal">/{aulas.length}</span>
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-amber-500/30 transition-all">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 mb-1.5 shadow-sm">
-            <Layers className="w-4 h-4" />
-          </div>
-          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Flashcards</span>
-          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-white/20 transition-all">
+          <Layers className="w-5 h-5 text-amber-400 mb-1.5 shrink-0" />
+          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate w-full">Flashcards</span>
+          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5 truncate w-full">
             {totalFlashcardsFeitos}
             <span className="text-[11px] text-zinc-500 font-normal">/{aulas.length}</span>
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-emerald-500/30 transition-all">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-1.5 shadow-sm">
-            <HelpCircle className="w-4 h-4" />
-          </div>
-          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Questões</span>
-          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-white/20 transition-all">
+          <HelpCircle className="w-5 h-5 text-emerald-400 mb-1.5 shrink-0" />
+          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate w-full">Questões</span>
+          <span className="text-base sm:text-xl font-black font-mono text-white mt-0.5 truncate w-full">
             {totalQuestoesFeitas}
             <span className="text-[11px] text-zinc-500 font-normal">/{aulas.length}</span>
           </span>
         </div>
 
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-cyan-500/30 transition-all">
-          <div className="p-1.5 xs:p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 mb-1.5 shadow-sm">
-            <Target className="w-4 h-4" />
-          </div>
-          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Precisão Global</span>
-          <span className="text-base sm:text-xl font-black font-mono text-cyan-300 mt-0.5">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-[#141416]/85 border border-white/10 backdrop-blur-xl flex flex-col items-center sm:items-start text-center sm:text-left shadow-lg hover:border-white/20 transition-all">
+          <Target className="w-5 h-5 text-cyan-400 mb-1.5 shrink-0" />
+          <span className="text-[9.5px] xs:text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate w-full">Precisão Global</span>
+          <span className="text-base sm:text-xl font-black font-mono text-cyan-300 mt-0.5 truncate w-full">
             {taxaPrecisaoGeral}%
           </span>
         </div>
       </div>
 
-      {/* ── MELHOR vs PIOR (ONDE É MELHOR VS ONDE PRECISA REFORÇAR) NA MESMA LINHA COM "VS" NO MEIO ELEGANTE ── */}
+      {/* ── MELHOR vs PIOR (ONDE É MELHOR VS ONDE PRECISA REFORÇAR) COM CONTORNO NÍTIDO SEM BRILHO ── */}
       <div className="relative w-full my-2">
         <div className="grid grid-cols-2 gap-2.5 sm:gap-4 items-stretch">
-          {/* LADO ESQUERDO: MAIS FACILIDADE / MELHOR DESEMPENHO */}
+          {/* LADO ESQUERDO: MAIS FACILIDADE (CONTORNO AMARELO SEM BRILHO) */}
           <div 
             onClick={() => {
               try { haptic.selection(); } catch {}
               if (materiaTopAcertos) onSelecionarMateria(materiaTopAcertos.materia.id);
             }}
-            className="p-3 xs:p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-black/85 to-black/95 border border-amber-500/40 shadow-xl cursor-pointer hover:border-amber-400/70 active:scale-[0.98] transition-all group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden"
+            className="p-3 xs:p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-[#141416]/95 border border-amber-500/60 hover:border-amber-400 transition-all cursor-pointer group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden shadow-md active:scale-[0.98]"
           >
             <div>
-              <div className="flex items-center justify-between gap-1 mb-2">
-                <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1 truncate">
-                  <Trophy className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-amber-400 shrink-0" />
-                  <span className="truncate">Mais Facilidade</span>
+              <div className="flex items-center justify-between gap-1 mb-1.5">
+                <span className="text-[9px] xs:text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1 min-w-0 truncate">
+                  <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span className="truncate">Facilidade</span>
                 </span>
-                <span className="text-[8px] xs:text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 shrink-0">
-                  Maior Êxito
+                <span className="text-[8px] xs:text-[8.5px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/30 shrink-0">
+                  Top
                 </span>
               </div>
 
-              <div className="my-1.5 xs:my-2 min-h-[40px] xs:min-h-[46px] flex flex-col justify-center">
-                <h4 className="text-xs xs:text-sm sm:text-base font-serif font-black text-white group-hover:text-amber-200 transition-colors line-clamp-2 leading-snug">
+              <div className="my-1 sm:my-1.5">
+                <h4 className="text-xs xs:text-[13px] sm:text-sm font-serif font-black text-white group-hover:text-amber-200 transition-colors truncate">
                   {formatarTituloElegante(materiaTopAcertos?.materia.titulo || 'Noções Gerais de Direito')}
                 </h4>
-                <p className="text-[10px] xs:text-[11px] text-zinc-400 mt-1 truncate">
+                <p className="text-[9.5px] xs:text-[10.5px] text-zinc-400 mt-0.5 truncate">
                   {materiaTopAcertos?.aulasTerminadas || 0} de {materiaTopAcertos?.totalAulas || 10} aulas
                 </p>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] xs:text-xs">
-              <span className="text-zinc-400">Taxa de Acertos:</span>
-              <span className="font-mono font-black text-amber-300 text-xs xs:text-sm">
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] xs:text-[11px] sm:text-xs">
+              <span className="text-zinc-400 truncate">Taxa de Acertos:</span>
+              <span className="font-mono font-black text-amber-300 text-xs xs:text-sm shrink-0">
                 {materiaTopAcertos?.taxaAcerto || 0}%
               </span>
             </div>
           </div>
 
-          {/* LADO DIREITO: ONDE PRECISA REFORÇAR / PIOR DESEMPENHO */}
+          {/* LADO DIREITO: MAIS DESAFIO (CONTORNO VERMELHO SEM BRILHO) */}
           <div 
             onClick={() => {
               try { haptic.selection(); } catch {}
               if (materiaParaReforcar) onSelecionarMateria(materiaParaReforcar.materia.id);
             }}
-            className="p-3 xs:p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-rose-500/15 via-black/85 to-black/95 border border-rose-500/40 shadow-xl cursor-pointer hover:border-rose-400/70 active:scale-[0.98] transition-all group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden"
+            className="p-3 xs:p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-[#141416]/95 border border-rose-500/60 hover:border-rose-400 transition-all cursor-pointer group flex flex-col justify-between backdrop-blur-xl relative overflow-hidden shadow-md active:scale-[0.98]"
           >
             <div>
-              <div className="flex items-center justify-between gap-1 mb-2">
-                <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-rose-400 flex items-center gap-1 truncate">
-                  <AlertTriangle className="w-3 h-3 xs:w-3.5 xs:h-3.5 text-rose-400 shrink-0" />
-                  <span className="truncate">Mais Desafio</span>
+              <div className="flex items-center justify-between gap-1 mb-1.5">
+                <span className="text-[9px] xs:text-[10px] sm:text-xs font-black uppercase tracking-wider text-rose-400 flex items-center gap-1 min-w-0 truncate">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                  <span className="truncate">Desafio</span>
                 </span>
-                <span className="text-[8px] xs:text-[9px] font-black px-1.5 py-0.5 rounded-full bg-rose-400/20 text-rose-300 border border-rose-400/30 shrink-0">
+                <span className="text-[8px] xs:text-[8.5px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-400/10 text-rose-300 border border-rose-400/30 shrink-0">
                   Reforçar
                 </span>
               </div>
 
-              <div className="my-1.5 xs:my-2 min-h-[40px] xs:min-h-[46px] flex flex-col justify-center">
-                <h4 className="text-xs xs:text-sm sm:text-base font-serif font-black text-white group-hover:text-rose-200 transition-colors line-clamp-2 leading-snug">
+              <div className="my-1 sm:my-1.5">
+                <h4 className="text-xs xs:text-[13px] sm:text-sm font-serif font-black text-white group-hover:text-rose-200 transition-colors truncate">
                   {formatarTituloElegante(materiaParaReforcar?.materia.titulo || 'Princípios Penais')}
                 </h4>
-                <p className="text-[10px] xs:text-[11px] text-zinc-400 mt-1 truncate">
+                <p className="text-[9.5px] xs:text-[10.5px] text-zinc-400 mt-0.5 truncate">
                   {materiaParaReforcar?.aulasTerminadas || 0} de {materiaParaReforcar?.totalAulas || 10} aulas
                 </p>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] xs:text-xs">
-              <span className="text-zinc-400">Aproveitamento:</span>
-              <span className="font-mono font-black text-rose-300 text-xs xs:text-sm">
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] xs:text-[11px] sm:text-xs">
+              <span className="text-zinc-400 truncate">Aproveitamento:</span>
+              <span className="font-mono font-black text-rose-300 text-xs xs:text-sm shrink-0">
                 {materiaParaReforcar?.taxaAcerto || 0}%
               </span>
             </div>
           </div>
         </div>
 
-        {/* BADGE "VS" CENTRALIZADO ELEGANTE */}
+        {/* BADGE "VS" CENTRALIZADO COM CONTORNO NÍTIDO SEM HALO */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-          <div className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-[#121214] border-2 border-amber-400/80 shadow-[0_0_16px_rgba(251,191,36,0.65),0_4px_12px_rgba(0,0,0,0.9)] flex items-center justify-center">
-            <span className="text-[10px] xs:text-[11px] font-serif font-black italic tracking-tighter text-amber-400 select-none">
+          <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#141416] border border-amber-400/70 shadow-md flex items-center justify-center">
+            <span className="text-[9px] xs:text-[10px] font-serif font-black italic text-amber-400 select-none">
               vs
             </span>
           </div>
@@ -487,21 +479,19 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
               GRÁFICO 1: RADAR DE DOMÍNIO POR ÁREA
              ══════════════════════════════════════════════════════════════════════════ */}
           <div className="p-4 sm:p-5 rounded-3xl bg-black/70 border border-white/15 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center">
-                  <Activity className="w-4 h-4 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white">
-                    Radar de Competências por Área
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Activity className="w-5 h-5 text-amber-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white truncate">
+                    Radar de Competências
                   </h3>
-                  <p className="text-[10.5px] text-zinc-400">
+                  <p className="text-[10px] xs:text-[10.5px] text-zinc-400 truncate">
                     Domínio comparativo em 8 áreas jurídicas
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+              <span className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-300 bg-white/5 px-2 py-0.5 rounded-full border border-white/10 shrink-0">
                 0 - 100%
               </span>
             </div>
@@ -557,16 +547,14 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
               GRÁFICO 2: PIZZA / DONUT DE APROVEITAMENTO DO CICLO
              ══════════════════════════════════════════════════════════════════════════ */}
           <div className="p-4 sm:p-5 rounded-3xl bg-black/70 border border-white/15 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center">
-                  <PieIcon className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white">
-                    Distribuição do Ciclo de Estudo
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <PieIcon className="w-5 h-5 text-emerald-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white truncate">
+                    Ciclo de Estudos
                   </h3>
-                  <p className="text-[10.5px] text-zinc-400">
+                  <p className="text-[10px] xs:text-[10.5px] text-zinc-400 truncate">
                     Aulas completas, em andamento e pendentes
                   </p>
                 </div>
@@ -653,16 +641,14 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
               GRÁFICO 3: COLUNAS DE TAXA DE APROVEITAMENTO POR ÁREA
              ══════════════════════════════════════════════════════════════════════════ */}
           <div className="p-4 sm:p-5 rounded-3xl bg-black/70 border border-white/15 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center">
-                  <BarChart3 className="w-4 h-4 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white">
-                    Aproveitamento por Disciplina
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <BarChart3 className="w-5 h-5 text-amber-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-white truncate">
+                    Progresso por Disciplina
                   </h3>
-                  <p className="text-[10.5px] text-zinc-400">
+                  <p className="text-[10px] xs:text-[10.5px] text-zinc-400 truncate">
                     Progresso percentual de conclusão por área
                   </p>
                 </div>
@@ -731,12 +717,12 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
                 <div 
                   key={item.materia.id}
                   onClick={() => onSelecionarMateria(item.materia.id)}
-                  className="p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-amber-400/40 transition-all cursor-pointer group shadow-lg flex items-center justify-between gap-3.5 backdrop-blur-md"
+                  className="p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-white/25 transition-all cursor-pointer group shadow-lg flex items-center justify-between gap-3.5 backdrop-blur-md"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {/* Medalhão Numérico Dourado */}
-                    <div className="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center shrink-0 shadow">
-                      <span className="font-mono font-black text-xs text-amber-300">
+                    {/* Medalhão Numérico Discreto */}
+                    <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <span className="font-mono font-bold text-xs text-zinc-300">
                         {String(index + 1).padStart(2, '0')}
                       </span>
                     </div>
