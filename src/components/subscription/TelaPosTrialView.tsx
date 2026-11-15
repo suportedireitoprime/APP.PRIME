@@ -83,19 +83,24 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
       {/* ── CARD ELEGANTE, IMPACTANTE E LEVEMENTE TRANSPARENTE ── */}
       <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-black/70 border border-amber-500/35 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(245,158,11,0.12)] backdrop-blur-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
         
-        {/* Logo Oficial do App com Nome e Subtítulo */}
-        <div className="flex flex-col items-center justify-center pt-1 space-y-2">
+        {/* Logo Oficial do App e Nome Idêntico ao Painel do Início */}
+        <div className="flex flex-col items-center justify-center pt-1 space-y-1.5">
           <img 
             src={appLogo} 
-            alt="Direito Prime" 
+            alt="Estudos Jurídicos" 
             className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_8px_24px_rgba(245,158,11,0.25)]"
           />
           <div className="space-y-0.5 text-center">
-            <h1 className="font-serif font-black text-lg sm:text-xl tracking-[0.18em] uppercase text-white drop-shadow">
-              DIREITO PRIME
+            <h1 className="tracking-tight leading-tight drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+              <span className="font-serif text-xl sm:text-2xl font-medium text-white">
+                Estudos{' '}
+              </span>
+              <span className="font-serif italic text-2xl sm:text-[26px] font-bold text-amber-400 drop-shadow-[0_2px_12px_rgba(245,158,11,0.5)]">
+                Jurídicos
+              </span>
             </h1>
-            <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-amber-400 font-bold">
-              Plataforma Jurídica Inteligente
+            <p className="font-serif italic text-white/90 text-xs sm:text-[13px] leading-tight drop-shadow">
+              Conteúdo de qualidade para sua jornada no Direito.
             </p>
           </div>
         </div>
@@ -115,15 +120,6 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans max-w-xs sm:max-w-sm mx-auto">
           {nomeAluno ? `${nomeAluno}, sua` : 'Sua'} degustação gratuita de 3 dias terminou. Para <strong className="text-amber-300 font-bold">continuar os seus estudos</strong> com acesso ilimitado, <strong className="text-white font-bold">escolha um plano</strong>.
         </p>
-
-        {/* Micro-pílulas de Valor dos Recursos */}
-        <div className="flex items-center justify-center gap-1.5 text-[10.5px] font-mono text-zinc-300 py-0.5 flex-wrap">
-          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">3.192 Aulas</span>
-          <span className="text-zinc-600">•</span>
-          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">Vade Mecum com Áudio</span>
-          <span className="text-zinc-600">•</span>
-          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">Tutor IA Hórus</span>
-        </div>
 
         {/* Botão Ver Planos com Animação de Reflexo Contínuo */}
         <div className="pt-2">
