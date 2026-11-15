@@ -711,6 +711,12 @@ body {
   100% { transform: translateX(250%) skewX(-18deg); }
 }
 
+@keyframes shimmer-reflect {
+  0% { transform: translateX(-150%) skewX(-18deg); }
+  40% { transform: translateX(250%) skewX(-18deg); }
+  100% { transform: translateX(250%) skewX(-18deg); }
+}
+
 /* === Reflexo suave na barra de pesquisa do hero === */
 .search-bar-shine {
   position: relative;

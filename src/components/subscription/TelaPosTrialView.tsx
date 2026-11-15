@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Clock, X } from 'lucide-react';
+import { ArrowRight, Clock, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { haptic } from '@/lib/nativeHaptics';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
@@ -80,20 +80,28 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </button>
       )}
 
-      {/* ── CARD MINIMALISTA CENTRALIZADO POR CIMA DO FUNDO ── */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-zinc-950/90 border border-white/15 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95)] backdrop-blur-xl text-center space-y-4 animate-in zoom-in-95 duration-200">
+      {/* ── CARD ELEGANTE, IMPACTANTE E LEVEMENTE TRANSPARENTE ── */}
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-black/70 border border-amber-500/35 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(245,158,11,0.12)] backdrop-blur-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
         
-        {/* Logo Oficial do App Grande e com Destaque */}
-        <div className="flex justify-center pt-1">
+        {/* Logo Oficial do App com Nome e Subtítulo */}
+        <div className="flex flex-col items-center justify-center pt-1 space-y-2">
           <img 
             src={appLogo} 
             alt="Direito Prime" 
-            className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+            className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_8px_24px_rgba(245,158,11,0.25)]"
           />
+          <div className="space-y-0.5 text-center">
+            <h1 className="font-serif font-black text-lg sm:text-xl tracking-[0.18em] uppercase text-white drop-shadow">
+              DIREITO PRIME
+            </h1>
+            <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-amber-400 font-bold">
+              Plataforma Jurídica Inteligente
+            </p>
+          </div>
         </div>
 
         {/* Badge Minimalista */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-mono font-bold tracking-wider">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] font-mono font-bold tracking-wider">
           <Clock className="w-3 h-3 text-amber-400" />
           <span>SEU TESTE DE 3 DIAS ACABOU</span>
         </div>
@@ -103,27 +111,39 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
           Seus 3 Dias Gratuitos Chegaram ao Fim
         </h2>
 
-        {/* Descrição Minimalista */}
-        <p className="text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-sans max-w-xs sm:max-w-sm mx-auto">
-          {nomeAluno ? `${nomeAluno}, sua` : 'Sua'} degustação gratuita de 3 dias no Direito Prime terminou. Mantenha seu ritmo de estudos com acesso ilimitado a todas as aulas interativas, ao Vade Mecum com áudio e às ferramentas exclusivas.
+        {/* Descrição Direta e Persuasiva */}
+        <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans max-w-xs sm:max-w-sm mx-auto">
+          {nomeAluno ? `${nomeAluno}, sua` : 'Sua'} degustação gratuita de 3 dias terminou. Para <strong className="text-amber-300 font-bold">continuar os seus estudos</strong> com acesso ilimitado, <strong className="text-white font-bold">escolha um plano</strong>.
         </p>
 
-        {/* Botão Ver Planos */}
-        <div className="pt-2 space-y-2.5">
+        {/* Micro-pílulas de Valor dos Recursos */}
+        <div className="flex items-center justify-center gap-1.5 text-[10.5px] font-mono text-zinc-300 py-0.5 flex-wrap">
+          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">3.192 Aulas</span>
+          <span className="text-zinc-600">•</span>
+          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">Vade Mecum com Áudio</span>
+          <span className="text-zinc-600">•</span>
+          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">Tutor IA Hórus</span>
+        </div>
+
+        {/* Botão Ver Planos com Animação de Reflexo Contínuo */}
+        <div className="pt-2">
           <button
             type="button"
             onClick={handleVerPlanos}
-            className="w-full h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black font-serif text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(245,158,11,0.3)] active:scale-[0.98] transition-all cursor-pointer border border-amber-300/40"
+            className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black font-serif text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_8px_30px_rgba(245,158,11,0.35)] active:scale-[0.98] transition-all cursor-pointer border border-amber-300/40"
           >
-            <span>VER PLANOS</span>
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+            <span className="relative z-10">VER PLANOS</span>
+            <ArrowRight className="w-5 h-5 stroke-[2.8] relative z-10" />
+            
+            {/* Feixe dinâmico de reflexo contínuo */}
+            <span 
+              className="absolute inset-0 pointer-events-none z-10 mix-blend-screen opacity-70"
+              style={{
+                background: 'linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.4) 45%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0.4) 55%, transparent 70%)',
+                animation: 'shimmer-reflect-loop 2.4s ease-out infinite'
+              }}
+            />
           </button>
-
-          {/* Micro-copy discreto */}
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-400 font-sans">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Garantia incondicional de 7 dias · Cancele quando quiser</span>
-          </div>
         </div>
 
       </div>
