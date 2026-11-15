@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Search, BarChart3, Flame, Play, X } from 'lucide-react';
-import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { 
+  ArrowLeft, Search, BarChart3, History, Heart, Flame, X 
+} from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import aulasHeroCover from '@/assets/aulas-interativas-hero-cover.jpg';
 import { AulasHeroWave } from './AulasHeroWave';
@@ -12,13 +13,12 @@ interface AulasInterativasHeroProps {
   totalAulas: number;
   totalMaterias: number;
   porcentagemGeral: number;
-  onAbrirEstatisticas: () => void;
-  ultimaAulaAndamento: AulaItem | null;
-  onIniciarAula?: (aula: AulaItem) => void;
-  calcularProgressoCiclo?: (aula: AulaItem) => {
-    etapaAtual: number;
-    porcentagemTotal: number;
-  };
+  onRecentes: () => void;
+  onFavoritos: () => void;
+  onEmAlta: () => void;
+  onDesempenho: () => void;
+  badgeRecentes?: number;
+  badgeFavoritos?: number;
 }
 
 export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.memo(
@@ -29,18 +29,20 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
     totalAulas,
     totalMaterias,
     porcentagemGeral,
-    onAbrirEstatisticas,
-    ultimaAulaAndamento,
-    onIniciarAula,
-    calcularProgressoCiclo,
+    onRecentes,
+    onFavoritos,
+    onEmAlta,
+    onDesempenho,
+    badgeRecentes = 0,
+    badgeFavoritos = 0,
   }) {
     const [buscaAberta, setBuscaAberta] = useState(false);
 
     return (
-      <div className="relative mb-6">
-        {/* Shell unificado idêntico ao modelo de Áudio Aulas e início do app */}
+      <div className="relative mb-5">
+        {/* Shell unificado idêntico ao início do app e Áudio Aulas */}
         <div
-          className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[330px] sm:min-h-[355px]"
+          className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[300px] xs:min-h-[320px] sm:min-h-[340px]"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
@@ -53,7 +55,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa Oficial (Mulher trabalhadora na indústria com centelhas e tons petróleo/teal) */}
+          {/* Imagem de Capa Oficial */}
           <img
             src={aulasHeroCover}
             alt="Estudo com Aulas Interativas"
@@ -67,7 +69,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
           {/* Onda Hiper-Realista 3D em Verde Petróleo / Esmeralda / Teal */}
           <AulasHeroWave />
 
-          {/* Cabeçalho Superior Transparente (Botão de Voltar, Busca e Estatísticas) */}
+          {/* Cabeçalho Superior Transparente (Botão Voltar e Busca) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
             <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
               <button
@@ -82,45 +84,26 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                 <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
               </button>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setBuscaAberta(!buscaAberta);
-                  }}
-                  aria-label="Pesquisar matéria ou aula"
-                  className={`grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full border text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg ${
-                    buscaAberta || buscaTermo
-                      ? 'bg-emerald-600/30 border-emerald-400/60 text-emerald-300'
-                      : 'bg-black/40 border-white/10 hover:bg-black/60'
-                  }`}
-                >
-                  <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    onAbrirEstatisticas();
-                  }}
-                  aria-label="Ver Desempenho e Estatísticas"
-                  className="relative grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
-                >
-                  <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] text-amber-400" />
-                  {porcentagemGeral > 0 && (
-                    <span className="absolute -bottom-1 -right-1 text-[9.5px] font-mono font-black px-1.5 py-0.5 rounded-full text-black bg-amber-400 border border-amber-300 shadow">
-                      {porcentagemGeral}%
-                    </span>
-                  )}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  setBuscaAberta(!buscaAberta);
+                }}
+                aria-label="Pesquisar matéria ou aula"
+                className={`grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full border text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg ${
+                  buscaAberta || buscaTermo
+                    ? 'bg-teal-600/30 border-teal-400/60 text-[#2dd4bf]'
+                    : 'bg-black/40 border-white/10 hover:bg-black/60'
+                }`}
+              >
+                <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+              </button>
             </div>
           </header>
 
           {/* Conteúdo: Tipografia de Marca Minimalista */}
-          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[135px] sm:min-h-[150px]">
+          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[125px] sm:min-h-[135px]">
             <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-4 sm:ml-6 max-w-[290px]">
               {/* Espaçador para o botão de voltar */}
               <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
@@ -147,19 +130,19 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             </div>
           </div>
 
-          {/* Barra de Pesquisa Expansível ou Campo de Busca */}
+          {/* Barra de Pesquisa Expansível */}
           {(buscaAberta || buscaTermo) && (
-            <div className="relative z-10 px-4 pb-3 pt-1">
-              <div className="relative w-full max-w-md">
+            <div className="relative z-10 px-4 pb-2.5 pt-1">
+              <div className="relative w-full max-w-md mx-auto">
                 <input
                   type="text"
                   value={buscaTermo}
                   onChange={(e) => setBuscaTermo(e.target.value)}
                   placeholder="Filtrar matérias por nome..."
                   autoFocus
-                  className="w-full h-11 pl-10 pr-10 rounded-full text-xs sm:text-sm text-white placeholder:text-zinc-400 focus:outline-none shadow-lg bg-black/85 backdrop-blur-md border border-white/20 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40"
+                  className="w-full h-11 pl-10 pr-10 rounded-full text-xs sm:text-sm text-white placeholder:text-zinc-400 focus:outline-none shadow-lg bg-black/85 backdrop-blur-md border border-white/20 focus:border-teal-400 focus:ring-1 focus:ring-teal-400/40"
                 />
-                <Search className="w-4 h-4 text-emerald-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="w-4 h-4 text-[#2dd4bf] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 {buscaTermo && (
                   <button
                     type="button"
@@ -174,39 +157,99 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             </div>
           )}
 
-          {/* Banner Opcional de Continuar Aula de onde parou */}
-          {ultimaAulaAndamento && onIniciarAula && (
-            <div className="relative z-10 px-4 pb-3 pt-1">
+          {/* ══════════════════════════════════════════════════════════════════════════
+              PAINEL DE FUNÇÕES RÁPIDAS (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO)
+              ══════════════════════════════════════════════════════════════════════════ */}
+          <div className="relative z-10 px-3 sm:px-5 pt-1 pb-3.5">
+            <div className="flex items-center justify-between gap-1.5 sm:gap-2 mx-auto max-w-md bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl">
+              {/* Recentes */}
               <button
                 type="button"
                 onClick={() => {
-                  try { haptic.impact('medium'); } catch {}
-                  onIniciarAula(ultimaAulaAndamento);
+                  try { haptic.selection(); } catch {}
+                  onRecentes();
                 }}
-                className="w-full max-w-md py-2 px-3.5 rounded-2xl bg-black/80 hover:bg-black/95 border border-emerald-500/40 text-left flex items-center justify-between gap-2.5 shadow-xl active:scale-[0.98] transition-all cursor-pointer backdrop-blur-md group"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                aria-label="Aulas Recentes"
               >
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="w-7 h-7 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
-                    <Flame className="w-3.5 h-3.5 text-emerald-400 fill-current" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[9px] uppercase font-black tracking-wider text-emerald-400 block truncate leading-none mb-0.5">
-                      Continuar de Onde Parou
+                <div className="relative inline-flex items-center justify-center">
+                  <History className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  {badgeRecentes > 0 && (
+                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
+                      {badgeRecentes}
                     </span>
-                    <h4 className="text-xs font-serif font-black text-white truncate group-hover:text-emerald-200">
-                      {ultimaAulaAndamento.titulo}
-                    </h4>
-                  </div>
+                  )}
                 </div>
-                <div className="shrink-0 flex items-center gap-1.5 pl-2 border-l border-white/10">
-                  <span className="text-[10px] font-mono font-bold text-zinc-400">
-                    Etapa {calcularProgressoCiclo ? (calcularProgressoCiclo(ultimaAulaAndamento).etapaAtual || 1) : 1}
-                  </span>
-                  <Play className="w-3.5 h-3.5 text-emerald-400 fill-current" />
+                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                  Recentes
+                </span>
+              </button>
+
+              {/* Favoritos */}
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  onFavoritos();
+                }}
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                aria-label="Aulas Favoritas"
+              >
+                <div className="relative inline-flex items-center justify-center">
+                  <Heart className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#f43f5e] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  {badgeFavoritos > 0 && (
+                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-rose-600 text-white">
+                      {badgeFavoritos}
+                    </span>
+                  )}
                 </div>
+                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                  Favoritos
+                </span>
+              </button>
+
+              {/* Em Alta */}
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  onEmAlta();
+                }}
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                aria-label="Aulas Em Alta"
+              >
+                <div className="relative inline-flex items-center justify-center">
+                  <Flame className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#f59e0b] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                  Em Alta
+                </span>
+              </button>
+
+              {/* Desempenho */}
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  onDesempenho();
+                }}
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center cursor-pointer"
+                aria-label="Desempenho e Estatísticas"
+              >
+                <div className="relative inline-flex items-center justify-center">
+                  <BarChart3 className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] text-[#10b981] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                  {porcentagemGeral > 0 && (
+                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-emerald-600 text-white">
+                      {porcentagemGeral}%
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+                  Desempenho
+                </span>
               </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );

@@ -7,8 +7,11 @@ import {
   getDisciplinasDaFase 
 } from '@/data/aulasTrilhasCronologicas';
 import { AulasInterativasHero } from './AulasInterativasHero';
+import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
 import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
 import { AulasMateriaCard } from './AulasMateriaCard';
+import { AulasRecentesModal } from './AulasRecentesModal';
+import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AulasCoverflowHomeProps {
@@ -62,18 +65,33 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   aulasCatalogo,
 }) => {
   const [faseSelecionadaId, setFaseSelecionadaId] = useState<string | null>(null);
+  const [recentesModalOpen, setRecentesModalOpen] = useState(false);
+  const [emAltaModalOpen, setEmAltaModalOpen] = useState(false);
 
-  // Procura aula em andamento para o botão rápido do Hero
-  const ultimaAulaAndamento = useMemo(() => {
-    if (!calcularProgressoCiclo) return null;
-    const emAndamento = aulasCatalogo.filter((a) => {
-      const p = calcularProgressoCiclo(a);
-      return p.porcentagemTotal > 0 && p.porcentagemTotal < 100;
-    });
-    return emAndamento[0] || null;
+  // Procura aula em andamento para o banner "Continuar de onde parou" abaixo do painel
+  const aulaParaContinuar = useMemo(() => {
+    if (aulasCatalogo.length === 0) return null;
+    if (calcularProgressoCiclo) {
+      const emAndamento = aulasCatalogo.filter((a) => {
+        const p = calcularProgressoCiclo(a);
+        return p.porcentagemTotal > 0 && p.porcentagemTotal < 100;
+      });
+      if (emAndamento.length > 0) return emAndamento[0];
+    }
+    // Fallback gracioso: 1ª aula do acervo
+    return aulasCatalogo[0] || null;
   }, [aulasCatalogo, calcularProgressoCiclo]);
 
-  // Lista de matérias filtrada por fase e por termo de busca
+  // Contagem de aulas em andamento para o badge de Recentes
+  const totalEmAndamento = useMemo(() => {
+    if (!calcularProgressoCiclo) return 0;
+    return aulasCatalogo.filter((a) => {
+      const p = calcularProgressoCiclo(a);
+      return p.porcentagemTotal > 0;
+    }).length;
+  }, [aulasCatalogo, calcularProgressoCiclo]);
+
+  // Matérias filtradas por fase e busca
   const materiasExibidas = useMemo(() => {
     let base = disciplinasFiltradas;
     if (faseSelecionadaId) {
@@ -97,9 +115,15 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
     }
   };
 
+  const handleIniciarAulaSegura = (aula: AulaItem) => {
+    if (onIniciarAula) {
+      onIniciarAula(aula);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white flex flex-col relative z-10">
-      {/* ── 1. PAINEL DE TOPO (HERO COM ONDA VERDE ESMERALDA / PETRÓLEO) ── */}
+      {/* ── 1. PAINEL DE TOPO COM ONDA ESMERALDA E ATALHOS DE FUNÇÕES (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO) ── */}
       <AulasInterativasHero
         onVoltar={handleVoltar}
         buscaTermo={buscaTermo}
@@ -107,13 +131,23 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         totalAulas={totalAulas}
         totalMaterias={disciplinasFiltradas.length}
         porcentagemGeral={porcentagemGeral}
-        onAbrirEstatisticas={() => setAbaAtiva('estatisticas')}
-        ultimaAulaAndamento={ultimaAulaAndamento}
-        onIniciarAula={onIniciarAula}
-        calcularProgressoCiclo={calcularProgressoCiclo}
+        onRecentes={() => setRecentesModalOpen(true)}
+        onFavoritos={() => setAbaAtiva('favoritos')}
+        onEmAlta={() => setEmAltaModalOpen(true)}
+        onDesempenho={() => setAbaAtiva('estatisticas')}
+        badgeRecentes={totalEmAndamento}
       />
 
-      {/* ── 2. CARROSSEL DE TRILHAS DE PROGRESSO EM ORDEM CRONOLÓGICA ── */}
+      {/* ── 2. BOTÃO CONTINUAR DE ONDE PAROU ABAIXO DO PAINEL (IGUAL AO CONTINUAR LEITURA) ── */}
+      {aulaParaContinuar && (
+        <AulasContinuarAulaBanner
+          aula={aulaParaContinuar}
+          onIniciarAula={handleIniciarAulaSegura}
+          calcularProgressoCiclo={calcularProgressoCiclo}
+        />
+      )}
+
+      {/* ── 3. CARROSSEL DE TRILHAS EM CARDS REDUZIDOS COM DEGRADÊ ── */}
       <div className="w-full max-w-5xl lg:max-w-7xl mx-auto">
         <AulasTrilhasCarousel
           disciplinas={disciplinasFiltradas}
@@ -124,18 +158,18 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         />
       </div>
 
-      {/* ── 3. LISTA DE MATÉRIAS NORMAIS COM CAPAS IGUAL ÁUDIO AULAS ── */}
-      <section className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mt-4 pb-28">
-        {/* Cabeçalho da Seção */}
+      {/* ── 4. LISTA DE MATÉRIAS NORMAIS COM CAPAS (PADRÃO ÁUDIO AULAS) ── */}
+      <section className="w-full max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 mt-2 pb-28">
+        {/* Cabeçalho da Seção com Barra Vermelha Oficial da Paleta */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 px-1">
           <div className="min-w-0 flex-1">
-            <h2 className="font-display text-white text-[16px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-              <span className="w-1.5 h-5 rounded-full bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.7)] shrink-0" />
+            <h2 className="font-display text-white text-[15px] sm:text-[17px] font-bold flex items-center gap-2 uppercase tracking-widest">
+              <span className="w-1.5 h-4.5 rounded-full bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.7)] shrink-0" />
               <span>
                 {faseAtiva ? `Matérias • ${faseAtiva.nome}` : 'Todas as Matérias'}
               </span>
             </h2>
-            <p className="font-sans text-zinc-400 text-[12px] sm:text-[12.5px] leading-snug ml-3.5 mt-0.5">
+            <p className="font-sans text-zinc-400 text-[11.5px] sm:text-[12px] leading-snug ml-3.5 mt-0.5">
               {faseAtiva
                 ? `Mostrando ${materiasExibidas.length} matérias desta fase cronológica`
                 : 'Toque em uma matéria para acessar suas aulas e atividades'}
@@ -186,7 +220,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
         </div>
 
-        {/* Lista de Matérias */}
+        {/* Lista Vertical de Matérias */}
         {materiasExibidas.length === 0 ? (
           <div className="py-12 text-center rounded-2xl bg-zinc-900/40 border border-zinc-800/80 p-8 my-4">
             <p className="text-zinc-400 text-sm">Nenhuma matéria encontrada para a busca.</p>
@@ -196,7 +230,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 setBuscaTermo('');
                 setFaseSelecionadaId(null);
               }}
-              className="mt-3 px-4 py-1.5 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/30 text-xs font-semibold hover:bg-rose-600/30 transition-colors"
+              className="mt-3 px-4 py-1.5 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/30 text-xs font-semibold hover:bg-rose-600/30 transition-colors cursor-pointer"
             >
               Limpar Filtros
             </button>
@@ -234,6 +268,22 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </motion.div>
         )}
       </section>
+
+      {/* ── 5. MODAIS SECUNDÁRIOS RÁPIDOS ── */}
+      <AulasRecentesModal
+        isOpen={recentesModalOpen}
+        onClose={() => setRecentesModalOpen(false)}
+        aulas={aulasCatalogo}
+        calcularProgressoCiclo={calcularProgressoCiclo}
+        onIniciarAula={handleIniciarAulaSegura}
+      />
+
+      <AulasEmAltaModal
+        isOpen={emAltaModalOpen}
+        onClose={() => setEmAltaModalOpen(false)}
+        aulas={aulasCatalogo}
+        onIniciarAula={handleIniciarAulaSegura}
+      />
     </div>
   );
 };
