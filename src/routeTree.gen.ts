@@ -14,6 +14,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
+import { Route as AdminLaboratorioAulasRouteImport } from './routes/admin-laboratorio-aulas'
 import { Route as AdminLousaMagicaRouteImport } from './routes/admin-lousa-magica'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
@@ -59,6 +60,7 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VadeMecumRouteImport } from './routes/vade-mecum'
 import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
+import { Route as AulasModuloModuloIdRouteImport } from './routes/aulas-modulo.$moduloId'
 import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$colecaoId'
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
@@ -175,6 +177,11 @@ const AdminFuncoesRoute = AdminFuncoesRouteImport.update({
 const AdminHorusRoute = AdminHorusRouteImport.update({
   id: '/admin-horus',
   path: '/admin-horus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLaboratorioAulasRoute = AdminLaboratorioAulasRouteImport.update({
+  id: '/admin-laboratorio-aulas',
+  path: '/admin-laboratorio-aulas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLousaMagicaRoute = AdminLousaMagicaRouteImport.update({
@@ -400,6 +407,11 @@ const VideoaulasRoute = VideoaulasRouteImport.update({
 const AjustesExcluirContaRoute = AjustesExcluirContaRouteImport.update({
   id: '/ajustes/excluir-conta',
   path: '/ajustes/excluir-conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AulasModuloModuloIdRoute = AulasModuloModuloIdRouteImport.update({
+  id: '/aulas-modulo/$moduloId',
+  path: '/aulas-modulo/$moduloId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BibliotecasColecaoIdRoute = BibliotecasColecaoIdRouteImport.update({
@@ -887,6 +899,7 @@ export interface FileRoutesByFullPath {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -932,6 +945,7 @@ export interface FileRoutesByFullPath {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
+  '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1031,6 +1045,7 @@ export interface FileRoutesByTo {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -1076,6 +1091,7 @@ export interface FileRoutesByTo {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
+  '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1176,6 +1192,7 @@ export interface FileRoutesById {
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
+  '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -1221,6 +1238,7 @@ export interface FileRoutesById {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
+  '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1322,6 +1340,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
@@ -1367,6 +1386,7 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/ajustes/excluir-conta'
+    | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1466,6 +1486,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
@@ -1511,6 +1532,7 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/ajustes/excluir-conta'
+    | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1610,6 +1632,7 @@ export interface FileRouteTypes {
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
+    | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
     | '/admin-omniroute'
     | '/admin-push'
@@ -1655,6 +1678,7 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/ajustes/excluir-conta'
+    | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1755,6 +1779,7 @@ export interface RootRouteChildren {
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminHorusRoute: typeof AdminHorusRoute
+  AdminLaboratorioAulasRoute: typeof AdminLaboratorioAulasRoute
   AdminLousaMagicaRoute: typeof AdminLousaMagicaRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
@@ -1800,6 +1825,7 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
+  AulasModuloModuloIdRoute: typeof AulasModuloModuloIdRoute
   DesktopLinkTokenRoute: typeof DesktopLinkTokenRoute
   GraficosAvaliacaoRoute: typeof GraficosAvaliacaoRoute
   IrSplatRoute: typeof IrSplatRoute
@@ -1850,6 +1876,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-horus'
       fullPath: '/admin-horus'
       preLoaderRoute: typeof AdminHorusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-laboratorio-aulas': {
+      id: '/admin-laboratorio-aulas'
+      path: '/admin-laboratorio-aulas'
+      fullPath: '/admin-laboratorio-aulas'
+      preLoaderRoute: typeof AdminLaboratorioAulasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-lousa-magica': {
@@ -2165,6 +2198,13 @@ declare module '@tanstack/react-router' {
       path: '/ajustes/excluir-conta'
       fullPath: '/ajustes/excluir-conta'
       preLoaderRoute: typeof AjustesExcluirContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aulas-modulo/$moduloId': {
+      id: '/aulas-modulo/$moduloId'
+      path: '/aulas-modulo/$moduloId'
+      fullPath: '/aulas-modulo/$moduloId'
+      preLoaderRoute: typeof AulasModuloModuloIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bibliotecas/$colecaoId': {
@@ -3252,6 +3292,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminHorusRoute: AdminHorusRoute,
+  AdminLaboratorioAulasRoute: AdminLaboratorioAulasRoute,
   AdminLousaMagicaRoute: AdminLousaMagicaRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
@@ -3297,6 +3338,7 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
+  AulasModuloModuloIdRoute: AulasModuloModuloIdRoute,
   DesktopLinkTokenRoute: DesktopLinkTokenRoute,
   GraficosAvaliacaoRoute: GraficosAvaliacaoRoute,
   IrSplatRoute: IrSplatRoute,

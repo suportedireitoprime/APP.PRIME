@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
-  Sparkles, BookOpen, Shield, Scale, Building2, Layers, CheckCircle2, ChevronRight 
+  BookOpen, Shield, Scale, Building2, Sparkles, Layers, CheckCircle2, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { 
   TRILHAS_CRONOLOGICAS, 
-  calcularMetricasFase 
+  calcularMetricasFase,
+  TrilhaFaseItem
 } from '@/data/aulasTrilhasCronologicas';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
@@ -16,6 +17,7 @@ interface AulasTrilhasCarouselProps {
   faseSelecionadaId: string | null;
   onSelectFase: (faseId: string | null) => void;
   onOpenTodasTrilhas?: () => void;
+  onOpenModuloDedicado?: (moduloId: string) => void;
   calcularProgressoCiclo?: (aula: AulaItem) => {
     aulaTerminada: boolean;
     porcentagemTotal: number;
@@ -37,6 +39,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
     faseSelecionadaId,
     onSelectFase,
     onOpenTodasTrilhas,
+    onOpenModuloDedicado,
     calcularProgressoCiclo,
   }) {
     const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -45,20 +48,52 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
     const handleScroll = () => {
       const el = scrollerRef.current;
       if (!el) return;
-      const nodeWidth = 145;
-      const newIdx = Math.round(el.scrollLeft / nodeWidth);
-      if (newIdx !== activeIndex && newIdx >= 0 && newIdx < TRILHAS_CRONOLOGICAS.length) {
-        setActiveIndex(newIdx);
+      // Item width (130px) + connector width (48px) = ~178px
+      const center = el.scrollLeft + el.clientWidth / 2;
+      let closestIdx = 0;
+      let minDiff = Infinity;
+
+      // Percorre os nós para encontrar o mais próximo do centro exato
+      for (let i = 0; i < TRILHAS_CRONOLOGICAS.length; i++) {
+        const child = el.children[i * 2] as HTMLElement | undefined;
+        if (child) {
+          const childCenter = child.offsetLeft + child.clientWidth / 2;
+          const diff = Math.abs(center - childCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIdx = i;
+          }
+        }
+      }
+
+      if (closestIdx !== activeIndex && closestIdx >= 0 && closestIdx < TRILHAS_CRONOLOGICAS.length) {
+        setActiveIndex(closestIdx);
       }
     };
 
     const scrollToFase = (index: number) => {
       const el = scrollerRef.current;
       if (!el) return;
-      const child = el.children[index] as HTMLElement | undefined;
+      const child = el.children[index * 2] as HTMLElement | undefined;
       if (!child) return;
       const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
       el.scrollTo({ left: target, behavior: 'smooth' });
+      setActiveIndex(index);
+    };
+
+    const scrollDelta = (deltaModules: number) => {
+      const nextIdx = Math.max(0, Math.min(TRILHAS_CRONOLOGICAS.length - 1, activeIndex + deltaModules));
+      scrollToFase(nextIdx);
+    };
+
+    const handleCardClick = (fase: TrilhaFaseItem, idx: number) => {
+      try { haptic.impact('medium'); } catch {}
+      scrollToFase(idx);
+      if (onOpenModuloDedicado) {
+        onOpenModuloDedicado(fase.id);
+      } else {
+        onSelectFase(faseSelecionadaId === fase.id ? null : fase.id);
+      }
     };
 
     return (
@@ -71,7 +106,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
               <span>Trilhas</span>
             </h2>
             <p className="font-sans text-zinc-400 text-[11px] sm:text-[11.5px] leading-snug ml-3.5 truncate">
-              Divididas do início ao fim da formação jurídica completa
+              106 Módulos Oficiais • Divididos por aulas e temas
             </p>
           </div>
 
@@ -105,141 +140,98 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
           </div>
         </div>
 
-        {/* ── TRILHA HORIZONTAL EM CÍRCULOS AMPLIADOS (DESIGN MINIMALISTA LIMPO) ── */}
+        {/* ── TRILHA HORIZONTAL EM FORMATO 1:1 COM ZOOM CENTRAL E LINHA DE GUIA PROEMINENTE ── */}
         <div
           ref={scrollerRef}
           onScroll={handleScroll}
-          className="flex items-start justify-start sm:justify-center gap-0 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden touch-pan-x"
+          className="flex items-start justify-start gap-0 overflow-x-auto snap-x snap-mandatory px-8 sm:px-12 py-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden touch-pan-x"
         >
           {TRILHAS_CRONOLOGICAS.map((fase, idx) => {
+            const isCenter = idx === activeIndex;
             const isSelected = faseSelecionadaId === fase.id;
             const Icon = ICON_MAP[fase.iconName] || Layers;
             const metricas = calcularMetricasFase(fase, disciplinas, aulas, calcularProgressoCiclo);
             const isLast = idx === TRILHAS_CRONOLOGICAS.length - 1;
-            
-            // Cálculo do progresso no anel circular SVG ampliado (raio 34 -> perímetro ~213.63)
-            const radius = 34;
-            const circumference = 2 * Math.PI * radius;
-            const strokeDashoffset = circumference - (metricas.pct / 100) * circumference;
 
             return (
               <React.Fragment key={fase.id}>
-                {/* ── NÓ CIRCULAR DA TRILHA ── */}
+                {/* ── CARD 1:1 DO MÓDULO (COM ZOOM NA CAPA CENTRAL E SEM CONTORNO COLORIDO) ── */}
                 <div
-                  onClick={() => {
-                    try { haptic.impact('medium'); } catch {}
-                    onSelectFase(isSelected ? null : fase.id);
-                    scrollToFase(idx);
-                  }}
-                  className="snap-center shrink-0 flex flex-col items-center w-[116px] xs:w-[130px] sm:w-[145px] cursor-pointer group transition-all duration-300"
+                  onClick={() => handleCardClick(fase, idx)}
+                  className={`snap-center shrink-0 flex flex-col items-center w-[120px] xs:w-[130px] sm:w-[142px] cursor-pointer group transition-all duration-300 ease-out ${
+                    isCenter ? 'scale-110 z-20' : 'scale-95 opacity-80 hover:opacity-100 hover:scale-100 z-10'
+                  }`}
                 >
-                  {/* Container do Círculo com Anel de Progresso SVG e Badge Flutuante */}
-                  <div className="relative flex items-center justify-center">
-                    {/* SVG Progress Ring Ampliado */}
-                    <svg 
-                      className="w-[78px] h-[78px] xs:w-[86px] xs:h-[86px] sm:w-[94px] sm:h-[94px] transform -rotate-90 pointer-events-none drop-shadow-md"
-                      viewBox="0 0 84 84"
-                    >
-                      {/* Trilha do anel (fundo sutil) */}
-                      <circle
-                        cx="42"
-                        cy="42"
-                        r={radius}
-                        fill="transparent"
-                        stroke="rgba(255, 255, 255, 0.12)"
-                        strokeWidth="3.5"
-                      />
-                      {/* Progresso preenchido */}
-                      {metricas.pct > 0 && (
-                        <circle
-                          cx="42"
-                          cy="42"
-                          r={radius}
-                          fill="transparent"
-                          stroke={fase.accentColor}
-                          strokeWidth="3.5"
-                          strokeDasharray={circumference}
-                          strokeDashoffset={strokeDashoffset}
-                          strokeLinecap="round"
-                          className="transition-all duration-500 ease-out"
-                        />
-                      )}
-                    </svg>
-
-                    {/* Círculo Principal Ampliado com Gradiente Temático */}
+                  {/* Container Quadrado 1:1 Limpo sem Contorno Colorido */}
+                  <div className="relative w-full aspect-square flex items-center justify-center">
                     <div
-                      className={`absolute inset-[7px] rounded-full flex flex-col items-center justify-center transition-all duration-300 ease-out border shadow-lg ${
-                        isSelected
-                          ? 'scale-105 border-white ring-2 ring-white/90'
-                          : 'border-white/20 group-hover:scale-105 group-hover:border-white/40'
+                      className={`relative w-full h-full rounded-2xl overflow-hidden bg-zinc-950 transition-all duration-300 shadow-md ${
+                        isCenter
+                          ? 'border border-white/40 ring-1 ring-white/30 shadow-[0_12px_28px_rgba(0,0,0,0.95)]'
+                          : 'border border-white/10 group-hover:border-white/25'
                       }`}
-                      style={{
-                        background: fase.gradientBg,
-                        boxShadow: isSelected
-                          ? `0 0 24px ${fase.accentColor}95, 0 8px 24px rgba(0,0,0,0.9)`
-                          : `0 4px 14px rgba(0,0,0,0.65)`,
-                      }}
                     >
-                      {/* Ícone da Fase Ampliado */}
-                      <Icon 
-                        className={`w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 transition-transform duration-300 ${
-                          isSelected ? 'text-white scale-110' : 'text-white/90 group-hover:scale-110'
-                        }`}
-                        strokeWidth={2.2}
-                      />
+                      {fase.capaUrl ? (
+                        <>
+                          <img
+                            src={fase.capaUrl}
+                            alt={fase.nome}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
+                        </>
+                      ) : (
+                        <div 
+                          className="w-full h-full flex flex-col items-center justify-center p-2 text-center"
+                          style={{ background: fase.gradientBg }}
+                        >
+                          <Icon className="w-8 h-8 text-white/90 mb-1" strokeWidth={2} />
+                        </div>
+                      )}
+
+                      {/* Badge Superior Esquerdo Neutro e Minimalista */}
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-black bg-black/80 text-white border border-white/20 shadow-sm leading-none flex items-center justify-center">
+                          #{fase.faseNumero}
+                        </span>
+                      </div>
+
+                      {/* Badge Inferior Direito com Quantidade de Aulas */}
+                      <div className="absolute bottom-2 right-2 z-10">
+                        <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold bg-black/80 text-zinc-300 border border-white/10 backdrop-blur-sm">
+                          {fase.totalAulas || 30} aulas
+                        </span>
+                      </div>
+
+                      {/* Indicador de Conclusão */}
+                      {metricas.pct >= 100 && (
+                        <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full bg-emerald-500 border border-white flex items-center justify-center shadow">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                        </div>
+                      )}
                     </div>
-
-                    {/* Badge Circular do Número do Módulo no Topo Direito */}
-                    <span 
-                      className="absolute -top-1 right-1 w-5 h-5 xs:w-5.5 xs:h-5.5 rounded-full text-[9px] xs:text-[10px] font-mono font-black border shadow-md flex items-center justify-center leading-none"
-                      style={{
-                        backgroundColor: isSelected ? '#ffffff' : fase.accentColor,
-                        color: isSelected ? '#000000' : '#ffffff',
-                        borderColor: isSelected ? fase.accentColor : 'rgba(255,255,255,0.4)',
-                        boxShadow: `0 2px 8px ${fase.accentColor}60`,
-                      }}
-                    >
-                      {fase.faseNumero}
-                    </span>
-
-                    {/* Check de conclusão se 100% */}
-                    {metricas.pct >= 100 && (
-                      <span className="absolute -bottom-1 right-1 w-4.5 h-4.5 rounded-full bg-emerald-500 border border-white flex items-center justify-center shadow">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                      </span>
-                    )}
                   </div>
 
-                  {/* Informações Minimalistas Abaixo do Círculo (Sem poluição de textos de aulas) */}
+                  {/* Informações Minimalistas Abaixo do Card 1:1 */}
                   <div className="flex flex-col items-center text-center mt-2 px-1 w-full">
-                    <span 
-                      className="text-[9px] xs:text-[9.5px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded-full border leading-none mb-1 transition-colors"
-                      style={{
-                        backgroundColor: isSelected ? `${fase.accentColor}35` : 'rgba(0,0,0,0.4)',
-                        color: isSelected ? '#ffffff' : fase.highlightColor,
-                        borderColor: isSelected ? fase.accentColor : 'rgba(255,255,255,0.1)',
-                      }}
-                    >
+                    <span className="text-[9px] xs:text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/10 leading-none mb-1">
                       Módulo {fase.faseNumero}
                     </span>
 
-                    <h3 className="font-serif font-black text-white text-[12px] xs:text-[13px] sm:text-[13.5px] leading-snug line-clamp-2 drop-shadow-sm min-h-[32px] flex items-center justify-center">
+                    <h3 className={`font-serif font-black text-white text-[11.5px] xs:text-[12px] sm:text-[12.5px] leading-snug line-clamp-2 drop-shadow-sm min-h-[30px] flex items-center justify-center transition-colors ${
+                      isCenter ? 'text-teal-300' : 'text-zinc-200'
+                    }`}>
                       {fase.nome}
                     </h3>
                   </div>
                 </div>
 
-                {/* ── LINHA CONECTORA DA TRILHA ENTRE OS CÍRCULOS (EXCETO O ÚLTIMO) ── */}
+                {/* ── LINHA DE GUIA DA TRILHA COM MARGEM GENEROSA ── */}
                 {!isLast && (
-                  <div className="shrink-0 flex items-center justify-center w-5 xs:w-7 sm:w-9 pt-[35px] xs:pt-[39px] sm:pt-[43px] -mx-1">
-                    <div 
-                      className="w-full h-[2.5px] rounded-full transition-all duration-300 shadow-sm"
-                      style={{
-                        background: `linear-gradient(to right, ${fase.accentColor}90, ${TRILHAS_CRONOLOGICAS[idx + 1]?.accentColor || fase.accentColor}90)`,
-                        opacity: isSelected ? 1 : 0.45,
-                        boxShadow: isSelected ? `0 0 8px ${fase.accentColor}70` : undefined,
-                      }}
-                    />
+                  <div className="shrink-0 flex items-center justify-center w-10 xs:w-12 sm:w-16 pt-[54px] xs:pt-[58px] sm:pt-[64px] px-1">
+                    <div className="w-full h-[3px] rounded-full bg-gradient-to-r from-zinc-700 via-teal-500/70 to-zinc-700 shadow-[0_0_8px_rgba(45,212,191,0.5)] transition-all duration-300" />
                   </div>
                 )}
               </React.Fragment>
@@ -247,21 +239,31 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
           })}
         </div>
 
-        {/* Indicadores de Paginação Discretos */}
-        <div className="flex items-center justify-center gap-1.5 mt-1 mb-2">
-          {TRILHAS_CRONOLOGICAS.map((_, dotIdx) => (
-            <button
-              key={dotIdx}
-              type="button"
-              onClick={() => scrollToFase(dotIdx)}
-              className={`rounded-full transition-all duration-300 cursor-pointer ${
-                dotIdx === activeIndex
-                  ? 'w-4.5 h-1.5 bg-[#2dd4bf] shadow-[0_0_8px_rgba(45,212,191,0.6)]'
-                  : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
-              }`}
-              aria-label={`Ir para Módulo ${dotIdx + 1}`}
-            />
-          ))}
+        {/* Barra de Controle de Navegação & Indicador Rápido */}
+        <div className="flex items-center justify-center gap-3 mt-1 mb-2">
+          <button
+            type="button"
+            onClick={() => scrollDelta(-3)}
+            disabled={activeIndex === 0}
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:pointer-events-none text-zinc-300 flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Módulos anteriores"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+
+          <span className="font-mono text-[10.5px] text-zinc-400 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full">
+            Módulo <strong className="text-white">{activeIndex + 1}</strong> de 106
+          </span>
+
+          <button
+            type="button"
+            onClick={() => scrollDelta(3)}
+            disabled={activeIndex >= TRILHAS_CRONOLOGICAS.length - 1}
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:pointer-events-none text-zinc-300 flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Próximos módulos"
+          >
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     );

@@ -53,6 +53,7 @@ import {
   Gauge,
   Route as RouteIcon,
   Presentation,
+  FlaskConical,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -63,6 +64,7 @@ import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
+  "/admin-laboratorio-aulas": () => import("./AdminLaboratorioAulas"),
   "/admin-lousa-magica": () => import("./AdminLousaMagica"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
@@ -187,6 +189,22 @@ const CATEGORIES: Category[] = [
         icon: Presentation,
         desc: "Lousa interativa sobre Teoria Pura do Direito e Escolas Penais",
         route: "/admin-lousa-magica",
+      },
+    ],
+  },
+  {
+    id: "laboratorio-cat",
+    title: "Laboratório",
+    desc: "Aulas teste com novo layout visual: diagramas, tabelas e setas",
+    icon: FlaskConical,
+    route: "/admin-laboratorio-aulas",
+    items: [
+      {
+        id: "laboratorio-aulas",
+        label: "Laboratório de Layout",
+        icon: FlaskConical,
+        desc: "Ambiente de testes para protótipos de layout sem alterar a aula principal",
+        route: "/admin-laboratorio-aulas",
       },
     ],
   },

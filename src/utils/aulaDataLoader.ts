@@ -1,6 +1,7 @@
 import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { SlideItem, AulaData } from '@/types/aulaInterativa';
 import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
+import { getAulaLaboratorioData } from '@/data/aulasLaboratorioData';
 
 const aulaCache: Record<string, AulaData> = {};
 
@@ -274,7 +275,8 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
   // 2. Fonte de Altíssima Fidelidade: Conteúdo Curado Pré-Estruturado (0ms, zero latência, rico em HTML e interatividade)
-  const realData = AULAS_CONTEUDO_REAL[aula.id] || (aula.slug && AULAS_CONTEUDO_REAL[aula.slug]);
+  const labData = getAulaLaboratorioData(aula.id);
+  const realData = labData || AULAS_CONTEUDO_REAL[aula.id] || (aula.slug && AULAS_CONTEUDO_REAL[aula.slug]);
   if (realData) {
     const rawData = realData;
     if (rawData.slides && rawData.slides.length > 0) {
