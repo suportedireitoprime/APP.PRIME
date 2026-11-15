@@ -204,7 +204,10 @@ const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosDesktop = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosDesktop.tsx"));
 const ResumosMaterias = lazy(() => import("./pages/resumos-juridicos/ResumosMaterias.tsx"));
 const ResumosJuridicosTemas = lazy(routePrefetch.resumosJuridicosTemas);
+const ResumosJuridicosSubtemas = lazy(routePrefetch.resumosJuridicosSubtemas);
 const ResumosJuridicosLista = lazy(routePrefetch.resumosJuridicosLista);
+const ResumosLeis = lazy(() => import("./pages/resumos-juridicos/ResumosLeis.tsx"));
+const ResumosJurisprudencia = lazy(() => import("./pages/resumos-juridicos/ResumosJurisprudencia.tsx"));
 const LeiSecaIndex = lazy(routePrefetch.leiSeca);
 const LeiSecaTrilha = lazy(routePrefetch.leiSecaTrilha);
 const LeiSecaParte = lazy(routePrefetch.leiSecaParte);
@@ -920,7 +923,10 @@ function AnimatedRoutes() {
           <Route path="/resumos-juridicos/materias" element={<ProtectedRoute><PageTransition instant><ResumosMaterias /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition instant><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/leis" element={<ProtectedRoute><PageTransition instant><ResumosLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/jurisprudencia" element={<ProtectedRoute><PageTransition instant><ResumosJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosSubtemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/questoes" element={<ProtectedRoute><PageTransition instant><Questoes /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados" element={<ProtectedRoute><PageTransition instant><Simulados /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
