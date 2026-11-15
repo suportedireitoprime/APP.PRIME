@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { ChevronDown, FileText, Heart, History, Loader2, Search } from "lucide-react";
+import { ChevronDown, FileText, Bookmark, History, Loader2, Search } from "lucide-react";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import { resumosLocal, ResumoRef } from "@/lib/resumosLocal";
@@ -94,7 +94,7 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  }
  };
 
- const Icon = modo === "favoritos" ? Heart : History;
+ const Icon = modo === "favoritos" ? Bookmark : History;
  const titulo = modo === "favoritos" ? "Favoritos" : "Recentes";
 
  return (
@@ -160,11 +160,11 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: Math.min(i * 0.01, 0.2) }}
  onClick={() => abrir(r)}
- className="w-full flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+ className="w-full flex items-center gap-3 p-4 rounded-xl bg-[#141416] border border-white/10 hover:border-white/20 transition-all text-left"
  >
  <FileText className="w-6 h-6 shrink-0" style={{ color: "#22D3EE" }} strokeWidth={1.7} />
  <div className="flex-1 min-w-0">
- <div className="font-body text-foreground line-clamp-2">
+ <div className="font-sans font-normal text-[15px] sm:text-base text-zinc-100 break-words whitespace-normal leading-snug">
  {r.subtema || r.tema}
  </div>
  <div className="text-xs text-muted-foreground mt-0.5 truncate">
