@@ -246,14 +246,14 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                   try { haptic.selection(); } catch {}
                   setModuloDedicado(mod);
                 }}
-                className={`rounded-2xl border transition-all duration-200 p-3 sm:p-3.5 flex items-center gap-3.5 sm:gap-4 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
+                className={`rounded-2xl border transition-all duration-200 p-3.5 sm:p-4.5 flex items-center gap-3.5 sm:gap-4.5 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
                   isSelected
                     ? 'border-teal-500/60 bg-gradient-to-r from-teal-950/40 via-zinc-900 to-zinc-900 ring-1 ring-teal-500/40 shadow-lg'
                     : 'border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/60 hover:bg-zinc-900'
                 }`}
               >
-                {/* Thumbnail 1:1 Quadrado Limpo */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 aspect-square border border-white/10 relative shadow-md bg-zinc-950">
+                {/* Thumbnail 1:1 Quadrado Limpo e Mais Amplo */}
+                <div className="w-[72px] h-[72px] sm:w-[86px] sm:h-[86px] rounded-xl sm:rounded-2xl overflow-hidden shrink-0 aspect-square border border-white/10 relative shadow-md bg-zinc-950">
                   {mod.capaUrl ? (
                     <>
                       <img
@@ -270,12 +270,12 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                       className="w-full h-full flex flex-col items-center justify-center p-2 text-center"
                       style={{ background: mod.gradientBg }}
                     >
-                      <BookOpen className="w-6 h-6 text-white/90" />
+                      <BookOpen className="w-7 h-7 text-white/90" />
                     </div>
                   )}
 
                   {/* Número do Módulo */}
-                  <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-black/80 text-white border border-white/20">
+                  <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded text-[8.5px] font-mono font-black bg-black/85 text-white border border-white/20 shadow">
                     #{mod.moduloNumero}
                   </span>
                 </div>
@@ -287,7 +287,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                       Módulo {mod.moduloNumero}
                     </span>
 
-                    <span className="text-[11px] font-mono text-zinc-400">
+                    <span className="text-[11.5px] font-mono text-zinc-400">
                       {mod.totalAulas} aulas • {mod.temas.length} temas
                     </span>
                   </div>
@@ -296,18 +296,18 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                     {mod.nome}
                   </h3>
 
-                  <p className="text-xs text-zinc-400 font-sans line-clamp-1">
+                  <p className="text-xs sm:text-[13px] text-zinc-400 font-sans line-clamp-1 leading-relaxed">
                     {mod.sobre}
                   </p>
 
                   {/* ── BARRA DE PROGRESSO DO MÓDULO NA LISTA ── */}
                   <div className="pt-1 space-y-1">
-                    <div className="flex items-center justify-between text-[10.5px] font-mono text-zinc-400">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
                       <span>{prog.concluidas} de {mod.totalAulas} aulas concluídas</span>
                       <strong className={prog.pct > 0 ? "text-teal-400" : "text-zinc-500"}>{prog.pct}%</strong>
                     </div>
 
-                    <div className="w-full h-1.5 rounded-full bg-zinc-800/90 overflow-hidden shadow-inner">
+                    <div className="w-full h-2 rounded-full bg-zinc-800/90 overflow-hidden shadow-inner">
                       <div 
                         style={{ width: `${Math.max(prog.pct > 0 ? 3 : 0, prog.pct)}%` }}
                         className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-300"
@@ -317,8 +317,8 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                 </div>
 
                 {/* Ação: Chevron Minimalista */}
-                <div className="shrink-0 flex items-center gap-1.5">
-                  <div className="w-8 h-8 rounded-full bg-white/5 group-hover:bg-teal-500/20 border border-white/10 group-hover:border-teal-500/40 flex items-center justify-center text-zinc-400 group-hover:text-teal-300 transition-all">
+                <div className="shrink-0 flex items-center gap-1.5 pl-1">
+                  <div className="w-9 h-9 rounded-full bg-white/5 group-hover:bg-teal-500/20 border border-white/10 group-hover:border-teal-500/40 flex items-center justify-center text-zinc-400 group-hover:text-teal-300 transition-all shadow">
                     <ChevronRight className="w-4 h-4" />
                   </div>
                 </div>

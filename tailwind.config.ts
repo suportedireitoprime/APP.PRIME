@@ -119,6 +119,20 @@ const SKY = {
   950: "#082f49",
 };
 
+const TEAL = {
+  50:  "#f0fdfa",
+  100: "#ccfbf1",
+  200: "#99f6e4",
+  300: "#5eead4",
+  400: "#2dd4bf",
+  500: "#14b8a6",
+  600: "#0d9488",
+  700: "#0f766e",
+  800: "#115e59",
+  900: "#134e4a",
+  950: "#042f2e",
+};
+
 const MONO_COLOR_ALIASES = {
   // Alterações legislativas / Redação dada -> Amarelo / Âmbar legítimo
   amber: AMBER,
@@ -130,15 +144,15 @@ const MONO_COLOR_ALIASES = {
   pink: RED_PRIME,
   fuchsia: RED_PRIME,
   lime: RED_PRIME,
-  // Azuis e Cianos autênticos vibrantes
+  // Azuis, Cianos e Teals autênticos vibrantes
   sky: SKY,
   blue: BLUE,
   indigo: BLUE,
   cyan: CYAN,
+  teal: TEAL,
   // Frios/neutros -> cinza
   violet: GRAY,
   purple: GRAY,
-  teal: GRAY,
   stone: GRAY,
   slate: GRAY,
   zinc: GRAY,
