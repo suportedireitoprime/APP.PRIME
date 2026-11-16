@@ -35,7 +35,7 @@ import {
 import { audiobooksTracking, AudiobookRecenteItem } from "@/lib/audiobooksTracking";
 import { useAudiobookPlayer } from "@/contexts/AudiobookPlayerContext";
 
-export type AudiobookCategoriaTab = "todos" | "classicos" | "lideranca" | "fora_da_toga" | "oratoria";
+export type AudiobookCategoriaTab = "classicos" | "lideranca" | "fora_da_toga" | "oratoria";
 
 export function getAudiobookCategoria(livro: AudiobookLivro): "classicos" | "lideranca" | "fora_da_toga" | "oratoria" {
   const t = (livro.titulo || "").toLowerCase();
@@ -171,9 +171,9 @@ export default function AudiobooksPage() {
     }
   });
 
-  // Busca e Filtros de Categoria ("todos", "classicos", "lideranca", "fora_da_toga", "oratoria")
+  // Busca e Filtros de Categoria (inicia por padrão em "classicos": "classicos", "lideranca", "fora_da_toga", "oratoria")
   const [termoBusca, setTermoBusca] = useState("");
-  const [filtroCategoria, setFiltroCategoria] = useState<AudiobookCategoriaTab>("todos");
+  const [filtroCategoria, setFiltroCategoria] = useState<AudiobookCategoriaTab>("classicos");
 
   // Rastreamento dos livros iniciados pelo usuário (onde ele já deu play)
   const [livrosIniciados, setLivrosIniciados] = useState<Set<string>>(() =>
@@ -289,11 +289,9 @@ export default function AudiobooksPage() {
   // Lista filtrada do catálogo completo por Categoria e Busca
   const livrosFiltrados = useMemo(() => {
     return AUDIOBOOKS_CATALOGO.filter((livro) => {
-      // Filtro de Categoria
-      if (filtroCategoria !== "todos") {
-        const cat = getAudiobookCategoria(livro);
-        if (cat !== filtroCategoria) return false;
-      }
+      // Filtro de Categoria (inicia com Clássicos)
+      const cat = getAudiobookCategoria(livro);
+      if (cat !== filtroCategoria) return false;
 
       // Filtro de Busca por Título, Autor ou Tags
       if (termoBusca.trim()) {
@@ -315,10 +313,9 @@ export default function AudiobooksPage() {
     return [...disponiveis, ...emBreve].slice(0, 12);
   }, []);
 
-  // Contadores dinâmicos para as abas 3D estilo pasta
+  // Contadores dinâmicos para as abas 3D estilo pasta (inicia com Clássicos)
   const categoriasCounts = useMemo(() => {
     const counts: Record<AudiobookCategoriaTab, number> = {
-      todos: AUDIOBOOKS_CATALOGO.length,
       classicos: 0,
       lideranca: 0,
       fora_da_toga: 0,
@@ -332,7 +329,6 @@ export default function AudiobooksPage() {
   }, []);
 
   const CATEGORIAS_TABS = useMemo(() => [
-    { id: "todos" as const, label: "Todos", count: categoriasCounts.todos },
     { id: "classicos" as const, label: "Clássicos", count: categoriasCounts.classicos },
     { id: "lideranca" as const, label: "Liderança", count: categoriasCounts.lideranca },
     { id: "fora_da_toga" as const, label: "Fora da Toga", count: categoriasCounts.fora_da_toga },
@@ -818,11 +814,11 @@ export default function AudiobooksPage() {
                 type="button"
                 onClick={() => {
                   setTermoBusca("");
-                  setFiltroCategoria("todos");
+                  setFiltroCategoria("classicos");
                 }}
                 className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] transition-colors"
               >
-                Ver Todos os Livros
+                Ver Obras Clássicas
               </button>
             </div>
           ) : (
