@@ -37,8 +37,8 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
       transition={{ duration: 0.3 }}
       onClick={handleClick}
       style={{
-        background: 'linear-gradient(to right, rgba(124, 58, 237, 0.22), rgba(124, 58, 237, 0.06))',
-        borderColor: 'rgba(168, 85, 247, 0.35)',
+        background: 'linear-gradient(to right, rgba(124, 58, 237, 0.14), rgba(20, 20, 24, 0.95))',
+        borderColor: 'rgba(255, 255, 255, 0.12)',
       }}
       className="w-full flex items-center gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer"
     >
@@ -49,9 +49,6 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
           alt={livro.titulo}
           className="w-full h-full object-cover"
         />
-        <span className="absolute bottom-0 inset-x-0 bg-[#7C3AED] text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
-          ÁUDIO
-        </span>
       </div>
 
       {/* Textos informativos centrais */}

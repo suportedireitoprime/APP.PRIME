@@ -6,7 +6,7 @@ import {
   Layers,
   Info,
   Bell,
-  Heart,
+  Bookmark,
   ChevronRight,
   Headphones,
   BookOpen,
@@ -154,12 +154,12 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
         <button
           type="button"
           onClick={handleToggleFav}
-          aria-label="Favoritar"
+          aria-label={fav ? "Remover dos favoritos" : "Salvar nos favoritos"}
           className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center transition-transform active:scale-95 shadow-lg cursor-pointer"
         >
-          <Heart
+          <Bookmark
             className={`w-4 h-4 transition-colors ${
-              fav ? 'fill-[#E11D48] text-[#E11D48]' : 'text-white'
+              fav ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'text-white/80'
             }`}
           />
         </button>

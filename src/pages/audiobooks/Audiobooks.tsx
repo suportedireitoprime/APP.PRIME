@@ -10,10 +10,12 @@ import {
   ChevronRight,
   X,
   Heart,
+  Bookmark,
   Check,
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { haptic } from "@/lib/nativeHaptics";
 import {
@@ -21,8 +23,9 @@ import {
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
   AudiobookLivro,
 } from "@/data/audiobooksCatalogo";
-import { criarLivroPlayerResumo, hasResumoDisponivel } from "@/data/audiobooksResumosMap";
+import { criarLivroPlayerResumo, hasResumoDisponivel, getResumoForLivro } from "@/data/audiobooksResumosMap";
 import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
+import { AudiobookModalidadeDialog } from "@/components/audiobooks/AudiobookModalidadeDialog";
 import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
 import { AudiobooksContinuarOuvindoCard } from "@/components/audiobooks/AudiobooksContinuarOuvindoCard";
 import {
@@ -32,12 +35,106 @@ import {
 import { audiobooksTracking, AudiobookRecenteItem } from "@/lib/audiobooksTracking";
 import { useAudiobookPlayer } from "@/contexts/AudiobookPlayerContext";
 
+export type AudiobookCategoriaTab = "todos" | "classicos" | "lideranca" | "fora_da_toga" | "oratoria";
+
+export function getAudiobookCategoria(livro: AudiobookLivro): "classicos" | "lideranca" | "fora_da_toga" | "oratoria" {
+  const t = (livro.titulo || "").toLowerCase();
+  const id = (livro.id || "").toLowerCase();
+  const tagsStr = (livro.tags || []).join(" ").toLowerCase();
+
+  // 1. Oratória
+  if (
+    t.includes("discurso") ||
+    t.includes("oratória") ||
+    t.includes("oratoria") ||
+    t.includes("retórica") ||
+    t.includes("retorica") ||
+    t.includes("falar em público") ||
+    t.includes("comunic") ||
+    id.includes("discurso") ||
+    id.includes("oratoria") ||
+    tagsStr.includes("oratória") ||
+    tagsStr.includes("oratoria")
+  ) {
+    return "oratoria";
+  }
+
+  // 2. Liderança
+  if (
+    t.includes("monge") ||
+    t.includes("arte da guerra") ||
+    t.includes("virando a própria mesa") ||
+    t.includes("meta: um processo") ||
+    t.includes("príncipe") ||
+    t.includes("principe") ||
+    t.includes("liderança") ||
+    t.includes("lideranca") ||
+    t.includes("gestão") ||
+    t.includes("gestao") ||
+    id.includes("monge") ||
+    id.includes("arte-da-guerra") ||
+    id.includes("virando") ||
+    id.includes("meta") ||
+    tagsStr.includes("liderança") ||
+    tagsStr.includes("lideranca")
+  ) {
+    return "lideranca";
+  }
+
+  // 3. Fora da Toga (Ficção, Literatura, Sociedade, Filosofia geral)
+  if (
+    t.includes("revolução dos bichos") ||
+    t.includes("1984") ||
+    t.includes("como as democracias") ||
+    t.includes("mundo assombrado") ||
+    t.includes("mundo de sofia") ||
+    t.includes("o processo") ||
+    t.includes("advogado do diabo") ||
+    t.includes("riqueza das nações") ||
+    t.includes("crime e castigo") ||
+    id.includes("1984") ||
+    id.includes("revolucao") ||
+    id.includes("processo") ||
+    id.includes("democracias") ||
+    id.includes("sofia") ||
+    id.includes("assombrado") ||
+    id.includes("diabo") ||
+    id.includes("riqueza") ||
+    id.includes("crime-e-castigo")
+  ) {
+    return "fora_da_toga";
+  }
+
+  // 4. Clássicos (Clássicos do Direito e da Filosofia Jurídica)
+  return "classicos";
+}
+
+export function getAudiobookDuracaoBadge(livro: AudiobookLivro): string {
+  if (livro.duracaoTotalFormatada && livro.duracaoTotalFormatada.includes("min")) {
+    return livro.duracaoTotalFormatada.replace("~", "").trim();
+  }
+  if (livro.duracaoTotalSegundos && livro.duracaoTotalSegundos > 0) {
+    return `${Math.round(livro.duracaoTotalSegundos / 60)} min`;
+  }
+  const resumo = getResumoForLivro(livro);
+  if (resumo?.duracaoFormatada) {
+    return resumo.duracaoFormatada.replace("~", "").trim();
+  }
+  if (livro.totalCapitulos && livro.totalCapitulos > 0) {
+    return `${livro.totalCapitulos * 10} min`;
+  }
+  return "35 min";
+}
+
 export default function AudiobooksPage() {
   const navigate = useNavigate();
   const player = useAudiobookPlayer();
 
   // Livro aberto no Painel de Detalhes
   const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(null);
+
+  // Livro selecionado para escolher modalidade (Audiobook Completo vs Resumo Analítico)
+  const [livroModalidade, setLivroModalidade] = useState<AudiobookLivro | null>(null);
 
   // Sheet de Ações Rápidas do Painel Hero (Favoritos | Recentes | Estatísticas | Outros)
   const [activeQuickSheet, setActiveQuickSheet] = useState<AudiobookQuickActionType | null>(null);
@@ -57,9 +154,9 @@ export default function AudiobooksPage() {
     }
   });
 
-  // Busca e Filtros: Ordem obrigatória: Todos, Terminando e Finalizados
+  // Busca e Filtros de Categoria ("todos", "classicos", "lideranca", "fora_da_toga", "oratoria")
   const [termoBusca, setTermoBusca] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState<"todos" | "terminando" | "finalizados">("todos");
+  const [filtroCategoria, setFiltroCategoria] = useState<AudiobookCategoriaTab>("todos");
 
   // Rastreamento dos livros iniciados pelo usuário (onde ele já deu play)
   const [livrosIniciados, setLivrosIniciados] = useState<Set<string>>(() =>
@@ -172,18 +269,16 @@ export default function AudiobooksPage() {
     });
   }, []);
 
-  // Lista filtrada do catálogo completo
+  // Lista filtrada do catálogo completo por Categoria e Busca
   const livrosFiltrados = useMemo(() => {
     return AUDIOBOOKS_CATALOGO.filter((livro) => {
-      // Filtro de Status
-      if (filtroStatus === "finalizados" && livro.status !== "disponivel") return false;
-      if (filtroStatus === "terminando") {
-        // "Terminando deve ser só os que ele já deu play"
-        const jaDeuPlay = livrosIniciados.has(livro.id) || (player.livroAtual?.id === livro.id);
-        if (!jaDeuPlay) return false;
+      // Filtro de Categoria
+      if (filtroCategoria !== "todos") {
+        const cat = getAudiobookCategoria(livro);
+        if (cat !== filtroCategoria) return false;
       }
 
-      // Filtro de Busca por Título ou Autor
+      // Filtro de Busca por Título, Autor ou Tags
       if (termoBusca.trim()) {
         const query = termoBusca.toLowerCase();
         const matchTitulo = livro.titulo.toLowerCase().includes(query);
@@ -194,7 +289,7 @@ export default function AudiobooksPage() {
 
       return true;
     });
-  }, [termoBusca, filtroStatus, livrosIniciados, player.livroAtual]);
+  }, [termoBusca, filtroCategoria]);
 
   // Livros recomendados para a seção de destaque
   const livrosRecomendados = useMemo(() => {
@@ -203,17 +298,29 @@ export default function AudiobooksPage() {
     return [...disponiveis, ...emBreve].slice(0, 12);
   }, []);
 
-  // Contadores para as abas
-  const totalCount = AUDIOBOOKS_CATALOGO.length;
-  const terminandoCount = useMemo(() => {
-    return AUDIOBOOKS_CATALOGO.filter(
-      (l) => livrosIniciados.has(l.id) || (player.livroAtual?.id === l.id)
-    ).length;
-  }, [livrosIniciados, player.livroAtual]);
-  const finalizadosCount = useMemo(
-    () => AUDIOBOOKS_CATALOGO.filter((l) => l.status === "disponivel").length,
-    [],
-  );
+  // Contadores dinâmicos para as abas 3D estilo pasta
+  const categoriasCounts = useMemo(() => {
+    const counts: Record<AudiobookCategoriaTab, number> = {
+      todos: AUDIOBOOKS_CATALOGO.length,
+      classicos: 0,
+      lideranca: 0,
+      fora_da_toga: 0,
+      oratoria: 0,
+    };
+    for (const livro of AUDIOBOOKS_CATALOGO) {
+      const cat = getAudiobookCategoria(livro);
+      counts[cat] = (counts[cat] || 0) + 1;
+    }
+    return counts;
+  }, []);
+
+  const CATEGORIAS_TABS = useMemo(() => [
+    { id: "todos" as const, label: "Todos", count: categoriasCounts.todos },
+    { id: "classicos" as const, label: "Clássicos", count: categoriasCounts.classicos },
+    { id: "lideranca" as const, label: "Liderança", count: categoriasCounts.lideranca },
+    { id: "fora_da_toga" as const, label: "Fora da Toga", count: categoriasCounts.fora_da_toga },
+    { id: "oratoria" as const, label: "Oratória", count: categoriasCounts.oratoria },
+  ], [categoriasCounts]);
 
   // 4 cópias para permitir rolagem contínua infinita sem margem morta na esquerda (idêntico a Leis em Alta)
   const loopedItems = useMemo(() => {
@@ -397,18 +504,18 @@ export default function AudiobooksPage() {
     if (idx !== activeCarouselIndex) {
       scrollCarouselToIndex(idx);
     }
-    setLivroSelecionado(livro);
+    setLivroModalidade(livro);
   };
 
   const handleCardClick = (livro: AudiobookLivro) => {
     haptic.selection();
-    setLivroSelecionado(livro);
+    setLivroModalidade(livro);
   };
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(7rem+var(--sai-bottom,0px))]">
-      {/* Fundo Padrão ShapeGrid */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      {/* Fundo Oficial Idêntico ao Início do App */}
+      <div className="fixed inset-0 z-0">
         <ShapeGrid />
       </div>
 
@@ -475,19 +582,12 @@ export default function AudiobooksPage() {
                   }`}
                 >
                   <div
-                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#140E28] border transform-gpu transition-all duration-300 ${
+                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[#161618] transform-gpu transition-all duration-300 ${
                       isActive
-                        ? "scale-100 border-[#8B5CF6]/80 shadow-2xl shadow-[#7C3AED]/30 ring-2 ring-[#7C3AED]/50"
-                        : "scale-[0.94] border-purple-500/20 shadow-md group-hover:border-[#7C3AED]/50"
+                        ? "scale-100 border-2 border-[#A855F7]"
+                        : "scale-[0.94] border border-white/10 group-hover:border-white/20"
                     }`}
                   >
-                    {/* Efeito de Pulso Leve na capa centralizada ativa (padrão Layers/Leis em Alta) */}
-                    {isActive && (
-                      <>
-                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7C3AED]/35 via-[#A855F7]/25 to-[#7C3AED]/35 blur-md pointer-events-none animate-pulse" />
-                        <div className="absolute inset-0 rounded-2xl ring-2 ring-[#8B5CF6]/80 pointer-events-none animate-[pulse_2.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
-                      </>
-                    )}
 
                     <img
                       src={livro.capaUrl}
@@ -517,17 +617,21 @@ export default function AudiobooksPage() {
                       )}
                     </div>
 
-                    {/* Botão de Favorito no topo direito */}
+                    {/* Botão de Favorito / Salvar no topo direito */}
                     <button
                       type="button"
                       onClick={(e) => toggleFavorito(livro, e)}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-purple-950/70 backdrop-blur-md border border-purple-500/30 text-purple-200/80 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10"
-                      aria-label="Favoritar"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white/70 hover:text-amber-400 hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
+                      aria-label={isFav ? "Remover dos favoritos" : "Salvar nos favoritos"}
                     >
-                      <Heart
-                        className={`w-3.5 h-3.5 ${
-                          isFav ? "fill-rose-500 text-rose-500" : ""
-                        }`}
+                      <Bookmark
+                        className={cn(
+                          "w-3.5 h-3.5 transition-colors",
+                          isFav
+                            ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                            : "text-white/70"
+                        )}
+                        strokeWidth={2}
                       />
                     </button>
                   </div>
@@ -602,9 +706,9 @@ export default function AudiobooksPage() {
             <input
               type="text"
               value={termoBusca}
-              onChange={(e) => setTermoBusca("")}
+              onChange={(e) => setTermoBusca(e.target.value)}
               placeholder="Buscar livro, autor ou tema…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#140E28]/85 border border-purple-500/25 text-white placeholder-purple-200/40 focus:outline-none focus:border-[#A855F7] transition-colors shadow-[0_4px_20px_rgba(124,58,237,0.12)]"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416]/95 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#A855F7] transition-colors shadow-lg shadow-black/40"
             />
             {termoBusca && (
               <button
@@ -617,80 +721,92 @@ export default function AudiobooksPage() {
             )}
           </div>
 
-          {/* Abas de Filtro de Status na Ordem Solicitada: Todos, Terminando e Finalizados */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
-            {/* 1. Todos */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setFiltroStatus("todos");
-              }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
-                filtroStatus === "todos"
-                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
-                  : "bg-purple-950/30 border-purple-500/20 text-purple-200/80 hover:text-white hover:bg-purple-900/40 hover:border-purple-500/40"
-              }`}
-            >
-              Todos ({totalCount})
-            </button>
+          {/* Abas 3D Estilo Pasta (Idêntico a Resumos: Todos, Clássicos, Liderança, Fora da Toga, Oratória) */}
+          <div className="relative w-full -mr-4 sm:-mr-6 pr-4 sm:pr-6 overflow-hidden mb-5">
+            <div className="flex w-full items-end overflow-x-auto no-scrollbar h-11 sm:h-12 pt-1 pl-1">
+              {CATEGORIAS_TABS.map((tab, index) => {
+                const isActive = filtroCategoria === tab.id;
+                const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
 
-            {/* 2. Terminando (Apenas os que o usuário já deu play) */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setFiltroStatus("terminando");
-              }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                filtroStatus === "terminando"
-                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
-                  : "bg-purple-950/30 border-purple-500/20 text-purple-200/80 hover:text-white hover:bg-purple-900/40 hover:border-purple-500/40"
-              }`}
-            >
-              <Clock className={`w-3 h-3 ${filtroStatus === "terminando" ? "text-white" : "text-amber-300"}`} />
-              Terminando ({terminandoCount})
-            </button>
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setFiltroCategoria(tab.id);
+                    }}
+                    className={cn(
+                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t font-bold text-[10px] sm:text-[11px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
+                      isActive
+                        ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-purple-500/60"
+                        : "bg-[#0A0A0A] text-zinc-400 hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/5 opacity-80"
+                    )}
+                    style={{
+                      zIndex,
+                      marginLeft: index > 0 ? "-10px" : "0",
+                    }}
+                  >
+                    <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-purple-500/5 to-purple-500/15 opacity-70" />
+                      )}
+                    </div>
 
-            {/* 3. Finalizados (Disponíveis completos no acervo) */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setFiltroStatus("finalizados");
-              }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                filtroStatus === "finalizados"
-                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
-                  : "bg-purple-950/30 border-purple-500/20 text-purple-200/80 hover:text-white hover:bg-purple-900/40 hover:border-purple-500/40"
-              }`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${filtroStatus === "finalizados" ? "bg-white" : "bg-emerald-400"}`} />
-              Finalizados ({finalizadosCount})
-            </button>
+                    <span
+                      className={cn(
+                        "relative z-10 whitespace-nowrap transition-transform duration-200",
+                        isActive ? "scale-105 text-purple-200 font-black drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]" : "scale-100"
+                      )}
+                    >
+                      {tab.label}
+                    </span>
+
+                    <span
+                      className={cn(
+                        "relative z-10 text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold tracking-tight transition-colors duration-200",
+                        isActive
+                          ? "bg-purple-500/25 text-purple-200 border border-purple-500/35"
+                          : "bg-white/5 text-purple-400/50"
+                      )}
+                    >
+                      {tab.count}
+                    </span>
+
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeAudiobooksFolderTab"
+                        className="absolute inset-0 rounded-t-2xl border-x border-t border-purple-500/60 pointer-events-none shadow-[inset_0_2px_10px_rgba(168,85,247,0.3)]"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 480, damping: 36, mass: 0.8 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Linha de Base da Pasta */}
+            <div className="w-full h-px bg-[#1A1A1A] relative z-20 shadow-[0_-1px_0_rgba(168,85,247,0.35)]" />
           </div>
 
           {/* Listagem de Livros — Somente Lista Vertical */}
           {livrosFiltrados.length === 0 ? (
             <div className="py-16 text-center text-white/60 text-sm bg-purple-950/20 border border-purple-500/20 rounded-3xl px-4">
-              {filtroStatus === "terminando" ? (
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <Clock className="w-8 h-8 text-amber-400/60 mb-1" />
-                  <p className="font-semibold text-white">Nenhum audiobook em andamento</p>
-                  <p className="text-xs text-white/50 max-w-sm">
-                    Dê o play em qualquer obra da coleção para que ela apareça aqui em &quot;Terminando&quot;.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setFiltroStatus("todos")}
-                    className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#7C3AED]"
-                  >
-                    Ver Todos os Livros
-                  </button>
-                </div>
-              ) : (
-                "Nenhum livro encontrado com o termo informado."
-              )}
+              <p className="font-semibold text-white">Nenhum audiobook encontrado</p>
+              <p className="text-xs text-white/50 max-w-sm mx-auto mt-1">
+                Tente buscar outro termo ou selecione outra categoria de áudio.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setTermoBusca("");
+                  setFiltroCategoria("todos");
+                }}
+                className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] transition-colors"
+              >
+                Ver Todos os Livros
+              </button>
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
@@ -715,7 +831,7 @@ export default function AudiobooksPage() {
                     whileTap={{ scale: 0.985 }}
                     onClick={() => handleCardClick(livro)}
                     aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#140E28]/85 hover:bg-[#1D1438] border border-purple-500/20 hover:border-purple-500/45 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_20px_rgba(124,58,237,0.2)] cursor-pointer select-none"
+                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-purple-400/40 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none"
                   >
                     {/* Capa Retangular à Esquerda */}
                     <div className="w-[72px] sm:w-[80px] h-[100px] sm:h-[110px] shrink-0 rounded-xl overflow-hidden bg-[#0A0518] border border-purple-500/25 shadow-md relative">
@@ -753,12 +869,11 @@ export default function AudiobooksPage() {
                       </p>
 
                       <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                        {hasResumoDisponivel(livro) && (
-                          <span className="inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/30">
-                            <Sparkles className="w-2.5 h-2.5 text-amber-300" />
-                            Resumo em Áudio
-                          </span>
-                        )}
+                        {/* Duração em minutos no lugar da antiga tag 'Resumo em Áudio' */}
+                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                          <Clock className="w-3 h-3 text-purple-300 stroke-[2.2]" />
+                          {getAudiobookDuracaoBadge(livro)}
+                        </span>
 
                         {isNotificado && !isDisponivel && (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/20 text-[#DDD6FE] border border-[#7C3AED]/35 shadow-[0_0_8px_rgba(124,58,237,0.3)]">
@@ -769,18 +884,22 @@ export default function AudiobooksPage() {
                       </div>
                     </div>
 
-                    {/* Botões de Ação à Direita: Favorito e Abrir */}
+                    {/* Botões de Ação à Direita: Salvar (Bookmark) e Ouvir */}
                     <div className="flex flex-col items-center justify-between py-1 pl-1 pr-1 shrink-0">
                       <button
                         type="button"
                         onClick={(e) => toggleFavorito(livro, e)}
-                        className="p-1.5 rounded-full hover:bg-white/10 text-white/50 hover:text-rose-400 active:scale-90 transition-all"
-                        aria-label="Favoritar"
+                        className="p-1.5 rounded-xl hover:bg-white/10 text-white/50 hover:text-amber-400 active:scale-90 transition-all cursor-pointer"
+                        aria-label={isFav ? "Remover dos favoritos" : "Salvar nos favoritos"}
                       >
-                        <Heart
-                          className={`w-4 h-4 ${
-                            isFav ? "fill-rose-500 text-rose-500" : ""
-                          }`}
+                        <Bookmark
+                          className={cn(
+                            "w-4 h-4 transition-colors",
+                            isFav
+                              ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                              : "text-zinc-500 hover:text-zinc-300"
+                          )}
+                          strokeWidth={2}
                         />
                       </button>
 
@@ -805,19 +924,36 @@ export default function AudiobooksPage() {
       </main>
 
       {/* ======================================================== */}
-      {/* SHEET DE AÇÕES RÁPIDAS (FAVORITOS, RECENTES, ESTATÍSTICAS, RESUMOS) */}
+      {/* SHEET DE AÇÕES RÁPIDAS (FAVORITOS, RECENTES, ESTATÍSTICAS, EM ALTA) */}
       {/* ======================================================== */}
       <AudiobooksQuickActionSheet
         activeSheet={activeQuickSheet}
         onClose={() => setActiveQuickSheet(null)}
         onSelectLivro={(livro) => {
-          setLivroSelecionado(livro);
+          setLivroModalidade(livro);
         }}
         onPlayLivro={(livro, idx) => {
           player.tocarLivro(livro, idx ?? 0);
         }}
         onPlayResumo={(livro, idx) => {
           abrirResumo(livro, idx ?? 0);
+        }}
+      />
+
+      {/* ======================================================== */}
+      {/* DIÁLOGO MINIMALISTA: ESCOLHA ENTRE AUDIOBOOK COMPLETO OU RESUMO ANALÍTICO */}
+      {/* ======================================================== */}
+      <AudiobookModalidadeDialog
+        open={!!livroModalidade}
+        livro={livroModalidade}
+        onClose={() => setLivroModalidade(null)}
+        onSelectCompleto={(livro) => {
+          setLivroModalidade(null);
+          setLivroSelecionado(livro);
+        }}
+        onSelectResumo={(livro) => {
+          setLivroModalidade(null);
+          abrirResumo(livro);
         }}
       />
 
