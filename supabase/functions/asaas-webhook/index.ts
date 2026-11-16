@@ -82,9 +82,9 @@ Deno.serve(async (req) => {
       else if (externalRefPlan.startsWith('mensal')) inferredPlan = 'mensal';
       else if (externalRefPlan.startsWith('anual') || externalRefPlan === 'anual_regular_pix') inferredPlan = 'anual';
       else if (externalRefPlan === 'promocao') inferredPlan = 'anual_promocional';
-    } else if (desc.includes('vitalicio') || (val >= 140 && val <= 180 && !desc.includes('anual'))) {
+    } else if (desc.includes('vitalicio') || desc.includes('vitalício') || desc.includes('vital') || (val >= 140 && val <= 180 && !desc.includes('anual'))) {
       inferredPlan = 'vitalicio';
-    } else if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+    } else if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio') && !desc.includes('vitalício') && !desc.includes('vital'))) {
       inferredPlan = 'mensal';
     } else if (desc.includes('promo')) {
       inferredPlan = 'anual_promocional';
@@ -289,9 +289,11 @@ Deno.serve(async (req) => {
         origem: 'asaas',
         updated_at: new Date().toISOString(),
       };
-      if (pago) {
+      if (currSub?.started_at) {
         // Preserva started_at original para não destruir histórico e manter grandfathering
-        subUpsertPayload.started_at = currSub?.started_at || new Date().toISOString();
+        subUpsertPayload.started_at = currSub.started_at;
+      } else if (pago) {
+        subUpsertPayload.started_at = new Date().toISOString();
       }
       await admin.from('asaas_subscriptions').upsert(subUpsertPayload, { onConflict: 'user_id' });
 

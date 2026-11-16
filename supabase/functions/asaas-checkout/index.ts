@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
       // Validação estrita: confere se o pagamento pertence ao usuário autenticado
       const extRef = payment.externalReference || '';
       const [refUserId, refPlan] = extRef.includes('|') ? extRef.split('|') : [extRef, null];
-      if (refUserId && refUserId !== user.id) {
+      if (!extRef || !refUserId || refUserId !== user.id) {
         throw new Error('Pagamento não pertence ao usuário autenticado');
       }
 
@@ -332,13 +332,20 @@ Deno.serve(async (req) => {
         const now = new Date();
         const expiresAt = isVitalicio ? null : new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();
 
+        // Preserva started_at original para não destruir histórico e manter grandfathering
+        const { data: existingSub } = await admin
+          .from('asaas_subscriptions')
+          .select('started_at')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
         await admin.from('asaas_subscriptions').upsert({
           user_id: user.id,
           plano: planoFinal,
           status: 'ACTIVE',
           asaas_customer_id: customerId,
           asaas_subscription_id: paymentId || sub.id,
-          started_at: now.toISOString(),
+          started_at: existingSub?.started_at || now.toISOString(),
           expires_at: expiresAt,
           origem: 'asaas',
           updated_at: now.toISOString(),
