@@ -1622,6 +1622,144 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   transform: rotateY(180deg);
 }
 
+/* ─── 3D Realistic Book Page Flip ─── */
+.pagearea {
+  perspective: 1500px;
+  -webkit-perspective: 1500px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+.pagearea .under {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.pagearea .flip-shadow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 20%, transparent 50%);
+  opacity: 0;
+}
+
+.pagearea .flip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform-origin: left center;
+  -webkit-transform-origin: left center;
+  will-change: transform;
+}
+
+.pagearea .face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.pagearea .face.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.pagearea .face.back {
+  z-index: 1;
+  transform: rotateY(180deg);
+}
+
+.pagearea .veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.1) 20%, rgba(255, 255, 255, 0.08) 45%, rgba(0, 0, 0, 0.25) 100%);
+  opacity: 0;
+}
+
+@keyframes turnNext {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(-180deg);
+  }
+}
+
+@keyframes turnPrev {
+  0% {
+    transform: rotateY(-180deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes veilNextAnim {
+  0% { opacity: 0; }
+  35% { opacity: 0.7; }
+  70% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+@keyframes veilPrevAnim {
+  0% { opacity: 0; }
+  35% { opacity: 0.5; }
+  70% { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+@keyframes shadowNextAnim {
+  0% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+@keyframes shadowPrevAnim {
+  0% { opacity: 0; }
+  100% { opacity: 0.6; }
+}
+
+.pagearea .flip.anim-next {
+  animation: turnNext 0.58s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.pagearea .flip.anim-next .veil {
+  animation: veilNextAnim 0.58s ease-in-out forwards;
+}
+
+.pagearea.is-turning-next .flip-shadow {
+  animation: shadowNextAnim 0.58s ease-out forwards;
+}
+
+.pagearea .flip.anim-prev {
+  animation: turnPrev 0.58s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.pagearea .flip.anim-prev .veil {
+  animation: veilPrevAnim 0.58s ease-in-out forwards;
+}
+
+.pagearea.is-turning-prev .flip-shadow {
+  animation: shadowPrevAnim 0.58s ease-out forwards;
+}
+
+
 .hover-shimmer-effect {
   position: relative;
   overflow: hidden;

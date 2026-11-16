@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
+import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams, getPdfUrlParams } from '@/lib/pdfWorkerConfig';
 import { Capacitor } from '@capacitor/core';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
 import {
@@ -57,7 +57,7 @@ export function usePdfDocument({
           const bytes = await fetchPdfBytes(normalizedUrl);
           source = getPdfDocumentParams(bytes);
         } else {
-          source = { url: normalizedUrl, withCredentials: false };
+          source = getPdfUrlParams(normalizedUrl);
         }
 
         const task = pdfjsLib.getDocument(source);

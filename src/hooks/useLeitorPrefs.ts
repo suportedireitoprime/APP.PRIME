@@ -110,7 +110,7 @@ const DEFAULTS: LeitorPrefs = {
   espacamento: 'amplo',
   brilho: 1,
   tonalidade: 0,
-  pageMode: 'slide',
+  pageMode: 'curl',
 };
 
 function load(): LeitorPrefs {

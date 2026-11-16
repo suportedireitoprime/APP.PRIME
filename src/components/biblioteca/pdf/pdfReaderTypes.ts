@@ -16,6 +16,7 @@ export const PAGE_KEY = (url: string) => `pdf-reader:page:${url}`;
 
 export const MIN_ZOOM = 1;
 export const MAX_ZOOM = 4;
+export const DEFAULT_ZOOM = 1.1;
 
 /**
  * Normaliza URLs de compartilhamento comuns (Drive/Dropbox) para o

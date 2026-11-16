@@ -12,12 +12,15 @@ import {
   PAGE_KEY,
   MIN_ZOOM,
   MAX_ZOOM,
+  DEFAULT_ZOOM,
 } from './pdf/pdfReaderTypes';
 import PdfReaderHeader from './pdf/PdfReaderHeader';
 import PdfReaderFooter from './pdf/PdfReaderFooter';
 import PdfContinuarPrompt from './pdf/PdfContinuarPrompt';
 import PdfSumarioSheet from './pdf/PdfSumarioSheet';
 import PdfBuscaSheet from './pdf/PdfBuscaSheet';
+import AssistenteIA from './leitor/AssistenteIA';
+import { TEMAS } from '@/hooks/useLeitorPrefs';
 import { usePdfSearch } from './pdf/usePdfSearch';
 import { usePdfDocument } from './pdf/usePdfDocument';
 
@@ -75,7 +78,8 @@ const PdfScrollReader = ({
     return v ? Number(v) : null;
   });
   const [showSumario, setShowSumario] = useState(false);
-  const [zoom, setZoom] = useState(1);
+  const [showAssistente, setShowAssistente] = useState(false);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const isNative = Capacitor.isNativePlatform();
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
   // Começar em largura total sem margens de padrão
@@ -201,16 +205,16 @@ const PdfScrollReader = ({
       const page = await pdf.getPage(idx);
       pagesRef.current.set(idx, page);
       
-      const containerWidth = containerRef.current?.clientWidth || window.innerWidth;
+      const hostParent = host.parentElement;
+      const containerWidth = hostParent?.clientWidth || containerRef.current?.clientWidth || window.innerWidth;
       // Largura total sem margens de padrão
       const targetWidth = dualPage
         ? containerWidth / 2
         : containerWidth;
       const viewport = page.getViewport({ scale: 1 });
       
-      // Multiplicador de alta definição (Retina / Ultra HD)
-      // Mínimo 2.25x e até 3.0x para nitidez cristalina absoluta de fontes e vetores
-      const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.25), 3.0);
+      // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
+      const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.5), 3.5);
       const baseScale = targetWidth / viewport.width;
       const renderScale = baseScale * dpr;
       const finalVp = page.getViewport({ scale: renderScale });
@@ -221,11 +225,13 @@ const PdfScrollReader = ({
       const canvas = document.createElement('canvas');
       canvas.width = Math.floor(finalVp.width);
       canvas.height = Math.floor(finalVp.height);
-      canvas.style.width = '100%';
-      canvas.style.height = `${displayHeight}px`;
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.maxWidth = '100%';
+      canvas.style.height = 'auto';
+      canvas.style.aspectRatio = `${viewport.width} / ${viewport.height}`;
       canvas.style.display = 'block';
       canvas.style.margin = '0 auto';
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: false });
       if (!ctx) return;
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
@@ -558,14 +564,13 @@ const PdfScrollReader = ({
             >
               <ZoomOut className="w-[18px] h-[18px]" />
             </button>
-            {zoom > 1 && (
-              <button
-                onClick={() => setZoom(1)}
-                className="px-2 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] font-bold tabular-nums backdrop-blur shadow active:scale-95 transition cursor-pointer"
-              >
-                {Math.round(zoom * 100)}%
-              </button>
-            )}
+            <button
+              onClick={() => setZoom(zoom === DEFAULT_ZOOM ? 1.0 : DEFAULT_ZOOM)}
+              className="px-2.5 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] font-bold tabular-nums backdrop-blur shadow active:scale-95 transition cursor-pointer"
+              title="Zoom atual (clique para alternar 110% / 100%)"
+            >
+              {Math.round(zoom * 100)}%
+            </button>
           </div>
         )}
 
@@ -587,11 +592,28 @@ const PdfScrollReader = ({
           totalPages={totalPages}
           progress={progress}
           bookmark={bookmark}
+          bookmarksCount={bookmark ? 1 : 0}
           onPrev={goPrev}
           onNext={goNext}
           onToggleBookmark={toggleBookmark}
           onOpenBusca={() => setShowBusca(true)}
           onOpenSumario={() => setShowSumario(true)}
+          onOpenAssistente={() => setShowAssistente(true)}
+        />
+      )}
+
+      {/* Assistente IA */}
+      {showAssistente && (
+        <AssistenteIA
+          open={showAssistente}
+          onClose={() => setShowAssistente(false)}
+          paginaMd={`# ${titulo}\n\nPágina ${currentPage} de ${totalPages} do documento PDF original.`}
+          livroTitulo={titulo}
+          capituloTitulo={`Página ${currentPage}`}
+          paginaNum={currentPage}
+          livroId={String(livroId || 'pdf')}
+          tema={TEMAS.noturno}
+          fonteFamily="Inter, sans-serif"
         />
       )}
 

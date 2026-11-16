@@ -82,6 +82,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
   const [pdfCached, setPdfCached] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState<null | number>(null);
   const [pdfUrlForReader, setPdfUrlForReader] = useState<string | null>(null);
+  const [pdfStyle, setPdfStyle] = useState<'paginated' | 'scroll'>('paginated');
   const [gateOpen, setGateOpen] = useState(false);
   const [lembreteOpen, setLembreteOpen] = useState(false);
   const { canUse, register, config } = useFeatureLimit('biblioteca_ler', {
@@ -391,7 +392,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
         {readerMode === 'pdf' && (pdfUrlForReader || currentLivro.download) && (
           <ErrorBoundary key="pdf-reader">
             <Suspense fallback={<div className="flex h-full items-center justify-center p-8 text-zinc-400">Carregando leitor...</div>}>
-              {isDesktop ? (
+              {pdfStyle === 'paginated' ? (
                 <PdfPaginatedReader
                   url={pdfUrlForReader || currentLivro.download!}
                   urlClara={urlClara}
@@ -408,6 +409,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
                   livroId={String(currentLivro.id)}
                   capaUrl={capaUrl}
                   onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+                  onSwitchToScroll={() => setPdfStyle('scroll')}
                 />
               ) : (
                 <PdfScrollReader

@@ -57,6 +57,18 @@ export function getPdfDocumentParams(buf: Uint8Array | ArrayBuffer) {
   };
 }
 
+export function getPdfUrlParams(url: string) {
+  const version = pdfjsLib.version || '3.11.174';
+  return {
+    url,
+    withCredentials: false,
+    cMapUrl: `https://unpkg.com/pdfjs-dist@${version}/cmaps/`,
+    cMapPacked: true,
+    standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${version}/standard_fonts/`,
+    isEvalSupported: true,
+  };
+}
+
 // Exportar pdfjsLib do config para centralizar o import correto (legacy build) e evitar mix de versões
 export { pdfjsLib };
 

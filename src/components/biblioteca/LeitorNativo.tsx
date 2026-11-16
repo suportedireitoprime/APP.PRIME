@@ -563,6 +563,7 @@ const LeitorNativo = ({
                   fontSize={fontSize}
                   lineHeight={lineHeight}
                   alinhamento={alinhamentoEfetivo}
+                  onTapCenter={() => setModoFoco((v) => !v)}
                 />
               ) : (
                 <AnimatePresence mode="wait" custom={direction} initial={false}>
