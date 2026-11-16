@@ -58,6 +58,37 @@ jobs:
           javac -version
           sdkmanager --list_installed | grep -E 'platforms;android-36|build-tools;36.0.0|platform-tools' || true
 
+      - name: Configure Gradle Maven Central mirror (prevent 429 rate limits)
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/maven-mirror.gradle <<'GRADLE'
+          allprojects {
+              buildscript {
+                  repositories {
+                      all { repo ->
+                          if (repo instanceof MavenArtifactRepository) {
+                              def url = repo.url.toString()
+                              if (url.contains("repo.maven.apache.org") || url.contains("repo1.maven.org")) {
+                                  repo.url = uri("https://maven-central.storage-download.googleapis.com/maven2/")
+                              }
+                          }
+                      }
+                  }
+              }
+              repositories {
+                  all { repo ->
+                      if (repo instanceof MavenArtifactRepository) {
+                          def url = repo.url.toString()
+                          if (url.contains("repo.maven.apache.org") || url.contains("repo1.maven.org")) {
+                              repo.url = uri("https://maven-central.storage-download.googleapis.com/maven2/")
+                          }
+                      }
+                  }
+              }
+          }
+          GRADLE
+          echo "✅ Gradle mirror initialized in ~/.gradle/init.d/maven-mirror.gradle"
+
       - name: Install dependencies
         run: bun install
 
