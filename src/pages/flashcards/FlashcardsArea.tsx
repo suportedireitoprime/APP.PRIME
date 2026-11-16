@@ -38,7 +38,8 @@ import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { formatarNomeArea } from '@/pages/flashcards/Flashcards';
+import { formatarNomeArea } from '@/lib/flashcardsConstants';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
   AULAS_CATALOGO_COMPLETO,
@@ -267,17 +268,18 @@ const FlashcardsArea = () => {
     if (!flashcardsAreasResumo || flashcardsAreasResumo.length === 0) {
       return effectiveAreaName;
     }
+    const safeEffective = (area?.nome || effectiveAreaName || '').toLowerCase();
     const found =
-      flashcardsAreasResumo.find((a) => a.slug === slug) ||
-      flashcardsAreasResumo.find((a) => a.area.toLowerCase() === (area?.nome || effectiveAreaName).toLowerCase()) ||
-      flashcardsAreasResumo.find((a) => slug && (a.slug.includes(slug) || slug.includes(a.slug))) ||
-      flashcardsAreasResumo.find((a) => slug && a.area.toLowerCase().includes(slug.replace(/-/g, ' ')));
+      flashcardsAreasResumo.find((a) => a?.slug && a.slug === slug) ||
+      flashcardsAreasResumo.find((a) => a?.area && a.area.toLowerCase() === safeEffective) ||
+      flashcardsAreasResumo.find((a) => slug && a?.slug && (a.slug.includes(slug) || slug.includes(a.slug))) ||
+      flashcardsAreasResumo.find((a) => slug && a?.area && a.area.toLowerCase().includes(slug.replace(/-/g, ' ')));
     return found ? found.area : effectiveAreaName;
   }, [flashcardsAreasResumo, slug, area?.nome, effectiveAreaName]);
 
   const flashcardAreaRow = useMemo(() => {
     if (!flashcardsAreasResumo) return null;
-    return flashcardsAreasResumo.find((a) => a.area === officialFlashcardArea || a.slug === slug) || null;
+    return flashcardsAreasResumo.find((a) => (a?.area && a.area === officialFlashcardArea) || (a?.slug && a.slug === slug)) || null;
   }, [flashcardsAreasResumo, officialFlashcardArea, slug]);
 
   // Busca temas e cards de flashcards desta área no Supabase com fallback resiliente
@@ -557,7 +559,7 @@ const FlashcardsArea = () => {
   // Ícone oficial da área idêntico ao exibido nas listas (ex: Martelo para Penal, Templo para Administrativo)
   const AreaIconComponent = useMemo(() => {
     const rawTarget = slug || disciplinaId || area?.slug || area?.nome || officialFlashcardArea || effectiveAreaName;
-    return areaIconFor(rawTarget).Icon;
+    return areaIconFor(rawTarget)?.Icon || Landmark;
   }, [slug, disciplinaId, area?.slug, area?.nome, officialFlashcardArea, effectiveAreaName]);
 
   // Capa oficial ilustrada da matéria
@@ -713,12 +715,14 @@ const FlashcardsArea = () => {
       const numMat = parseInt(String(mat.numeroMateria).split('.')[0], 10) || (matIdx + 1);
       const matchBanco =
         (temasFlashcards || []).find((tf) => {
+          if (!tf?.tema) return false;
           const numTf = parseInt(String(tf.tema).split('.')[0], 10);
           return numTf > 0 && numTf === numMat;
         }) ||
         (temasFlashcards || []).find((tf) => {
-          const tNorm = tf.tema.toLowerCase();
-          const mNorm = mat.titulo.toLowerCase();
+          if (!tf?.tema || !mat?.titulo) return false;
+          const tNorm = String(tf.tema).toLowerCase();
+          const mNorm = String(mat.titulo).toLowerCase();
           return tNorm.includes(mNorm) || mNorm.includes(tNorm);
         });
 
@@ -861,17 +865,17 @@ const FlashcardsArea = () => {
   }, [materiaAtivaId]);
 
   const totalDecksCount = useMemo(() => {
-    return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
+    return (materiasComTemas || []).reduce((acc, m) => acc + (m.items?.length || 0), 0);
   }, [materiasComTemas]);
 
-  const totalMateriasCount = materiasComTemas.length;
+  const totalMateriasCount = (materiasComTemas || []).length;
   const totalTemasCount = useMemo(() => {
-    return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
+    return (materiasComTemas || []).reduce((acc, m) => acc + (m.items?.length || 0), 0);
   }, [materiasComTemas]);
-  const totalCardsCountGeral = totalFlashcardsArea > 0 ? totalFlashcardsArea : materiasComTemas.reduce((acc, m) => acc + (m.totalCards || 0), 0);
+  const totalCardsCountGeral = totalFlashcardsArea > 0 ? totalFlashcardsArea : (materiasComTemas || []).reduce((acc, m) => acc + (m.totalCards || 0), 0);
 
   const materiaAtiva = useMemo(() => {
-    return materiasComTemas.find((m) => m.id === materiaAtivaId) || materiasComTemas[0];
+    return (materiasComTemas || []).find((m) => m.id === materiaAtivaId) || (materiasComTemas || [])[0];
   }, [materiasComTemas, materiaAtivaId]);
 
   const activeSectionTotalCards = materiaAtiva?.totalCards || 144;
@@ -1205,4 +1209,34 @@ const FlashcardsArea = () => {
   );
 };
 
-export default FlashcardsArea;
+const FlashcardsAreaWithErrorBoundary = () => (
+  <ErrorBoundary
+    fallback={(_error, reset) => (
+      <div className="min-h-screen bg-[#0D0F12] text-white flex flex-col items-center justify-center p-6 text-center">
+        <Landmark className="w-12 h-12 text-blue-500 mb-4 animate-pulse" />
+        <h2 className="text-xl font-bold text-white mb-2">Trilha de Flashcards</h2>
+        <p className="text-sm text-zinc-400 max-w-sm mb-6">
+          Ocorreu um ajuste temporário ao carregar a trilha. Toque abaixo para recarregar ou voltar.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => reset()}
+            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all cursor-pointer"
+          >
+            Recarregar
+          </button>
+          <a
+            href="/flashcards"
+            className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm transition-all cursor-pointer"
+          >
+            Voltar
+          </a>
+        </div>
+      </div>
+    )}
+  >
+    <FlashcardsArea />
+  </ErrorBoundary>
+);
+
+export default FlashcardsAreaWithErrorBoundary;

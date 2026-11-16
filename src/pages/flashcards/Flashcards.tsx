@@ -7,19 +7,15 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow } from '@/lib/flashcardsQueries';
-import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
+import { FALLBACK_FLASHCARDS_AREAS, formatarNomeArea } from '@/lib/flashcardsConstants';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { cn } from '@/lib/utils';
 import FlashcardsHero from '@/components/flashcards/FlashcardsHero';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
-// Formatação limpa do nome da matéria (remove prefixo "Direito" para exibição direta)
-export const formatarNomeArea = (nome: string) => {
-  if (!nome) return '';
-  const limpo = nome.replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '').trim();
-  return limpo.charAt(0).toUpperCase() + limpo.slice(1);
-};
+export { formatarNomeArea };
+
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },

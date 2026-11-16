@@ -60,3 +60,11 @@ export const FALLBACK_FLASHCARDS_AREAS: FlashcardsAreaRow[] = [
   { area: 'Pesquisa Científica', slug: 'pesquisa-cientifica', ordem: 28, total_cards: 200, compreendidos: 0, a_revisar: 0 },
   { area: 'Direito Internacional Privado', slug: 'direito-internacional-privado', ordem: 29, total_cards: 90, compreendidos: 0, a_revisar: 0 },
 ];
+
+// Formatação limpa do nome da matéria (remove prefixo "Direito" para exibição direta)
+export const formatarNomeArea = (nome?: string | null): string => {
+  if (!nome) return '';
+  const limpo = String(nome).replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '').trim();
+  return limpo.charAt(0).toUpperCase() + limpo.slice(1);
+};
+
