@@ -491,7 +491,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         name: formData.name,
         cpfCnpj: formData.cpf.replace(/\D/g, ''),
         phone: formData.phone.replace(/\D/g, ''),
-        installmentCount: (activePlan === 'anual') ? installmentCount : 1
+        installmentCount: (activePlan === 'anual' || activePlan.startsWith('vitalicio')) ? installmentCount : 1
       };
 
       if (!isPix) {
@@ -540,7 +540,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
 
       if (isPix && data?.pixQrCode) {
-        const pixValor = (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') ? 149.90 : (activePlan.includes('anual') ? 89.90 : 29.90);
+        const pixValor = isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
         void logDb('checkout_pix_gerado', { plano: activePlan, payment_id: data.paymentId || null, valor: pixValor });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
         setPixPaymentId(data.paymentId || null);
@@ -571,7 +571,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        const pixValor = (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') ? 149.90 : (activePlan.includes('anual') ? 89.90 : 29.90);
+        const pixValor = isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
         void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true, payment_id: data.paymentId || null, valor: pixValor });
         openExternal(data.invoiceUrl);
         onSuccess();

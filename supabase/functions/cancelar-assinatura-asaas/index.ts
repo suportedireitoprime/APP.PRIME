@@ -66,8 +66,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Cobranças parceladas/avulsas no Asaas possuem prefixo pay_ e não possuem assinatura recorrente
-    if (sub.asaas_subscription_id.startsWith('pay_')) {
+    // Cobranças parceladas/avulsas no Asaas possuem prefixo pay_ ou install_ e não possuem assinatura recorrente
+    if (sub.asaas_subscription_id.startsWith('pay_') || sub.asaas_subscription_id.startsWith('install_')) {
       return new Response(
         JSON.stringify({
           error: 'Esta assinatura foi realizada como cobrança parcelada/avulsa e não possui renovação automática recorrente a ser cancelada.',

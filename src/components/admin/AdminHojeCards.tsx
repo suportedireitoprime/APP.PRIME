@@ -663,7 +663,7 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
-          const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+          const isSegundoMesOuMais = createdTime > 0 && (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           // 1. Renovação de HOJE (2º ciclo em diante, mensal ou anual):
           // Assinaturas criadas antes do período de hoje ou com mais de 20 dias de existência que tiveram pagamento no período
@@ -1148,10 +1148,10 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
-          const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+          const isSegundoMesOuMais = createdTime > 0 && (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           const isRenovacao = startedInPeriod && (isCriadaAntes || isSegundoMesOuMais);
-          const isNovaAssinatura = !isCriadaAntes && (createdInPeriod || startedInPeriod);
+          const isNovaAssinatura = !isRenovacao && !isCriadaAntes && (createdInPeriod || startedInPeriod);
 
           if (isRenovou) {
             if (!isRenovacao) return;
@@ -1237,9 +1237,9 @@ export function AdminHojeCards() {
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
           if (isRenovou) {
-            if (!isCriadaAntes) return;
+            if (!createdInPeriod || !isCriadaAntes) return;
           } else {
-            if (!createdInPeriod) return;
+            if (!createdInPeriod || isCriadaAntes) return;
           }
 
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
@@ -1280,7 +1280,7 @@ export function AdminHojeCards() {
           if (isRenovou) {
             if (!startedInPeriod || !isCriadaAntes) return;
           } else {
-            if (!(createdInPeriod || (!isCriadaAntes && startedInPeriod))) return;
+            if (!createdInPeriod || isCriadaAntes) return;
           }
 
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;

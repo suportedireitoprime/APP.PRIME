@@ -281,10 +281,11 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
         if (extPlan.startsWith('anual') || extPlan === 'anual_regular_pix') return 'anual';
         if (extPlan === 'promocao') return 'anual_promocional';
       }
-      if (desc.includes('vitalicio') || (val >= 140 && val <= 180 && !desc.includes('anual'))) {
+      const d = desc.toLowerCase();
+      if (d.includes('vitalicio') || d.includes('vitalício') || d.includes('vital') || (val >= 140 && val <= 180 && !d.includes('anual'))) {
         return 'vitalicio';
       }
-      if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+      if (d.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !d.includes('anual') && !d.includes('vitalicio') && !d.includes('vitalício') && !d.includes('vital'))) {
         return 'mensal';
       }
       if (desc.includes('promo')) {
@@ -297,6 +298,8 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     expect(inferPlan(149.90, 'Cobrança Direito Prime', 'vitalicio_pix')).toBe('vitalicio');
     expect(inferPlan(89.90, 'Cobrança Direito Prime', 'anual_regular_pix')).toBe('anual');
     expect(inferPlan(29.90, 'Cobrança Mensal')).toBe('mensal');
+    expect(inferPlan(29.90, 'Direito Prime Vitalício (6x)')).toBe('vitalicio');
+    expect(inferPlan(149.90, 'Direito Prime Vitalício PIX')).toBe('vitalicio');
   });
 
   it('deve validar token Asaas estritamente', () => {
@@ -316,8 +319,9 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
 
   it('deve validar propriedade do usuário no check_status do asaas-checkout', () => {
     const checkOwnership = (extRef: string, authUserId: string) => {
+      if (!extRef) return false;
       const [refUserId] = extRef.includes('|') ? extRef.split('|') : [extRef, null];
-      if (refUserId && refUserId !== authUserId) {
+      if (!refUserId || refUserId !== authUserId) {
         return false;
       }
       return true;
@@ -327,18 +331,44 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     expect(checkOwnership('user_123|anual', 'user_456')).toBe(false);
     expect(checkOwnership('user_123', 'user_123')).toBe(true);
     expect(checkOwnership('user_123', 'user_456')).toBe(false);
+    expect(checkOwnership('', 'user_123')).toBe(false);
   });
 
-  it('deve rejeitar cancelamento de cobranças parceladas (pay_...) na função cancelar-assinatura', () => {
+  it('deve rejeitar cancelamento de cobranças parceladas (pay_... ou install_...) na função cancelar-assinatura', () => {
     const canCancelSubscription = (subId: string) => {
-      if (subId.startsWith('pay_')) {
+      if (subId.startsWith('pay_') || subId.startsWith('install_')) {
         return { allowed: false, error: 'Cobrança parcelada/avulsa' };
       }
       return { allowed: true };
     };
 
     expect(canCancelSubscription('pay_987654321').allowed).toBe(false);
+    expect(canCancelSubscription('install_123456').allowed).toBe(false);
     expect(canCancelSubscription('sub_123456789').allowed).toBe(true);
+  });
+
+  it('deve permitir parcelamento em até 6x para vitalício no payload de checkout', () => {
+    const getPayloadInstallmentCount = (activePlan: string, selectedInstallments: number) => {
+      return (activePlan === 'anual' || activePlan.startsWith('vitalicio')) ? selectedInstallments : 1;
+    };
+
+    expect(getPayloadInstallmentCount('vitalicio', 6)).toBe(6);
+    expect(getPayloadInstallmentCount('vitalicio', 3)).toBe(3);
+    expect(getPayloadInstallmentCount('anual', 6)).toBe(6);
+    expect(getPayloadInstallmentCount('mensal', 6)).toBe(1);
+  });
+
+  it('não deve considerar isSegundoMesOuMais quando created_at estiver ausente', () => {
+    const calcIsSegundoMesOuMais = (createdAt?: string | null, startedAt?: string | null) => {
+      const createdTime = createdAt ? new Date(createdAt).getTime() : 0;
+      const startedTime = startedAt ? new Date(startedAt).getTime() : createdTime;
+      return createdTime > 0 && (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+    };
+
+    expect(calcIsSegundoMesOuMais(null, '2026-11-10T12:00:00Z')).toBe(false);
+    expect(calcIsSegundoMesOuMais(undefined, '2026-11-10T12:00:00Z')).toBe(false);
+    expect(calcIsSegundoMesOuMais('2026-10-10T12:00:00Z', '2026-11-10T12:00:00Z')).toBe(true);
+    expect(calcIsSegundoMesOuMais('2026-11-10T10:00:00Z', '2026-11-10T12:00:00Z')).toBe(false);
   });
 
   it('deve alternar entre Cartão e PIX preservando vitalício no CheckoutModal', () => {
