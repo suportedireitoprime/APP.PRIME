@@ -17,6 +17,7 @@ import {
   ZoomIn,
   ZoomOut,
   Sparkles,
+  Sliders,
 } from 'lucide-react';
 import {
   pdfjsLib,
@@ -27,11 +28,13 @@ import {
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
+import { haptic } from '@/lib/nativeHaptics';
 import { DEFAULT_ZOOM, MIN_ZOOM, MAX_ZOOM } from './pdf/pdfReaderTypes';
 import BookPageFlip3D, { type BookPageFlip3DHandle } from './leitor/BookPageFlip3D';
 import PdfReaderFooter from './pdf/PdfReaderFooter';
 import PdfSumarioSheet from './pdf/PdfSumarioSheet';
 import PdfBuscaSheet from './pdf/PdfBuscaSheet';
+import PdfAjustesSheet from './pdf/PdfAjustesSheet';
 import AssistenteIA from './leitor/AssistenteIA';
 import { usePdfSearch } from './pdf/usePdfSearch';
 import { TEMAS } from '@/hooks/useLeitorPrefs';
@@ -116,6 +119,7 @@ const PdfPaginatedReader = ({
   const [showSumario, setShowSumario] = useState(false);
   const [showBusca, setShowBusca] = useState(false);
   const [showAssistente, setShowAssistente] = useState(false);
+  const [showAjustes, setShowAjustes] = useState(false);
   const [outline, setOutline] = useState<any[]>([]);
 
   const [bookmark, setBookmark] = useState<number | null>(() => {
@@ -312,39 +316,16 @@ const PdfPaginatedReader = ({
             </div>
 
             <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-              {urlClara && urlEscura && onSwitchVersao && (
-                <button
-                  onClick={() => {
-                    const isEscura = url?.toLowerCase().includes('escura');
-                    onSwitchVersao(isEscura ? 'clara' : 'escura');
-                  }}
-                  title={
-                    url?.toLowerCase().includes('escura')
-                      ? 'Mudar para Versão Clara'
-                      : 'Mudar para Versão Escura'
-                  }
-                  className="h-9 px-2.5 sm:px-3 rounded-lg border border-white/10 hover:bg-white/10 text-xs font-bold flex items-center gap-1.5 transition text-white/80 hover:text-white active:scale-95 cursor-pointer"
-                >
-                  {url?.toLowerCase().includes('escura') ? (
-                    <>
-                      <Sun className="w-4 h-4 text-amber-400" />
-                      <span className="hidden sm:inline text-amber-300">Clara</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon className="w-4 h-4 text-emerald-400" />
-                      <span className="hidden sm:inline text-emerald-300">Escura</span>
-                    </>
-                  )}
-                </button>
-              )}
-
               <button
-                onClick={() => setDualPage(!dualPage)}
-                className="w-10 h-10 hidden sm:flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/10 cursor-pointer"
-                title={dualPage ? 'Uma página' : 'Duas páginas'}
+                onClick={() => {
+                  haptic.selection();
+                  setShowAjustes(true);
+                }}
+                className="w-10 h-10 flex items-center justify-center text-white/80 hover:text-white transition-colors rounded-full hover:bg-white/10 active:scale-95 cursor-pointer"
+                aria-label="Ajustes de visualização e zoom"
+                title="Configurações e Zoom"
               >
-                {dualPage ? <Square className="w-4 h-4" /> : <Columns className="w-4 h-4" />}
+                <Sliders className="w-5 h-5" />
               </button>
             </div>
           </motion.div>
@@ -390,7 +371,9 @@ const PdfPaginatedReader = ({
                       el.scrollTop = 0;
                     }
                   }}
-                  className="w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center pt-16 pb-40 px-2 sm:px-4 select-none"
+                  className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center pt-14 pb-36 px-0 select-none ${
+                    isDarkPdf ? 'bg-[#18181b]' : 'bg-white'
+                  }`}
                 >
                   <PdfPage
                     pdf={pdfRef.current}
@@ -408,33 +391,6 @@ const PdfPaginatedReader = ({
               onPageChange={(p) => setCurrentPage(p)}
               onTapCenter={() => setShowBars((v) => !v)}
             />
-          </div>
-        )}
-
-        {/* ── Floating Zoom Pill ── */}
-        {!loading && !error && showBars && (
-          <div className="fixed bottom-24 right-4 z-[2510] flex items-center gap-1.5 p-1.5 rounded-full bg-neutral-900/90 border border-white/10 backdrop-blur-md shadow-2xl">
-            <button
-              onClick={() => setZoom((z) => Math.min(MAX_ZOOM, Number((z + 0.1).toFixed(1))))}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
-              title="Aumentar zoom"
-            >
-              <ZoomIn className="w-[18px] h-[18px]" />
-            </button>
-            <button
-              onClick={() => setZoom((z) => Math.max(MIN_ZOOM, Number((z - 0.1).toFixed(1))))}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
-              title="Diminuir zoom"
-            >
-              <ZoomOut className="w-[18px] h-[18px]" />
-            </button>
-            <button
-              onClick={() => setZoom(zoom === DEFAULT_ZOOM ? 1.0 : DEFAULT_ZOOM)}
-              className="px-2.5 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] font-bold tabular-nums backdrop-blur shadow active:scale-95 transition cursor-pointer"
-              title="Zoom atual (clique para alternar 110% / 100%)"
-            >
-              {Math.round(zoom * 100)}%
-            </button>
           </div>
         )}
       </div>
@@ -485,6 +441,20 @@ const PdfPaginatedReader = ({
           flip3DRef.current?.goToPage(p);
           setShowBusca(false);
         }}
+      />
+
+      {/* ── Ajustes Sheet (Configurações & Zoom) ── */}
+      <PdfAjustesSheet
+        open={showAjustes}
+        onClose={() => setShowAjustes(false)}
+        zoom={zoom}
+        setZoom={setZoom}
+        dualPage={dualPage}
+        setDualPage={setDualPage}
+        urlClara={urlClara}
+        urlEscura={urlEscura}
+        onSwitchVersao={onSwitchVersao}
+        isEscura={url?.toLowerCase().includes('escura')}
       />
 
       {/* ── Assistente IA ── */}
@@ -551,14 +521,12 @@ const PdfPage = ({
 
         const unscaledViewport = page.getViewport({ scale: 1 });
 
-        // Cálculo de largura ideal para leitura fluida:
-        // No mobile, ocupa a largura da tela com margens elegantes (16px) e zoom padrão (110%)
-        // No desktop / dual, limita ao espaço de leitura confortável
+        // Zero margens: adaptação total à tela do usuário (100% de largura)
         const availableWidth = isDual
-          ? Math.min(containerWidth / 2 - 16, 600)
-          : Math.min(containerWidth - 16, 800);
+          ? containerWidth / 2
+          : containerWidth;
 
-        const baseScale = (availableWidth / unscaledViewport.width) * (zoom || 1.1);
+        const baseScale = (availableWidth / unscaledViewport.width) * (zoom || 1.0);
 
         // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
         const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.5), 3.5);
@@ -574,8 +542,8 @@ const PdfPage = ({
         const displayHeight = Math.round(unscaledViewport.height * baseScale);
         setPageSize({ width: displayWidth, height: displayHeight });
 
-        canvas.style.width = `${displayWidth}px`;
-        canvas.style.height = `${displayHeight}px`;
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
         canvas.style.maxWidth = '100%';
         canvas.style.aspectRatio = `${unscaledViewport.width} / ${unscaledViewport.height}`;
 
@@ -625,20 +593,22 @@ const PdfPage = ({
   if (isBackFace) {
     return (
       <div
-        className="w-full h-full flex flex-col justify-between p-8 select-none border-l rounded-sm shadow-2xl"
+        className="w-full h-full flex flex-col justify-between p-8 select-none border-l rounded-sm"
         style={{
-          background: isDark ? '#141416' : '#f7f4ed',
+          background: isDark ? '#18181b' : '#ffffff',
           color: isDark ? '#ffffff' : '#1a1a1a',
-          borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-          boxShadow: 'inset 25px 0 45px -15px rgba(0,0,0,0.4)',
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+          boxShadow: isDark
+            ? 'inset 25px 0 35px -15px rgba(0,0,0,0.4)'
+            : 'inset 20px 0 30px -15px rgba(0,0,0,0.06)',
         }}
       >
         <div className="flex items-center justify-between text-[11px] opacity-40 font-mono tracking-widest uppercase">
           <span className="truncate max-w-[200px]">{titulo || 'Documento Original'}</span>
           <span>p. {pageNumber}</span>
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center text-center opacity-25 px-4">
-          <div className="w-12 h-0.5 bg-current mb-4 rounded-full opacity-40" />
+        <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30 px-4">
+          <div className="w-12 h-0.5 bg-neutral-300 dark:bg-neutral-600 mb-4 rounded-full" />
           <p className="text-xs font-serif italic max-w-xs line-clamp-3">{titulo}</p>
         </div>
         <div className="text-center text-[10px] opacity-35 font-mono">
@@ -650,17 +620,17 @@ const PdfPage = ({
 
   return (
     <div
-      className={`relative mx-auto transition-opacity duration-200 ${
+      className={`relative w-full mx-auto transition-opacity duration-200 ${
         isDark ? 'bg-[#18181b]' : 'bg-white'
       } ${rendered ? 'opacity-100' : 'opacity-0'}`}
       style={{
-        width: pageSize.width ? `${pageSize.width}px` : '100%',
-        maxWidth: '100%',
-        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5), inset 15px 0 25px -15px rgba(0,0,0,0.15)',
-        borderRadius: '2px',
+        width: '100%',
+        maxWidth: isDual ? '50%' : '100%',
+        boxShadow: 'none',
+        borderRadius: '0px',
       }}
     >
-      <canvas ref={canvasRef} className="block w-full h-auto rounded-[2px]" />
+      <canvas ref={canvasRef} className="block w-full h-auto" />
       {!rendered && (
         <div
           className={`absolute inset-0 flex items-center justify-center min-h-[500px] ${

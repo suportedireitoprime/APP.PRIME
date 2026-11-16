@@ -74,10 +74,12 @@ const LeitorFolhear = forwardRef<LeitorFolhearHandle, Props>(function LeitorFolh
         <div
           className="w-full h-full flex flex-col justify-between p-8 select-none border-l"
           style={{
-            background: tema.isDark ? '#0e0e11' : '#f4eee1',
+            background: tema.isDark ? '#0e0e11' : tema.bg,
             color: tema.text,
             borderColor: tema.border,
-            boxShadow: 'inset 20px 0 35px -10px rgba(0,0,0,0.3)',
+            boxShadow: tema.isDark
+              ? 'inset 20px 0 35px -10px rgba(0,0,0,0.3)'
+              : 'inset 20px 0 35px -10px rgba(0,0,0,0.06)',
           }}
         >
           <div className="flex items-center justify-between text-[11px] opacity-40 font-mono tracking-widest uppercase">

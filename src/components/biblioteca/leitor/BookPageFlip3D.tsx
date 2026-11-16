@@ -219,12 +219,12 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
   if (!flipState) {
     return (
       <div
-        className={`pagearea pagearea-idle ${className}`}
+        className={`pagearea pagearea-idle bg-white dark:bg-[#18181b] ${className}`}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={handleClick}
       >
-        <div className="w-full h-full relative">
+        <div className="w-full h-full relative bg-white dark:bg-[#18181b]">
           {renderPage(activePage, false)}
         </div>
       </div>
@@ -238,13 +238,13 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
 
   return (
     <div
-      className={`pagearea is-turning-${flipState.dir} ${className}`}
+      className={`pagearea is-turning-${flipState.dir} bg-white dark:bg-[#18181b] ${className}`}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
     >
       {/* 1. Página de Destino (Under) */}
-      <div className="under">
+      <div className="under bg-white dark:bg-[#18181b]">
         {renderPage(underPage, false)}
       </div>
 
@@ -256,10 +256,10 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
         className={`flip anim-${flipState.dir}`}
         onAnimationEnd={handleAnimationEnd}
       >
-        <div className="face front">
+        <div className="face front bg-white dark:bg-[#18181b]">
           {renderPage(frontPage, false)}
         </div>
-        <div className="face back">
+        <div className="face back bg-white dark:bg-[#18181b]">
           {renderPage(backPage, true)}
         </div>
         <div className="veil" />
