@@ -307,60 +307,60 @@ const Flashcards = () => {
                           haptic.selection();
                           setAreaSelecionadaModal(area);
                         }}
-                        className="group relative flex flex-col p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-blue-500/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
+                        className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-blue-500/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
                       >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
-                            <div className="shrink-0 flex items-center justify-center pl-1">
-                              <AreaIcon
-                                className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 group-hover:scale-110 transition-transform duration-200"
-                                strokeWidth={2.2}
-                              />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
-                                {area.area}
-                              </p>
-                              <div className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 group-hover:text-blue-400 transition-colors flex items-center gap-1.5 font-medium">
-                                <span>{compreendidos > 0 ? `${compreendidos.toLocaleString('pt-BR')} dominados` : 'Filtrar ou ver trilha'}</span>
-                                {isFav && (
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400 shrink-0">
-                                    • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                                  </span>
-                                )}
-                              </div>
-                            </div>
+                        <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
+                          {/* Ícone limpo sem cor atrás */}
+                          <div className="shrink-0 flex items-center justify-center">
+                            <AreaIcon
+                              className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 group-hover:scale-110 transition-transform duration-200"
+                              strokeWidth={2.2}
+                            />
                           </div>
 
-                          <div className="flex items-center gap-2.5 shrink-0">
-                            <div className="flex flex-col items-end">
-                              <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full bg-zinc-800/90 text-zinc-300 border border-zinc-700/50 font-mono">
+                          {/* Conteúdo Central */}
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
+                              {area.area}
+                            </p>
+
+                            {/* Barra de Progresso da Trilha (contida no conteúdo, sem ir até o final do card) */}
+                            <div className="w-full mt-2">
+                              <div className="w-full h-1.5 rounded-full bg-zinc-800/90 overflow-hidden border border-white/5">
+                                <div
+                                  className={cn(
+                                    "h-full rounded-full transition-all duration-700 ease-out",
+                                    pctArea >= 100 
+                                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                                      : pctArea > 0 
+                                      ? "bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.35)]" 
+                                      : "bg-transparent"
+                                  )}
+                                  style={{ width: `${Math.max(pctArea, pctArea > 0 ? 3 : 0)}%` }}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Número de cards e porcentagem embaixo da barra */}
+                            <div className="flex items-center justify-between mt-1 text-[11px] font-medium">
+                              <span className="font-mono text-zinc-400">
                                 {totalCards > 0 ? `${totalCards.toLocaleString('pt-BR')} cards` : 'Em breve'}
+                                {isFav && (
+                                  <span className="inline-flex items-center gap-1 text-rose-400 ml-1.5">
+                                    • <Heart className="w-3 h-3 text-rose-500 fill-rose-500 inline" />
+                                  </span>
+                                )}
                               </span>
-                              <span className="text-[10px] font-mono font-bold text-blue-400/90 mt-0.5">
-                                {pctArea}%
+                              <span className="font-mono font-bold text-blue-400">
+                                {pctArea}% {compreendidos > 0 && <span className="text-zinc-500 font-normal">({compreendidos})</span>}
                               </span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5 shrink-0" />
                           </div>
                         </div>
 
-                        {/* Barra de Progresso da Trilha */}
-                        <div className="w-full mt-2.5 pt-0.5">
-                          <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden border border-white/5">
-                            <div
-                              className={cn(
-                                "h-full rounded-full transition-all duration-700 ease-out",
-                                pctArea >= 100 
-                                  ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
-                                  : pctArea > 0 
-                                  ? "bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.35)]" 
-                                  : "bg-transparent"
-                              )}
-                              style={{ width: `${Math.max(pctArea, pctArea > 0 ? 3 : 0)}%` }}
-                            />
-                          </div>
+                        {/* Chevron lateral direito */}
+                        <div className="shrink-0 flex items-center justify-center">
+                          <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5" />
                         </div>
                       </motion.button>
                     );
@@ -401,10 +401,11 @@ const Flashcards = () => {
               </button>
 
               <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shadow-inner mb-3">
+                {/* Ícone limpo sem moldura ou cor de fundo atrás */}
+                <div className="flex items-center justify-center mb-2.5">
                   {(() => {
                     const AreaIcon = areaIconFor(areaSelecionadaModal.slug || areaSelecionadaModal.area)?.Icon || BookOpen;
-                    return <AreaIcon className="w-7 h-7 text-blue-400" strokeWidth={2} />;
+                    return <AreaIcon className="w-10 h-10 text-blue-400" strokeWidth={2.2} />;
                   })()}
                 </div>
                 <h3 className="text-lg font-bold text-foreground leading-snug px-2">
@@ -421,10 +422,6 @@ const Flashcards = () => {
                   const mPct = mTotal > 0 ? Math.min(100, Math.round((mComp / mTotal) * 100)) : 0;
                   return (
                     <div className="w-full mt-3 px-1">
-                      <div className="flex justify-between items-center text-[11px] mb-1.5 font-medium">
-                        <span className="text-zinc-400">Progresso da Trilha</span>
-                        <span className="font-mono font-bold text-blue-400">{mPct}% ({mComp}/{mTotal})</span>
-                      </div>
                       <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden border border-white/5">
                         <div
                           className={cn(
@@ -434,12 +431,17 @@ const Flashcards = () => {
                           style={{ width: `${Math.max(mPct, mPct > 0 ? 3 : 0)}%` }}
                         />
                       </div>
+                      <div className="flex justify-between items-center text-[11px] mt-1.5 font-medium">
+                        <span className="text-zinc-400">Progresso da Trilha</span>
+                        <span className="font-mono font-bold text-blue-400">{mPct}% ({mComp}/{mTotal})</span>
+                      </div>
                     </div>
                   );
                 })()}
               </div>
 
               <div className="mt-6 space-y-2.5">
+                {/* Opção Filtrar Assuntos - Ícone âmbar sem cor atrás */}
                 <button
                   type="button"
                   onClick={() => {
@@ -449,14 +451,14 @@ const Flashcards = () => {
                     setFiltroPassoPrevio('assuntos');
                     setFiltroAberto(true);
                   }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card hover:bg-zinc-800/80 border border-border/80 hover:border-blue-500/50 text-left transition-all group cursor-pointer"
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card hover:bg-zinc-800/80 border border-border/80 hover:border-amber-500/50 text-left transition-all group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                      <Filter className="w-5 h-5" />
+                    <div className="shrink-0 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                      <Filter className="w-6 h-6 text-amber-400" strokeWidth={2.2} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-foreground group-hover:text-blue-400 transition-colors">
+                      <p className="text-sm font-bold text-foreground group-hover:text-amber-400 transition-colors">
                         Filtrar Assuntos
                       </p>
                       <p className="text-[11px] text-muted-foreground">
@@ -464,9 +466,10 @@ const Flashcards = () => {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5" />
                 </button>
 
+                {/* Opção Trilhas de Estudo - Ícone azul sem cor atrás */}
                 <button
                   type="button"
                   onClick={() => {
@@ -477,8 +480,8 @@ const Flashcards = () => {
                   className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card hover:bg-zinc-800/80 border border-border/80 hover:border-blue-500/50 text-left transition-all group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                      <Landmark className="w-5 h-5" />
+                    <div className="shrink-0 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                      <Landmark className="w-6 h-6 text-blue-400" strokeWidth={2.2} />
                     </div>
                     <div>
                       <p className="text-sm font-bold text-foreground group-hover:text-blue-400 transition-colors">
