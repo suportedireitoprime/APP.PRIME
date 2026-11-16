@@ -317,12 +317,19 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     if (curObj.versoes_pdf) versoesPdf = curObj.versoes_pdf;
   }
 
-  // Tratamento especial para Dos Delitos e das Penas (Cesare Beccaria) ou obras já com versões no R2
+  // Tratamento especial para Dos Delitos e das Penas e O Caso dos Exploradores de Cavernas com versões no R2
   const isDelitos = String(titulo).toLowerCase().includes('delitos e das penas') || String(row.id) === '123';
+  const isExploradores = String(titulo).toLowerCase().includes('exploradores de cavernas') || String(row.id) === '1';
   let downloadUrl = row[colecao.downloadField] ?? null;
   if (isDelitos && (!versoesPdf || !versoesPdf.clara)) {
     const urlClara = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-clara.pdf';
     const urlEscura = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-escura.pdf';
+    downloadUrl = urlClara;
+    downloadEscura = urlEscura;
+    versoesPdf = { clara: urlClara, escura: urlEscura };
+  } else if (isExploradores) {
+    const urlClara = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-clara.pdf';
+    const urlEscura = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-escura.pdf';
     downloadUrl = urlClara;
     downloadEscura = urlEscura;
     versoesPdf = { clara: urlClara, escura: urlEscura };

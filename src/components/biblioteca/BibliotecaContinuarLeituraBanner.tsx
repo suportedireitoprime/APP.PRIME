@@ -101,7 +101,12 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
         sobre: 'Uma das mais célebres introduções ao pensamento jurídico e dilemas morais.',
         capa: null,
         link: null,
-        download: null,
+        download: 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-clara.pdf',
+        downloadEscura: 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-escura.pdf',
+        versoesPdf: {
+          clara: 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-clara.pdf',
+          escura: 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-caso-dos-exploradores-de-cavernas/o-caso-dos-exploradores-de-cavernas-versao-escura.pdf',
+        },
         area: 'Teoria e Filosofia do Direito',
         colecaoId: 'classicos',
       }, 'nativa');

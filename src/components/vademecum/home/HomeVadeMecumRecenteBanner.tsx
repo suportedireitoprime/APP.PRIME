@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Scale, BookOpen, Landmark, Gavel, FileText, ArrowRight, LucideIcon } from 'lucide-react';
@@ -6,8 +6,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { getRecentes, LeiRecente } from '@/lib/leisRecentes';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
-
-const GREEN_COLOR = '#10B981';
+import { getLeiColor } from '@/lib/leiTheme';
 
 interface HomeVadeMecumRecenteBannerProps {
   onOpenLei?: (id: string) => void;
@@ -102,6 +101,11 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
       : ultimaLei.descricao || 'Consulte os artigos e jurisprudência'
     : 'Consulte a CF/88, Códigos, Estatutos e Súmulas';
 
+  const themeColor = useMemo(() => {
+    if (!ultimaLei) return '#059669';
+    return getLeiColor(ultimaLei.leiId, ultimaLei.tipo);
+  }, [ultimaLei]);
+
   return (
     <motion.button
       type="button"
@@ -110,48 +114,58 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
       transition={{ duration: 0.3 }}
       onClick={handleClick}
       style={{
-        background: `linear-gradient(to right, ${GREEN_COLOR}2A, ${GREEN_COLOR}0A)`,
-        borderColor: `${GREEN_COLOR}4D`,
+        background: `linear-gradient(135deg, ${themeColor}26 0%, rgba(18, 18, 22, 0.94) 55%, rgba(10, 10, 12, 0.98) 100%)`,
+        borderColor: `${themeColor}40`,
+        boxShadow: `0 12px 32px rgba(0,0,0,0.7), inset 0 1px 0 ${themeColor}30`,
       }}
-      className="w-full flex items-center gap-3 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
+      className="w-full flex items-center gap-3 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative group cursor-pointer backdrop-blur-md"
     >
       {/* Ícone principal à esquerda */}
       <div className="flex items-center justify-center shrink-0 z-10">
         <IconeLei
-          className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-sm text-emerald-400 group-hover:scale-105 transition-transform"
+          className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-sm group-hover:scale-105 transition-transform"
+          style={{ color: themeColor }}
           strokeWidth={1.6}
         />
       </div>
 
       {/* Textos informativos centrais */}
       <div className="flex-1 min-w-0 z-10">
-        <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-emerald-400 font-mono">
+        <p 
+          className="text-[10px] font-bold uppercase tracking-wider mb-0.5 font-mono"
+          style={{ color: themeColor }}
+        >
           {displayTag}
         </p>
         <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
           {displayNome}
         </p>
-        <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-emerald-300/85">
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
+        <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
+          <span 
+            className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
+            style={{ backgroundColor: themeColor }} 
+          />
           <span>{displaySubtitulo}</span>
         </p>
       </div>
 
       {/* Seta indicativa à direita ampliada */}
       <ArrowRight
-        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-emerald-400 group-hover:translate-x-1 transition-transform"
+        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
+        style={{ color: themeColor }}
         strokeWidth={2.4}
       />
 
-      {/* Decoração de fundo — SVG translúcido no lado direito com glow esmeralda */}
+      {/* Decoração de fundo — SVG translúcido no lado direito com glow da cor da lei */}
       <div
         className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
         style={{
-          filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px ${GREEN_COLOR}40)`,
+          filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 12px ${themeColor}35)`,
+          color: themeColor,
         }}
       >
         <IconeLei
-          className="w-24 h-24 opacity-20 text-emerald-500"
+          className="w-24 h-24 opacity-15"
           strokeWidth={1.2}
         />
       </div>

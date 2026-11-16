@@ -2,6 +2,7 @@
 // Reused by CategoriaLegislacao header and ArtigoCard badge.
 
 import { COVERS } from './coverLoader';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 const COLOR_MAP: Record<string, string> = {
   ei:   '#8b5cf6', // Violet 500
@@ -16,6 +17,7 @@ const COLOR_MAP: Record<string, string> = {
   eca:  '#4F46E5', // Indigo 600
   ctn:  '#D97706', // Amber 600
   ctb:  '#16A34A', // Green 600
+  eoab: '#1d4ed8', // OAB Blue
 };
 
 const TIPO_COLOR: Record<string, string> = {
@@ -35,7 +37,12 @@ function hash(id: string): string {
 }
 
 export function getLeiColor(id?: string | null, tipo?: string | null): string {
-  if (id && COLOR_MAP[id]) return COLOR_MAP[id];
+  const cleanId = id?.toLowerCase();
+  if (cleanId && COLOR_MAP[cleanId]) return COLOR_MAP[cleanId];
+  if (cleanId) {
+    const catalogItem = LEIS_CATALOG.find((l) => l.id.toLowerCase() === cleanId);
+    if (catalogItem?.iconColor) return catalogItem.iconColor;
+  }
   if (tipo && TIPO_COLOR[tipo]) return TIPO_COLOR[tipo];
   return hash(id || tipo || 'default');
 }

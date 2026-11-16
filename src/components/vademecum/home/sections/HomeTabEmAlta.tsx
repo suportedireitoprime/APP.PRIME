@@ -18,11 +18,7 @@ interface HomeTabEmAltaProps {
 }
 
 function getAreaDisplayLabel(label: string): string {
-  if (label.startsWith('Direito')) return label;
-  if (label === 'Trabalho') return 'Direito do Trabalho';
-  if (label === 'Consumidor') return 'Direito do Consumidor';
-  if (label === 'Criança, Idoso e PCD') return label;
-  return `Direito ${label}`;
+  return label.replace(/^Direito (do |da |de |dos |das )?/i, '').trim();
 }
 
 const getLawIcon = (id: string) => {
