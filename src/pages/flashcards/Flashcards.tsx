@@ -218,17 +218,6 @@ const Flashcards = () => {
               variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
               className="space-y-3 pt-2"
             >
-              {/* Definição do Gradiente SVG Azul para os Ícones */}
-              <svg width="0" height="0" className="absolute pointer-events-none opacity-0" aria-hidden="true">
-                <defs>
-                  <linearGradient id="flashcardsBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#93C5FD" />
-                    <stop offset="45%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#1D4ED8" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="h-4 w-1 rounded-full bg-blue-500" />
@@ -324,8 +313,7 @@ const Flashcards = () => {
                         <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
                           <div className="shrink-0 flex items-center justify-center pl-1">
                             <AreaIcon
-                              stroke="url(#flashcardsBlueGradient)"
-                              className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform duration-200 drop-shadow-[0_2px_8px_rgba(59,130,246,0.35)]"
+                              className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 group-hover:scale-110 transition-transform duration-200"
                               strokeWidth={2.2}
                             />
                           </div>
