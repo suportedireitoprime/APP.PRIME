@@ -738,9 +738,9 @@ export default function AudiobooksPage() {
             )}
           </div>
 
-          {/* Abas 3D Estilo Pasta (Idêntico a Resumos: Todos, Clássicos, Liderança, Fora da Toga, Oratória) */}
-          <div className="relative w-full overflow-x-auto no-scrollbar mb-5">
-            <div className="flex w-full items-end no-scrollbar h-11 sm:h-12 pt-1">
+          {/* Abas 3D Estilo Pasta (Sem margem na direita para efeito contínuo/infinito) */}
+          <div className="relative -mr-4 sm:-mr-6 overflow-x-auto no-scrollbar mb-5">
+            <div className="flex w-max min-w-full items-end no-scrollbar h-11 sm:h-12 pt-1 pr-6 sm:pr-8">
               {CATEGORIAS_TABS.map((tab, index) => {
                 const isActive = filtroCategoria === tab.id;
                 const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
@@ -803,8 +803,8 @@ export default function AudiobooksPage() {
               })}
             </div>
 
-            {/* Linha de Base da Pasta Roxo Oficial */}
-            <div className="w-full h-0.5 bg-[#7C3AED] relative z-20 shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
+            {/* Linha de Base da Pasta Roxo Oficial contínua de ponta a ponta */}
+            <div className="min-w-full w-max h-0.5 bg-[#7C3AED] relative z-20 shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
           </div>
 
           {/* Listagem de Livros — Somente Lista Vertical com Altura Padronizada e Títulos Finos */}
