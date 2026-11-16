@@ -61,6 +61,7 @@ export const bundle = {
   blogPosts: <T = any>() => fetchBundle<T>('blog-posts'),
   noticias: <T = any>() => fetchBundle<T>('noticias'),
   bibliotecaClassicos: <T = any>() => fetchBundle<T>('biblioteca-classicos'),
+  bibliotecaAreas: <T = any>() => fetchBundle<T>('biblioteca-estudos'),
   bibliotecaOab: <T = any>() => fetchBundle<T>('biblioteca-oab'),
   bibliotecaEstudos: <T = any>() => fetchBundle<T>('biblioteca-estudos'),
   bibliotecaPortugues: <T = any>() => fetchBundle<T>('biblioteca-portugues'),
@@ -69,12 +70,14 @@ export const bundle = {
   bibliotecaForaDaToga: <T = any>() => fetchBundle<T>('biblioteca-fora-da-toga'),
   bibliotecaPesquisaCientifica: <T = any>() => fetchBundle<T>('biblioteca-pesquisa-cientifica'),
   questoesAreas: <T = any>() => fetchBundle<T>('questoes-areas'),
+  flashcardsAreas: <T = any>() => fetchBundle<T>('flashcards-areas'),
   flashcardsResumoAreas: <T = any>() => fetchBundle<T>('flashcards-resumo-areas'),
   flashcardsCardsPorArea: <T = any>(area: string) => {
     const safeName = area.replace(/[^a-zA-Z0-9_-]/g, '_');
     return fetchBundle<T>(`flashcards-cards_${safeName}`);
   },
   flashcardsDecks: <T = any>() => fetchBundle<T>('flashcards-decks'),
+  questoesCargos: <T = any>() => fetchBundle<T>('questoes-cargos'),
   questoesPorDisciplina: <T = any>(disciplina: string) => {
     const safeName = disciplina.replace(/[^a-zA-Z0-9_-]/g, '_');
     return fetchBundle<T>(`questoes_${safeName}`);
