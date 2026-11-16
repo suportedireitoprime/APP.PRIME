@@ -7,6 +7,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // --- SETUP 1: ESCOLHER ÁREA ---
 const SetupArea = ({ onSelect, onCancel }: { onSelect: (area: string) => void, onCancel: () => void }) => {
@@ -49,7 +50,11 @@ const SetupArea = ({ onSelect, onCancel }: { onSelect: (area: string) => void, o
             </motion.button>
 
             {areas.map(area => (
-              <button onClick={() => { haptic.selection(); onSelect(area); }} className="w-full rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm p-4 flex items-center justify-between hover:border-success/50 transition-all active:scale-[0.98]">
+              <button 
+                key={area}
+                onClick={() => { haptic.selection(); onSelect(area); }} 
+                className="w-full rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm p-4 flex items-center justify-between hover:border-success/50 transition-all active:scale-[0.98]"
+              >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center shrink-0">
                     <Layers className="w-6 h-6 text-success" />
@@ -334,7 +339,7 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
   );
 };
 
-export default function FlashcardsTrilhas() {
+function FlashcardsTrilhas() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'home' | 'area' | 'tema' | 'detalhes' | 'mapa'>('home');
   const [trilhaAtivaTemp, setTrilhaAtivaTemp] = useState<Partial<FlashcardTrilhaAtiva>>({});
@@ -342,7 +347,11 @@ export default function FlashcardsTrilhas() {
   const [trilhaParaDeletar, setTrilhaParaDeletar] = useState<string | null>(null);
   const { trilhasAtivas, setTrilhaAtiva, limparTrilha } = useFlashcardsTrilhasStore();
 
-  const trilhasArray = Object.values(trilhasAtivas).sort((a,b) => new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime());
+  const trilhasArray = useMemo(() => {
+    return Object.values(trilhasAtivas || {})
+      .filter((t): t is FlashcardTrilhaAtiva => Boolean(t && t.id))
+      .sort((a, b) => new Date(b.dataInicio || 0).getTime() - new Date(a.dataInicio || 0).getTime());
+  }, [trilhasAtivas]);
 
   const handleFinishSetup = (dias: number, cards: number) => {
     const novaTrilha: FlashcardTrilhaAtiva = {
@@ -528,3 +537,36 @@ export default function FlashcardsTrilhas() {
     </div>
   );
 }
+
+export default function FlashcardsTrilhasWrapper() {
+  return (
+    <ErrorBoundary
+      fallback={(_error, reset) => (
+        <div className="min-h-screen bg-[#0D0F12] text-white flex flex-col items-center justify-center p-6 text-center">
+          <RouteIcon className="w-12 h-12 text-success mb-4 animate-pulse" />
+          <h2 className="text-xl font-bold text-white mb-2">Trilhas de Estudo</h2>
+          <p className="text-sm text-zinc-400 max-w-sm mb-6">
+            Não foi possível carregar as trilhas no momento. Toque abaixo para tentar novamente.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => reset()}
+              className="px-5 py-2.5 rounded-xl bg-success hover:bg-success/90 text-white font-bold text-sm transition-all cursor-pointer"
+            >
+              Recarregar
+            </button>
+            <a
+              href="/flashcards"
+              className="px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm transition-all cursor-pointer"
+            >
+              Voltar
+            </a>
+          </div>
+        </div>
+      )}
+    >
+      <FlashcardsTrilhas />
+    </ErrorBoundary>
+  );
+}
+
