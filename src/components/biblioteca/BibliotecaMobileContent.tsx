@@ -165,11 +165,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'administrativo',
     label: 'Administrativo',
     fullName: 'Direito Administrativo',
-    corPrimaria: '#D97706',
-    corSecundaria: '#FBBF24',
-    corBadgeNum: '#FDE68A',
-    corSombra: 'rgba(217, 119, 6, 0.4)',
-    corFundoBotao: '#B45309',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Regime jurídico-administrativo, licitações, contratos e servidores públicos',
     defaultCount: 26,
   },
@@ -177,11 +177,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'ambiental',
     label: 'Ambiental',
     fullName: 'Direito Ambiental',
-    corPrimaria: '#16A34A',
-    corSecundaria: '#4ADE80',
-    corBadgeNum: '#BBF7D0',
-    corSombra: 'rgba(22, 163, 74, 0.4)',
-    corFundoBotao: '#15803D',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Princípios ambientais, SISNAMA, licenciamento e tutela ecológica',
     defaultCount: 7,
   },
@@ -189,11 +189,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'civil',
     label: 'Civil',
     fullName: 'Direito Civil',
-    corPrimaria: '#2563EB',
-    corSecundaria: '#60A5FA',
-    corBadgeNum: '#BFDBFE',
-    corSombra: 'rgba(37, 99, 235, 0.4)',
-    corFundoBotao: '#1D4ED8',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Parte geral, obrigações, contratos, coisas, família e sucessões',
     defaultCount: 56,
   },
@@ -201,11 +201,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'constitucional',
     label: 'Constitucional',
     fullName: 'Direito Constitucional',
-    corPrimaria: '#10B981',
-    corSecundaria: '#34D399',
-    corBadgeNum: '#A7F3D0',
-    corSombra: 'rgba(16, 185, 129, 0.4)',
-    corFundoBotao: '#059669',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Teoria da Constituição, controle de constitucionalidade e direitos fundamentais',
     defaultCount: 45,
   },
@@ -213,11 +213,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'humanos',
     label: 'Direitos Humanos',
     fullName: 'Direitos Humanos',
-    corPrimaria: '#6366F1',
-    corSecundaria: '#818CF8',
-    corBadgeNum: '#C7D2FE',
-    corSombra: 'rgba(99, 102, 241, 0.4)',
-    corFundoBotao: '#4F46E5',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Sistemas internacionais de proteção, tratados e direitos universais',
     defaultCount: 7,
   },
@@ -225,11 +225,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'empresarial',
     label: 'Empresarial',
     fullName: 'Direito Empresarial',
-    corPrimaria: '#EA580C',
-    corSecundaria: '#FB923C',
-    corBadgeNum: '#FFEDD5',
-    corSombra: 'rgba(234, 88, 12, 0.4)',
-    corFundoBotao: '#C2410C',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Teoria da empresa, sociedades, títulos de crédito e falência',
     defaultCount: 12,
   },
@@ -237,11 +237,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'filosofia',
     label: 'Filosofia',
     fullName: 'Teoria e Filosofia do Direito',
-    corPrimaria: '#9333EA',
-    corSecundaria: '#C084FC',
-    corBadgeNum: '#E9D5FF',
-    corSombra: 'rgba(147, 51, 234, 0.4)',
-    corFundoBotao: '#7E22CE',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Jusnaturalismo, positivismo, hermenêutica e teoria da justiça',
     defaultCount: 17,
   },
@@ -249,11 +249,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'financeiro',
     label: 'Financeiro',
     fullName: 'Direito Financeiro',
-    corPrimaria: '#CA8A04',
-    corSecundaria: '#FACC15',
-    corBadgeNum: '#FEF08A',
-    corSombra: 'rgba(202, 138, 4, 0.4)',
-    corFundoBotao: '#A16207',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Orçamento público, receita, despesa, dívida pública e LRF',
     defaultCount: 16,
   },
@@ -261,11 +261,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'internacional',
     label: 'Internacional',
     fullName: 'Direito Internacional Público',
-    corPrimaria: '#2563EB',
-    corSecundaria: '#60A5FA',
-    corBadgeNum: '#BFDBFE',
-    corSombra: 'rgba(37, 99, 235, 0.4)',
-    corFundoBotao: '#1D4ED8',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Tratados, soberania, tribunais internacionais e diplomacia',
     defaultCount: 10,
   },
@@ -273,11 +273,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'penal',
     label: 'Penal',
     fullName: 'Direito Penal',
-    corPrimaria: '#E11D48',
-    corSecundaria: '#FB7185',
-    corBadgeNum: '#FECDD3',
-    corSombra: 'rgba(225, 29, 72, 0.4)',
-    corFundoBotao: '#BE123C',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Teoria do crime, penas, parte geral e crimes em espécie',
     defaultCount: 44,
   },
@@ -285,11 +285,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'penal-especial',
     label: 'Penal Especial',
     fullName: 'Lei Penal Especial',
-    corPrimaria: '#BE123C',
-    corSecundaria: '#FB7185',
-    corBadgeNum: '#FECDD3',
-    corSombra: 'rgba(190, 18, 60, 0.4)',
-    corFundoBotao: '#9F1239',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Drogas, armas, crimes hediondos, lavagem e legislação penal extravagante',
     defaultCount: 14,
   },
@@ -297,11 +297,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'politicas-publicas',
     label: 'Políticas Públicas',
     fullName: 'Políticas Públicas',
-    corPrimaria: '#475569',
-    corSecundaria: '#94A3B8',
-    corBadgeNum: '#CBD5E1',
-    corSombra: 'rgba(71, 85, 105, 0.4)',
-    corFundoBotao: '#334155',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Governança, regulação, controle social e políticas de Estado',
     defaultCount: 14,
   },
@@ -309,11 +309,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'previdenciario',
     label: 'Previdenciário',
     fullName: 'Direito Previdenciário',
-    corPrimaria: '#0D9488',
-    corSecundaria: '#2DD4BF',
-    corBadgeNum: '#CCFBF1',
-    corSombra: 'rgba(13, 148, 136, 0.4)',
-    corFundoBotao: '#0F766E',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Seguridade social, RGPS, benefícios, aposentadorias e custeio',
     defaultCount: 15,
   },
@@ -321,11 +321,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'processual-civil',
     label: 'Proc. Civil',
     fullName: 'Direito Processual Civil',
-    corPrimaria: '#0891B2',
-    corSecundaria: '#22D3EE',
-    corBadgeNum: '#CFFAFE',
-    corSombra: 'rgba(8, 145, 178, 0.4)',
-    corFundoBotao: '#0E7490',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Procedimento comum, recursos, execução e tutelas provisórias',
     defaultCount: 51,
   },
@@ -333,11 +333,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'processual-penal',
     label: 'Proc. Penal',
     fullName: 'Direito Processual Penal',
-    corPrimaria: '#DC2626',
-    corSecundaria: '#F87171',
-    corBadgeNum: '#FECACA',
-    corSombra: 'rgba(220, 38, 38, 0.4)',
-    corFundoBotao: '#B91C1C',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Inquérito policial, provas, prisões, recursos e júri',
     defaultCount: 22,
   },
@@ -345,11 +345,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'processual-trabalho',
     label: 'Proc. Trabalho',
     fullName: 'Direito Processual do Trabalho',
-    corPrimaria: '#6D28D9',
-    corSecundaria: '#A78BFA',
-    corBadgeNum: '#DDD6FE',
-    corSombra: 'rgba(109, 40, 217, 0.4)',
-    corFundoBotao: '#5B21B6',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Competência da JT, petição inicial trabalhista, audiências e recursos',
     defaultCount: 11,
   },
@@ -357,11 +357,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'trabalho',
     label: 'Trabalho',
     fullName: 'Direito do Trabalho',
-    corPrimaria: '#7C3AED',
-    corSecundaria: '#A78BFA',
-    corBadgeNum: '#DDD6FE',
-    corSombra: 'rgba(124, 58, 237, 0.4)',
-    corFundoBotao: '#6D28D9',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Relações de emprego, contratos individuais, direito coletivo e reforma',
     defaultCount: 29,
   },
@@ -369,11 +369,11 @@ const MATERIAS_DIREITO_TABS: MateriaTabConfig[] = [
     id: 'tributario',
     label: 'Tributário',
     fullName: 'Direito Tributário',
-    corPrimaria: '#059669',
-    corSecundaria: '#34D399',
-    corBadgeNum: '#A7F3D0',
-    corSombra: 'rgba(5, 150, 105, 0.4)',
-    corFundoBotao: '#047857',
+    corPrimaria: '#8B5CF6',
+    corSecundaria: '#C4B5FD',
+    corBadgeNum: '#EDE9FE',
+    corSombra: 'rgba(139, 92, 246, 0.45)',
+    corFundoBotao: '#7C3AED',
     subtitulo: 'Sistema tributário nacional, competências, espécies tributárias e CTN',
     defaultCount: 39,
   },
@@ -624,26 +624,23 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
       {/* Hero Padrão Vade Mecum / Audiobooks */}
       <BibliotecaHero onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')} />
 
-      {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem generosa sem colar) */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-8 sm:space-y-10">
+      {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem generosa e responsiva sem colar) */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-9 md:pt-12 mt-4 sm:mt-6 space-y-10 sm:space-y-14">
         {/* Banner Continuar Leitura no modelo de Resumos com capa flush */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-9 sm:mb-12">
           <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
         </div>
 
         {/* ======================================================== */}
         {/* CARROSSEL DO MEIO: ACERVOS ESPECIAIS (Persuasivo e Enxuto) */}
         {/* ======================================================== */}
-        <section className="space-y-3">
+        <section className="space-y-4">
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
                 <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.6)] shrink-0" />
                 <span className="truncate">ACERVOS ESPECIAIS</span>
               </h3>
-              <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
-                Coleções essenciais para expandir seu domínio jurídico e intelectual
-              </p>
             </div>
           </div>
 
@@ -780,7 +777,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         {/* LISTA DE BAIXO: SÓ DAS MATÉRIAS DE DIREITO               */}
         {/* FORMATO E LAYOUT IDÊNTICO AO DE AUDIOBOOKS               */}
         {/* ======================================================== */}
-        <section className="pt-3 sm:pt-5 pb-8 sm:pb-12">
+        <section className="pt-5 sm:pt-7 pb-8 sm:pb-12">
           {/* Header da Seção: MATÉRIAS DE DIREITO com risco roxo oficial */}
           <div className="mb-4">
             <div className="flex items-center justify-between gap-2">
@@ -789,9 +786,6 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.7)] shrink-0" />
                   <span className="truncate">MATÉRIAS DE DIREITO</span>
                 </h2>
-                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
-                  Doutrinas essenciais e manuais práticos organizados por disciplina
-                </p>
               </div>
             </div>
           </div>
@@ -818,12 +812,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             )}
           </div>
 
-          {/* Abas 3D Estilo Pasta (Sem margem na direita para efeito contínuo/infinito e cores dinâmicas) */}
-          <div className="relative -mr-4 sm:-mr-6 overflow-x-auto no-scrollbar mb-5">
+          {/* Abas 3D Estilo Pasta com Linha Base e Fundo Roxo Crepuscular Oficial */}
+          <div className="relative -mr-4 sm:-mr-6 overflow-x-auto no-scrollbar mb-5 border-b border-purple-500/25">
             <div className="flex w-max min-w-full items-end no-scrollbar h-11 sm:h-12 pt-1 pr-6 sm:pr-8">
               {MATERIAS_DIREITO_TABS.map((tab, index) => {
                 const isActive = activeMateriaId === tab.id;
-                const tabTema = tab;
                 const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
                 const countNumber = getTabCount(tab);
 
@@ -839,22 +832,22 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t text-[10.5px] sm:text-[11.5px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
                       isActive
                         ? "text-white font-bold border-transparent"
-                        : "bg-[#141416] text-white/50 hover:bg-[#1A1A1E] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/10 opacity-80 font-medium"
+                        : "bg-[#141416] text-white/50 hover:bg-[#1A1824] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/10 hover:border-purple-500/30 opacity-80 font-medium"
                     )}
                     style={{
                       zIndex,
                       marginLeft: index > 0 ? "-10px" : "0",
                     }}
                   >
-                    {/* Fundo Deslizante Ativo com Física de Mola Fluida (Spring Physics) */}
+                    {/* Fundo Deslizante Ativo no Tom Roxo Oficial com Brilho e Efeito 3D */}
                     {isActive && (
                       <motion.div
                         layoutId="activeBibliotecaMateriaTabPill"
                         className="absolute inset-0 rounded-t-2xl border-x border-t z-0 overflow-hidden"
                         style={{
-                          backgroundColor: tabTema.corPrimaria,
-                          borderColor: tabTema.corSecundaria,
-                          boxShadow: `0 -6px 20px ${tabTema.corSombra}`,
+                          background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #4C1D95 100%)',
+                          borderColor: '#A855F7',
+                          boxShadow: '0 -6px 22px rgba(124, 58, 237, 0.6), inset 0 2px 10px rgba(255, 255, 255, 0.35)',
                         }}
                         initial={false}
                         transition={{
@@ -867,8 +860,8 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                         {/* Brilho Superior Suave */}
                         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/25 opacity-90 pointer-events-none" />
                         <div
-                          className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none shadow-[inset_0_2px_10px_rgba(255,255,255,0.35)]"
-                          style={{ borderColor: tabTema.corBadgeNum }}
+                          className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
+                          style={{ borderColor: '#C084FC' }}
                         />
                       </motion.div>
                     )}
@@ -886,7 +879,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       className={cn(
                         "relative z-10 text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold tracking-tight transition-colors duration-200",
                         isActive
-                          ? "bg-zinc-900/85 text-zinc-300 border border-zinc-700/60 shadow-inner"
+                          ? "bg-black/35 text-purple-100 border border-purple-400/30 shadow-inner"
                           : "bg-white/5 text-white/40"
                       )}
                     >
@@ -897,14 +890,13 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
               })}
             </div>
 
-            {/* Linha de Base da Pasta Oficial com Transição Suave de Cor */}
+            {/* Linha de Base da Pasta Oficial com Transição Suave de Cor Roxa */}
             <motion.div
               className="min-w-full w-max h-0.5 relative z-20"
-              animate={{
-                backgroundColor: activeMateria.corPrimaria,
-                boxShadow: `0 0 14px ${activeMateria.corSombra}`,
+              style={{
+                backgroundColor: '#8B5CF6',
+                boxShadow: '0 0 14px rgba(139, 92, 246, 0.6)',
               }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
             />
           </div>
 
@@ -972,64 +964,96 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                         onAbrirLivro(livro);
                       }}
                       aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                      className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-white/20 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none min-h-[116px] sm:min-h-[122px] h-auto"
+                      style={{
+                        background: 'linear-gradient(135deg, #4A1D96 0%, #31136A 55%, #1A083B 100%)',
+                      }}
+                      className="group relative flex items-stretch rounded-2xl overflow-hidden transition-all duration-300 border border-purple-500/25 hover:border-purple-400/50 shadow-[0_6px_20px_rgba(0,0,0,0.65)] hover:shadow-[0_8px_28px_rgba(124,58,237,0.35)] cursor-pointer select-none text-left w-full h-[142px] sm:h-[150px] transform-gpu will-change-transform"
                     >
-                      {/* Capa Retangular à Esquerda (Sem contornos) */}
-                      <div className="w-[72px] sm:w-[78px] min-h-[92px] sm:min-h-[98px] shrink-0 rounded-xl overflow-hidden bg-zinc-950 relative self-stretch shadow-md">
+                      {/* SVGs jurídicos decorativos ao fundo (idêntico ao Carrossel de Clássicos) */}
+                      <svg
+                        aria-hidden
+                        viewBox="0 0 200 200"
+                        className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/[0.08]"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                        <path d="M35 95 Q55 135 75 95 Z" />
+                        <path d="M125 95 Q145 135 165 95 Z" />
+                      </svg>
+                      <svg
+                        aria-hidden
+                        viewBox="0 0 100 100"
+                        className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/[0.08]"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      >
+                        <path d="M18 78 L58 38" />
+                        <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                        <path d="M10 88 H50" />
+                      </svg>
+
+                      {/* Capa do Livro à Esquerda (proporcional, com sombra tridimensional e fallback) */}
+                      <div className="relative h-full w-[96px] sm:w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Library className="w-8 h-8 text-white/20" />
+                        </div>
                         <img
-                          src={livro.capa ? directImg(livro.capa, 200) : bibliotecaCoverImg}
-                          alt={`Capa do livro: ${livro.titulo}`}
+                          src={livro.capa ? directImg(livro.capa, 240) : bibliotecaCoverImg}
+                          alt={livro.titulo}
                           loading={index < 6 ? "eager" : "lazy"}
                           decoding="async"
                           fetchPriority={index < 4 ? "high" : "auto"}
                           onError={(e) => {
                             e.currentTarget.src = bibliotecaCoverImg;
                           }}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="relative h-[118px] sm:h-[124px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300"
+                          style={{
+                            boxShadow:
+                              '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.2)',
+                          }}
                         />
-
-                        {/* Selo no topo da capinha: Círculo minimalista com Check */}
-                        <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
-                          <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md border border-emerald-300/40">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
-                          </div>
-                        </div>
                       </div>
 
-                      {/* Informações da Obra — Título e Autor com Espaço Amplo + Rodapé com Páginas, Salvar e Ler */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5 gap-2">
-                        <div>
-                          {/* Título com espaço livre total, sem abreviações e traços finos */}
-                          <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] text-white/95 leading-snug tracking-wide group-hover:text-white transition-colors">
-                            {livro.titulo}
-                          </p>
+                      {/* Detalhes à Direita no Padrão Clássicos com Botão ↗ no Canto Superior */}
+                      <div className="relative flex-1 min-w-0 flex flex-col justify-between p-3 sm:p-3.5 pr-10 z-[1]">
+                        {/* Botão Circular ↗ no Topo Direito (como em Clássicos) */}
+                        <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md group-hover:bg-purple-500/50 group-hover:scale-110 transition-all z-10">
+                          <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.4} />
+                        </div>
 
-                          <p className="mt-0.5 text-[11px] sm:text-[11.5px] text-white/50 leading-snug">
-                            {livro.autor || activeMateria.label} {livro.anoLancamento && `• ${livro.anoLancamento}`}
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                            <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white bg-black/40 backdrop-blur-sm border border-white/15">
+                              <Library className="w-2.5 h-2.5" />
+                              {activeMateria.label}
+                            </span>
+                            {livro.autor && (
+                              <div className="flex items-center gap-1 text-[11px] text-white/80 truncate">
+                                <Clock className="w-3 h-3 shrink-0 opacity-70" />
+                                <span className="truncate">{livro.autor}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <p className="font-display text-white text-[13.5px] sm:text-[14.5px] font-semibold leading-snug line-clamp-2 drop-shadow-sm group-hover:text-purple-100 transition-colors">
+                            {livro.titulo}
                           </p>
                         </div>
 
-                        {/* Linha Inferior: Páginas + Ícone de Salvar ao lado + Botão Ler à Direita */}
-                        <div className="flex items-center justify-between gap-2 mt-auto pt-1 w-full">
-                          <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                            {/* Páginas na cor dinâmica da matéria */}
-                            <span
-                              className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md border shadow-sm shrink-0 transition-colors duration-300"
-                              style={{
-                                backgroundColor: `${activeMateria.corPrimaria}1A`,
-                                borderColor: `${activeMateria.corPrimaria}45`,
-                              }}
-                            >
-                              <BookOpen
-                                className="w-3 h-3 stroke-[2.4]"
-                                style={{ color: activeMateria.corSecundaria }}
-                              />
-                              <span className="font-bold" style={{ color: activeMateria.corBadgeNum }}>
+                        {/* Linha Inferior: Páginas + Favoritar + Botão Ler */}
+                        <div className="flex items-center justify-between gap-2 pt-1 mt-auto">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[10.5px] font-mono px-2 py-0.5 rounded-md bg-black/35 border border-purple-400/25 text-purple-200">
+                              <BookOpen className="w-3 h-3 text-purple-300" />
+                              <span className="font-bold">
                                 {livro.paginas ? `${livro.paginas} págs` : 'PDF Integral'}
                               </span>
                             </span>
 
-                            {/* Ícone de Salvar ao lado das páginas */}
                             <button
                               type="button"
                               onClick={(e) => {
@@ -1044,23 +1068,16 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                                   "w-3.5 h-3.5 transition-colors",
                                   isFav
                                     ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                                    : "text-zinc-500 hover:text-zinc-300"
+                                    : "text-white/40 hover:text-white"
                                 )}
                                 strokeWidth={2}
                               />
                             </button>
                           </div>
 
-                          {/* Botão Ler posicionado embaixo à direita na cor do tema */}
                           <div className="shrink-0">
-                            <span
-                              className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full transition-all duration-200 shadow-md flex items-center gap-1.5 cursor-pointer hover:opacity-95 active:scale-95"
-                              style={{
-                                backgroundColor: activeMateria.corFundoBotao,
-                                boxShadow: `0 3px 12px ${activeMateria.corSombra}`,
-                              }}
-                            >
-                              <BookOpen className="w-3 h-3 fill-white/20 stroke-[2.2]" />
+                            <span className="text-[10.5px] uppercase tracking-wide font-bold text-white px-3 py-1 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 group-hover:from-purple-500 group-hover:to-indigo-500 transition-all duration-200 shadow-md flex items-center gap-1 border border-purple-400/30">
+                              <BookOpen className="w-3 h-3 stroke-[2.2]" />
                               Ler
                             </span>
                           </div>
