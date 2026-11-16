@@ -9,6 +9,23 @@ import { getImageOfflineUrl, fetchAndCacheImageOffline } from '@/services/imageO
 let offlineCoversManifest: Record<string, string> | null = null;
 let manifestPromise: Promise<void> | null = null;
 
+// Inicialização imediata em segundo plano para retorno síncrono a 0ms
+if (typeof window !== 'undefined') {
+  manifestPromise = fetch('/offline-covers/manifest.json')
+    .then((res) => (res.ok ? res.json() : {}))
+    .then((data) => {
+      offlineCoversManifest = data;
+      for (const [url, file] of Object.entries(data)) {
+        if (typeof file === 'string') {
+          resolvedCoversCache.set(url, `/offline-covers/${file}`);
+        }
+      }
+    })
+    .catch(() => {
+      offlineCoversManifest = {};
+    });
+}
+
 export async function getOfflineCover(remoteUrl: string): Promise<string | null> {
   if (!remoteUrl) return null;
   const localAsset = assetUrl(remoteUrl);
