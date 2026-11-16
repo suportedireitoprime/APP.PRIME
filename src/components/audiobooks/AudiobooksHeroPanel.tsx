@@ -24,7 +24,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
           <source srcSet={heroCoverWebp} type="image/webp" />
           <img
             src={heroCoverJpg}
-            alt="Audiobooks Clássicos do Direito — Grandes Pensadores"
+            alt="Audiobooks Direito Prime — Grandes Obras e Pensadores"
             loading="eager"
             fetchPriority="high"
             decoding="async"
@@ -72,18 +72,18 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
       <div className="relative z-10 px-4 sm:px-6 md:px-8 pt-2 sm:pt-3 pb-3 flex flex-col justify-start min-h-[120px] sm:min-h-[130px]">
         <div className="flex flex-col items-start text-left z-10 max-w-[300px]">
           <h2 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
-            <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
+            <span className="font-serif text-[26px] sm:text-[30px] font-medium text-white block">
               Audiobooks
             </span>
-            <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#c084fc] block drop-shadow-[0_2px_14px_rgba(192,132,252,0.65)] -mt-0.5">
-              Clássicos do Direito
+            <span className="font-serif italic text-[22px] sm:text-[25px] font-semibold text-[#c084fc] block drop-shadow-[0_2px_14px_rgba(192,132,252,0.65)] -mt-0.5">
+              Direito Prime
             </span>
           </h2>
 
           <div className="mt-2.5 flex items-start text-left gap-2">
             <div className="w-[3px] h-8 bg-gradient-to-b from-[#c084fc] via-[#9333ea] to-[#4c1d95] rounded-full shrink-0 mt-0.5" />
             <p className="font-serif italic text-white/95 text-[11.5px] sm:text-[12.5px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
-              A voz dos grandes pensadores,
+              As grandes obras e pensadores,
               <br />
               narrados para o seu estudo.
             </p>
