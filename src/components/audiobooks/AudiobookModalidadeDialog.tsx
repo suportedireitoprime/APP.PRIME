@@ -87,10 +87,10 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
                 <Headphones className="w-3 h-3 text-[#A855F7]" />
                 Como prefere ouvir?
               </span>
-              <h3 className="font-sans font-bold text-base sm:text-lg text-white truncate mt-0.5">
+              <h3 className="font-sans font-bold text-base sm:text-lg text-white leading-snug mt-0.5">
                 {livro.titulo}
               </h3>
-              <p className="text-xs text-white/50 truncate">
+              <p className="text-xs text-white/50 mt-0.5">
                 {livro.autor} {livro.ano && `• ${livro.ano}`}
               </p>
             </div>

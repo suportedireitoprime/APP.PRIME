@@ -88,8 +88,8 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
           </span>
         </div>
 
-        {/* Linha 2: Título da Obra (sem negrito excessivo, traços finos) */}
-        <h4 className="font-sans font-normal text-sm sm:text-base text-white truncate leading-snug">
+        {/* Linha 2: Título da Obra (sem abreviação, traços finos) */}
+        <h4 className="font-sans font-normal text-sm sm:text-base text-white leading-snug">
           {livro.titulo}
         </h4>
 

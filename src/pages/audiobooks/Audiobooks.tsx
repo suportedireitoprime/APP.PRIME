@@ -654,7 +654,7 @@ export default function AudiobooksPage() {
                   </div>
 
                   <p
-                    className={`font-sans font-bold text-xs sm:text-[13px] line-clamp-2 mt-2 leading-snug transition-colors ${
+                    className={`font-sans font-bold text-xs sm:text-[13px] mt-2 leading-snug transition-colors ${
                       isActive
                         ? "text-[#DDD6FE]"
                         : "text-white group-hover:text-[#C4B5FD]"
@@ -783,7 +783,7 @@ export default function AudiobooksPage() {
                       className={cn(
                         "relative z-10 text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold tracking-tight transition-colors duration-200",
                         isActive
-                          ? "bg-white/25 text-white border border-white/35 shadow-sm"
+                          ? "bg-zinc-900/85 text-zinc-300 border border-zinc-700/60 shadow-inner"
                           : "bg-white/5 text-white/40"
                       )}
                     >
@@ -848,10 +848,10 @@ export default function AudiobooksPage() {
                     whileTap={{ scale: 0.985 }}
                     onClick={() => handleCardClick(livro)}
                     aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-[#7C3AED]/40 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none h-[116px] sm:h-[122px]"
+                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-[#7C3AED]/40 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none min-h-[116px] sm:min-h-[122px] h-auto"
                   >
                     {/* Capa Retangular à Esquerda */}
-                    <div className="w-[72px] sm:w-[78px] h-full shrink-0 rounded-xl overflow-hidden bg-[#0A0518] border border-[#7C3AED]/25 shadow-md relative">
+                    <div className="w-[72px] sm:w-[78px] min-h-[92px] sm:min-h-[98px] shrink-0 rounded-xl overflow-hidden bg-[#0A0518] border border-[#7C3AED]/25 shadow-md relative self-stretch">
                       <img
                         src={livro.capaUrl}
                         alt={`Capa do livro: ${livro.titulo}`}
@@ -875,15 +875,15 @@ export default function AudiobooksPage() {
                       </div>
                     </div>
 
-                    {/* Informações Centrais da Obra — Título em Traços Finos e Altura Igual */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                    {/* Informações Centrais da Obra — Título Completo sem Abreviar e Traços Finos */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5 gap-2">
                       <div>
-                        {/* Título sem negrito (traços finos!) */}
-                        <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] text-white/95 leading-snug tracking-wide line-clamp-2 group-hover:text-[#D8B4FE] transition-colors">
+                        {/* Título sem negrito e sem abreviações (traços finos!) */}
+                        <p className="font-sans font-normal text-[14px] sm:text-[15px] text-white/95 leading-snug tracking-wide group-hover:text-[#D8B4FE] transition-colors">
                           {livro.titulo}
                         </p>
 
-                        <p className="mt-0.5 text-[11px] sm:text-[11.5px] text-white/50 line-clamp-1 truncate">
+                        <p className="mt-0.5 text-[11px] sm:text-[11.5px] text-white/50 leading-snug">
                           {livro.autor} {livro.ano && `• ${livro.ano}`}
                         </p>
                       </div>

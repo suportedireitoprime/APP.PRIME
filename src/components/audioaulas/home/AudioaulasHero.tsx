@@ -105,7 +105,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
       <div className="relative mb-6">
         {/* Shell unificado com o painel da Home, Resumos e Biblioteca */}
         <div
-          className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
