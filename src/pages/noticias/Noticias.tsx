@@ -255,8 +255,8 @@ const Noticias = () => {
       <h2 className="font-display text-xl text-foreground leading-tight font-bold">
         {noticia.titulo}
       </h2>
-      <p className="text-muted-foreground text-xs font-body flex items-center gap-1.5">
-        <Clock className="w-3 h-3" />
+      <p className="text-muted-foreground text-[13px] sm:text-sm font-body flex items-center gap-1.5">
+        <Clock className="w-3.5 h-3.5" />
         {new Date(noticia.data_publicacao).toLocaleDateString('pt-BR')} –{' '}
         {new Date(noticia.data_publicacao).toLocaleTimeString('pt-BR', {
           hour: '2-digit',
@@ -345,7 +345,7 @@ const Noticias = () => {
 
 
         {/* Day calendar strip — same style as Radar de Leis */}
-        <div className="flex justify-between gap-1 px-2 py-3 max-w-3xl mx-auto overflow-x-auto no-scrollbar">
+        <div className="flex justify-between gap-1.5 px-3 pt-3 pb-2 max-w-3xl mx-auto overflow-x-auto no-scrollbar scroll-smooth">
           {dayList.map((day, idx) => {
             const key = toYMD(day);
             const isSelected = dataFiltro === key;
@@ -357,25 +357,25 @@ const Noticias = () => {
               <button
                 key={key}
                 onClick={() => setDataFiltro(key)}
-                className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] rounded-xl transition-all shadow-md shadow-black/10 min-w-[36px] ${
+                className={`relative flex-1 shrink-0 flex flex-col items-center justify-center gap-1 py-2.5 min-h-[64px] sm:min-h-[70px] min-w-[42px] sm:min-w-[48px] rounded-2xl transition-all shadow-md shadow-black/20 active:scale-95 cursor-pointer ${
                   isSelected
-                    ? 'bg-primary shadow-primary/30'
-                    : 'bg-card/40 text-foreground hover:bg-card/60'
+                    ? 'bg-primary shadow-primary/30 ring-1 ring-primary/40'
+                    : 'bg-card/50 text-foreground hover:bg-card/75 border border-border/30'
                 }`}
               >
                 {monthChanged && (
                   <span
-                    className={`absolute -top-2 left-1/2 -translate-x-1/2 px-1 py-[1px] rounded-full text-[8px] font-body font-semibold uppercase tracking-wider ${
-                      isSelected ? 'bg-primary text-primary-foreground' : 'bg-primary/20 text-primary'
+                    className={`absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-[1.5px] rounded-full text-[9px] sm:text-[9.5px] font-body font-bold uppercase tracking-wider shadow-sm z-10 ${
+                      isSelected ? 'bg-primary text-primary-foreground border border-white/20' : 'bg-primary/20 text-primary border border-primary/30'
                     }`}
                   >
                     {MONTHS[day.getMonth()]}
                   </span>
                 )}
-                <span className={`text-[9px] sm:text-[10px] font-body font-semibold uppercase tracking-wide line-clamp-1 ${isSelected ? 'text-primary-foreground' : 'text-foreground/85'}`}>{label}</span>
-                <span className={`text-base sm:text-lg font-display font-bold leading-none ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>{day.getDate()}</span>
+                <span className={`text-[10.5px] sm:text-[11.5px] font-body font-bold uppercase tracking-wider line-clamp-1 ${isSelected ? 'text-primary-foreground' : 'text-foreground/80'}`}>{label}</span>
+                <span className={`text-xl sm:text-2xl font-display font-extrabold leading-none ${isSelected ? 'text-primary-foreground drop-shadow-sm' : 'text-foreground'}`}>{day.getDate()}</span>
                 {hasData && !isSelected && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
                 )}
               </button>
             );
@@ -383,9 +383,9 @@ const Noticias = () => {
         </div>
 
         {/* Selected date label */}
-        <div className="flex items-center gap-2 px-5 pb-1 max-w-3xl mx-auto">
-          <Calendar className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs font-display text-primary">
+        <div className="flex items-center gap-2 px-4.5 pt-1 pb-1.5 max-w-3xl mx-auto">
+          <Calendar className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-sm font-display font-semibold text-primary tracking-wide">
             {formatFullDate(dataFiltro ? new Date(dataFiltro + 'T00:00:00') : centerDate)}
           </span>
         </div>
@@ -439,9 +439,9 @@ const Noticias = () => {
                       <h3 className="font-display text-[15px] sm:text-base text-foreground leading-snug line-clamp-3 group-hover:text-primary transition-colors">
                         {item.titulo}
                       </h3>
-                      <div className="flex items-center gap-2 flex-wrap text-[11px] font-body text-muted-foreground">
-                        <span className="inline-flex items-center gap-1 text-primary font-semibold">
-                          <Clock className="w-3 h-3" />
+                      <div className="flex items-center gap-2 flex-wrap text-xs font-body text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5 text-primary font-bold">
+                          <Clock className="w-3.5 h-3.5" />
                           {time}
                         </span>
                         <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />

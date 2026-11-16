@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  Heart,
+  Bookmark,
   History,
   BarChart3,
   Sparkles,
@@ -31,7 +31,7 @@ import {
 } from '@/data/audiobooksCatalogo';
 import { AudiobooksTrilhaResumos } from './AudiobooksTrilhaResumos';
 
-export type AudiobookQuickActionType = 'favoritos' | 'recentes' | 'estatisticas' | 'resumos';
+export type AudiobookQuickActionType = 'favoritos' | 'recentes' | 'estatisticas' | 'em_alta' | 'resumos';
 
 interface AudiobooksQuickActionSheetProps {
   activeSheet: AudiobookQuickActionType | null;
@@ -88,6 +88,10 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
     estatisticas: {
       title: 'Minhas Estatísticas',
       subtitle: 'Tempo de audição, obras e evolução jurídica',
+    },
+    em_alta: {
+      title: 'Obras em Alta',
+      subtitle: 'Os audiobooks clássicos mais ouvidos e recomendados',
     },
     resumos: {
       title: 'Trilha de Resumos',
@@ -197,7 +201,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                   : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30 border border-transparent'
               }`}
             >
-              <Heart className={`w-3.5 h-3.5 ${tabAtiva === 'favoritos' ? 'fill-white text-white' : 'text-rose-400'}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${tabAtiva === 'favoritos' ? 'fill-white text-white' : 'text-amber-400'}`} />
               <span className="truncate">Favoritos ({favoritos.length})</span>
             </button>
 
@@ -229,7 +233,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                   : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30 border border-transparent'
               }`}
             >
-              <BarChart3 className={`w-3.5 h-3.5 ${tabAtiva === 'estatisticas' ? 'text-white' : 'text-[#FBBF24]'}`} />
+              <BarChart3 className={`w-3.5 h-3.5 ${tabAtiva === 'estatisticas' ? 'text-white' : 'text-emerald-400'}`} />
               <span className="truncate">Estatísticas</span>
             </button>
 
@@ -237,12 +241,16 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
               type="button"
               onClick={() => {
                 haptic.selection();
-                setTabAtiva('resumos');
+                setTabAtiva('em_alta');
               }}
-              className="flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center text-purple-200/70 hover:text-white hover:bg-purple-900/30 border border-transparent"
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
+                tabAtiva === 'em_alta'
+                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
+                  : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30 border border-transparent'
+              }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-[#C4B5FD]" />
-              <span className="truncate">Resumos</span>
+              <Flame className={`w-3.5 h-3.5 ${tabAtiva === 'em_alta' ? 'fill-white text-white' : 'text-orange-400'}`} />
+              <span className="truncate">Em Alta</span>
             </button>
           </div>
 
@@ -253,14 +261,14 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
               <div className="space-y-3">
                 {favoritos.length === 0 ? (
                   <div className="text-center py-12 px-4 rounded-2xl bg-zinc-950/60 border border-white/5 flex flex-col items-center">
-                    <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-3">
-                      <Heart className="w-6 h-6 text-rose-400" />
+                    <div className="w-14 h-14 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
+                      <Bookmark className="w-6 h-6 text-amber-400 fill-amber-400" />
                     </div>
                     <h3 className="font-sans font-bold text-white text-base">
                       Nenhum audiobook favoritado
                     </h3>
                     <p className="text-xs text-white/50 max-w-xs mt-1.5">
-                      Toque no ícone de coração de qualquer livro no catálogo para salvá-lo aqui e ter acesso rápido.
+                      Toque no ícone de marcador de qualquer livro no catálogo para salvá-lo aqui e ter acesso rápido.
                     </p>
                     <button
                       type="button"
@@ -437,6 +445,62 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                     </p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* ── ABA 4: OBRAS EM ALTA ── */}
+            {tabAtiva === 'em_alta' && (
+              <div className="space-y-3">
+                {AUDIOBOOKS_CATALOGO.slice(0, 10).map((livro, rankIdx) => (
+                  <div
+                    key={livro.id}
+                    onClick={() => {
+                      haptic.selection();
+                      onSelectLivro(livro);
+                    }}
+                    className="p-3.5 rounded-2xl bg-[#140D26]/85 border border-purple-500/20 hover:border-orange-500/50 transition-all flex items-center gap-3.5 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 font-bold text-xs flex items-center justify-center shrink-0">
+                      {rankIdx + 1}º
+                    </div>
+
+                    <div className="relative w-12 h-16 rounded-xl overflow-hidden shrink-0 border border-white/15">
+                      <img
+                        src={livro.capaUrl}
+                        alt={livro.titulo}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-orange-200 transition-colors leading-snug truncate">
+                        {livro.titulo}
+                      </h4>
+                      <p className="text-[11.5px] text-white/60 truncate mt-0.5">
+                        {livro.autor} {livro.ano && `• ${livro.ano}`}
+                      </p>
+                      <div className="mt-1 flex items-center gap-1 text-[10px] font-mono font-bold text-orange-300">
+                        <Flame className="w-3 h-3 text-orange-400 fill-orange-400/20" />
+                        Obra em Alta no Acervo
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        haptic.impact();
+                        onSelectLivro(livro);
+                      }}
+                      className="px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-md shrink-0 flex items-center gap-1"
+                    >
+                      <Play className="w-3 h-3 fill-white" />
+                      Ouvir
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>

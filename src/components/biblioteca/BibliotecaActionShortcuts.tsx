@@ -5,10 +5,10 @@ import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Leitura',     icon: BookOpen,   action: () => abrirAtalhoBiblioteca('leitura'),       color: '#FACC15' },
-  { label: 'Trilhas',     icon: Map,        action: (navigate: NavigateFunction) => navigate('/bibliotecas/trilhas'), color: '#38BDF8' },
-  { label: 'Favoritos',   icon: Bookmark,   action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#F43F5E' },
-  { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#A855F7' },
+  { label: 'Leitura',     icon: BookOpen,   action: () => abrirAtalhoBiblioteca('leitura'),       color: '#C084FC' },
+  { label: 'Trilhas',     icon: Map,        action: (navigate: NavigateFunction) => navigate('/bibliotecas/trilhas'), color: '#C084FC' },
+  { label: 'Favoritos',   icon: Bookmark,   action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#C084FC' },
+  { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#C084FC' },
 ];
 
 interface BibliotecaActionShortcutsProps {
@@ -37,7 +37,10 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
           >
             <Icon
               className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
-              style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+              style={{
+                color: item.color,
+                filter: 'drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65))',
+              }}
               strokeWidth={2.1}
             />
             <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">

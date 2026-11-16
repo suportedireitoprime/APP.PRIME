@@ -42,7 +42,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
       <div className="relative mb-5">
         {/* Shell unificado idêntico ao início do app e Áudio Aulas */}
         <div
-          className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[300px] xs:min-h-[320px] sm:min-h-[340px]"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',

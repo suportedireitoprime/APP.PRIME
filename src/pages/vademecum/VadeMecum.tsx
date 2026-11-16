@@ -140,17 +140,9 @@ const VadeMecum = () => {
   }
 
   return (
-    <div className={`theme-vademecum min-h-dvh bg-zinc-950 pb-24 relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.08)"
-          hoverFillColor="rgba(255, 255, 255, 0.12)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
+    <div className={`theme-vademecum min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+      <div className="fixed inset-0 z-0">
+        <ShapeGrid />
       </div>
       <div className="relative z-10">
         {renderContent()}

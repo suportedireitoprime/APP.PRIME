@@ -37,7 +37,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'George Orwell',
     audioUrl: `${R2_BASE}/1984/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/1984/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Resumo completo e aprofundado dos dilemas do totalitarismo, duplipensar e controle estatal.',
   },
   'a-arte-da-guerra': {
@@ -47,7 +47,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Sun Tzu',
     audioUrl: `${R2_BASE}/a-arte-da-guerra/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-arte-da-guerra/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Estratégia militar aplicada ao raciocínio lógico, táticas jurídicas e liderança.',
   },
   'a-era-dos-direitos': {
@@ -57,7 +57,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/a-era-dos-direitos/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-era-dos-direitos/audiobook-completo.srt`,
-    duracaoFormatada: '~30 min',
+    duracaoFormatada: '30 min',
     descricao: 'A evolução histórica, filosófica e institucional dos Direitos Humanos fundamentais.',
   },
   'a-estrada-para-o-carater': {
@@ -67,7 +67,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'David Brooks',
     audioUrl: `${R2_BASE}/a-estrada-para-o-carater/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-estrada-para-o-carater/audiobook-completo.srt`,
-    duracaoFormatada: '~32 min',
+    duracaoFormatada: '32 min',
     descricao: 'Valores morais internos versus virtudes exteriores na construção ética do indivíduo.',
   },
   'a-luta-pelo-direito': {
@@ -77,7 +77,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Rudolf von Ihering',
     audioUrl: `${R2_BASE}/a-luta-pelo-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-luta-pelo-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~25 min',
+    duracaoFormatada: '25 min',
     descricao: 'O dever ético e prático de todo cidadão de lutar e defender ativamente seus direitos.',
   },
   'a-meta': {
@@ -87,7 +87,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Eliyahu M. Goldratt',
     audioUrl: `${R2_BASE}/a-meta/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-meta/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'A Teoria das Restrições e processos de melhoria contínua aplicados à resolução de problemas complexos.',
   },
   'a-republica': {
@@ -97,7 +97,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Platão',
     audioUrl: `${R2_BASE}/a-republica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-republica/audiobook-completo.srt`,
-    duracaoFormatada: '~40 min',
+    duracaoFormatada: '40 min',
     descricao: 'A justiça individual e coletiva, a Cidade Ideal e a célebre alegoria da caverna.',
   },
   'a-riqueza-das-nacoes': {
@@ -107,7 +107,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Adam Smith',
     audioUrl: `${R2_BASE}/a-riqueza-das-nacoes/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-riqueza-das-nacoes/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Divisão do trabalho, mercado livre, incentivos econômicos e o papel das leis na prosperidade.',
   },
   'a-teoria-das-formas-de-governo': {
@@ -117,7 +117,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/a-teoria-das-formas-de-governo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-teoria-das-formas-de-governo/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Análise comparativa das formas de governo desde os gregos até o constitucionalismo moderno.',
   },
   'acesso-a-justica': {
@@ -127,7 +127,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Mauro Cappelletti e Bryant Garth',
     audioUrl: `${R2_BASE}/acesso-a-justica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/acesso-a-justica/audiobook-completo.srt`,
-    duracaoFormatada: '~25 min',
+    duracaoFormatada: '25 min',
     descricao: 'As três ondas renovatórias do acesso à ordem jurídica justa e democratização do Judiciário.',
   },
   'admiravel-mundo-novo': {
@@ -137,7 +137,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Aldous Huxley',
     audioUrl: `${R2_BASE}/admiravel-mundo-novo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/admiravel-mundo-novo/audiobook-completo.srt`,
-    duracaoFormatada: '~40 min',
+    duracaoFormatada: '40 min',
     descricao: 'Distopia sobre controle social tecnológico, perda da individualidade e bioética.',
   },
   'as-21-irrefutaveis-leis-da-lideranca': {
@@ -147,7 +147,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'John C. Maxwell',
     audioUrl: `${R2_BASE}/as-21-irrefutaveis-leis-da-lideranca/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/as-21-irrefutaveis-leis-da-lideranca/audiobook-completo.srt`,
-    duracaoFormatada: '~40 min',
+    duracaoFormatada: '40 min',
     descricao: 'Princípios atemporais de influência, integridade e tomada de decisão estratégica.',
   },
   'blink': {
@@ -157,7 +157,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Malcolm Gladwell',
     audioUrl: `${R2_BASE}/blink/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/blink/audiobook-completo.srt`,
-    duracaoFormatada: '~30 min',
+    duracaoFormatada: '30 min',
     descricao: 'A psicologia da intuição rápida, vieses cognitivos e julgamento sob pressão.',
   },
   'comece-pelo-porque': {
@@ -167,7 +167,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Simon Sinek',
     audioUrl: `${R2_BASE}/comece-pelo-porque/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/comece-pelo-porque/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'O Círculo Dourado: propósito, clareza institucional e capacidade de inspirar pessoas.',
   },
   'como-as-democracias-morrem': {
@@ -177,7 +177,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Steven Levitsky e Daniel Ziblatt',
     audioUrl: `${R2_BASE}/como-as-democracias-morrem/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/como-as-democracias-morrem/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Erosão democrática por vias legais, limites institucionais e tolerância mútua.',
   },
   'comunicacao-nao-violenta': {
@@ -187,7 +187,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Marshall B. Rosenberg',
     audioUrl: `${R2_BASE}/comunicacao-nao-violenta/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/comunicacao-nao-violenta/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Resolução consensual de conflitos, mediação, empatia ativa e linguagem assertiva.',
   },
   'dos-delitos-e-das-penas': {
@@ -197,7 +197,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Cesare Beccaria',
     audioUrl: `${R2_BASE}/dos-delitos-e-das-penas/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/dos-delitos-e-das-penas/audiobook-completo.srt`,
-    duracaoFormatada: '~40 min',
+    duracaoFormatada: '40 min',
     descricao: 'Marco iluminista que fundou o Direito Penal humanitário e a proporcionalidade das sanções.',
   },
   'eles-os-juizes-vistos-por-nos-os-advogados': {
@@ -207,7 +207,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Piero Calamandrei',
     audioUrl: `${R2_BASE}/eles-os-juizes-vistos-por-nos-os-advogados/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/eles-os-juizes-vistos-por-nos-os-advogados/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'A relação ética entre a advocacia e a magistratura com elegância e sabedoria forense.',
   },
   'etica-a-nicomaco': {
@@ -217,7 +217,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Aristóteles',
     audioUrl: `${R2_BASE}/etica-a-nicomaco/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/etica-a-nicomaco/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Virtude moral, justa medida, prudência (phronesis) e busca da felicidade autêntica.',
   },
   'filosofia-do-direito': {
@@ -227,7 +227,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'G. W. F. Hegel / Sergio Cavalieri Filho',
     audioUrl: `${R2_BASE}/filosofia-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/filosofia-do-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Conceitos fundamentais da essência do Direito, moralidade, eticidade e Estado.',
   },
   'introducao-ao-estudo-do-direito': {
@@ -237,7 +237,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Tércio Sampaio Ferraz Jr.',
     audioUrl: `${R2_BASE}/introducao-ao-estudo-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/introducao-ao-estudo-do-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~30 min',
+    duracaoFormatada: '30 min',
     descricao: 'Zetética e dogmática jurídica, teoria da norma e fontes de validade do ordenamento.',
   },
   'justica': {
@@ -247,7 +247,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Michael J. Sandel',
     audioUrl: `${R2_BASE}/justica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/justica/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Dilemas morais fundamentais: utilitarismo, libertarianismo, imperativo categórico e bem comum.',
   },
   'licoes-preliminares-de-direito': {
@@ -257,7 +257,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Miguel Reale',
     audioUrl: `${R2_BASE}/licoes-preliminares-de-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/licoes-preliminares-de-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'A Teoria Tridimensional do Direito (Fato, Valor e Norma) e metodologia jurídica.',
   },
   'o-advogado-do-diabo': {
@@ -267,7 +267,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Morris West',
     audioUrl: `${R2_BASE}/o-advogado-do-diabo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-advogado-do-diabo/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Investigação forense rigorosa, dilemas de consciência, verdade material e santidade.',
   },
   'o-caso-dos-exploradores-de-cavernas': {
@@ -277,7 +277,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Lon L. Fuller',
     audioUrl: `${R2_BASE}/o-caso-dos-exploradores-de-cavernas/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-caso-dos-exploradores-de-cavernas/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Julgamento simulado de Harvard confrontando Direito Natural, Positivismo e Realismo Jurídico.',
   },
   'o-caso-dos-irmaos-naves': {
@@ -287,7 +287,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'João Alamy Filho',
     audioUrl: `${R2_BASE}/o-caso-dos-irmaos-naves/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-caso-dos-irmaos-naves/audiobook-completo.srt`,
-    duracaoFormatada: '~40 min',
+    duracaoFormatada: '40 min',
     descricao: 'O maior erro judiciário da história brasileira e o papel inegociável do devido processo legal.',
   },
   'o-contrato-social': {
@@ -297,7 +297,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Jean-Jacques Rousseau',
     audioUrl: `${R2_BASE}/o-contrato-social/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-contrato-social/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Vontade geral, soberania popular, liberdade civil e a legitimidade do pacto político.',
   },
   'o-espirito-das-leis': {
@@ -307,7 +307,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Montesquieu',
     audioUrl: `${R2_BASE}/o-espirito-das-leis/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-espirito-das-leis/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'A teoria da separação dos poderes (Executivo, Legislativo e Judiciário) e freios e contrapesos.',
   },
   'o-futuro-da-democracia': {
@@ -317,7 +317,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/o-futuro-da-democracia/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-futuro-da-democracia/audiobook-completo.srt`,
-    duracaoFormatada: '~30 min',
+    duracaoFormatada: '30 min',
     descricao: 'As promessas não cumpridas da democracia e os desafios da representação política.',
   },
   'o-leviata': {
@@ -327,7 +327,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Thomas Hobbes',
     audioUrl: `${R2_BASE}/o-leviata/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-leviata/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Estado de natureza, contrato de submissão, segurança jurídica e a soberania do poder público.',
   },
   'o-monge-e-o-executivo': {
@@ -337,7 +337,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'James C. Hunter',
     audioUrl: `${R2_BASE}/o-monge-e-o-executivo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-monge-e-o-executivo/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Liderança servidora, inteligência emocional e construção de confiança e autoridade legítima.',
   },
   'o-mundo-assombrado-pelos-demonios': {
@@ -347,7 +347,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Carl Sagan',
     audioUrl: `${R2_BASE}/o-mundo-assombrado-pelos-demonios/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-mundo-assombrado-pelos-demonios/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'O método científico como vela no escuro, combate a pseudociências e pensamento crítico.',
   },
   'o-mundo-de-sofia': {
@@ -357,7 +357,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Jostein Gaarder',
     audioUrl: `${R2_BASE}/o-mundo-de-sofia/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-mundo-de-sofia/audiobook-completo.srt`,
-    duracaoFormatada: '~50 min',
+    duracaoFormatada: '50 min',
     descricao: 'Viagem panorâmica pelos 3.000 anos da história do pensamento filosófico ocidental.',
   },
   'o-principe': {
@@ -367,7 +367,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Nicolau Maquiavel',
     audioUrl: `${R2_BASE}/o-principe/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-principe/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Realismo político puro: virtù, fortuna e a conservação do poder no Estado moderno.',
   },
   'o-processo': {
@@ -377,7 +377,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Franz Kafka',
     audioUrl: `${R2_BASE}/o-processo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-processo/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'O pesadelo burocrático, a alienação do réu e a crítica contundente ao formalismo opressor.',
   },
   'o-que-e-direito': {
@@ -387,7 +387,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Roberto Lyra Filho',
     audioUrl: `${R2_BASE}/o-que-e-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-que-e-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~25 min',
+    duracaoFormatada: '25 min',
     descricao: 'Dialética jurídica, crítica sociológica e a libertação do Direito das amarras meramente estatais.',
   },
   'o-ultimo-dia-de-um-condenado': {
@@ -397,7 +397,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Victor Hugo',
     audioUrl: `${R2_BASE}/o-ultimo-dia-de-um-condenado/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-ultimo-dia-de-um-condenado/audiobook-completo.srt`,
-    duracaoFormatada: '~45 min',
+    duracaoFormatada: '45 min',
     descricao: 'Manifesto visceral contra a pena de morte e a desumanização institucional no sistema carcerário.',
   },
   'os-7-habitos-das-pessoas-altamente-eficazes': {
@@ -407,7 +407,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Stephen R. Covey',
     audioUrl: `${R2_BASE}/os-7-habitos-das-pessoas-altamente-eficazes/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/os-7-habitos-das-pessoas-altamente-eficazes/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Proatividade, foco no que importa, sinergia e liderança pessoal fundamentada em princípios.',
   },
   'sobre-a-liberdade': {
@@ -417,7 +417,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'John Stuart Mill',
     audioUrl: `${R2_BASE}/sobre-a-liberdade/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/sobre-a-liberdade/audiobook-completo.srt`,
-    duracaoFormatada: '~30 min',
+    duracaoFormatada: '30 min',
     descricao: 'O princípio do dano, liberdade de expressão irrestrita e os limites do poder sobre o indivíduo.',
   },
   'teoria-pura-do-direito': {
@@ -427,7 +427,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Hans Kelsen',
     audioUrl: `${R2_BASE}/teoria-pura-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/teoria-pura-do-direito/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Pirâmide de Kelsen, norma fundamental hipotética e a depuração científica do positivismo.',
   },
   'vigiar-e-punir': {
@@ -437,7 +437,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Michel Foucault',
     audioUrl: `${R2_BASE}/vigiar-e-punir/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/vigiar-e-punir/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'O Panóptico, a disciplina dos corpos, microfísica do poder e o surgimento da prisão moderna.',
   },
   'virando-a-propria-mesa': {
@@ -447,7 +447,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
     autor: 'Ricardo Semler',
     audioUrl: `${R2_BASE}/virando-a-propria-mesa/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/virando-a-propria-mesa/audiobook-completo.srt`,
-    duracaoFormatada: '~35 min',
+    duracaoFormatada: '35 min',
     descricao: 'Gestão revolucionária, autonomia corporativa, transparência radical e quebra de dogmas empresariais.',
   },
 };
@@ -633,7 +633,7 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
         autor: resumo?.autor || livro.autor,
         descricao: `Resumo pedagógico e aprofundado: ${enrichedTitle} da obra ${livro.titulo}.`,
         duracaoSegundos: c.duracaoSegundos || 360,
-        duracaoFormatada: c.duracaoFormatada || '~6 min',
+        duracaoFormatada: c.duracaoFormatada || '6 min',
         audioUrl: c.audioUrl,
         srtUrl: c.srtUrl,
         cues: [],
@@ -654,7 +654,7 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
         autor: resumo?.autor || livro.autor,
         descricao: resumo?.descricao || `Resumo analítico aprofundado da obra ${livro.titulo}.`,
         duracaoSegundos: 2400,
-        duracaoFormatada: resumo?.duracaoFormatada || '~35 min',
+        duracaoFormatada: resumo?.duracaoFormatada || '35 min',
         audioUrl,
         srtUrl,
         cues: [],

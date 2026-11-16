@@ -80,8 +80,8 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </button>
       )}
 
-      {/* ── CARD ELEGANTE, IMPACTANTE E LEVEMENTE TRANSPARENTE ── */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-black/70 border border-amber-500/35 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.95),0_0_50px_rgba(245,158,11,0.12)] backdrop-blur-2xl text-center space-y-4 animate-in zoom-in-95 duration-200">
+      {/* ── CARD ELEGANTE, IMPACTANTE E TRANSLÚCIDO (FROSTED GLASS) ── */}
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-black/45 border border-white/15 p-6 sm:p-8 shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_40px_rgba(245,158,11,0.1)] backdrop-blur-xl text-center space-y-4 animate-in zoom-in-95 duration-200">
         
         {/* Logo Oficial do App e Nome Idêntico ao Painel do Início */}
         <div className="flex flex-col items-center justify-center pt-1 space-y-1.5">

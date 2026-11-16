@@ -92,7 +92,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 <button
                   onClick={handlePesquisar}
                   aria-label="Abrir busca"
-                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 shadow-[0_10px_26px_rgba(16,185,129,0.55),0_0_20px_rgba(16,185,129,0.35)] active:scale-95 transition-transform cursor-pointer pointer-events-auto`}
+                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 shadow-[0_10px_25px_rgba(0,0,0,0.65)] active:scale-95 transition-transform cursor-pointer pointer-events-auto`}
                 >
                   <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-emerald-400 drop-shadow-lg -scale-x-100" aria-hidden="true" strokeWidth={1.2} />
                   <span
