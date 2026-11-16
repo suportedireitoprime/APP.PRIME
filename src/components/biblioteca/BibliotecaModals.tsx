@@ -5,7 +5,7 @@ import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 const LivroDetailSheet = lazyWithRetry(() => import('@/components/biblioteca/LivroDetailSheet'));
 const BibliotecaBuscaOverlay = lazyWithRetry(() => import('@/components/biblioteca/BibliotecaBuscaOverlay'));
-const PdfScrollReader = lazyWithRetry(() => import('@/components/biblioteca/PdfScrollReader'));
+const PdfPaginatedReader = lazyWithRetry(() => import('@/components/biblioteca/PdfPaginatedReader'));
 const BibliotecaMateriaSheet = lazyWithRetry(() => import('@/components/biblioteca/BibliotecaMateriaSheet'));
 
 interface BibliotecaModalsProps {
@@ -62,11 +62,11 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
         )}
       </Suspense>
 
-      {/* Leitor de PDF sob demanda */}
+      {/* Leitor de PDF sob demanda (100% Paginado com folheação 3D) */}
       <Suspense fallback={null}>
         <AnimatePresence>
           {customPdfUrl && (
-            <PdfScrollReader
+            <PdfPaginatedReader
               url={customPdfUrl}
               titulo={customPdfTitle}
               onClose={onCloseCustomPdf}

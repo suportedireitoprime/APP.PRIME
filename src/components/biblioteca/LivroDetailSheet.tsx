@@ -317,7 +317,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
         )
       ) : (
         <PrimeBottomSheet 
-          open={open} 
+          open={open && !readerMode} 
           onClose={handleCloseSafe} 
           zIndex={1001} 
           className={isDesktop ? "left-0 right-0 mx-auto bottom-auto top-[7.5dvh] !h-[85dvh] max-w-[720px] rounded-3xl border border-border shadow-2xl" : "mt-[10dvh] !h-[90dvh] rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"}
@@ -392,44 +392,23 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
         {readerMode === 'pdf' && (pdfUrlForReader || currentLivro.download) && (
           <ErrorBoundary key="pdf-reader">
             <Suspense fallback={<div className="flex h-full items-center justify-center p-8 text-zinc-400">Carregando leitor...</div>}>
-              {pdfStyle === 'paginated' ? (
-                <PdfPaginatedReader
-                  url={pdfUrlForReader || currentLivro.download!}
-                  urlClara={urlClara}
-                  urlEscura={urlEscura}
-                  onSwitchVersao={async (versao) => {
-                    saveUltimoModoLeitura(currentLivro.id, versao === 'clara' ? 'pdf-clara' : 'pdf-escura');
-                    const target = versao === 'clara' ? urlClara : urlEscura;
-                    if (target) {
-                      const local = await ensurePdfLocalUrl(target);
-                      setPdfUrlForReader(local);
-                    }
-                  }}
-                  titulo={currentLivro.titulo}
-                  livroId={String(currentLivro.id)}
-                  capaUrl={capaUrl}
-                  onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-                  onSwitchToScroll={() => setPdfStyle('scroll')}
-                />
-              ) : (
-                <PdfScrollReader
-                  url={pdfUrlForReader || currentLivro.download!}
-                  urlClara={urlClara}
-                  urlEscura={urlEscura}
-                  onSwitchVersao={async (versao) => {
-                    saveUltimoModoLeitura(currentLivro.id, versao === 'clara' ? 'pdf-clara' : 'pdf-escura');
-                    const target = versao === 'clara' ? urlClara : urlEscura;
-                    if (target) {
-                      const local = await ensurePdfLocalUrl(target);
-                      setPdfUrlForReader(local);
-                    }
-                  }}
-                  titulo={currentLivro.titulo}
-                  livroId={String(currentLivro.id)}
-                  capaUrl={capaUrl}
-                  onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-                />
-              )}
+              <PdfPaginatedReader
+                url={pdfUrlForReader || currentLivro.download!}
+                urlClara={urlClara}
+                urlEscura={urlEscura}
+                onSwitchVersao={async (versao) => {
+                  saveUltimoModoLeitura(currentLivro.id, versao === 'clara' ? 'pdf-clara' : 'pdf-escura');
+                  const target = versao === 'clara' ? urlClara : urlEscura;
+                  if (target) {
+                    const local = await ensurePdfLocalUrl(target);
+                    setPdfUrlForReader(local);
+                  }
+                }}
+                titulo={currentLivro.titulo}
+                livroId={String(currentLivro.id)}
+                capaUrl={capaUrl}
+                onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+              />
             </Suspense>
           </ErrorBoundary>
         )}

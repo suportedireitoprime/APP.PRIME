@@ -166,8 +166,8 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
     const diffY = touch.clientY - start.y;
     const duration = Date.now() - start.time;
 
-    // Detecta swipe horizontal
-    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5 && duration < 600) {
+    // Detecta swipe horizontal (apenas se for predominantemente horizontal)
+    if (Math.abs(diffX) > 48 && Math.abs(diffX) > Math.abs(diffY) * 2 && duration < 500) {
       if (diffX < 0) {
         turn('next');
       } else {
@@ -176,13 +176,18 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
       return;
     }
 
+    // Se o usuário rolou verticalmente mais de 12px, foi um scroll de leitura, não um toque!
+    if (Math.abs(diffY) > 12) {
+      return;
+    }
+
     // Se foi apenas um toque curto e a navegação por toque está ativada
     if (enableTapNavigation && Math.abs(diffX) < 12 && Math.abs(diffY) < 12 && duration < 350) {
       const width = window.innerWidth;
       const x = touch.clientX;
-      if (x > width * 0.72) {
+      if (x > width * 0.78) {
         turn('next');
-      } else if (x < width * 0.28) {
+      } else if (x < width * 0.22) {
         turn('prev');
       } else {
         onTapCenter?.();
@@ -200,52 +205,55 @@ const BookPageFlip3D = forwardRef<BookPageFlip3DHandle, Props>(function BookPage
     const x = e.clientX - rect.left;
     const w = rect.width;
 
-    if (x > w * 0.72) {
+    if (x > w * 0.78) {
       turn('next');
-    } else if (x < w * 0.28) {
+    } else if (x < w * 0.22) {
       turn('prev');
     } else {
       onTapCenter?.();
     }
   };
 
-  // Determina os conteúdos de under, front e back
-  const underPage = flipState
-    ? flipState.dir === 'next'
-      ? flipState.toPage
-      : flipState.fromPage
-    : activePage;
+  // Se não estiver no meio de uma virada (idle), renderiza apenas a página ativa
+  // eliminando conflitos de renderização concorrente e render tasks duplicadas
+  if (!flipState) {
+    return (
+      <div
+        className={`pagearea pagearea-idle ${className}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
+      >
+        <div className="w-full h-full relative">
+          {renderPage(activePage, false)}
+        </div>
+      </div>
+    );
+  }
 
-  const frontPage = flipState
-    ? flipState.dir === 'next'
-      ? flipState.fromPage
-      : flipState.toPage
-    : activePage;
-
-  const backPage = flipState
-    ? flipState.dir === 'next'
-      ? flipState.toPage
-      : flipState.fromPage
-    : activePage;
+  // Durante a virada física em 3D:
+  const underPage = flipState.toPage;
+  const frontPage = flipState.dir === 'next' ? flipState.fromPage : flipState.toPage;
+  const backPage = flipState.dir === 'next' ? flipState.toPage : flipState.fromPage;
 
   return (
     <div
-      className={`pagearea ${flipState ? `is-turning-${flipState.dir}` : ''} ${className}`}
+      className={`pagearea is-turning-${flipState.dir} ${className}`}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
     >
-      {/* 1. Página de Baixo (Under) */}
+      {/* 1. Página de Destino (Under) */}
       <div className="under">
         {renderPage(underPage, false)}
       </div>
 
-      {/* Sombra projetada na página de baixo durante a virada */}
+      {/* Sombra dinâmica projetada durante o movimento */}
       <div className="flip-shadow" />
 
-      {/* 2. Folha que vira em 3D */}
+      {/* 2. Folha curvada que vira em 3D */}
       <div
-        className={`flip ${flipState ? `anim-${flipState.dir}` : ''}`}
+        className={`flip anim-${flipState.dir}`}
         onAnimationEnd={handleAnimationEnd}
       >
         <div className="face front">

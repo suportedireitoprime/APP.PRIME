@@ -67,7 +67,7 @@ export default function AssistenteIA({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`fixed inset-0 z-[1400] ${lateral ? 'bg-black/25' : 'bg-black/80'}`}
+            className={`fixed inset-0 z-[2600] ${lateral ? 'bg-black/25' : 'bg-black/80'}`}
             onClick={onClose}
           />
           <motion.div
@@ -77,8 +77,8 @@ export default function AssistenteIA({
             transition={{ type: 'spring', damping: 32, stiffness: 320 }}
             className={
               lateral
-                ? 'fixed z-[1401] flex flex-col rounded-3xl shadow-2xl overflow-hidden'
-                : 'fixed inset-x-0 bottom-0 z-[1401] flex flex-col rounded-t-3xl shadow-2xl overflow-hidden'
+                ? 'fixed z-[2601] flex flex-col rounded-3xl shadow-2xl overflow-hidden'
+                : 'fixed inset-x-0 bottom-0 z-[2601] flex flex-col rounded-t-3xl shadow-2xl overflow-hidden'
             }
             style={
               lateral

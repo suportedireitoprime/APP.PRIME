@@ -427,7 +427,7 @@ const LeitorNativo = ({
 
   const reader = (
     <div
-      className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col"
+      className="fixed inset-0 z-[2500] h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col"
       style={{ background: tema.bg, color: tema.text }}
     >
       {/* ── HEADER CHUNK ── */}
