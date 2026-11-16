@@ -54,6 +54,14 @@ Deno.serve(async (req) => {
       if (!paymentId) throw new Error('paymentId obrigatório para verificação');
 
       const payment = await asaasRequest(`/payments/${paymentId}`, 'GET');
+
+      // Validação estrita: confere se o pagamento pertence ao usuário autenticado
+      const extRef = payment.externalReference || '';
+      const [refUserId, refPlan] = extRef.includes('|') ? extRef.split('|') : [extRef, null];
+      if (refUserId && refUserId !== user.id) {
+        throw new Error('Pagamento não pertence ao usuário autenticado');
+      }
+
       const isPaid = ['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED', 'RECEIVED_IN_CASH'].includes(payment.status);
 
       if (isPaid) {
@@ -62,10 +70,17 @@ Deno.serve(async (req) => {
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
         );
 
-        const desc = (payment.description || '').toLowerCase();
+        // Extrai o plano diretamente de externalReference (formato userId|plan) com fallback na descrição
         let planFinal = 'anual';
-        if (desc.includes('mensal')) planFinal = 'mensal';
-        else if (desc.includes('vitalicio') || desc.includes('vitalício')) planFinal = 'vitalicio';
+        if (refPlan) {
+          if (refPlan.startsWith('vitalicio')) planFinal = 'vitalicio';
+          else if (refPlan.startsWith('mensal')) planFinal = 'mensal';
+          else if (refPlan.startsWith('anual') || refPlan === 'promocao' || refPlan === 'anual_regular_pix') planFinal = 'anual';
+        } else {
+          const desc = (payment.description || '').toLowerCase();
+          if (desc.includes('mensal')) planFinal = 'mensal';
+          else if (desc.includes('vitalicio') || desc.includes('vitalício')) planFinal = 'vitalicio';
+        }
 
         const isVitalicio = planFinal === 'vitalicio';
         const isAnual = planFinal === 'anual';
@@ -73,13 +88,20 @@ Deno.serve(async (req) => {
         const now = new Date();
         const expiresAt = isVitalicio ? null : new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();
 
+        // Preserva started_at se já existir registro prévio
+        const { data: existingSub } = await admin
+          .from('asaas_subscriptions')
+          .select('started_at')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
         await admin.from('asaas_subscriptions').upsert({
           user_id: user.id,
           plano: planFinal,
           status: 'ACTIVE',
           asaas_customer_id: payment.customer,
           asaas_subscription_id: payment.subscription || payment.id,
-          started_at: now.toISOString(),
+          started_at: existingSub?.started_at || now.toISOString(),
           expires_at: expiresAt,
           origem: 'asaas',
           updated_at: now.toISOString(),
@@ -357,8 +379,12 @@ Deno.serve(async (req) => {
 
   } catch (err: any) {
     console.error('asaas-checkout falhou:', err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 200,
+    const msg = err.message || 'Erro ao processar cobrança';
+    const status = (msg.includes('Unauthorized') || msg.includes('Missing Authorization')) ? 401
+      : msg.includes('não pertence') ? 403
+      : 400;
+    return new Response(JSON.stringify({ error: msg }), {
+      status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

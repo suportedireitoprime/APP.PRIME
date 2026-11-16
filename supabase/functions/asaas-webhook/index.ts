@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
 
   const expected = Deno.env.get('ASAAS_WEBHOOK_TOKEN') ?? Deno.env.get('STRIPE_WEBHOOK_SECRET');
   const received = req.headers.get('asaas-access-token') ?? req.headers.get('x-asaas-token');
-  if (expected && received !== expected) {
+  if (!expected || received !== expected) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -66,33 +66,34 @@ Deno.serve(async (req) => {
     const desc = (payment.description || '').toLowerCase();
     const isParcelado = desc.includes('parcelad') || !!payment.installment || !!payment.installmentNumber;
 
+    // Se temos externalReference (user_id|plan)
+    const rawExternalRef = payment.externalReference || body?.customer?.externalReference || '';
+    let externalRefUserId = rawExternalRef;
+    let externalRefPlan: string | null = null;
+    if (rawExternalRef.includes('|')) {
+      const parts = rawExternalRef.split('|');
+      externalRefUserId = parts[0];
+      externalRefPlan = parts[1];
+    }
+
     let inferredPlan = 'anual';
-    if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
-      inferredPlan = 'mensal';
-    } else if (desc.includes('vitalicio')) {
+    if (externalRefPlan) {
+      if (externalRefPlan.startsWith('vitalicio')) inferredPlan = 'vitalicio';
+      else if (externalRefPlan.startsWith('mensal')) inferredPlan = 'mensal';
+      else if (externalRefPlan.startsWith('anual') || externalRefPlan === 'anual_regular_pix') inferredPlan = 'anual';
+      else if (externalRefPlan === 'promocao') inferredPlan = 'anual_promocional';
+    } else if (desc.includes('vitalicio') || (val >= 140 && val <= 180 && !desc.includes('anual'))) {
       inferredPlan = 'vitalicio';
-    } else if (desc.includes('promo') || (val >= 140 && val <= 165)) {
+    } else if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+      inferredPlan = 'mensal';
+    } else if (desc.includes('promo')) {
       inferredPlan = 'anual_promocional';
     } else {
       inferredPlan = 'anual';
     }
 
     if (!legacy) {
-      // Caso não seja um legado pelo Asaas ID, verificamos externalReference (user_id do app)
-      const rawExternalRef = payment.externalReference || body?.customer?.externalReference || '';
-      let externalRefUserId = rawExternalRef;
-      let externalRefPlan = null;
-      if (rawExternalRef.includes('|')) {
-        const parts = rawExternalRef.split('|');
-        externalRefUserId = parts[0];
-        externalRefPlan = parts[1];
-      }
-
       if (externalRefUserId) {
-        if (externalRefPlan === 'vitalicio' || externalRefPlan === 'vitalicio_pix') inferredPlan = 'vitalicio';
-        else if (externalRefPlan === 'mensal' || externalRefPlan === 'mensal_pix') inferredPlan = 'mensal';
-        else if (externalRefPlan === 'anual' || externalRefPlan === 'anual_pix' || externalRefPlan === 'anual_regular_pix' || externalRefPlan === 'promocao') inferredPlan = 'anual';
-        
         legacy = {
           id: 'new_user',
           tipo: inferredPlan,
@@ -213,22 +214,6 @@ Deno.serve(async (req) => {
       effectivePlan = 'vitalicio';
     }
 
-    // Regra oficial: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia.
-    // Assinaturas anuais só têm contagem de ciclo (370 dias) a partir de 10/11/2026 em diante.
-    // Assinaturas mensais continuam mensais normalmente.
-    const CUTOFF_ANUAL_MS = new Date('2026-11-10T00:00:00.000Z').getTime();
-    const isAnual = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional');
-    const legacyCreatedAtMs = legacy?.created_at ? new Date(legacy.created_at).getTime() : 0;
-    const paymentCreatedMs = payment?.dateCreated ? new Date(payment.dateCreated).getTime() : 0;
-
-    if (isAnual && (
-      (legacyCreatedAtMs > 0 && legacyCreatedAtMs < CUTOFF_ANUAL_MS) ||
-      (paymentCreatedMs > 0 && paymentCreatedMs < CUTOFF_ANUAL_MS) ||
-      (legacy?.id !== 'new_user' && legacyCreatedAtMs < CUTOFF_ANUAL_MS)
-    )) {
-      effectivePlan = 'vitalicio';
-    }
-
     const finalUserId = targetUserId || legacy.claimed_user_id;
     let currSub: any = null;
     if (finalUserId) {
@@ -238,6 +223,26 @@ Deno.serve(async (req) => {
       if (currSub?.plano === 'vitalicio' && !pago) {
         effectivePlan = 'vitalicio';
       }
+    }
+
+    // Regra oficial: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia.
+    // Assinaturas anuais só têm contagem de ciclo (370 dias) a partir de 10/11/2026 em diante.
+    // Assinaturas mensais continuam mensais normalmente.
+    const CUTOFF_ANUAL_MS = new Date('2026-11-10T00:00:00.000Z').getTime();
+    const isAnual = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional');
+    const legacyCreatedAtMs = legacy?.created_at ? new Date(legacy.created_at).getTime() : 0;
+    const paymentCreatedMs = payment?.dateCreated ? new Date(payment.dateCreated).getTime() : 0;
+    const currSubStartedAtMs = currSub?.started_at ? new Date(currSub.started_at).getTime() : 0;
+    const currSubCreatedAtMs = currSub?.created_at ? new Date(currSub.created_at).getTime() : 0;
+
+    if (isAnual && (
+      (legacyCreatedAtMs > 0 && legacyCreatedAtMs < CUTOFF_ANUAL_MS) ||
+      (paymentCreatedMs > 0 && paymentCreatedMs < CUTOFF_ANUAL_MS) ||
+      (currSubStartedAtMs > 0 && currSubStartedAtMs < CUTOFF_ANUAL_MS) ||
+      (currSubCreatedAtMs > 0 && currSubCreatedAtMs < CUTOFF_ANUAL_MS) ||
+      (legacy?.id !== 'new_user' && legacyCreatedAtMs < CUTOFF_ANUAL_MS)
+    )) {
+      effectivePlan = 'vitalicio';
     }
 
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
@@ -285,7 +290,8 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       };
       if (pago) {
-        subUpsertPayload.started_at = new Date().toISOString();
+        // Preserva started_at original para não destruir histórico e manter grandfathering
+        subUpsertPayload.started_at = currSub?.started_at || new Date().toISOString();
       }
       await admin.from('asaas_subscriptions').upsert(subUpsertPayload, { onConflict: 'user_id' });
 
@@ -335,42 +341,40 @@ Deno.serve(async (req) => {
         }).eq('id', finalUserId);
       }
       // Sincroniza imediatamente o plano no Horus (WhatsApp)
-      syncHorusSubscriptionStatus(admin, {
-        userId: finalUserId,
-        isPremium: !cortarAgora && (pago || legacy.status === 'active'),
-        plano: effectivePlan,
-        expiresAt: vitalicio ? null : (proximo ?? legacy.expires_at),
-        notifyWhatsapp: false, // O recibo abaixo já faz a notificação via WhatsApp
-      }).catch((e) => console.warn('syncHorusSubscriptionStatus error in asaas-webhook:', e));
+      try {
+        await syncHorusSubscriptionStatus(admin, {
+          userId: finalUserId,
+          isPremium: !cortarAgora && (pago || legacy.status === 'active'),
+          plano: effectivePlan,
+          expiresAt: vitalicio ? null : (proximo ?? legacy.expires_at),
+          notifyWhatsapp: false, // O recibo abaixo já faz a notificação via WhatsApp
+        });
+      } catch (e) {
+        console.warn('syncHorusSubscriptionStatus error in asaas-webhook:', e);
+      }
     }
 
     // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
     if (pago && finalUserId) {
-      (async () => {
-        try {
-          const { data: profile } = await admin.from('profiles')
-            .select('display_name, telefone, whatsapp_number')
-            .eq('id', finalUserId)
-            .maybeSingle();
+      try {
+        const { data: profile } = await admin.from('profiles')
+          .select('display_name, telefone, whatsapp_number')
+          .eq('id', finalUserId)
+          .maybeSingle();
 
-          const phone = profile?.whatsapp_number || profile?.telefone;
-          if (!phone) return;
-
+        const phone = profile?.whatsapp_number || profile?.telefone;
+        if (phone) {
           const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
           const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
           const planoLabel = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 'Anual' : effectivePlan === 'vitalicio' ? 'Vitalício' : 'Mensal';
 
-          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅
-
-Seu acesso ao *Direito Prime* está ativo. Bons estudos! 📚
-
-Acesse: https://app.suportedireitoprimeoficial.com`;
+          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅\n\nSeu acesso ao *Direito Prime* está ativo. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
 
           await evolution.sendText(phone, msg);
-        } catch (e) {
-          console.warn('WhatsApp receipt failed (non-blocking):', String((e as Error)?.message || e).slice(0, 200));
         }
-      })();
+      } catch (e) {
+        console.warn('WhatsApp receipt failed:', String((e as Error)?.message || e).slice(0, 200));
+      }
     }
 
     return new Response(JSON.stringify({ ok: true, event }), {

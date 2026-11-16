@@ -623,10 +623,8 @@ export function AdminHojeCards() {
           : [{ data: [] }, { data: [] }];
 
         const asaasEmailMap = new Map<string, string>();
-        const profileCreatedMap = new Map<string, string>();
         (asaasProfs || []).forEach((p: any) => {
           if (p.id && p.email) asaasEmailMap.set(p.id, p.email.toLowerCase().trim());
-          if (p.id && p.created_at) profileCreatedMap.set(p.id, p.created_at);
         });
 
         const priorAsaasUids = new Set<string>();
@@ -665,19 +663,18 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
-          const isStartedAntes = startedTime > 0 && startedTime < new Date(startIso).getTime();
           const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
-          // 1. Novo assinante de HOJE (1º mês):
-          // A assinatura iniciou no período de hoje (se started_at é anterior a hoje, trata-se de assinatura vinculada/migrada, nunca nova venda)
-          if (!isStartedAntes && (createdInPeriod || startedInPeriod)) {
+          // 1. Renovação de HOJE (2º ciclo em diante, mensal ou anual):
+          // Assinaturas criadas antes do período de hoje ou com mais de 20 dias de existência que tiveram pagamento no período
+          if (startedInPeriod && (isCriadaAntes || isSegundoMesOuMais)) {
+            renewUsers.set(uid, { plano: planName, valor });
+            subUsers.delete(uid);
+          }
+          // 2. Novo assinante de HOJE (apenas as criadas no período):
+          else if (!isCriadaAntes && (createdInPeriod || startedInPeriod)) {
             subUsers.set(uid, { plano: planName, valor });
             renewUsers.delete(uid);
-          }
-          // 2. Renovação de HOJE (2º mês em diante):
-          // Somente MENSAL, de assinatura que já existia antes de hoje cujo ciclo renovou hoje
-          else if (isMensal && startedInPeriod && isCriadaAntes && isSegundoMesOuMais) {
-            renewUsers.set(uid, { plano: planName, valor });
           }
         });
 
@@ -701,7 +698,7 @@ export function AdminHojeCards() {
           if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
-          } else if (isMensal && createdInPeriod && isCriadaAntes) {
+          } else if (createdInPeriod && isCriadaAntes) {
             renewUsers.set(uid, { plano, valor });
           }
         });
@@ -727,7 +724,7 @@ export function AdminHojeCards() {
           if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
-          } else if (isMensal && startedInPeriod && isCriadaAntes) {
+          } else if (startedInPeriod && isCriadaAntes) {
             renewUsers.set(uid, { plano, valor });
           }
         });
@@ -774,13 +771,13 @@ export function AdminHojeCards() {
 
           const hadPriorSub = hasPriorSubscription(e.user_id, em);
 
-          if (isMensal && hadPriorSub) {
+          if (hadPriorSub) {
             if (!renewUsers.has(uid) && !subUsers.has(uid)) {
               renewUsers.set(uid, { plano: planName, valor: valorReal });
             } else if (renewUsers.has(uid) && valorReal > 0) {
               renewUsers.set(uid, { plano: planName, valor: valorReal });
             }
-          } else if (!hadPriorSub) {
+          } else {
             // Nova compra de hoje (1º mês do usuário real sem assinatura prévia)
             renewUsers.delete(uid);
             if (!subUsers.has(uid)) {
@@ -1151,15 +1148,15 @@ export function AdminHojeCards() {
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
-          const isStartedAntes = startedTime > 0 && startedTime < new Date(startIso).getTime();
           const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
+          const isRenovacao = startedInPeriod && (isCriadaAntes || isSegundoMesOuMais);
+          const isNovaAssinatura = !isCriadaAntes && (createdInPeriod || startedInPeriod);
+
           if (isRenovou) {
-            // "Renovou": estritamente MENSAL de assinatura antiga (2º mês em diante) cujo ciclo renovou hoje
-            if (!isMensal || !startedInPeriod || !isCriadaAntes || !isSegundoMesOuMais) return;
+            if (!isRenovacao) return;
           } else {
-            // "Assinou": assinaturas do 1º mês (iniciadas no período de hoje, excluindo assinaturas antigas vinculadas)
-            if (isStartedAntes || !(createdInPeriod || startedInPeriod)) return;
+            if (!isNovaAssinatura) return;
           }
 
           allLists.push({
@@ -1198,9 +1195,6 @@ export function AdminHojeCards() {
           const planValor = valorReal;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
 
-          // Renovou é ESTRITAMENTE MENSAL!
-          if (isRenovou && !isMensal) return;
-
           const profInfo = profMap.get(e.user_id);
           const hadPriorSub = hasPriorSubscription(e.user_id, em || profInfo?.email);
           const createdInPeriod = inPeriod(e.created_at);
@@ -1237,8 +1231,6 @@ export function AdminHojeCards() {
           const isAnual = s.product_id?.includes('anual');
           const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
           const isMensal = !isVit && !isAnual;
-
-          if (isRenovou && !isMensal) return;
 
           const createdInPeriod = inPeriod(s.created_at);
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
@@ -1279,8 +1271,6 @@ export function AdminHojeCards() {
           const isAnual = s.product_id?.includes('anual');
           const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
           const isMensal = !isVit && !isAnual;
-
-          if (isRenovou && !isMensal) return;
 
           const createdInPeriod = inPeriod(s.created_at);
           const startedInPeriod = inPeriod(s.start_time);
