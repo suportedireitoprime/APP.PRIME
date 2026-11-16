@@ -19,6 +19,7 @@ import PdfReaderFooter from './pdf/PdfReaderFooter';
 import PdfContinuarPrompt from './pdf/PdfContinuarPrompt';
 import PdfSumarioSheet from './pdf/PdfSumarioSheet';
 import PdfBuscaSheet from './pdf/PdfBuscaSheet';
+import PdfAjustesSheet from './pdf/PdfAjustesSheet';
 import AssistenteIA from './leitor/AssistenteIA';
 import { TEMAS } from '@/hooks/useLeitorPrefs';
 import { usePdfSearch } from './pdf/usePdfSearch';
@@ -79,6 +80,7 @@ const PdfScrollReader = ({
   });
   const [showSumario, setShowSumario] = useState(false);
   const [showAssistente, setShowAssistente] = useState(false);
+  const [showAjustes, setShowAjustes] = useState(false);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const isNative = Capacitor.isNativePlatform();
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
@@ -337,7 +339,9 @@ const PdfScrollReader = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-      className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] bg-neutral-900 flex flex-col overflow-hidden"
+      className={`fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden ${
+        isDarkPdf ? 'bg-[#18181b]' : 'bg-white'
+      }`}
     >
       {/* Prompt: Continuar de onde parou */}
       <PdfContinuarPrompt
@@ -358,6 +362,7 @@ const PdfScrollReader = ({
         dualPage={dualPage}
         onToggleDualPage={() => setDualPage((d) => !d)}
         onOpenBusca={() => setShowBusca(true)}
+        onOpenAjustes={() => setShowAjustes(true)}
         urlClara={urlClara}
         urlEscura={urlEscura}
         currentUrl={url}
@@ -462,7 +467,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && !dualPage && (
             <div
-              className="pb-44 space-y-2 w-full"
+              className="pb-44 space-y-0 w-full"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -478,6 +483,10 @@ const PdfScrollReader = ({
                   className={`w-full min-h-[400px] flex items-center justify-center overflow-hidden transition-colors ${
                     isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                   }`}
+                  style={{
+                    boxShadow: 'none',
+                    borderRadius: '0px',
+                  }}
                 >
                   <div className="text-xs py-8">Página {i + 1}</div>
                 </div>
@@ -486,7 +495,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && dualPage && (
             <div
-              className="pb-44 flex flex-wrap items-start justify-center gap-2 w-full"
+              className="pb-44 flex flex-wrap items-start justify-center gap-0 w-full"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -501,22 +510,30 @@ const PdfScrollReader = ({
                 return (
                   <div
                     key={`spread-${spreadIdx}`}
-                    className="w-full flex flex-col md:flex-row items-center justify-center gap-2 border-b border-white/5 pb-4 mb-2"
+                    className="w-full flex flex-col md:flex-row items-center justify-center gap-0 border-b border-white/5 pb-2 mb-2"
                   >
                     <div
                       data-page={p1}
-                      className={`w-full md:w-1/2 shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                      className={`w-full md:w-1/2 min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
                         isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                       }`}
+                      style={{
+                        boxShadow: 'none',
+                        borderRadius: '0px',
+                      }}
                     >
                       <div className="text-xs py-8">Página {p1}</div>
                     </div>
                     {p2 <= totalPages && (
                       <div
                         data-page={p2}
-                        className={`w-full md:w-1/2 shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                        className={`w-full md:w-1/2 min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
                           isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                         }`}
+                        style={{
+                          boxShadow: 'none',
+                          borderRadius: '0px',
+                        }}
                       >
                         <div className="text-xs py-8">Página {p2}</div>
                       </div>
@@ -544,34 +561,6 @@ const PdfScrollReader = ({
               className="absolute right-0 top-0 bottom-32 w-[18%] z-[2]"
             />
           </>
-        )}
-
-        {/* Controles de zoom (passos de 5%) */}
-        {!loading && !error && (
-          <div className="absolute right-3 bottom-48 z-[4] flex flex-col gap-2">
-            <button
-              onClick={() => ajustarZoom(0.05)}
-              aria-label="Aumentar zoom (+5%)"
-              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg active:scale-90 transition cursor-pointer"
-            >
-              <ZoomIn className="w-[18px] h-[18px]" />
-            </button>
-            <button
-              onClick={() => ajustarZoom(-0.05)}
-              aria-label="Diminuir zoom (-5%)"
-              disabled={zoom <= MIN_ZOOM}
-              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg disabled:opacity-30 active:scale-90 transition cursor-pointer"
-            >
-              <ZoomOut className="w-[18px] h-[18px]" />
-            </button>
-            <button
-              onClick={() => setZoom(zoom === DEFAULT_ZOOM ? 1.0 : DEFAULT_ZOOM)}
-              className="px-2.5 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] font-bold tabular-nums backdrop-blur shadow active:scale-95 transition cursor-pointer"
-              title="Zoom atual (clique para alternar 110% / 100%)"
-            >
-              {Math.round(zoom * 100)}%
-            </button>
-          </div>
         )}
 
         {/* Botão flutuante para retomar marcador */}
@@ -638,6 +627,20 @@ const PdfScrollReader = ({
         matches={matches}
         onBuscar={buscar}
         onSelectMatch={(p) => scrollToPage(p)}
+      />
+
+      {/* Ajustes de visualização e zoom */}
+      <PdfAjustesSheet
+        open={showAjustes}
+        onClose={() => setShowAjustes(false)}
+        zoom={zoom}
+        setZoom={setZoom}
+        dualPage={dualPage}
+        setDualPage={setDualPage}
+        urlClara={urlClara}
+        urlEscura={urlEscura}
+        onSwitchVersao={onSwitchVersao}
+        isEscura={isDarkPdf}
       />
     </motion.div>
   );

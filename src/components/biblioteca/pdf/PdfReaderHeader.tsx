@@ -1,4 +1,5 @@
-import { ArrowLeft, Columns, Search, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, Columns, Search, Sun, Moon, Sliders } from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface PdfReaderHeaderProps {
   titulo: string;
@@ -7,6 +8,7 @@ interface PdfReaderHeaderProps {
   dualPage: boolean;
   onToggleDualPage: () => void;
   onOpenBusca: () => void;
+  onOpenAjustes?: () => void;
   urlClara?: string | null;
   urlEscura?: string | null;
   currentUrl?: string;
@@ -20,6 +22,7 @@ export default function PdfReaderHeader({
   dualPage,
   onToggleDualPage,
   onOpenBusca,
+  onOpenAjustes,
   urlClara,
   urlEscura,
   currentUrl,
@@ -49,6 +52,19 @@ export default function PdfReaderHeader({
         {titulo}
       </p>
       <div className="flex items-center gap-2 shrink-0">
+        {onOpenAjustes && (
+          <button
+            onClick={() => {
+              haptic.selection();
+              onOpenAjustes();
+            }}
+            aria-label="Ajustes de visualização e zoom"
+            title="Configurações e Zoom"
+            className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/15 flex items-center justify-center transition active:opacity-70 text-white cursor-pointer"
+          >
+            <Sliders className="w-5 h-5 text-white" />
+          </button>
+        )}
         {urlClara && urlEscura && onSwitchVersao && (
           <button
             onClick={() => onSwitchVersao(isEscura ? 'clara' : 'escura')}

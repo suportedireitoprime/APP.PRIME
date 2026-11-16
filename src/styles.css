@@ -1631,12 +1631,24 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   height: 100%;
   overflow: hidden;
   user-select: none;
+  background-color: #ffffff;
+  border-radius: 0px !important;
+}
+
+.dark .pagearea {
+  background-color: #18181b;
 }
 
 .pagearea-idle {
   width: 100%;
   height: 100%;
   position: relative;
+  background-color: #ffffff;
+  border-radius: 0px !important;
+}
+
+.dark .pagearea-idle {
+  background-color: #18181b;
 }
 
 .pagearea .under {
@@ -1646,6 +1658,12 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   height: 100%;
   z-index: 1;
   overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 0px !important;
+}
+
+.dark .pagearea .under {
+  background-color: #18181b;
 }
 
 .pagearea .flip-shadow {
@@ -1653,8 +1671,9 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.2) 20%, transparent 50%);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.05) 20%, transparent 45%);
   opacity: 0;
+  border-radius: 0px !important;
 }
 
 .pagearea .flip {
@@ -1668,6 +1687,8 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   transform-origin: left center;
   -webkit-transform-origin: left center;
   will-change: transform;
+  background-color: transparent;
+  border-radius: 0px !important;
 }
 
 .pagearea .face {
@@ -1678,16 +1699,36 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 0px !important;
+}
+
+.dark .pagearea .face {
+  background-color: #18181b;
 }
 
 .pagearea .face.front {
   z-index: 2;
   transform: rotateY(0deg);
+  background-color: #ffffff;
+  box-shadow: inset 18px 0 24px -12px rgba(0, 0, 0, 0.08);
+}
+
+.dark .pagearea .face.front {
+  background-color: #18181b;
+  box-shadow: inset 18px 0 24px -12px rgba(0, 0, 0, 0.4);
 }
 
 .pagearea .face.back {
   z-index: 1;
   transform: rotateY(180deg);
+  background-color: #ffffff;
+  box-shadow: inset -18px 0 24px -12px rgba(0, 0, 0, 0.08);
+}
+
+.dark .pagearea .face.back {
+  background-color: #18181b;
+  box-shadow: inset -18px 0 24px -12px rgba(0, 0, 0, 0.4);
 }
 
 .pagearea .veil {
@@ -1697,12 +1738,12 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   z-index: 10;
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.2) 20%,
-    rgba(255, 255, 255, 0.3) 45%,
-    rgba(255, 255, 255, 0.55) 50%,
-    rgba(0, 0, 0, 0.2) 60%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(0, 0, 0, 0.12) 0%,
+    rgba(0, 0, 0, 0.04) 20%,
+    rgba(255, 255, 255, 0.5) 45%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(0, 0, 0, 0.04) 55%,
+    rgba(0, 0, 0, 0.12) 100%
   );
   background-size: 250% 100%;
   opacity: 0;
@@ -1752,15 +1793,15 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
     background-position: 100% 0;
   }
   25% {
-    opacity: 0.7;
+    opacity: 0.35;
     background-position: 65% 0;
   }
   50% {
-    opacity: 0.9;
+    opacity: 0.45;
     background-position: 45% 0;
   }
   75% {
-    opacity: 0.55;
+    opacity: 0.25;
     background-position: 25% 0;
   }
   100% {
@@ -1775,15 +1816,15 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
     background-position: 0% 0;
   }
   25% {
-    opacity: 0.55;
+    opacity: 0.25;
     background-position: 25% 0;
   }
   50% {
-    opacity: 0.9;
+    opacity: 0.45;
     background-position: 45% 0;
   }
   75% {
-    opacity: 0.7;
+    opacity: 0.35;
     background-position: 65% 0;
   }
   100% {
@@ -1799,12 +1840,12 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
     transform-origin: right center;
   }
   30% {
-    opacity: 0.75;
+    opacity: 0.35;
     transform: scaleX(0.65);
     transform-origin: right center;
   }
   60% {
-    opacity: 0.6;
+    opacity: 0.25;
     transform: scaleX(0.85);
     transform-origin: center center;
   }
@@ -1822,12 +1863,12 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
     transform-origin: left center;
   }
   30% {
-    opacity: 0.6;
+    opacity: 0.25;
     transform: scaleX(0.85);
     transform-origin: center center;
   }
   60% {
-    opacity: 0.75;
+    opacity: 0.35;
     transform: scaleX(0.65);
     transform-origin: right center;
   }
