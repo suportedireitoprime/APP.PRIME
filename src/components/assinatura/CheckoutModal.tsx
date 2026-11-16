@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, MAX_PARCELAS_ANUAL, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, MAX_PARCELAS_ANUAL, MAX_PARCELAS_VITALICIO, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -133,12 +133,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const isPix = activePlan === 'anual_regular_pix' || activePlan === 'mensal_pix' || activePlan === 'vitalicio_pix';
 
   useEffect(() => {
-    if (installmentCount > MAX_PARCELAS_ANUAL) setInstallmentCount(MAX_PARCELAS_ANUAL);
-  }, [installmentCount]);
+    const max = isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
+    if (installmentCount > max) setInstallmentCount(max);
+  }, [installmentCount, activePlan]);
 
   const getInstallmentDetails = (num: number) => {
     const precoBase = isVitalicio(activePlan) ? PRECO_VITALICIO : PRECO_ANUAL;
-    const { total, parcela, parcelas } = parcelamento(num, precoBase);
+    const max = isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
+    const { total, parcela, parcelas } = parcelamento(num, precoBase, max);
     return {
       total,
       installmentValue: parcela,
@@ -538,7 +540,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
 
       if (isPix && data?.pixQrCode) {
-        const pixValor = activePlan === 'vitalicio' ? 149.90 : activePlan === 'anual' ? 89.90 : 29.90;
+        const pixValor = (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') ? 149.90 : (activePlan.includes('anual') ? 89.90 : 29.90);
         void logDb('checkout_pix_gerado', { plano: activePlan, payment_id: data.paymentId || null, valor: pixValor });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
         setPixPaymentId(data.paymentId || null);
@@ -569,7 +571,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        const pixValor = activePlan === 'vitalicio' ? 149.90 : activePlan === 'anual' ? 89.90 : 29.90;
+        const pixValor = (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') ? 149.90 : (activePlan.includes('anual') ? 89.90 : 29.90);
         void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true, payment_id: data.paymentId || null, valor: pixValor });
         openExternal(data.invoiceUrl);
         onSuccess();
@@ -726,7 +728,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl text-center">
                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">
-                  {isPix ? 'PAGAMENTO VIA PIX (SEM CEP)' : (activePlan.includes('anual') ? 'PARCELAMENTO EM ATÉ 6X NO CARTÃO' : 'ASSINATURA MENSAL')}
+                  {isPix ? 'PAGAMENTO VIA PIX (SEM CEP)' : ((activePlan.includes('anual') || activePlan.startsWith('vitalicio')) ? 'PARCELAMENTO EM ATÉ 6X NO CARTÃO' : 'ASSINATURA MENSAL')}
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1 uppercase">
                   {planInfo.title}
@@ -743,7 +745,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
                 <button
                   type="button"
-                  onClick={() => setActivePlan(activePlan.includes('anual') ? 'anual_regular_pix' : 'mensal_pix')}
+                  onClick={() => {
+                    if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio_pix');
+                    else if (activePlan.includes('anual')) setActivePlan('anual_regular_pix');
+                    else setActivePlan('mensal_pix');
+                  }}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     isPix
                       ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
@@ -755,7 +761,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActivePlan(activePlan.includes('anual') ? 'anual' : 'mensal')}
+                  onClick={() => {
+                    if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio');
+                    else if (activePlan.includes('anual')) setActivePlan('anual');
+                    else setActivePlan('mensal');
+                  }}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     !isPix
                       ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
@@ -813,7 +823,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     className="space-y-3"
                   >
                     {/* Seleção de Parcelamento como a 1ª Coisa no Cartão */}
-                    {!isPix && activePlan === 'anual' && (
+                    {!isPix && (activePlan === 'anual' || activePlan.startsWith('vitalicio')) && (
                       <div className="space-y-2 p-3.5 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 border border-primary/40 shadow-[0_0_25px_rgba(224,31,71,0.15)]">
                         <div className="flex items-center justify-between">
                           <Label className="text-xs font-black text-primary uppercase tracking-wider flex items-center gap-1.5">
@@ -831,7 +841,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={handleFocus}
                             className="w-full h-12 rounded-xl bg-black/80 border border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary font-black px-3.5 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer shadow-inner"
                           >
-                            {Array.from({ length: MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
+                            {Array.from({ length: isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
                               const details = getInstallmentDetails(num);
                               return (
                                 <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
@@ -1016,7 +1026,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     />
 
                     {/* Seleção de Parcelamento em 1º Lugar antes dos dados do cartão */}
-                    {activePlan === 'anual' && (
+                    {(activePlan === 'anual' || activePlan.startsWith('vitalicio')) && (
                       <div className="space-y-1.5 p-3 rounded-2xl bg-primary/10 border border-primary/30">
                         <Label className="text-xs font-black text-primary uppercase tracking-wider flex items-center justify-between">
                           <span>Opção de Parcelamento</span>
@@ -1029,7 +1039,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                             className="w-full h-12 rounded-xl bg-black/60 border border-white/20 focus:border-primary focus:ring-1 focus:ring-primary font-bold px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer"
                           >
-                          {Array.from({ length: MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
+                          {Array.from({ length: isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
                             const details = getInstallmentDetails(num);
                             return (
                               <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">

@@ -233,11 +233,145 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     const isCriadaAntes = createdTime < new Date(startIso).getTime();
     const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
-    const isAssinou = createdInPeriod || (!isCriadaAntes && startedInPeriod);
-    const isRenovou = renewSub.plano === 'mensal' && startedInPeriod && isCriadaAntes && isSegundoMesOuMais;
+    const isRenovacao = startedInPeriod && (isCriadaAntes || isSegundoMesOuMais);
+    const isNovaAssinatura = !isCriadaAntes && (createdInPeriod || startedInPeriod);
 
-    expect(isAssinou).toBe(false);
-    expect(isRenovou).toBe(true);
+    expect(isNovaAssinatura).toBe(false);
+    expect(isRenovacao).toBe(true);
+  });
+
+  it('deve classificar renovação anual (2º ciclo) em RENOVOU tanto mensal quanto anual', () => {
+    const startIso = '2026-11-10T00:00:00.000Z';
+    const endIso = '2026-11-10T23:59:59.999Z';
+
+    const inPeriod = (dateStr?: string | null) => {
+      if (!dateStr) return false;
+      const t = new Date(dateStr).getTime();
+      return !isNaN(t) && t >= new Date(startIso).getTime() && t <= new Date(endIso).getTime();
+    };
+
+    const annualRenewSub = {
+      user_id: 'carlos-uid',
+      created_at: '2025-11-10T12:00:00.000Z',
+      started_at: '2026-11-10T12:00:00.000Z',
+      plano: 'anual',
+      status: 'ACTIVE'
+    };
+
+    const createdInPeriod = inPeriod(annualRenewSub.created_at);
+    const startedInPeriod = inPeriod(annualRenewSub.started_at);
+    const createdTime = new Date(annualRenewSub.created_at).getTime();
+    const startedTime = new Date(annualRenewSub.started_at).getTime();
+    const isCriadaAntes = createdTime < new Date(startIso).getTime();
+    const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+
+    const isRenovacao = startedInPeriod && (isCriadaAntes || isSegundoMesOuMais);
+    const isNovaAssinatura = !isCriadaAntes && (createdInPeriod || startedInPeriod);
+
+    expect(isNovaAssinatura).toBe(false);
+    expect(isRenovacao).toBe(true);
+  });
+
+  it('deve inferir Vitalício (R$ 149,90) sem rebaixar para anual_promocional mesmo sem descrição explícita', () => {
+    const inferPlan = (val: number, desc: string, extPlan?: string | null) => {
+      const isParcelado = desc.includes('parcelad');
+      if (extPlan) {
+        if (extPlan.startsWith('vitalicio')) return 'vitalicio';
+        if (extPlan.startsWith('mensal')) return 'mensal';
+        if (extPlan.startsWith('anual') || extPlan === 'anual_regular_pix') return 'anual';
+        if (extPlan === 'promocao') return 'anual_promocional';
+      }
+      if (desc.includes('vitalicio') || (val >= 140 && val <= 180 && !desc.includes('anual'))) {
+        return 'vitalicio';
+      }
+      if (desc.includes('mensal') || (!isParcelado && val > 0 && val < 50 && !desc.includes('anual') && !desc.includes('vitalicio'))) {
+        return 'mensal';
+      }
+      if (desc.includes('promo')) {
+        return 'anual_promocional';
+      }
+      return 'anual';
+    };
+
+    expect(inferPlan(149.90, 'Cobrança Direito Prime')).toBe('vitalicio');
+    expect(inferPlan(149.90, 'Cobrança Direito Prime', 'vitalicio_pix')).toBe('vitalicio');
+    expect(inferPlan(89.90, 'Cobrança Direito Prime', 'anual_regular_pix')).toBe('anual');
+    expect(inferPlan(29.90, 'Cobrança Mensal')).toBe('mensal');
+  });
+
+  it('deve validar token Asaas estritamente', () => {
+    const validateToken = (expected?: string | null, received?: string | null) => {
+      if (!expected || received !== expected) {
+        return false;
+      }
+      return true;
+    };
+
+    expect(validateToken('secret123', 'secret123')).toBe(true);
+    expect(validateToken('secret123', 'wrong')).toBe(false);
+    expect(validateToken(null, 'any')).toBe(false);
+    expect(validateToken('secret123', null)).toBe(false);
+    expect(validateToken(undefined, undefined)).toBe(false);
+  });
+
+  it('deve validar propriedade do usuário no check_status do asaas-checkout', () => {
+    const checkOwnership = (extRef: string, authUserId: string) => {
+      const [refUserId] = extRef.includes('|') ? extRef.split('|') : [extRef, null];
+      if (refUserId && refUserId !== authUserId) {
+        return false;
+      }
+      return true;
+    };
+
+    expect(checkOwnership('user_123|vitalicio', 'user_123')).toBe(true);
+    expect(checkOwnership('user_123|anual', 'user_456')).toBe(false);
+    expect(checkOwnership('user_123', 'user_123')).toBe(true);
+    expect(checkOwnership('user_123', 'user_456')).toBe(false);
+  });
+
+  it('deve rejeitar cancelamento de cobranças parceladas (pay_...) na função cancelar-assinatura', () => {
+    const canCancelSubscription = (subId: string) => {
+      if (subId.startsWith('pay_')) {
+        return { allowed: false, error: 'Cobrança parcelada/avulsa' };
+      }
+      return { allowed: true };
+    };
+
+    expect(canCancelSubscription('pay_987654321').allowed).toBe(false);
+    expect(canCancelSubscription('sub_123456789').allowed).toBe(true);
+  });
+
+  it('deve alternar entre Cartão e PIX preservando vitalício no CheckoutModal', () => {
+    const toggleToPix = (activePlan: string) => {
+      if (activePlan.startsWith('vitalicio')) return 'vitalicio_pix';
+      if (activePlan.includes('anual')) return 'anual_regular_pix';
+      return 'mensal_pix';
+    };
+
+    const toggleToCard = (activePlan: string) => {
+      if (activePlan.startsWith('vitalicio')) return 'vitalicio';
+      if (activePlan.includes('anual')) return 'anual';
+      return 'mensal';
+    };
+
+    expect(toggleToPix('vitalicio')).toBe('vitalicio_pix');
+    expect(toggleToCard('vitalicio_pix')).toBe('vitalicio');
+    expect(toggleToPix('anual')).toBe('anual_regular_pix');
+    expect(toggleToCard('anual_regular_pix')).toBe('anual');
+    expect(toggleToPix('mensal')).toBe('mensal_pix');
+    expect(toggleToCard('mensal_pix')).toBe('mensal');
+  });
+
+  it('deve calcular corretamente o valor do PIX para telemetria no CheckoutModal', () => {
+    const calcPixValor = (activePlan: string) => {
+      return (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') ? 149.90 : (activePlan.includes('anual') ? 89.90 : 29.90);
+    };
+
+    expect(calcPixValor('vitalicio_pix')).toBe(149.90);
+    expect(calcPixValor('vitalicio')).toBe(149.90);
+    expect(calcPixValor('anual_regular_pix')).toBe(89.90);
+    expect(calcPixValor('anual_pix')).toBe(89.90);
+    expect(calcPixValor('mensal_pix')).toBe(29.90);
   });
 
   it('deve identificar exatamente qual PIX foi pago quando o usuário gera 3 PIX', () => {

@@ -57,31 +57,48 @@ let dbEventQueue: Array<{
   created_at: string;
 }> = [];
 let dbFlushTimeout: any = null;
-let isDbPermissionDenied = false;
+
+const URGENT_FUNNEL_EVENTS = new Set([
+  'checkout_pix_gerado',
+  'checkout_pix_pago',
+  'checkout_cc_enviado',
+  'checkout_cc_recusado',
+  'checkout_cc_aprovado',
+  'trial_click',
+  'paywall_view',
+  'assinatura_aberta',
+  'purchase',
+  'subscription_started',
+  'begin_checkout',
+  'sign_up',
+  'login',
+]);
 
 async function flushDbEvents() {
-  if (dbEventQueue.length === 0 || isDbPermissionDenied) return;
+  if (dbEventQueue.length === 0) return;
   const batch = [...dbEventQueue];
   dbEventQueue = [];
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: sessData } = await supabase.auth.getSession();
+    const user = sessData?.session?.user;
     if (!user) {
-      // Usuário anônimo: RLS bloqueia insert para anon (42501). Evita sobrecarga de erros no Postgres.
+      // Usuário sem sessão ativa no momento: preserva os eventos mais recentes na fila para flush após login
+      dbEventQueue = [...batch.slice(-20), ...dbEventQueue].slice(-30);
       return;
     }
     const payload = batch.map(ev => ({
       event_name: ev.event_name,
       user_id: user.id,
       email: user.email ?? null,
-      metadata: ev.metadata,
+      metadata: (ev.metadata && typeof ev.metadata === 'object') ? ev.metadata : {},
       created_at: ev.created_at,
     }));
     const { error } = await supabase.from("app_events" as any).insert(payload);
-    if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
-      isDbPermissionDenied = true;
+    if (error) {
+      console.warn('[telemetria] app_events insert:', error.message);
     }
-  } catch {
-    /* silencioso: telemetria não deve quebrar UX */
+  } catch (err) {
+    console.warn('[telemetria] flushDbEvents erro:', err);
   }
 }
 
@@ -89,18 +106,25 @@ if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     void flushDbEvents();
   });
+
+  // Flush automático quando a sessão é autenticada
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session?.user && dbEventQueue.length > 0) {
+      void flushDbEvents();
+    }
+  });
 }
 
 export async function logDb(event_name: string, metadata: Record<string, unknown> = {}) {
   try {
-    if (isDbPermissionDenied) return;
     dbEventQueue.push({
       event_name,
       metadata,
       created_at: new Date().toISOString(),
     });
-    // Agrupa requisições: se acumular 5 eventos, envia de imediato; senão aguarda 8s
-    if (dbEventQueue.length >= 5) {
+    // Eventos do funil financeiro e autenticação são urgentes: flush imediato
+    const isUrgent = URGENT_FUNNEL_EVENTS.has(event_name);
+    if (isUrgent || dbEventQueue.length >= 5) {
       if (dbFlushTimeout) clearTimeout(dbFlushTimeout);
       dbFlushTimeout = null;
       void flushDbEvents();
@@ -108,7 +132,7 @@ export async function logDb(event_name: string, metadata: Record<string, unknown
       dbFlushTimeout = setTimeout(() => {
         dbFlushTimeout = null;
         void flushDbEvents();
-      }, 8000);
+      }, 3000);
     }
   } catch {
     /* silencioso: telemetria não deve quebrar UX */
@@ -257,12 +281,15 @@ export const appEvents = {
 
   // ---- funil de receita ----
   /** Usuário abriu a tela de planos. */
-  verPlanos: () =>
+  verPlanos: () => {
     fanout({
       ga: "view_item_list",
       meta: "ViewContent",
       params: { item_list_name: "planos", content_type: "product", content_category: "assinatura" },
-    }),
+      db: true,
+    });
+    void logDb("assinatura_aberta");
+  },
 
   /** Usuário selecionou um plano específico. */
   verPlano: (p: { plano: string }) =>

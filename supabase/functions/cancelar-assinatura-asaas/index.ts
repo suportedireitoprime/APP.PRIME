@@ -66,6 +66,16 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Cobranças parceladas/avulsas no Asaas possuem prefixo pay_ e não possuem assinatura recorrente
+    if (sub.asaas_subscription_id.startsWith('pay_')) {
+      return new Response(
+        JSON.stringify({
+          error: 'Esta assinatura foi realizada como cobrança parcelada/avulsa e não possui renovação automática recorrente a ser cancelada.',
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const asaasKey = Deno.env.get('ASAAS_API_KEY') || Deno.env.get('ASAAS_WEBHOOK_TOKEN');
     const baseUrl = Deno.env.get('ASAAS_API_URL') || 'https://api.asaas.com/v3';
 
@@ -81,8 +91,16 @@ Deno.serve(async (req) => {
       },
     });
 
-    const asaasJson = await asaasRes.json();
-    console.log('[cancelar-assinatura-asaas] Resposta Asaas:', asaasJson);
+    const asaasJson = await asaasRes.json().catch(() => ({}));
+    console.log('[cancelar-assinatura-asaas] Resposta Asaas:', asaasRes.status, asaasJson);
+
+    if (!asaasRes.ok) {
+      const errMsg = asaasJson?.errors?.[0]?.description || asaasJson?.message || 'Falha ao cancelar assinatura no gateway Asaas.';
+      return new Response(
+        JSON.stringify({ error: errMsg }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // 4. Atualiza o status no Supabase mantendo expires_at para não cortar o acesso adquirido
     const nowIso = new Date().toISOString();
