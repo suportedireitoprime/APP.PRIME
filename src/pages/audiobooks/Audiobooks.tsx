@@ -875,11 +875,11 @@ export default function AudiobooksPage() {
                       </div>
                     </div>
 
-                    {/* Informações Centrais da Obra — Título Completo sem Abreviar e Traços Finos */}
+                    {/* Informações da Obra — Título e Autor com Espaço Amplo + Rodapé com Tempo, Salvar e Ouvir */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5 gap-2">
                       <div>
-                        {/* Título sem negrito e sem abreviações (traços finos!) */}
-                        <p className="font-sans font-normal text-[14px] sm:text-[15px] text-white/95 leading-snug tracking-wide group-hover:text-[#D8B4FE] transition-colors">
+                        {/* Título com espaço livre total, sem abreviações e traços finos */}
+                        <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] text-white/95 leading-snug tracking-wide group-hover:text-[#D8B4FE] transition-colors">
                           {livro.titulo}
                         </p>
 
@@ -888,54 +888,58 @@ export default function AudiobooksPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {/* Duração com os NÚMEROS em ROXO oficial */}
-                        <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#7C3AED]/15 border border-[#7C3AED]/35 shadow-sm">
-                          <Clock className="w-3 h-3 text-[#A855F7] stroke-[2.4]" />
-                          <span className="flex items-center gap-0.5">
-                            {formatDuracaoComNumerosRoxos(getAudiobookDuracaoBadge(livro))}
+                      {/* Linha Inferior: Duração + Ícone de Salvar ao lado do tempo + Botão Ouvir à Direita */}
+                      <div className="flex items-center justify-between gap-2 mt-auto pt-1 w-full">
+                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                          {/* Duração com os NÚMEROS em ROXO oficial */}
+                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#7C3AED]/15 border border-[#7C3AED]/35 shadow-sm shrink-0">
+                            <Clock className="w-3 h-3 text-[#A855F7] stroke-[2.4]" />
+                            <span className="flex items-center gap-0.5">
+                              {formatDuracaoComNumerosRoxos(getAudiobookDuracaoBadge(livro))}
+                            </span>
                           </span>
-                        </span>
 
-                        {isNotificado && !isDisponivel && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/20 text-[#DDD6FE] border border-[#7C3AED]/35 shadow-[0_0_8px_rgba(124,58,237,0.3)]">
-                            <Bell className="w-2.5 h-2.5 fill-current" />
-                            Aviso Ativo
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                          {/* Ícone de Salvar ao lado do tempo (libera espaço no topo para o título) */}
+                          <button
+                            type="button"
+                            onClick={(e) => toggleFavorito(livro, e)}
+                            className="p-1 rounded-md hover:bg-white/10 text-white/50 hover:text-amber-400 active:scale-90 transition-all cursor-pointer flex items-center justify-center shrink-0"
+                            aria-label={isFav ? "Remover dos favoritos" : "Salvar nos favoritos"}
+                          >
+                            <Bookmark
+                              className={cn(
+                                "w-3.5 h-3.5 transition-colors",
+                                isFav
+                                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                                  : "text-zinc-500 hover:text-zinc-300"
+                              )}
+                              strokeWidth={2}
+                            />
+                          </button>
 
-                    {/* Botões de Ação à Direita: Salvar (Bookmark) e Ouvir */}
-                    <div className="h-full flex flex-col items-center justify-between py-0.5 pl-1 pr-0.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={(e) => toggleFavorito(livro, e)}
-                        className="p-1.5 rounded-xl hover:bg-white/10 text-white/50 hover:text-amber-400 active:scale-90 transition-all cursor-pointer"
-                        aria-label={isFav ? "Remover dos favoritos" : "Salvar nos favoritos"}
-                      >
-                        <Bookmark
-                          className={cn(
-                            "w-4 h-4 transition-colors",
-                            isFav
-                              ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                              : "text-zinc-500 hover:text-zinc-300"
+                          {isNotificado && !isDisponivel && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/20 text-[#DDD6FE] border border-[#7C3AED]/35 shadow-[0_0_8px_rgba(124,58,237,0.3)] shrink-0">
+                              <Bell className="w-2.5 h-2.5 fill-current" />
+                              Aviso Ativo
+                            </span>
                           )}
-                          strokeWidth={2}
-                        />
-                      </button>
+                        </div>
 
-                      {isDisponivel ? (
-                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors shadow-md shadow-[#7C3AED]/35 flex items-center gap-1">
-                          <Play className="w-3 h-3 fill-white" />
-                          Ouvir
-                        </span>
-                      ) : (
-                        <span className="text-[11px] uppercase tracking-wide font-semibold text-purple-200/80 px-2.5 py-1.5 rounded-full bg-purple-950/40 group-hover:bg-purple-900/40 border border-purple-500/20 transition-colors flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-400" />
-                          Painel
-                        </span>
-                      )}
+                        {/* Botão Ouvir / Painel posicionado embaixo à direita */}
+                        <div className="shrink-0">
+                          {isDisponivel ? (
+                            <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors shadow-md shadow-[#7C3AED]/35 flex items-center gap-1">
+                              <Play className="w-3 h-3 fill-white" />
+                              Ouvir
+                            </span>
+                          ) : (
+                            <span className="text-[11px] uppercase tracking-wide font-semibold text-purple-200/80 px-2.5 py-1.5 rounded-full bg-purple-950/40 group-hover:bg-purple-900/40 border border-purple-500/20 transition-colors flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-400" />
+                              Painel
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 );
