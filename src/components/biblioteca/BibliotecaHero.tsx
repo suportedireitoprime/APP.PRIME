@@ -34,7 +34,7 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa do Filósofo lendo ao Alvorecer no Parthenon */}
+      {/* Imagem de Capa da Biblioteca Clássica ao Crepúsculo */}
       <img
         src={bibliotecaFilosofoCover}
         alt="Biblioteca Jurídica"
@@ -42,10 +42,10 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         loading="eager"
         decoding="async"
         fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[52%_15%] md:object-[center_18%] z-0 pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-0 w-full h-full object-cover object-[62%_25%] md:object-[center_28%] z-0 pointer-events-none transform-gpu will-change-transform"
       />
 
-      {/* Onda Bege de Seda Clássica (Bege Mármore & Papiro do Parthenon) */}
+      {/* Onda Roxa / Púrpura Crepúsculo 3D em Seda Pura */}
       <BibliotecaHeroWave />
 
       {/* Cabeçalho Superior Transparente (Botões de Voltar e Meus PDFs / Offline) */}
@@ -78,29 +78,29 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         </div>
       </header>
 
-      {/* Conteúdo: Altura moderada, desobstruindo o botão voltar e mantendo proporção ideal */}
+      {/* Conteúdo: Altura calibrada, desobstruindo o botão voltar */}
       <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
-        {/* Espaçamento vertical calibrado para livrar os botões superiores sem esticar demais */}
+        {/* Espaçamento vertical para livrar os botões superiores */}
         <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
 
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
-          <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[240px]">
-            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (bege mármore itálico) */}
+          <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[250px]">
+            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (púrpura crepúsculo luminoso) */}
             <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
               <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
                 Biblioteca
               </span>
-              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#DFC8B2] block drop-shadow-[0_2px_14px_rgba(223,200,178,0.65)] -mt-0.5">
+              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#D8B4FE] block drop-shadow-[0_2px_16px_rgba(168,85,247,0.85)] -mt-0.5">
                 Jurídica
               </span>
             </h1>
 
-            {/* Traço vertical bege e subtítulo oficial */}
+            {/* Traço vertical púrpura e subtítulo oficial */}
             <div className="mt-2 flex items-start text-left gap-2">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-[#DFC8B2] to-[#8C7660] rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(223,200,178,0.55)]" />
+              <div className="w-[3px] h-8 bg-gradient-to-b from-[#C084FC] via-[#7C3AED] to-[#4C1D95] rounded-full shrink-0 mt-0.5 shadow-[0_0_12px_rgba(168,85,247,0.7)]" />
               <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                 Acervo permanente com{' '}
-                <span className="text-[#ECE0D1] font-bold not-italic">
+                <span className="text-[#E9D5FF] font-bold not-italic">
                   +{isLoading ? '...' : totalCount} livros
                 </span>{' '}
                 ao seu dispor.

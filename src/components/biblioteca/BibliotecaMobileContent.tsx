@@ -612,7 +612,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                <span className="w-1 h-5 rounded-full bg-amber-500 shrink-0" />
+                <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.6)] shrink-0" />
                 <span className="truncate">DEMAIS CATEGORIAS & ACERVOS</span>
               </h3>
               <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">

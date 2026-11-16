@@ -115,7 +115,7 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       onClick={handleClick}
-      className="w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border text-left active:scale-[0.99] transition-all overflow-hidden relative shadow-lg group cursor-pointer bg-gradient-to-r from-amber-950/20 via-[#181512] to-[#121110] border-amber-500/25 hover:border-amber-400/50"
+      className="w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border text-left active:scale-[0.99] transition-all overflow-hidden relative shadow-lg group cursor-pointer bg-gradient-to-r from-purple-950/25 via-[#161022] to-[#100b18] border-purple-500/25 hover:border-purple-400/50"
     >
       {/* Capa Compacta Minimalista à Esquerda (Sem contorno) */}
       <div className="w-12 sm:w-14 aspect-[3/4] rounded-xl overflow-hidden bg-black/60 shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
@@ -128,8 +128,8 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
             decoding="async"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#3d3226] to-[#1c1611] flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-amber-300/80" />
+          <div className="w-full h-full bg-gradient-to-br from-[#2e1065] to-[#150926] flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-purple-300/80" />
           </div>
         )}
         <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/30 to-transparent pointer-events-none" />
@@ -139,11 +139,11 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
       <div className="flex-1 min-w-0 py-0.5">
         {/* Linha 1: Label + Tag de Modo */}
         <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-[9.5px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-            <BookOpen className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+          <span className="text-[9.5px] font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1">
+            <BookOpen className="w-2.5 h-2.5 fill-purple-400 text-purple-400" />
             Continuar Leitura
           </span>
-          <span className="text-[8.5px] font-mono font-bold uppercase px-1.5 py-0.2 rounded border tracking-wider bg-amber-400/15 text-amber-300 border-amber-400/30">
+          <span className="text-[8.5px] font-mono font-bold uppercase px-1.5 py-0.2 rounded border tracking-wider bg-purple-400/15 text-purple-200 border-purple-400/30">
             {modoBadge}
           </span>
         </div>
@@ -155,7 +155,7 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
 
         {/* Linha 3: Descrição e Status em UMA LINHA ÚNICA com bolinha pulsante */}
         <p className="text-[11px] sm:text-[11.5px] text-white/60 truncate mt-0.5 flex items-center gap-1.5 leading-snug">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0 animate-pulse" />
           <span className="truncate">{descricaoUmaLinha}</span>
         </p>
 
@@ -163,13 +163,13 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
         <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
           <div
             style={{ width: `${Math.max(percent, percent > 0 ? 4 : 0)}%` }}
-            className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-amber-500 to-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.5)]"
+            className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-purple-500 to-violet-400 shadow-[0_0_8px_rgba(168,85,247,0.5)]"
           />
         </div>
       </div>
 
       {/* Botão Ação Circular Minimalista à Direita */}
-      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/35 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 active:scale-95 shadow-md">
+      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/35 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 active:scale-95 shadow-md">
         <ArrowRight className="w-3.5 h-3.5 stroke-[2.4]" />
       </div>
     </motion.button>
