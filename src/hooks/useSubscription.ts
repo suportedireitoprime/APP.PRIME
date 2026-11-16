@@ -490,19 +490,26 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     })();
 
     // Realtime: escuta reativa estrita em profiles (tabela mestre com PK id) para revalidar assinatura
-    // Evita timeouts e erros de REPLICA IDENTITY causados por múltiplos filtros em tabelas secundárias
-    const channel = supabase
-      .channel(`sub-profiles-${user.id}`)
-      .on(
-        'postgres_changes' as any, 
-        { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, 
-        () => { void fetchOnce(); }
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.debug('[useSubscription] Realtime fallback para polling:', status);
-        }
-      });
+    // Canal com sufixo randômico único por instância do hook para impedir colisões concorrentes
+    // Envolvido em try/catch para que falhas de Realtime NUNCA travem o login ou quebrem o app
+    let channel: any = null;
+    try {
+      const channelId = `sub-profiles-${user.id}-${Math.random().toString(36).slice(2, 8)}`;
+      channel = supabase
+        .channel(channelId)
+        .on(
+          'postgres_changes' as any, 
+          { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, 
+          () => { void fetchOnce(); }
+        )
+        .subscribe((status) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.debug('[useSubscription] Realtime fallback para polling:', status);
+          }
+        });
+    } catch (realtimeErr) {
+      console.warn('[useSubscription] Falha segura ao conectar canal Realtime:', realtimeErr);
+    }
 
     // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
     // renovações e o caso de concluir a compra fora do app.
@@ -528,7 +535,11 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
       if (removeAppListener) removeAppListener();
-      supabase.removeChannel(channel);
+      if (channel) {
+        try {
+          void supabase.removeChannel(channel);
+        } catch {}
+      }
     };
   }, [user, nonce, pollOnMount]);
 

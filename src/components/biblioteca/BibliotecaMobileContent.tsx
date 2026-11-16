@@ -411,9 +411,26 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   const [visibleLimit, setVisibleLimit] = useState<number>(30);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
-  // Estado do carrossel do meio (Demais Categorias)
-  const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(0);
+  // Estado do carrossel do meio (sempre inicia centralizado no meio)
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(() =>
+    Math.floor(DEMAIS_CATEGORIAS_CARROSSEL.length / 2)
+  );
   const carouselScrollerRef = useRef<HTMLDivElement>(null);
+
+  // Ao entrar na biblioteca, centraliza o carrossel no item do meio
+  useEffect(() => {
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+    const midIdx = Math.floor(DEMAIS_CATEGORIAS_CARROSSEL.length / 2);
+    const timer = setTimeout(() => {
+      const child = el.children[midIdx] as HTMLElement;
+      if (child) {
+        const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+        el.scrollTo({ left: target, behavior: 'instant' as ScrollBehavior });
+      }
+    }, 60);
+    return () => clearTimeout(timer);
+  }, []);
 
   const colecoesVisiveis = useVisibleColecoes();
 
@@ -564,28 +581,37 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     toast.success(now ? 'Livro salvo na sua estante!' : 'Livro removido dos salvos');
   }, []);
 
-  // Manipuladores de rolagem e dots do carrossel do meio
-  const handleCarouselScroll = () => {
+  // Manipuladores de rolagem e dots do carrossel do meio (idêntico a Leis em Alta)
+  const handleCarouselScroll = useCallback(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const cardWidth = 148;
-    const idx = Math.round(el.scrollLeft / cardWidth);
-    const clamped = Math.max(0, Math.min(DEMAIS_CATEGORIAS_CARROSSEL.length - 1, idx));
-    if (clamped !== activeCarouselIndex) {
-      setActiveCarouselIndex(clamped);
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const child = el.children[i] as HTMLElement;
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
     }
-  };
+    setActiveCarouselIndex(best);
+  }, []);
 
-  const scrollCarouselToIndex = (index: number) => {
+  const scrollCarouselToIndex = useCallback((index: number) => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const cardWidth = 148;
+    const child = el.children[index] as HTMLElement;
+    if (!child) return;
+    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
     el.scrollTo({
-      left: index * cardWidth,
+      left: target,
       behavior: 'smooth',
     });
     setActiveCarouselIndex(index);
-  };
+  }, []);
 
   return (
     <div className="relative w-full">
@@ -606,28 +632,29 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         </div>
 
         {/* ======================================================== */}
-        {/* CARROSSEL DO MEIO: DEMAIS CATEGORIAS DO ACERVO           */}
+        {/* CARROSSEL DO MEIO: ACERVOS ESPECIAIS (Persuasivo e Enxuto) */}
         {/* ======================================================== */}
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
                 <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.6)] shrink-0" />
-                <span className="truncate">DEMAIS CATEGORIAS & ACERVOS</span>
+                <span className="truncate">ACERVOS ESPECIAIS</span>
               </h3>
               <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
-                Clássicos, Fora da Toga, Liderança, Oratória, Português e Pesquisa
+                Coleções essenciais para expandir seu domínio jurídico e intelectual
               </p>
             </div>
           </div>
 
-          {/* Carrossel Horizontal Snap Fluido com Capas 3:4 das Demais Categorias */}
+          {/* Carrossel Horizontal Snap com Zoom & Destaque Central (Padrão Leis Em Alta) */}
           <div
             ref={carouselScrollerRef}
             onScroll={handleCarouselScroll}
-            className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-[calc(50vw-68px)] sm:px-[calc(50vw-75px)] flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pt-3 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none items-center"
           >
             {DEMAIS_CATEGORIAS_CARROSSEL.map((cat, idx) => {
+              const isActive = idx === activeCarouselIndex;
               const colecao = findColecao(cat.id);
               const coverUrl = colecao?.cover || bibliotecaCoverImg;
               const countVal = counts[cat.id] || cat.defaultCount;
@@ -640,12 +667,22 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                     haptic.selection();
                     navigate(`/bibliotecas/${cat.id}`);
                   }}
-                  className="snap-start shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  className={`snap-center shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-300 ease-out active:scale-95 ${
+                    isActive
+                      ? 'scale-[1.08] sm:scale-[1.10] opacity-100 z-10'
+                      : 'scale-[0.92] sm:scale-[0.93] opacity-65 hover:opacity-90 z-0'
+                  }`}
                 >
                   <div
-                    className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 transition-all duration-300 shadow-md group-hover:shadow-xl"
+                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 transition-all duration-300 ${
+                      isActive
+                        ? 'shadow-[0_16px_36px_-6px_rgba(0,0,0,0.95)] ring-1.5 ring-white/30'
+                        : 'shadow-[0_6px_16px_-4px_rgba(0,0,0,0.7)] ring-0'
+                    }`}
                     style={{
-                      boxShadow: '0 10px 24px -4px rgba(0,0,0,0.85)',
+                      boxShadow: isActive
+                        ? '0 20px 42px -6px rgba(0, 0, 0, 0.98), 0 8px 18px -2px rgba(0, 0, 0, 0.92)'
+                        : '0 6px 16px -4px rgba(0, 0, 0, 0.75)',
                     }}
                   >
                     <img
@@ -653,16 +690,28 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       alt={cat.title}
                       loading={idx < 5 ? 'eager' : 'lazy'}
                       decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className={`w-full h-full object-cover transition-transform duration-500 ${
+                        isActive ? 'scale-105' : 'scale-100 group-hover:scale-105'
+                      }`}
                     />
 
                     {/* Gradiente de profundidade para legibilidade e visual cinematográfico */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/40 pointer-events-none" />
+                    <div
+                      className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${
+                        isActive
+                          ? 'bg-gradient-to-t from-black/95 via-black/25 to-black/35'
+                          : 'bg-gradient-to-t from-black/95 via-black/45 to-black/55'
+                      }`}
+                    />
 
-                    {/* Ícone da Categoria no Topo à Esquerda com Pill Translúcida sem contorno colorido */}
+                    {/* Ícone da Categoria no Topo à Esquerda com Pill Translúcida */}
                     <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
                       <div
-                        className="w-7 h-7 rounded-xl bg-black/65 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center shadow-lg transition-all ${
+                          isActive
+                            ? 'bg-black/75 border border-white/25 scale-105'
+                            : 'bg-black/60 border border-white/10'
+                        }`}
                       >
                         <CatIcon className="w-3.5 h-3.5 text-white drop-shadow-sm" strokeWidth={2.2} />
                       </div>
@@ -670,23 +719,31 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
 
                     {/* Seta no Topo à Direita para Ação Direta */}
                     <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
-                      <div className="w-7 h-7 rounded-full bg-black/65 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg group-hover:border-white/40 group-hover:bg-black/80 transition-all">
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all ${
+                          isActive
+                            ? 'bg-black/80 border border-white/30 text-white'
+                            : 'bg-black/60 border border-white/15 text-white/80'
+                        }`}
+                      >
                         <ArrowUpRight
-                          className="w-3.5 h-3.5 text-white/90 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                          className={`w-3.5 h-3.5 transition-transform ${
+                            isActive ? 'translate-x-0.5 -translate-y-0.5 text-white' : ''
+                          }`}
                           strokeWidth={2.4}
                         />
                       </div>
                     </div>
 
-                    {/* Rodapé do Card com Selo e Título */}
+                    {/* Rodapé do Card com Selo e Título com Tipografia Moderna e Refinada */}
                     <div className="absolute inset-x-0 bottom-0 p-2.5 z-10 flex flex-col justify-end pointer-events-none">
                       <span
-                        className="self-start text-[9px] font-mono font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-black/75 border border-white/10 mb-1"
+                        className="self-start text-[9px] font-sans font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-black/80 border border-white/10 mb-1"
                         style={{ color: cat.corSecundaria }}
                       >
                         {countVal} {countVal === 1 ? 'OBRA' : 'OBRAS'}
                       </span>
-                      <h4 className="font-serif font-black text-xs sm:text-[13px] text-white uppercase leading-tight line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                      <h4 className="font-sans font-extrabold text-[12px] sm:text-[13px] text-white uppercase tracking-wider leading-snug line-clamp-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                         {cat.label}
                       </h4>
                     </div>
@@ -709,13 +766,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   }}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     isActive
-                      ? "w-5 shadow-sm"
+                      ? "w-5 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
                       : "w-1.5 bg-white/20 hover:bg-white/40"
                   }`}
-                  style={{
-                    backgroundColor: isActive ? cat.corTema : undefined,
-                    boxShadow: isActive ? `0 0 10px ${cat.corSombra}` : undefined,
-                  }}
                   aria-label={`Ver categoria ${cat.label}`}
                 />
               );
@@ -728,43 +781,36 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         {/* FORMATO E LAYOUT IDÊNTICO AO DE AUDIOBOOKS               */}
         {/* ======================================================== */}
         <section className="pt-3 sm:pt-5 pb-8 sm:pb-12">
-          {/* Header da Seção com Identidade Visual Dinâmica da Matéria Selecionada */}
+          {/* Header da Seção: MATÉRIAS DE DIREITO com risco roxo oficial */}
           <div className="mb-4">
-            <p
-              className="text-[10px] uppercase tracking-[0.22em] font-bold transition-colors duration-300"
-              style={{ color: activeMateria.corSecundaria }}
-            >
-              ACERVO DE DOUTRINAS • {activeMateria.label.toUpperCase()}
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span
-                className="w-1 h-6 rounded-full transition-colors duration-300"
-                style={{ backgroundColor: activeMateria.corPrimaria }}
-              />
-              <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-                {activeMateria.fullName}
-              </h2>
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h2 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                  <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.7)] shrink-0" />
+                  <span className="truncate">MATÉRIAS DE DIREITO</span>
+                </h2>
+                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
+                  Doutrinas essenciais e manuais práticos organizados por disciplina
+                </p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-white/60 mt-1 ml-3">
-              {activeMateria.subtitulo}
-            </p>
           </div>
 
-          {/* Campo de Busca Rápida Idêntico a Audiobooks */}
-          <div className="relative mb-4">
-            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Campo de Busca Rápida Idêntico a Audiobooks com Toque Roxo Crepuscular */}
+          <div className="relative mb-4 group">
+            <Search className="w-5 h-5 text-purple-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors group-focus-within:text-purple-300 drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Buscar livro, autor ou tema em ${activeMateria.label}…`}
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416]/95 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-white/30 transition-colors shadow-lg shadow-black/40"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#14121a]/95 border border-purple-500/25 text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-lg shadow-black/60"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white cursor-pointer"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-purple-300 hover:text-white cursor-pointer"
                 aria-label="Limpar busca"
               >
                 <X className="w-4 h-4" />

@@ -42,7 +42,7 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
         loading="eager"
         decoding="async"
         fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[62%_25%] md:object-[center_28%] z-0 pointer-events-none transform-gpu will-change-transform"
+        className="absolute inset-0 w-full h-full object-cover object-[68%_38%] md:object-[center_35%] z-0 pointer-events-none transform-gpu will-change-transform"
       />
 
       {/* Onda Roxa / Púrpura Crepúsculo 3D em Seda Pura */}
