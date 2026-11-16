@@ -28,14 +28,14 @@ export default function PdfSumarioSheet({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 z-[1320]"
+            className="fixed inset-0 bg-black/70 z-[2600]"
           />
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-            className="fixed inset-x-0 bottom-0 z-[1330] mx-auto w-full sm:max-w-lg bg-neutral-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl sm:bottom-6 flex flex-col max-h-[75dvh] shadow-2xl"
+            className="fixed inset-x-0 bottom-0 z-[2610] mx-auto w-full sm:max-w-lg bg-neutral-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl sm:bottom-6 flex flex-col max-h-[75dvh] shadow-2xl"
             style={{ paddingBottom: 'var(--sai-bottom)' }}
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 shrink-0">

@@ -49,7 +49,7 @@ export default function PdfReaderFooter({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 60, opacity: 0 }}
       transition={{ type: 'tween', duration: 0.2 }}
-      className="fixed z-[1310] inset-x-0 bottom-0 border-t border-white/10 bg-[#0b0b0b] shadow-2xl backdrop-blur-xl"
+      className="fixed z-[2510] inset-x-0 bottom-0 border-t border-white/10 bg-[#0b0b0b] shadow-2xl backdrop-blur-xl"
       style={{
         paddingBottom: 'var(--sai-bottom)',
       }}
@@ -71,8 +71,8 @@ export default function PdfReaderFooter({
         <span className="opacity-60 tabular-nums">{Math.round(progress)}%</span>
       </div>
 
-      {/* ── Linha 2: 5 Botões circulares generosos padrão Leitor Nativo (56x56) ── */}
-      <div className="flex items-center justify-around px-2 pb-4 pt-2 gap-1 text-white">
+      {/* ── Linha 2: 6 Botões circulares completos com avanço à direita ── */}
+      <div className="flex items-center justify-between px-3 pb-4 pt-2 gap-1 text-white max-w-lg mx-auto">
         {/* Botão 1: Página Anterior */}
         <button
           onClick={() => {
@@ -81,7 +81,8 @@ export default function PdfReaderFooter({
           }}
           disabled={currentPage <= 1}
           aria-label="Página anterior"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-30 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer"
+          title="Página anterior"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-25 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer shrink-0"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -94,9 +95,9 @@ export default function PdfReaderFooter({
           }}
           aria-label="Procurar no PDF"
           title="Buscar no documento"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer shrink-0"
         >
-          <Search className="w-[22px] h-[22px]" />
+          <Search className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
         </button>
 
         {/* Botão 3: Assistente IA Central em Destaque */}
@@ -111,13 +112,13 @@ export default function PdfReaderFooter({
           }}
           aria-label="Assistente IA"
           title="Assistente IA"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 text-white shadow-lg cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 text-white shadow-lg cursor-pointer shrink-0"
           style={{
             background: 'hsl(var(--primary))',
             boxShadow: '0 8px 20px -6px hsl(var(--primary) / 0.5)',
           }}
         >
-          <WandSparkles className="w-[20px] h-[20px]" />
+          <WandSparkles className="w-5 h-5 sm:w-[20px] sm:h-[20px]" />
         </button>
 
         {/* Botão 4: Marcadores */}
@@ -128,12 +129,12 @@ export default function PdfReaderFooter({
           }}
           aria-label="Marcador"
           title={isCurrentBookmarked ? 'Página marcada' : 'Marcar página'}
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 relative bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 relative bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer shrink-0"
         >
           {isCurrentBookmarked ? (
-            <BookmarkCheck className="w-[22px] h-[22px] text-primary" />
+            <BookmarkCheck className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-primary" />
           ) : (
-            <Bookmark className="w-[22px] h-[22px]" />
+            <Bookmark className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
           )}
           {bookmarksCount > 0 && (
             <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center">
@@ -150,9 +151,23 @@ export default function PdfReaderFooter({
           }}
           aria-label="Sumário"
           title="Sumário da obra"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition active:opacity-70 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer shrink-0"
         >
-          <List className="w-[22px] h-[22px]" />
+          <List className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+        </button>
+
+        {/* Botão 6: Próxima Página (Passar para a Direita) */}
+        <button
+          onClick={() => {
+            haptic.selection();
+            if (onNext) onNext();
+          }}
+          disabled={currentPage >= totalPages}
+          aria-label="Próxima página"
+          title="Próxima página"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition active:opacity-70 disabled:opacity-25 bg-white/[0.06] hover:bg-white/10 text-white cursor-pointer shrink-0"
+        >
+          <ChevronRight className="w-6 h-6" />
         </button>
       </div>
     </motion.div>

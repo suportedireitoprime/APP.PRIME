@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeft,
   Loader2,
@@ -283,8 +284,8 @@ const PdfPaginatedReader = ({
 
   const progress = totalPages > 0 ? (currentPage / totalPages) * 100 : 0;
 
-  return (
-    <div className="fixed inset-0 z-[1000] bg-[#0b0b0b] flex flex-col theme-vademecum select-none overflow-hidden">
+  const readerNode = (
+    <div className="fixed inset-0 z-[2500] bg-[#0b0b0b] flex flex-col theme-vademecum select-none overflow-hidden">
       {/* ── Top Bar / Header ── */}
       <AnimatePresence>
         {showBars && (
@@ -293,7 +294,7 @@ const PdfPaginatedReader = ({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -60, opacity: 0 }}
             transition={{ type: 'tween', duration: 0.18 }}
-            className="fixed top-0 inset-x-0 z-[1310] h-14 border-b border-white/10 bg-[#0b0b0b]/90 backdrop-blur-xl flex items-center px-4 shrink-0 shadow-lg"
+            className="fixed top-0 inset-x-0 z-[2510] h-14 border-b border-white/10 bg-[#0b0b0b]/90 backdrop-blur-xl flex items-center px-4 shrink-0 shadow-lg"
             style={{ paddingTop: 'var(--sai-top)' }}
           >
             <button
@@ -338,16 +339,6 @@ const PdfPaginatedReader = ({
                 </button>
               )}
 
-              {onSwitchToScroll && (
-                <button
-                  onClick={onSwitchToScroll}
-                  className="h-9 px-2.5 rounded-lg border border-white/10 hover:bg-white/10 text-xs font-semibold text-white/70 hover:text-white transition flex items-center gap-1 cursor-pointer"
-                  title="Mudar para visualização em rolagem contínua"
-                >
-                  Rolar
-                </button>
-              )}
-
               <button
                 onClick={() => setDualPage(!dualPage)}
                 className="w-10 h-10 hidden sm:flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/10 cursor-pointer"
@@ -362,7 +353,7 @@ const PdfPaginatedReader = ({
 
       {/* ── Main Book Canvas Area with 3D Page Flip ── */}
       <div
-        className="flex-1 relative overflow-hidden bg-[#0a0a0c] flex flex-col items-center justify-center pt-14 pb-20"
+        className="flex-1 relative overflow-hidden bg-[#0a0a0c] w-full h-full"
         ref={containerRef}
       >
         {loading ? (
@@ -387,13 +378,20 @@ const PdfPaginatedReader = ({
             </button>
           </div>
         ) : (
-          <div className="w-full h-full relative flex items-center justify-center">
+          <div className="w-full h-full relative">
             <BookPageFlip3D
               ref={flip3DRef}
               currentPage={currentPage}
               totalPages={totalPages}
               renderPage={(pageNum, isBackFace) => (
-                <div className="w-full h-full flex items-center justify-center p-1 sm:p-3 overflow-hidden select-none">
+                <div
+                  ref={(el) => {
+                    if (el && !isBackFace) {
+                      el.scrollTop = 0;
+                    }
+                  }}
+                  className="w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center pt-16 pb-40 px-2 sm:px-4 select-none"
+                >
                   <PdfPage
                     pdf={pdfRef.current}
                     pageNumber={pageNum}
@@ -415,7 +413,7 @@ const PdfPaginatedReader = ({
 
         {/* ── Floating Zoom Pill ── */}
         {!loading && !error && showBars && (
-          <div className="fixed bottom-24 right-4 z-40 flex items-center gap-1.5 p-1.5 rounded-full bg-neutral-900/90 border border-white/10 backdrop-blur-md shadow-2xl">
+          <div className="fixed bottom-24 right-4 z-[2510] flex items-center gap-1.5 p-1.5 rounded-full bg-neutral-900/90 border border-white/10 backdrop-blur-md shadow-2xl">
             <button
               onClick={() => setZoom((z) => Math.min(MAX_ZOOM, Number((z + 0.1).toFixed(1))))}
               className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
@@ -505,6 +503,8 @@ const PdfPaginatedReader = ({
       )}
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(readerNode, document.body) : readerNode;
 };
 
 const PdfPage = ({
@@ -530,6 +530,7 @@ const PdfPage = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState(false);
+  const [pageSize, setPageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   useEffect(() => {
     if (isBackFace) return;
@@ -543,10 +544,6 @@ const PdfPage = ({
         const page = await pdf.getPage(pageNumber);
         if (cancelled) return;
 
-        const containerHeight =
-          containerRef.current.clientHeight > 100
-            ? containerRef.current.clientHeight - 80
-            : window.innerHeight - 140;
         const containerWidth =
           containerRef.current.clientWidth > 100
             ? containerRef.current.clientWidth
@@ -554,11 +551,15 @@ const PdfPage = ({
 
         const unscaledViewport = page.getViewport({ scale: 1 });
 
-        const maxPageWidth = isDual ? containerWidth / 2 : containerWidth;
-        const scaleHeight = containerHeight / unscaledViewport.height;
-        const scaleWidth = maxPageWidth / unscaledViewport.width;
+        // Cálculo de largura ideal para leitura fluida:
+        // No mobile, ocupa a largura da tela com margens elegantes (16px) e zoom padrão (110%)
+        // No desktop / dual, limita ao espaço de leitura confortável
+        const availableWidth = isDual
+          ? Math.min(containerWidth / 2 - 16, 600)
+          : Math.min(containerWidth - 16, 800);
 
-        const baseScale = Math.min(scaleHeight, scaleWidth) * (zoom || 1.1);
+        const baseScale = (availableWidth / unscaledViewport.width) * (zoom || 1.1);
+
         // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
         const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.5), 3.5);
         const finalScale = baseScale * dpr;
@@ -571,10 +572,11 @@ const PdfPage = ({
 
         const displayWidth = Math.round(unscaledViewport.width * baseScale);
         const displayHeight = Math.round(unscaledViewport.height * baseScale);
+        setPageSize({ width: displayWidth, height: displayHeight });
+
         canvas.style.width = `${displayWidth}px`;
         canvas.style.height = `${displayHeight}px`;
         canvas.style.maxWidth = '100%';
-        canvas.style.maxHeight = '100%';
         canvas.style.aspectRatio = `${unscaledViewport.width} / ${unscaledViewport.height}`;
 
         const ctx = canvas.getContext('2d', { alpha: false });
@@ -623,7 +625,7 @@ const PdfPage = ({
   if (isBackFace) {
     return (
       <div
-        className="w-full h-full flex flex-col justify-between p-8 select-none border-l rounded-2xl shadow-2xl"
+        className="w-full h-full flex flex-col justify-between p-8 select-none border-l rounded-sm shadow-2xl"
         style={{
           background: isDark ? '#141416' : '#f7f4ed',
           color: isDark ? '#ffffff' : '#1a1a1a',
@@ -648,17 +650,20 @@ const PdfPage = ({
 
   return (
     <div
-      className={`relative rounded-2xl shadow-2xl overflow-hidden flex items-center justify-center transition-opacity duration-300 ${
+      className={`relative mx-auto transition-opacity duration-200 ${
         isDark ? 'bg-[#18181b]' : 'bg-white'
       } ${rendered ? 'opacity-100' : 'opacity-0'}`}
       style={{
-        boxShadow: '0 20px 50px -15px rgba(0,0,0,0.6)',
+        width: pageSize.width ? `${pageSize.width}px` : '100%',
+        maxWidth: '100%',
+        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5), inset 15px 0 25px -15px rgba(0,0,0,0.15)',
+        borderRadius: '2px',
       }}
     >
-      <canvas ref={canvasRef} className="block rounded-lg" />
+      <canvas ref={canvasRef} className="block w-full h-auto rounded-[2px]" />
       {!rendered && (
         <div
-          className={`absolute inset-0 flex items-center justify-center ${
+          className={`absolute inset-0 flex items-center justify-center min-h-[500px] ${
             isDark ? 'bg-[#18181b]/80' : 'bg-white/50'
           }`}
         >
