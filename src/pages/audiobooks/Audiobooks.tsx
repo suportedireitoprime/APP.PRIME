@@ -126,6 +126,23 @@ export function getAudiobookDuracaoBadge(livro: AudiobookLivro): string {
   return "35 min";
 }
 
+/** Formata a duração destacando os números em roxo oficial (#C084FC) */
+export function formatDuracaoComNumerosRoxos(duracao: string) {
+  if (!duracao) return null;
+  const parts = duracao.split(/(\d+)/);
+  return parts.map((part, i) =>
+    /^\d+$/.test(part) ? (
+      <span key={i} className="text-[#C084FC] font-extrabold font-mono">
+        {part}
+      </span>
+    ) : (
+      <span key={i} className="text-white/60 font-mono">
+        {part}
+      </span>
+    )
+  );
+}
+
 export default function AudiobooksPage() {
   const navigate = useNavigate();
   const player = useAudiobookPlayer();
@@ -722,8 +739,8 @@ export default function AudiobooksPage() {
           </div>
 
           {/* Abas 3D Estilo Pasta (Idêntico a Resumos: Todos, Clássicos, Liderança, Fora da Toga, Oratória) */}
-          <div className="relative w-full -mr-4 sm:-mr-6 pr-4 sm:pr-6 overflow-hidden mb-5">
-            <div className="flex w-full items-end overflow-x-auto no-scrollbar h-11 sm:h-12 pt-1 pl-1">
+          <div className="relative w-full overflow-x-auto no-scrollbar mb-5">
+            <div className="flex w-full items-end no-scrollbar h-11 sm:h-12 pt-1">
               {CATEGORIAS_TABS.map((tab, index) => {
                 const isActive = filtroCategoria === tab.id;
                 const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
@@ -737,10 +754,10 @@ export default function AudiobooksPage() {
                       setFiltroCategoria(tab.id);
                     }}
                     className={cn(
-                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t font-bold text-[10px] sm:text-[11px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
+                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t text-[10.5px] sm:text-[11.5px] uppercase tracking-wider cursor-pointer select-none transition-all duration-200",
                       isActive
-                        ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-purple-500/60"
-                        : "bg-[#0A0A0A] text-zinc-400 hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/5 opacity-80"
+                        ? "bg-[#7C3AED] text-white shadow-[0_-6px_20px_rgba(124,58,237,0.55)] border-t border-x border-[#A855F7] font-bold"
+                        : "bg-[#141416] text-white/50 hover:bg-[#1A1A1E] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/10 opacity-80 font-medium"
                     )}
                     style={{
                       zIndex,
@@ -749,14 +766,14 @@ export default function AudiobooksPage() {
                   >
                     <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
                       {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-purple-500/5 to-purple-500/15 opacity-70" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 opacity-80" />
                       )}
                     </div>
 
                     <span
                       className={cn(
                         "relative z-10 whitespace-nowrap transition-transform duration-200",
-                        isActive ? "scale-105 text-purple-200 font-black drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]" : "scale-100"
+                        isActive ? "scale-105 text-white font-black drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "scale-100"
                       )}
                     >
                       {tab.label}
@@ -766,8 +783,8 @@ export default function AudiobooksPage() {
                       className={cn(
                         "relative z-10 text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold tracking-tight transition-colors duration-200",
                         isActive
-                          ? "bg-purple-500/25 text-purple-200 border border-purple-500/35"
-                          : "bg-white/5 text-purple-400/50"
+                          ? "bg-white/25 text-white border border-white/35 shadow-sm"
+                          : "bg-white/5 text-white/40"
                       )}
                     >
                       {tab.count}
@@ -776,7 +793,7 @@ export default function AudiobooksPage() {
                     {isActive && (
                       <motion.div
                         layoutId="activeAudiobooksFolderTab"
-                        className="absolute inset-0 rounded-t-2xl border-x border-t border-purple-500/60 pointer-events-none shadow-[inset_0_2px_10px_rgba(168,85,247,0.3)]"
+                        className="absolute inset-0 rounded-t-2xl border-x border-t border-[#C084FC] pointer-events-none shadow-[inset_0_2px_10px_rgba(255,255,255,0.35)]"
                         initial={false}
                         transition={{ type: "spring", stiffness: 480, damping: 36, mass: 0.8 }}
                       />
@@ -786,11 +803,11 @@ export default function AudiobooksPage() {
               })}
             </div>
 
-            {/* Linha de Base da Pasta */}
-            <div className="w-full h-px bg-[#1A1A1A] relative z-20 shadow-[0_-1px_0_rgba(168,85,247,0.35)]" />
+            {/* Linha de Base da Pasta Roxo Oficial */}
+            <div className="w-full h-0.5 bg-[#7C3AED] relative z-20 shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
           </div>
 
-          {/* Listagem de Livros — Somente Lista Vertical */}
+          {/* Listagem de Livros — Somente Lista Vertical com Altura Padronizada e Títulos Finos */}
           {livrosFiltrados.length === 0 ? (
             <div className="py-16 text-center text-white/60 text-sm bg-purple-950/20 border border-purple-500/20 rounded-3xl px-4">
               <p className="font-semibold text-white">Nenhum audiobook encontrado</p>
@@ -831,10 +848,10 @@ export default function AudiobooksPage() {
                     whileTap={{ scale: 0.985 }}
                     onClick={() => handleCardClick(livro)}
                     aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-purple-400/40 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none"
+                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416]/95 hover:bg-[#1C1C1E] border border-white/10 hover:border-[#7C3AED]/40 transition-all text-left w-full relative overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] cursor-pointer select-none h-[116px] sm:h-[122px]"
                   >
                     {/* Capa Retangular à Esquerda */}
-                    <div className="w-[72px] sm:w-[80px] h-[100px] sm:h-[110px] shrink-0 rounded-xl overflow-hidden bg-[#0A0518] border border-purple-500/25 shadow-md relative">
+                    <div className="w-[72px] sm:w-[78px] h-full shrink-0 rounded-xl overflow-hidden bg-[#0A0518] border border-[#7C3AED]/25 shadow-md relative">
                       <img
                         src={livro.capaUrl}
                         alt={`Capa do livro: ${livro.titulo}`}
@@ -858,21 +875,26 @@ export default function AudiobooksPage() {
                       </div>
                     </div>
 
-                    {/* Informações Centrais da Obra — Título e Descrição de 1 Linha */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-                      <p className="font-sans text-[14.5px] sm:text-[15.5px] font-bold text-white leading-snug group-hover:text-[#C4B5FD] transition-colors">
-                        {livro.titulo}
-                      </p>
+                    {/* Informações Centrais da Obra — Título em Traços Finos e Altura Igual */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                      <div>
+                        {/* Título sem negrito (traços finos!) */}
+                        <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] text-white/95 leading-snug tracking-wide line-clamp-2 group-hover:text-[#D8B4FE] transition-colors">
+                          {livro.titulo}
+                        </p>
 
-                      <p className="mt-1 text-[11.5px] sm:text-[12px] text-purple-200/60 line-clamp-1 truncate">
-                        {livro.autor} {livro.ano && `• ${livro.ano}`}
-                      </p>
+                        <p className="mt-0.5 text-[11px] sm:text-[11.5px] text-white/50 line-clamp-1 truncate">
+                          {livro.autor} {livro.ano && `• ${livro.ano}`}
+                        </p>
+                      </div>
 
-                      <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                        {/* Duração em minutos no lugar da antiga tag 'Resumo em Áudio' */}
-                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                          <Clock className="w-3 h-3 text-purple-300 stroke-[2.2]" />
-                          {getAudiobookDuracaoBadge(livro)}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {/* Duração com os NÚMEROS em ROXO oficial */}
+                        <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#7C3AED]/15 border border-[#7C3AED]/35 shadow-sm">
+                          <Clock className="w-3 h-3 text-[#A855F7] stroke-[2.4]" />
+                          <span className="flex items-center gap-0.5">
+                            {formatDuracaoComNumerosRoxos(getAudiobookDuracaoBadge(livro))}
+                          </span>
                         </span>
 
                         {isNotificado && !isDisponivel && (
@@ -885,7 +907,7 @@ export default function AudiobooksPage() {
                     </div>
 
                     {/* Botões de Ação à Direita: Salvar (Bookmark) e Ouvir */}
-                    <div className="flex flex-col items-center justify-between py-1 pl-1 pr-1 shrink-0">
+                    <div className="h-full flex flex-col items-center justify-between py-0.5 pl-1 pr-0.5 shrink-0">
                       <button
                         type="button"
                         onClick={(e) => toggleFavorito(livro, e)}
@@ -904,7 +926,7 @@ export default function AudiobooksPage() {
                       </button>
 
                       {isDisponivel ? (
-                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors shadow-md shadow-purple-600/30 flex items-center gap-1">
+                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors shadow-md shadow-[#7C3AED]/35 flex items-center gap-1">
                           <Play className="w-3 h-3 fill-white" />
                           Ouvir
                         </span>

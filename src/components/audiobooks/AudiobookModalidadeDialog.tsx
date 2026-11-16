@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Headphones,
-  Sparkles,
   Play,
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -84,8 +83,8 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
           {/* Header Compacto */}
           <div className="px-5 sm:px-6 pt-3.5 pb-3 flex items-center justify-between border-b border-white/5 relative">
             <div className="min-w-0 pr-3">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-400">
-                <Headphones className="w-3 h-3 text-purple-400" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#A855F7]">
+                <Headphones className="w-3 h-3 text-[#A855F7]" />
                 Como prefere ouvir?
               </span>
               <h3 className="font-sans font-bold text-base sm:text-lg text-white truncate mt-0.5">
@@ -106,15 +105,15 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
             </button>
           </div>
 
-          {/* Lista de Opções: 1 Linha de Título + 1 Linha com Tempo & Porquê */}
-          <div className="px-4 sm:px-5 pt-3.5 pb-1 flex flex-col gap-2.5">
-            {/* OPÇÃO 1: AUDIOBOOK COMPLETO */}
+          {/* Lista de Opções: Capa Limpa + Título Completo Sem Abreviar + Descrição Explicativa */}
+          <div className="px-4 sm:px-5 pt-3.5 pb-1 flex flex-col gap-3">
+            {/* OPÇÃO 1: AUDIOBOOK COMPLETO (BOTÃO ROXO VIBRANTE #7C3AED) */}
             <div
               onClick={handleCompleto}
-              className="group relative p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-purple-950/30 via-[#161224] to-[#12101A] hover:from-purple-950/45 hover:to-[#171424] border border-purple-500/25 hover:border-purple-400/60 transition-all duration-200 cursor-pointer select-none active:scale-[0.99] flex items-center gap-3 sm:gap-3.5 shadow-md hover:shadow-[0_6px_24px_rgba(147,51,234,0.2)] overflow-hidden"
+              className="group relative p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-[#7C3AED]/15 via-[#161224] to-[#12101A] hover:from-[#7C3AED]/25 hover:to-[#171424] border border-[#7C3AED]/35 hover:border-[#A855F7]/70 transition-all duration-200 cursor-pointer select-none active:scale-[0.99] flex items-center gap-3 sm:gap-3.5 shadow-md hover:shadow-[0_6px_24px_rgba(124,58,237,0.25)] overflow-hidden"
             >
-              {/* Capa Compacta com Lombada e Badge */}
-              <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-lg overflow-hidden bg-black/60 border border-purple-500/35 shrink-0 shadow-md group-hover:border-purple-300 transition-colors">
+              {/* Capa Limpa Sem Nenhuma Tag Interna */}
+              <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-lg overflow-hidden bg-black/60 border border-[#7C3AED]/40 shrink-0 shadow-md group-hover:border-[#A855F7] transition-colors">
                 <img
                   src={livro.capaUrl}
                   alt={livro.titulo}
@@ -123,37 +122,37 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
                   className="w-full h-full object-cover brightness-[1.05]"
                 />
                 <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/30 to-transparent pointer-events-none" />
-                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-purple-600/95 text-[7px] font-black uppercase tracking-wider text-white flex items-center gap-0.5 shadow">
-                  <Headphones className="w-2 h-2" />
-                  <span>Integral</span>
-                </div>
               </div>
 
-              {/* Título e Uma Linha com Tempo + Porquê */}
+              {/* Informações: Título Completo sem Abreviar + Duração + Descrição Explicativa */}
               <div className="flex-1 min-w-0 pr-1">
-                <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-purple-200 transition-colors truncate">
-                  Audiobook Completo
-                </h4>
-                <p className="text-[11.5px] sm:text-xs text-purple-300/80 font-medium truncate mt-0.5">
-                  <span className="font-mono font-bold text-purple-200">{duracaoCompleto}</span>
-                  <span className="text-white/40 mx-1">•</span>
-                  <span>Obra integral sem cortes ({totalCapitulos} caps)</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-[#D8B4FE] transition-colors whitespace-nowrap">
+                    Audiobook Completo
+                  </h4>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#7C3AED]/25 text-[#D8B4FE] border border-[#7C3AED]/40 shrink-0">
+                    {duracaoCompleto}
+                  </span>
+                </div>
+
+                <p className="text-[11px] sm:text-xs text-white/70 mt-1 leading-snug">
+                  Narração integral da obra clássica do início ao fim, gravada na íntegra sem cortes ({totalCapitulos} caps).
                 </p>
               </div>
 
-              {/* Botão Play */}
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-600 group-hover:bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-purple-600/30 group-hover:scale-105 active:scale-95 transition-all">
+              {/* Botão Play Roxo Oficial Vibrante (#7C3AED) */}
+              <div className="w-10 h-10 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white flex items-center justify-center shrink-0 shadow-lg shadow-[#7C3AED]/45 group-hover:scale-105 active:scale-95 transition-all">
                 <Play className="w-4 h-4 fill-white ml-0.5" />
               </div>
             </div>
 
-            {/* OPÇÃO 2: RESUMO ANALÍTICO */}
+            {/* OPÇÃO 2: RESUMO ANALÍTICO (BOTÃO DOURADO #F59E0B) */}
             <div
               onClick={handleResumo}
-              className="group relative p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/25 via-[#1A1510] to-[#13110E] hover:from-amber-950/40 hover:to-[#17140F] border border-amber-500/25 hover:border-amber-400/60 transition-all duration-200 cursor-pointer select-none active:scale-[0.99] flex items-center gap-3 sm:gap-3.5 shadow-md hover:shadow-[0_6px_24px_rgba(245,158,11,0.2)] overflow-hidden"
+              className="group relative p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/25 via-[#1A1510] to-[#13110E] hover:from-amber-950/40 hover:to-[#17140F] border border-amber-500/35 hover:border-amber-400/70 transition-all duration-200 cursor-pointer select-none active:scale-[0.99] flex items-center gap-3 sm:gap-3.5 shadow-md hover:shadow-[0_6px_24px_rgba(245,158,11,0.25)] overflow-hidden"
             >
-              {/* Capa Compacta com Lombada e Badge */}
-              <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-lg overflow-hidden bg-black/60 border border-amber-500/35 shrink-0 shadow-md group-hover:border-amber-300 transition-colors">
+              {/* Capa Limpa Sem Nenhuma Tag Interna */}
+              <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-lg overflow-hidden bg-black/60 border border-amber-500/40 shrink-0 shadow-md group-hover:border-amber-300 transition-colors">
                 <img
                   src={livro.capaUrl}
                   alt={livro.titulo}
@@ -162,26 +161,26 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
                   className="w-full h-full object-cover brightness-[1.05]"
                 />
                 <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-amber-200/40 to-transparent pointer-events-none" />
-                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-amber-400 text-[7px] font-black uppercase tracking-wider text-zinc-950 flex items-center gap-0.5 shadow">
-                  <Sparkles className="w-2 h-2 fill-zinc-950" />
-                  <span>Resumo</span>
-                </div>
               </div>
 
-              {/* Título e Uma Linha com Tempo + Porquê */}
+              {/* Informações: Título Completo sem Abreviar + Duração + Descrição Explicativa */}
               <div className="flex-1 min-w-0 pr-1">
-                <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors truncate">
-                  Resumo Analítico
-                </h4>
-                <p className="text-[11.5px] sm:text-xs text-amber-300/80 font-medium truncate mt-0.5">
-                  <span className="font-mono font-bold text-amber-200">{duracaoResumo}</span>
-                  <span className="text-white/40 mx-1">•</span>
-                  <span>Síntese rápida para revisão e provas</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors whitespace-nowrap">
+                    Resumo Analítico
+                  </h4>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0">
+                    {duracaoResumo}
+                  </span>
+                </div>
+
+                <p className="text-[11px] sm:text-xs text-white/70 mt-1 leading-snug">
+                  Síntese comentada focada na doutrina essencial e conceitos-chave mais cobrados em provas.
                 </p>
               </div>
 
-              {/* Botão Play */}
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-400 group-hover:bg-amber-300 text-zinc-950 flex items-center justify-center shrink-0 shadow-md shadow-amber-500/30 group-hover:scale-105 active:scale-95 transition-all">
+              {/* Botão Play Dourado Vibrante (#F59E0B) */}
+              <div className="w-10 h-10 rounded-full bg-[#F59E0B] hover:bg-[#D97706] text-zinc-950 flex items-center justify-center shrink-0 shadow-lg shadow-[#F59E0B]/40 group-hover:scale-105 active:scale-95 transition-all">
                 <Play className="w-4 h-4 fill-zinc-950 ml-0.5" />
               </div>
             </div>
