@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Headphones,
   Play,
@@ -126,13 +126,72 @@ export function getAudiobookDuracaoBadge(livro: AudiobookLivro): string {
   return "35 min";
 }
 
-/** Formata a duração destacando os números em roxo oficial (#C084FC) */
-export function formatDuracaoComNumerosRoxos(duracao: string) {
+export interface CategoriaTema {
+  id: AudiobookCategoriaTab;
+  label: string;
+  subtitulo: string;
+  corPrimaria: string;       // tab background & button bg
+  corSecundaria: string;     // border, glow, title accent
+  corBadgeNum: string;       // duration numbers color
+  corSombra: string;         // shadow color
+  corHoverBotao: string;
+  corFundoBotao: string;
+}
+
+export const CATEGORIAS_THEMES: Record<AudiobookCategoriaTab, CategoriaTema> = {
+  classicos: {
+    id: "classicos",
+    label: "Clássicos",
+    subtitulo: "Grandes obras e fundamentos do pensamento jurídico",
+    corPrimaria: "#7C3AED",       // Roxo Imperial
+    corSecundaria: "#A855F7",
+    corBadgeNum: "#C084FC",
+    corSombra: "rgba(124, 58, 237, 0.55)",
+    corHoverBotao: "#6D28D9",
+    corFundoBotao: "#7C3AED",
+  },
+  lideranca: {
+    id: "lideranca",
+    label: "Liderança",
+    subtitulo: "Estratégia, poder, negociação e alta performance",
+    corPrimaria: "#D97706",       // Âmbar / Ouro Nobre
+    corSecundaria: "#F59E0B",
+    corBadgeNum: "#FCD34D",
+    corSombra: "rgba(217, 119, 6, 0.55)",
+    corHoverBotao: "#B45309",
+    corFundoBotao: "#D97706",
+  },
+  fora_da_toga: {
+    id: "fora_da_toga",
+    label: "Fora da Toga",
+    subtitulo: "Ficção, distopias, sociedade e visão de mundo",
+    corPrimaria: "#2563EB",       // Azul Royal Safira
+    corSecundaria: "#3B82F6",
+    corBadgeNum: "#93C5FD",
+    corSombra: "rgba(37, 99, 235, 0.55)",
+    corHoverBotao: "#1D4ED8",
+    corFundoBotao: "#2563EB",
+  },
+  oratoria: {
+    id: "oratoria",
+    label: "Oratória",
+    subtitulo: "Retórica, argumentação, fala em público e júri",
+    corPrimaria: "#DC2626",       // Carmim / Rubi
+    corSecundaria: "#EF4444",
+    corBadgeNum: "#FCA5A5",
+    corSombra: "rgba(220, 38, 38, 0.55)",
+    corHoverBotao: "#B91C1C",
+    corFundoBotao: "#DC2626",
+  },
+};
+
+/** Formata a duração destacando os números na cor temática da categoria selecionada */
+export function formatDuracaoComNumeros(duracao: string, corNumero = "#C084FC") {
   if (!duracao) return null;
   const parts = duracao.split(/(\d+)/);
   return parts.map((part, i) =>
     /^\d+$/.test(part) ? (
-      <span key={i} className="text-[#C084FC] font-extrabold font-mono">
+      <span key={i} className="font-extrabold font-mono" style={{ color: corNumero }}>
         {part}
       </span>
     ) : (
@@ -142,6 +201,9 @@ export function formatDuracaoComNumerosRoxos(duracao: string) {
     )
   );
 }
+
+export const formatDuracaoComNumerosRoxos = (duracao: string) =>
+  formatDuracaoComNumeros(duracao, "#C084FC");
 
 export default function AudiobooksPage() {
   const navigate = useNavigate();
@@ -174,6 +236,11 @@ export default function AudiobooksPage() {
   // Busca e Filtros de Categoria (inicia por padrão em "classicos": "classicos", "lideranca", "fora_da_toga", "oratoria")
   const [termoBusca, setTermoBusca] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState<AudiobookCategoriaTab>("classicos");
+
+  // Tema visual ativo de acordo com a categoria selecionada (para guiar o usuário com cores distintas)
+  const temaAtivo = useMemo(() => {
+    return CATEGORIAS_THEMES[filtroCategoria] || CATEGORIAS_THEMES.classicos;
+  }, [filtroCategoria]);
 
   // Rastreamento dos livros iniciados pelo usuário (onde ele já deu play)
   const [livrosIniciados, setLivrosIniciados] = useState<Set<string>>(() =>
@@ -697,48 +764,55 @@ export default function AudiobooksPage() {
         {/* SEÇÃO DO ACERVO NO FORMATO PADRÃO DA BIBLIOTECA         */}
         {/* ======================================================== */}
         <section className="pt-2">
-          {/* Header da Seção Idêntico à Biblioteca — Apenas Lista */}
+          {/* Header da Seção com Identidade Visual Dinâmica da Categoria Selecionada */}
           <div className="mb-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[#A78BFA] font-bold">
-              ACERVO DE AUDIOBOOKS
+            <p
+              className="text-[10px] uppercase tracking-[0.22em] font-bold transition-colors duration-300"
+              style={{ color: temaAtivo.corSecundaria }}
+            >
+              ACERVO DE AUDIOBOOKS • {temaAtivo.label.toUpperCase()}
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="w-1 h-6 rounded-full bg-[#7C3AED]" />
+              <span
+                className="w-1 h-6 rounded-full transition-colors duration-300"
+                style={{ backgroundColor: temaAtivo.corPrimaria }}
+              />
               <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-                Todos os Livros
+                {temaAtivo.label}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-white/60 mt-1 ml-3">
-              Toque em qualquer obra para ouvir
+              {temaAtivo.subtitulo}
             </p>
           </div>
 
           {/* Campo de Busca Rápida Idêntico à Biblioteca */}
           <div className="relative mb-4">
-            <Search className="w-5 h-5 text-purple-300/60 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
               placeholder="Buscar livro, autor ou tema…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416]/95 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#A855F7] transition-colors shadow-lg shadow-black/40"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416]/95 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-white/30 transition-colors shadow-lg shadow-black/40"
             />
             {termoBusca && (
               <button
                 type="button"
                 onClick={() => setTermoBusca("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-purple-300 hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Abas 3D Estilo Pasta (Sem margem na direita para efeito contínuo/infinito) */}
+          {/* Abas 3D Estilo Pasta (Sem margem na direita para efeito contínuo/infinito e cores dinâmicas por categoria) */}
           <div className="relative -mr-4 sm:-mr-6 overflow-x-auto no-scrollbar mb-5">
             <div className="flex w-max min-w-full items-end no-scrollbar h-11 sm:h-12 pt-1 pr-6 sm:pr-8">
               {CATEGORIAS_TABS.map((tab, index) => {
                 const isActive = filtroCategoria === tab.id;
+                const tabTema = CATEGORIAS_THEMES[tab.id];
                 const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
 
                 return (
@@ -750,9 +824,9 @@ export default function AudiobooksPage() {
                       setFiltroCategoria(tab.id);
                     }}
                     className={cn(
-                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t text-[10.5px] sm:text-[11.5px] uppercase tracking-wider cursor-pointer select-none transition-all duration-200",
+                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t text-[10.5px] sm:text-[11.5px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
                       isActive
-                        ? "bg-[#7C3AED] text-white shadow-[0_-6px_20px_rgba(124,58,237,0.55)] border-t border-x border-[#A855F7] font-bold"
+                        ? "text-white font-bold border-transparent"
                         : "bg-[#141416] text-white/50 hover:bg-[#1A1A1E] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/10 opacity-80 font-medium"
                     )}
                     style={{
@@ -760,16 +834,37 @@ export default function AudiobooksPage() {
                       marginLeft: index > 0 ? "-10px" : "0",
                     }}
                   >
-                    <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 opacity-80" />
-                      )}
-                    </div>
+                    {/* Fundo Deslizante Ativo com Física de Mola Fluida (Spring Physics) */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeAudiobooksFolderTabPill"
+                        className="absolute inset-0 rounded-t-2xl border-x border-t z-0 overflow-hidden"
+                        style={{
+                          backgroundColor: tabTema.corPrimaria,
+                          borderColor: tabTema.corSecundaria,
+                          boxShadow: `0 -6px 20px ${tabTema.corSombra}`,
+                        }}
+                        initial={false}
+                        transition={{
+                          type: "spring",
+                          stiffness: 450,
+                          damping: 35,
+                          mass: 0.6,
+                        }}
+                      >
+                        {/* Brilho Superior Suave */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/25 opacity-90 pointer-events-none" />
+                        <div
+                          className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none shadow-[inset_0_2px_10px_rgba(255,255,255,0.35)]"
+                          style={{ borderColor: tabTema.corBadgeNum }}
+                        />
+                      </motion.div>
+                    )}
 
                     <span
                       className={cn(
-                        "relative z-10 whitespace-nowrap transition-transform duration-200",
-                        isActive ? "scale-105 text-white font-black drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "scale-100"
+                        "relative z-10 whitespace-nowrap transition-transform duration-200 font-bold",
+                        isActive ? "scale-105 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "scale-100"
                       )}
                     >
                       {tab.label}
@@ -785,45 +880,58 @@ export default function AudiobooksPage() {
                     >
                       {tab.count}
                     </span>
-
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeAudiobooksFolderTab"
-                        className="absolute inset-0 rounded-t-2xl border-x border-t border-[#C084FC] pointer-events-none shadow-[inset_0_2px_10px_rgba(255,255,255,0.35)]"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 480, damping: 36, mass: 0.8 }}
-                      />
-                    )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Linha de Base da Pasta Roxo Oficial contínua de ponta a ponta */}
-            <div className="min-w-full w-max h-0.5 bg-[#7C3AED] relative z-20 shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
+            {/* Linha de Base da Pasta Oficial com Transição Suave de Cor */}
+            <motion.div
+              className="min-w-full w-max h-0.5 relative z-20"
+              animate={{
+                backgroundColor: temaAtivo.corPrimaria,
+                boxShadow: `0 0 14px ${temaAtivo.corSombra}`,
+              }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            />
           </div>
 
           {/* Listagem de Livros — Somente Lista Vertical com Altura Padronizada e Títulos Finos */}
-          {livrosFiltrados.length === 0 ? (
-            <div className="py-16 text-center text-white/60 text-sm bg-purple-950/20 border border-purple-500/20 rounded-3xl px-4">
-              <p className="font-semibold text-white">Nenhum audiobook encontrado</p>
-              <p className="text-xs text-white/50 max-w-sm mx-auto mt-1">
-                Tente buscar outro termo ou selecione outra categoria de áudio.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setTermoBusca("");
-                  setFiltroCategoria("classicos");
-                }}
-                className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] transition-colors"
+          <AnimatePresence mode="wait">
+            {livrosFiltrados.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18 }}
+                className="py-16 text-center text-white/60 text-sm bg-purple-950/20 border border-purple-500/20 rounded-3xl px-4"
               >
-                Ver Obras Clássicas
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2.5">
-              {livrosFiltrados.map((livro, index) => {
+                <p className="font-semibold text-white">Nenhum audiobook encontrado</p>
+                <p className="text-xs text-white/50 max-w-sm mx-auto mt-1">
+                  Tente buscar outro termo ou selecione outra categoria de áudio.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTermoBusca("");
+                    setFiltroCategoria("classicos");
+                  }}
+                  className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#6D28D9] transition-colors"
+                >
+                  Ver Obras Clássicas
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={filtroCategoria}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="flex flex-col gap-2.5"
+              >
+                {livrosFiltrados.map((livro, index) => {
                 const isDisponivel = livro.status === "disponivel";
                 const isNotificado = notificados[livro.id];
                 const isFav = favIds.has(livro.id);
@@ -884,14 +992,23 @@ export default function AudiobooksPage() {
                         </p>
                       </div>
 
-                      {/* Linha Inferior: Duração + Ícone de Salvar ao lado do tempo + Botão Ouvir à Direita */}
+                      {/* Linha Inferior: Duração + Ícone de Salvar ao lado do tempo + Botão Ouvir à Direita com Cor do Tema */}
                       <div className="flex items-center justify-between gap-2 mt-auto pt-1 w-full">
                         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                          {/* Duração com os NÚMEROS em ROXO oficial */}
-                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#7C3AED]/15 border border-[#7C3AED]/35 shadow-sm shrink-0">
-                            <Clock className="w-3 h-3 text-[#A855F7] stroke-[2.4]" />
+                          {/* Duração com os NÚMEROS na cor dinâmica da categoria */}
+                          <span
+                            className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded-md border shadow-sm shrink-0 transition-colors duration-300"
+                            style={{
+                              backgroundColor: `${temaAtivo.corPrimaria}1A`,
+                              borderColor: `${temaAtivo.corPrimaria}45`,
+                            }}
+                          >
+                            <Clock
+                              className="w-3 h-3 stroke-[2.4]"
+                              style={{ color: temaAtivo.corSecundaria }}
+                            />
                             <span className="flex items-center gap-0.5">
-                              {formatDuracaoComNumerosRoxos(getAudiobookDuracaoBadge(livro))}
+                              {formatDuracaoComNumeros(getAudiobookDuracaoBadge(livro), temaAtivo.corBadgeNum)}
                             </span>
                           </span>
 
@@ -914,22 +1031,35 @@ export default function AudiobooksPage() {
                           </button>
 
                           {isNotificado && !isDisponivel && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/20 text-[#DDD6FE] border border-[#7C3AED]/35 shadow-[0_0_8px_rgba(124,58,237,0.3)] shrink-0">
+                            <span
+                              className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md border shrink-0 transition-colors duration-300"
+                              style={{
+                                backgroundColor: `${temaAtivo.corPrimaria}26`,
+                                color: temaAtivo.corBadgeNum,
+                                borderColor: `${temaAtivo.corPrimaria}4D`,
+                              }}
+                            >
                               <Bell className="w-2.5 h-2.5 fill-current" />
                               Aviso Ativo
                             </span>
                           )}
                         </div>
 
-                        {/* Botão Ouvir / Painel posicionado embaixo à direita */}
+                        {/* Botão Ouvir / Painel posicionado embaixo à direita na cor do tema */}
                         <div className="shrink-0">
                           {isDisponivel ? (
-                            <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] transition-colors shadow-md shadow-[#7C3AED]/35 flex items-center gap-1">
+                            <span
+                              className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full transition-all duration-200 shadow-md flex items-center gap-1 cursor-pointer hover:opacity-95 active:scale-95"
+                              style={{
+                                backgroundColor: temaAtivo.corFundoBotao,
+                                boxShadow: `0 3px 12px ${temaAtivo.corSombra}`,
+                              }}
+                            >
                               <Play className="w-3 h-3 fill-white" />
                               Ouvir
                             </span>
                           ) : (
-                            <span className="text-[11px] uppercase tracking-wide font-semibold text-purple-200/80 px-2.5 py-1.5 rounded-full bg-purple-950/40 group-hover:bg-purple-900/40 border border-purple-500/20 transition-colors flex items-center gap-1">
+                            <span className="text-[11px] uppercase tracking-wide font-semibold text-white/70 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 transition-colors flex items-center gap-1">
                               <Clock className="w-3 h-3 text-amber-400" />
                               Painel
                             </span>
@@ -940,8 +1070,9 @@ export default function AudiobooksPage() {
                   </motion.div>
                 );
               })}
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </main>
 

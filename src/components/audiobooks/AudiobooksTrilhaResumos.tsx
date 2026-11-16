@@ -345,7 +345,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
             slug,
             numero: num,
             badgeLabel: `OBRA ${String(num).padStart(2, '0')}`,
-            duracao: resumoInfo?.duracaoFormatada || livro.duracaoTotalFormatada || '~35 min',
+            duracao: (resumoInfo?.duracaoFormatada || livro.duracaoTotalFormatada || '35 min').replace(/~/g, '').trim(),
             descricao: resumoInfo?.descricao || livro.descricao || 'Resumo analítico aprofundado.',
             coverImage,
             isConcluido,
@@ -371,12 +371,12 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
           ano: 2024,
           status: 'disponivel',
           descricao: info.descricao || 'Resumo analítico aprofundado.',
-          duracaoTotalFormatada: info.duracaoFormatada || '~35 min',
+          duracaoTotalFormatada: (info.duracaoFormatada || '35 min').replace(/~/g, '').trim(),
           totalCapitulos: info.capitulos?.length || 1,
           capitulos: [],
           resumoAudioUrl: info.audioUrl,
           resumoSrtUrl: info.srtUrl,
-          resumoDuracaoFormatada: info.duracaoFormatada || '~35 min',
+          resumoDuracaoFormatada: (info.duracaoFormatada || '35 min').replace(/~/g, '').trim(),
         };
 
         list.push({
@@ -384,7 +384,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
           slug,
           numero: num,
           badgeLabel: `OBRA ${String(num).padStart(2, '0')}`,
-          duracao: info.duracaoFormatada || '~35 min',
+          duracao: (info.duracaoFormatada || '35 min').replace(/~/g, '').trim(),
           descricao: info.descricao || 'Resumo analítico aprofundado.',
           coverImage,
           isConcluido,

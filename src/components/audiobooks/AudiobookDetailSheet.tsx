@@ -235,7 +235,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
               <Clock className="w-4 h-4 text-purple-400 mb-1" />
               <span className="text-[10px] text-purple-200/60 uppercase font-bold">Duração</span>
               <span className="text-xs sm:text-sm font-bold text-white mt-0.5">
-                {livro.duracaoTotalFormatada || (isDisponivel ? '~45 min' : 'Em gravação')}
+                {livro.duracaoTotalFormatada || (isDisponivel ? '45 min' : 'Em gravação')}
               </span>
             </div>
 
@@ -315,7 +315,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                       Resumo Analítico
                     </span>
                     <span className="block text-[11px] text-white/60 font-sans normal-case font-normal mt-0.5 truncate">
-                      Síntese dos pontos essenciais • {resumoInfo?.duracaoFormatada || '~35 min'}
+                      Síntese dos pontos essenciais • {resumoInfo?.duracaoFormatada || '35 min'}
                     </span>
                   </div>
                 </div>
@@ -501,7 +501,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-200 text-xs font-bold transition-all cursor-pointer"
                       >
                         <BookOpen className="w-3.5 h-3.5 text-purple-300" />
-                        <span>Ver Resumo Analítico ({resumoInfo?.duracaoFormatada || '~35m'})</span>
+                        <span>Ver Resumo Analítico ({resumoInfo?.duracaoFormatada || '35 min'})</span>
                       </button>
                     )}
                   </div>
@@ -606,7 +606,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                                 {cap.titulo}
                               </span>
                               <span className="block text-[11px] text-purple-200/60 truncate mt-0.5">
-                                Resumo Analítico • {cap.duracaoFormatada || '~6 min'}
+                                Resumo Analítico • {cap.duracaoFormatada || '6 min'}
                               </span>
                             </div>
                           </div>

@@ -37,7 +37,8 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
   if (!open || !livro) return null;
 
   const resumo = getResumoForLivro(livro);
-  const duracaoResumo = resumo?.duracaoFormatada || '~30 min';
+  const duracaoBruta = resumo?.duracaoFormatada || '30 min';
+  const duracaoResumo = duracaoBruta.replace(/~/g, '').trim();
   const totalCapitulos = livro.totalCapitulos || livro.capitulos?.length || 8;
   const duracaoCompleto = getAudiobookDuracaoBadge(livro);
 
@@ -124,18 +125,20 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
                 <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/30 to-transparent pointer-events-none" />
               </div>
 
-              {/* Informações: Título Completo sem Abreviar + Duração + Descrição Explicativa */}
+              {/* Informações: Título Completo sem Abreviar + Duração abaixo do título + Descrição */}
               <div className="flex-1 min-w-0 pr-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-[#D8B4FE] transition-colors whitespace-nowrap">
+                <div>
+                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-[#D8B4FE] transition-colors leading-tight">
                     Audiobook Completo
                   </h4>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#7C3AED]/25 text-[#D8B4FE] border border-[#7C3AED]/40 shrink-0">
-                    {duracaoCompleto}
-                  </span>
+                  <div className="mt-1">
+                    <span className="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#7C3AED]/25 text-[#D8B4FE] border border-[#7C3AED]/40">
+                      {duracaoCompleto}
+                    </span>
+                  </div>
                 </div>
 
-                <p className="text-[11px] sm:text-xs text-white/70 mt-1 leading-snug">
+                <p className="text-[11px] sm:text-xs text-white/70 mt-1.5 leading-snug">
                   Narração integral da obra clássica do início ao fim, gravada na íntegra sem cortes ({totalCapitulos} caps).
                 </p>
               </div>
@@ -163,18 +166,20 @@ export const AudiobookModalidadeDialog: React.FC<AudiobookModalidadeDialogProps>
                 <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-amber-200/40 to-transparent pointer-events-none" />
               </div>
 
-              {/* Informações: Título Completo sem Abreviar + Duração + Descrição Explicativa */}
+              {/* Informações: Título Completo sem Abreviar + Duração abaixo do título + Descrição */}
               <div className="flex-1 min-w-0 pr-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors whitespace-nowrap">
+                <div>
+                  <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors leading-tight">
                     Resumo Analítico
                   </h4>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0">
-                    {duracaoResumo}
-                  </span>
+                  <div className="mt-1">
+                    <span className="inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                      {duracaoResumo}
+                    </span>
+                  </div>
                 </div>
 
-                <p className="text-[11px] sm:text-xs text-white/70 mt-1 leading-snug">
+                <p className="text-[11px] sm:text-xs text-white/70 mt-1.5 leading-snug">
                   Síntese comentada focada na doutrina essencial e conceitos-chave mais cobrados em provas.
                 </p>
               </div>
