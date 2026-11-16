@@ -147,7 +147,7 @@ const Questoes = () => {
           </motion.div>
           </motion.div>
 
-          {/* ── Áreas do Direito (Grade de Trilhas) ───────────────────── */}
+          {/* ── Áreas do Direito (Lista de Trilhas) ───────────────────── */}
           <motion.section 
             variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
             className="space-y-3 pt-2"
@@ -164,7 +164,7 @@ const Questoes = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+            <div className="flex flex-col gap-2.5 sm:gap-3">
               {materiasAreas.map((area) => {
                 const iconInfo = areaIconFor(area.slug || area.area);
                 const AreaIcon = iconInfo?.Icon || BookOpen;
@@ -172,40 +172,37 @@ const Questoes = () => {
                 return (
                   <motion.button
                     key={area.slug || area.area}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.985 }}
                     onClick={() => {
                       haptic.selection();
                       setAreaFiltroSelecionada(area.area);
                     }}
-                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-primary/50 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[135px] focus-visible:outline-none"
+                    className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-primary/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
                   >
-                    <div className="flex items-start justify-between gap-2 z-10 w-full">
-                      <div className="relative shrink-0 flex items-center justify-center p-0.5">
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-zinc-800/90 border border-zinc-700/50 flex items-center justify-center shrink-0 group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors">
                         <AreaIcon
-                          className="w-6 h-6 sm:w-7 sm:h-7 text-zinc-300 group-hover:text-primary transition-all duration-200 group-hover:scale-110"
+                          className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-300 group-hover:text-primary transition-all duration-200 group-hover:scale-110"
                           strokeWidth={1.8}
                         />
                       </div>
-                      <span
-                        className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800/90 text-zinc-400 border border-zinc-700/50 shrink-0"
-                      >
-                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Filtrar'}
-                      </span>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
+                          {area.area}
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 group-hover:text-primary transition-colors flex items-center gap-1 font-medium">
+                          <span>Filtrar questões</span>
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="z-10 mt-3 w-full">
-                      <p
-                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-white transition-colors"
-                      >
-                        {area.area}
-                      </p>
-                      <p
-                        className="text-[11px] sm:text-xs text-zinc-500 mt-2 group-hover:text-primary transition-colors flex items-center gap-1 font-medium"
-                      >
-                        <span>Filtrar questões</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-                      </p>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                      <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800/90 text-zinc-300 border border-zinc-700/50 shrink-0 font-mono">
+                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Filtrar'}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-primary transition-transform group-hover:translate-x-0.5 shrink-0" />
                     </div>
                   </motion.button>
                 );
