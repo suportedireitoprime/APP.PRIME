@@ -294,6 +294,9 @@ const Flashcards = () => {
                     const iconInfo = areaIconFor(area.slug || area.area);
                     const AreaIcon = iconInfo?.Icon || BookOpen;
                     const isFav = favoritos.includes(area.slug || area.area);
+                    const totalCards = area.total_cards || 0;
+                    const compreendidos = area.compreendidos || 0;
+                    const pctArea = totalCards > 0 ? Math.min(100, Math.round((compreendidos / totalCards) * 100)) : 0;
 
                     return (
                       <motion.button
@@ -304,36 +307,60 @@ const Flashcards = () => {
                           haptic.selection();
                           setAreaSelecionadaModal(area);
                         }}
-                        className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-blue-500/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
+                        className="group relative flex flex-col p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-blue-500/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
                       >
-                        <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
-                          <div className="shrink-0 flex items-center justify-center pl-1">
-                            <AreaIcon
-                              className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 group-hover:scale-110 transition-transform duration-200"
-                              strokeWidth={2.2}
-                            />
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
+                            <div className="shrink-0 flex items-center justify-center pl-1">
+                              <AreaIcon
+                                className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500 group-hover:scale-110 transition-transform duration-200"
+                                strokeWidth={2.2}
+                              />
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
+                                {area.area}
+                              </p>
+                              <div className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 group-hover:text-blue-400 transition-colors flex items-center gap-1.5 font-medium">
+                                <span>{compreendidos > 0 ? `${compreendidos.toLocaleString('pt-BR')} dominados` : 'Filtrar ou ver trilha'}</span>
+                                {isFav && (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400 shrink-0">
+                                    • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
-                              {area.area}
-                            </p>
-                            <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 group-hover:text-blue-400 transition-colors flex items-center gap-1 font-medium">
-                              <span>Filtrar flashcards</span>
-                              {isFav && (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400 shrink-0">
-                                  • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                                </span>
-                              )}
-                            </p>
+                          <div className="flex items-center gap-2.5 shrink-0">
+                            <div className="flex flex-col items-end">
+                              <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full bg-zinc-800/90 text-zinc-300 border border-zinc-700/50 font-mono">
+                                {totalCards > 0 ? `${totalCards.toLocaleString('pt-BR')} cards` : 'Em breve'}
+                              </span>
+                              <span className="text-[10px] font-mono font-bold text-blue-400/90 mt-0.5">
+                                {pctArea}%
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5 shrink-0" />
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2.5 shrink-0">
-                          <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800/90 text-zinc-300 border border-zinc-700/50 shrink-0 font-mono">
-                            {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
-                          </span>
-                          <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5 shrink-0" />
+                        {/* Barra de Progresso da Trilha */}
+                        <div className="w-full mt-2.5 pt-0.5">
+                          <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden border border-white/5">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all duration-700 ease-out",
+                                pctArea >= 100 
+                                  ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" 
+                                  : pctArea > 0 
+                                  ? "bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.35)]" 
+                                  : "bg-transparent"
+                              )}
+                              style={{ width: `${Math.max(pctArea, pctArea > 0 ? 3 : 0)}%` }}
+                            />
+                          </div>
                         </div>
                       </motion.button>
                     );
@@ -386,6 +413,30 @@ const Flashcards = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   {areaSelecionadaModal.total_cards > 0 ? `${areaSelecionadaModal.total_cards.toLocaleString('pt-BR')} flashcards disponíveis` : 'Matéria'}
                 </p>
+
+                {/* Barra de Progresso na Seleção da Matéria */}
+                {(() => {
+                  const mTotal = areaSelecionadaModal.total_cards || 0;
+                  const mComp = areaSelecionadaModal.compreendidos || 0;
+                  const mPct = mTotal > 0 ? Math.min(100, Math.round((mComp / mTotal) * 100)) : 0;
+                  return (
+                    <div className="w-full mt-3 px-1">
+                      <div className="flex justify-between items-center text-[11px] mb-1.5 font-medium">
+                        <span className="text-zinc-400">Progresso da Trilha</span>
+                        <span className="font-mono font-bold text-blue-400">{mPct}% ({mComp}/{mTotal})</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden border border-white/5">
+                        <div
+                          className={cn(
+                            "h-full rounded-full transition-all duration-700 ease-out",
+                            mPct >= 100 ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : mPct > 0 ? "bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.4)]" : "bg-transparent"
+                          )}
+                          style={{ width: `${Math.max(mPct, mPct > 0 ? 3 : 0)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="mt-6 space-y-2.5">
