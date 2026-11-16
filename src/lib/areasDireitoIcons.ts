@@ -5,42 +5,43 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { slugify } from '@/lib/videoaulasCatalogos';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 
 export type AreaIcon = { Icon: LucideIcon; color: string };
 
-/** Mesmos ícones/cores usados no módulo Aprender — paleta clara e luminosa. */
+/** Mesmos ícones/cores oficiais usados no módulo de Aulas Interativas (disciplinasTheme). */
 export const AREA_ICON_MAP: Record<string, AreaIcon> = {
-  'direito-administrativo': { Icon: Landmark, color: '#fb923c' },
-  administrativo: { Icon: Landmark, color: '#fb923c' },
-  'direito-civil': { Icon: Home, color: '#60a5fa' },
-  civil: { Icon: Home, color: '#60a5fa' },
-  'direito-penal': { Icon: Gavel, color: '#fb7185' },
-  penal: { Icon: Gavel, color: '#fb7185' },
-  'direito-constitucional': { Icon: Scale, color: '#38bdf8' },
-  constitucional: { Icon: Scale, color: '#38bdf8' },
-  'direito-processual-civil': { Icon: FileText, color: '#7dd3fc' },
-  'processual-civil': { Icon: FileText, color: '#7dd3fc' },
-  'direito-processual-penal': { Icon: ShieldCheck, color: '#c084fc' },
-  'processual-penal': { Icon: ShieldCheck, color: '#c084fc' },
-  'direito-tributario': { Icon: DollarSign, color: '#4ade80' },
-  tributario: { Icon: DollarSign, color: '#4ade80' },
-  'direito-do-trabalho': { Icon: Briefcase, color: '#f472b6' },
-  'direito-trabalho': { Icon: Briefcase, color: '#f472b6' },
-  trabalho: { Icon: Briefcase, color: '#f472b6' },
-  'direito-empresarial': { Icon: Building2, color: '#93c5fd' },
-  'direito-ambiental': { Icon: Leaf, color: '#34d399' },
-  'direitos-humanos': { Icon: Users, color: '#f472b6' },
-  'direito-internacional-publico': { Icon: Globe, color: '#38bdf8' },
-  'direito-internacional': { Icon: Globe, color: '#38bdf8' },
-  'direito-previdenciario': { Icon: HeartPulse, color: '#fb7185' },
+  'direito-administrativo': { Icon: Landmark, color: '#ea580c' },
+  administrativo: { Icon: Landmark, color: '#ea580c' },
+  'direito-civil': { Icon: Home, color: '#3b82f6' },
+  civil: { Icon: Home, color: '#3b82f6' },
+  'direito-penal': { Icon: Gavel, color: '#dc2626' },
+  penal: { Icon: Gavel, color: '#dc2626' },
+  'direito-constitucional': { Icon: Scale, color: '#2563eb' },
+  constitucional: { Icon: Scale, color: '#2563eb' },
+  'direito-processual-civil': { Icon: FileText, color: '#0891b2' },
+  'processual-civil': { Icon: FileText, color: '#0891b2' },
+  'direito-processual-penal': { Icon: ShieldCheck, color: '#e11d48' },
+  'processual-penal': { Icon: ShieldCheck, color: '#e11d48' },
+  'direito-tributario': { Icon: DollarSign, color: '#16a34a' },
+  tributario: { Icon: DollarSign, color: '#16a34a' },
+  'direito-do-trabalho': { Icon: Briefcase, color: '#9333ea' },
+  'direito-trabalho': { Icon: Briefcase, color: '#9333ea' },
+  trabalho: { Icon: Briefcase, color: '#9333ea' },
+  'direito-empresarial': { Icon: Building2, color: '#4f46e5' },
+  'direito-ambiental': { Icon: Leaf, color: '#059669' },
+  'direitos-humanos': { Icon: Users, color: '#d97706' },
+  'direito-internacional-publico': { Icon: Globe, color: '#0d9488' },
+  'direito-internacional': { Icon: Globe, color: '#0d9488' },
+  'direito-previdenciario': { Icon: HeartPulse, color: '#ca8a04' },
   'direito-desportivo': { Icon: Trophy, color: '#fbbf24' },
-  'direito-processual-do-trabalho': { Icon: Hammer, color: '#93c5fd' },
-  'direito-financeiro': { Icon: Coins, color: '#facc15' },
+  'direito-processual-do-trabalho': { Icon: Hammer, color: '#7c3aed' },
+  'direito-financeiro': { Icon: Coins, color: '#65a30d' },
   'direito-concorrencial': { Icon: Swords, color: '#d8b4fe' },
   'direito-urbanistico': { Icon: Building, color: '#fdba74' },
-  'direito-internacional-privado': { Icon: Globe2, color: '#5eead4' },
-  'direito-consumidor': { Icon: Users, color: '#fbbf24' },
-  'direito-do-consumidor': { Icon: Users, color: '#fbbf24' },
+  'direito-internacional-privado': { Icon: Globe2, color: '#0d9488' },
+  'direito-consumidor': { Icon: Users, color: '#06b6d4' },
+  'direito-do-consumidor': { Icon: Users, color: '#06b6d4' },
   'lei-penal-especial': { Icon: AlertTriangle, color: '#fda4af' },
   'legislacao-penal-especial': { Icon: AlertTriangle, color: '#fda4af' },
   'formacao-complementar': { Icon: GraduationCap, color: '#fdba74' },
@@ -56,17 +57,27 @@ export const AREA_ICON_MAP: Record<string, AreaIcon> = {
   'etica-profissional': { Icon: Award, color: '#fda4af' },
 };
 
-const FALLBACK: AreaIcon = { Icon: Video, color: '#fb7185' };
+const FALLBACK: AreaIcon = { Icon: Video, color: '#ea580c' };
 
-/** Casa o nome (ou slug) da área com o ícone correspondente. */
+/** Casa o nome (ou slug) da área com o ícone correspondente e a cor oficial de Aulas Interativas. */
 export function areaIconFor(nomeOuSlug?: string | null): AreaIcon {
   if (!nomeOuSlug) return FALLBACK;
   const slug = slugify(nomeOuSlug);
-  if (AREA_ICON_MAP[slug]) return AREA_ICON_MAP[slug];
-  const parcial = Object.keys(AREA_ICON_MAP).find(
-    (k) => slug.includes(k) || k.includes(slug),
-  );
-  return parcial ? AREA_ICON_MAP[parcial] : FALLBACK;
+  const base = AREA_ICON_MAP[slug] || (() => {
+    const parcial = Object.keys(AREA_ICON_MAP).find(
+      (k) => slug.includes(k) || k.includes(slug),
+    );
+    return parcial ? AREA_ICON_MAP[parcial] : FALLBACK;
+  })();
+
+  // Harmonização absoluta com as cores oficiais de Aulas (disciplinasTheme)
+  const discTheme = getDisciplinaVisualTheme(nomeOuSlug);
+  const corOficial = discTheme?.primary || base.color;
+
+  return {
+    Icon: base.Icon,
+    color: corOficial,
+  };
 }
 
 export type AreaThemePalette = {

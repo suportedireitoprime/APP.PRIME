@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FileText, Bookmark, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown, Headphones } from "lucide-react";
+import { ArrowLeft, FileText, Bookmark, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -13,6 +13,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
 import { cn } from "@/lib/utils";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -39,17 +40,10 @@ export default function ResumosJuridicosSubtemas() {
   const navigate = useNavigate();
   
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
+  const visualTheme = useMemo(() => getDisciplinaVisualTheme(decodedArea), [decodedArea]);
   const materiaColor = useMemo(() => {
-    const norm = (decodedArea || "").toLowerCase();
-    if (norm.includes("admin")) return "#fb923c"; // Laranja para Direito Administrativo
-    if (norm.includes("penal")) return "#fb7185";
-    if (norm.includes("civil")) return "#60a5fa";
-    if (norm.includes("const")) return "#38bdf8";
-    if (norm.includes("amb")) return "#4ade80";
-    if (norm.includes("trab")) return "#f59e0b";
-    if (norm.includes("trib")) return "#a78bfa";
-    return palette?.primary || "#fb923c";
-  }, [decodedArea, palette]);
+    return visualTheme?.primary || palette?.primary || "#ea580c";
+  }, [visualTheme, palette]);
   const { isPremium } = useSubscription();
   const [gateOpen, setGateOpen] = useState(false);
   
@@ -131,7 +125,7 @@ export default function ResumosJuridicosSubtemas() {
     (async () => {
       // 2. Carregar instantaneamente (0ms) do catálogo offline
       try {
-        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea } = await import("@/services/resumosCatalog");
+        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea, getOrFetchMateriaContent } = await import("@/services/resumosCatalog");
         const catalog = await getResumosCatalog();
         const areaObj = matchAreaInCatalog(catalog, decodedArea);
         const temaObj = areaObj ? matchTemaInArea(areaObj.temas, decodedTema) : undefined;
@@ -155,8 +149,35 @@ export default function ResumosJuridicosSubtemas() {
             try {
               localStorage.setItem(localKey, JSON.stringify(list));
             } catch {}
-            return;
           }
+        }
+
+        // Pré-carrega o conteúdo completo com Markdown e Áudio do R2/IndexedDB em segundo plano (0ms ao clicar)
+        void getOrFetchMateriaContent(decodedArea).then((fullArea) => {
+          if (cancelled || !fullArea) return;
+          const fullTemaObj = matchTemaInArea(fullArea.temas, decodedTema);
+          if (fullTemaObj?.subtemas && fullTemaObj.subtemas.length > 0) {
+            const fullList: ResumoRow[] = fullTemaObj.subtemas.map((s, idx) => ({
+              id: s.id,
+              area: fullArea.area || decodedArea,
+              tema: fullTemaObj.tema || decodedTema,
+              subtema: s.subtema,
+              ordem_subtema: s.ordem ?? idx + 1,
+              markdown: s.markdown || null,
+              exemplos: s.exemplos || null,
+              termos: s.termos || null,
+              audio_url: s.audio_url || null,
+              imageUrl: s.imageUrl || null,
+            }));
+            subtemasCache.set(cacheKey, fullList);
+            if (!cancelled) {
+              setRows(fullList);
+            }
+          }
+        });
+
+        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
+          return;
         }
       } catch {}
 
@@ -244,12 +265,16 @@ export default function ResumosJuridicosSubtemas() {
           
           <div className="max-w-5xl mx-auto px-4 mt-2 space-y-3">
           <div className="relative flex items-center group">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" />
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" style={{ color: materiaColor }} />
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
               placeholder="Pesquisar"
-              className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all" 
+              style={{
+                backgroundColor: `${materiaColor}14`,
+                borderColor: `${materiaColor}55`,
+              }}
+              className="pl-12 pr-12 h-14 rounded-2xl backdrop-blur-md text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all focus:border-primary/80" 
             />
             <button
               onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
@@ -428,12 +453,6 @@ export default function ResumosJuridicosSubtemas() {
                               PREMIUM
                             </span>
                           )}
-                          {(r.audio_url || (r.markdown && r.markdown.includes("audio:"))) && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase text-rose-400 bg-rose-500/15 border border-rose-500/30 shrink-0">
-                              <Headphones className="w-2.5 h-2.5 text-rose-400" />
-                              ÁUDIO
-                            </span>
-                          )}
                         </div>
                       </div>
 
@@ -549,6 +568,10 @@ export default function ResumosJuridicosSubtemas() {
         resumo={selected}
         initialMetodo={selectedMetodo}
         autoStartMetodo={autoStartMetodo}
+        todosSubtemas={rows}
+        onSelectSubtema={(sub) => {
+          setSelected(sub);
+        }}
         onClose={() => {
           setSelected(null);
           setAutoStartMetodo(null);

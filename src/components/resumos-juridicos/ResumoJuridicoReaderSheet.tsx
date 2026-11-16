@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
   Heart,
   FileDown,
   Type,
@@ -28,6 +31,7 @@ import FeynmanView from "./FeynmanView";
 import { normalizarResumo } from "@/lib/resumoNormalizer";
 import { removerEmojis } from "@/lib/textoSemEmoji";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
+import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { GeracaoAnimacaoOverlay } from "@/components/vademecum/overlays/GeracaoAnimacaoOverlay";
 
@@ -70,6 +74,8 @@ interface Props {
   initialTab?: Tab;
   inline?: boolean;
   autoStartMetodo?: Metodo | null;
+  todosSubtemas?: ResumoRow[];
+  onSelectSubtema?: (subtema: ResumoRow) => void;
 }
 
 type Tab = "resumo" | "exemplos" | "termos";
@@ -83,6 +89,12 @@ const METODOS: { id: Metodo; label: string }[] = [
   { id: "feynman", label: "Feynman" },
 ];
 
+/** Remove prefixos numéricos redundantes ("01. ", "02 - ", etc.) dos títulos */
+export const cleanTitulo = (raw?: string | null): string => {
+  if (!raw) return "";
+  return raw.replace(/^\d+[\.\-\s_]+\s*/i, "").trim();
+};
+
 // Função de normalização on-the-fly para garantir fidelidade visual ao Word em todo o catálogo
 function normalizarMarkdownWord(raw?: string | null): string {
   if (!raw) return "";
@@ -91,6 +103,10 @@ function normalizarMarkdownWord(raw?: string | null): string {
   // 0. Remove comentários HTML e tags de áudio para não vazar no texto renderizado
   md = md.replace(/<!--[\s\S]*?-->/g, "");
   md = md.replace(/\[audio:\s*[^\s\]]+\s*\]/gi, "");
+
+  // 0.05 Remove prefixo numérico no título principal (# 01. Título -> # Título)
+  md = md.replace(/^#\s*\d+[\.\-\s_]+\s*/gm, "# ");
+  md = md.replace(/^##\s*\d+[\.\-\s_]+\s*/gm, "## ");
 
   // 0.1 Normaliza callouts de Curiosidade e Exemplo Prático para não vazar títulos em inglês nem repetir cabeçalhos
   md = md.replace(
@@ -200,12 +216,23 @@ function normalizarMarkdownWord(raw?: string | null): string {
 }
 
 const markdownComponents = {
-  h1: ({ node, ...props }: any) => (
-    <h1
-      className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-6 mb-4 border-b border-border/40 pb-3 font-display leading-tight"
-      {...props}
-    />
-  ),
+  h1: ({ node, children, ...props }: any) => {
+    const cleanHeaderChildren = (ch: any): any => {
+      if (typeof ch === "string") return ch.replace(/^\d+[\.\-\s_]+\s*/i, "");
+      if (Array.isArray(ch) && ch.length > 0 && typeof ch[0] === "string") {
+        return [ch[0].replace(/^\d+[\.\-\s_]+\s*/i, ""), ...ch.slice(1)];
+      }
+      return ch;
+    };
+    return (
+      <h1
+        className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-6 mb-4 border-b border-border/40 pb-3 font-display leading-tight"
+        {...props}
+      >
+        {cleanHeaderChildren(children)}
+      </h1>
+    );
+  },
   h2: ({ node, ...props }: any) => (
     <h2
       className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-8 mb-4 font-display leading-snug border-b-2 border-amber-500/80 dark:border-amber-500 pb-2"
@@ -494,7 +521,7 @@ const markdownComponents = {
 };
 
 export default function ResumoJuridicoReaderSheet({
-  resumo,
+  resumo: propsResumo,
   onClose,
   onOpenChange,
   open = true,
@@ -505,7 +532,90 @@ export default function ResumoJuridicoReaderSheet({
   initialTab,
   inline = false,
   autoStartMetodo,
+  todosSubtemas,
+  onSelectSubtema,
 }: Props) {
+  const [activeResumo, setActiveResumo] = useState<ResumoRow | null>(propsResumo);
+  useEffect(() => {
+    setActiveResumo(propsResumo);
+  }, [propsResumo]);
+
+  const resumo = activeResumo || propsResumo;
+
+  const [siblings, setSiblings] = useState<ResumoRow[]>(todosSubtemas || []);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (todosSubtemas && todosSubtemas.length > 0) {
+      setSiblings(todosSubtemas);
+      return;
+    }
+    if (!resumo?.area || !resumo?.tema) return;
+    let ativo = true;
+    (async () => {
+      try {
+        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const areaObj = matchAreaInCatalog(catalog, resumo.area);
+        const temaObj = areaObj ? matchTemaInArea(areaObj.temas, resumo.tema) : undefined;
+        if (temaObj?.subtemas && temaObj.subtemas.length > 0 && ativo) {
+          const mapped: ResumoRow[] = temaObj.subtemas.map((s, idx) => ({
+            id: s.id,
+            area: areaObj?.area || resumo.area,
+            tema: temaObj.tema || resumo.tema,
+            subtema: s.subtema,
+            ordem_subtema: s.ordem ?? idx + 1,
+            markdown: s.markdown || null,
+            exemplos: s.exemplos || null,
+            termos: s.termos || null,
+            audio_url: s.audio_url || null,
+          }));
+          setSiblings(mapped);
+        }
+      } catch {}
+    })();
+    return () => {
+      ativo = false;
+    };
+  }, [todosSubtemas, resumo?.area, resumo?.tema]);
+
+  const currentIndex = useMemo(() => {
+    if (!resumo || !siblings.length) return -1;
+    const byId = siblings.findIndex((s) => s.id === resumo.id);
+    if (byId >= 0) return byId;
+    const cleanCurrent = cleanTitulo(resumo.subtema || resumo.tema).toLowerCase();
+    const byTitle = siblings.findIndex(
+      (s) => cleanTitulo(s.subtema || s.tema).toLowerCase() === cleanCurrent
+    );
+    return byTitle >= 0 ? byTitle : 0;
+  }, [resumo, siblings]);
+
+  const materiaColor = useMemo(() => {
+    if (!resumo?.area) return "#ea580c";
+    const theme = getDisciplinaVisualTheme(resumo.area);
+    return theme?.primary || "#ea580c";
+  }, [resumo?.area]);
+
+  const navegarSubtema = (novoIdx: number) => {
+    if (novoIdx < 0 || novoIdx >= siblings.length) return;
+    const proximo = siblings[novoIdx];
+    haptic.selection();
+    resumosLocal.registrarRecente({
+      id: proximo.id,
+      area: proximo.area,
+      tema: proximo.tema,
+      subtema: proximo.subtema,
+    });
+    setActiveResumo(proximo);
+    onSelectSubtema?.(proximo);
+  };
+
+  useEffect(() => {
+    if (timelineRef.current && currentIndex >= 0) {
+      const activeEl = timelineRef.current.children[currentIndex] as HTMLElement | undefined;
+      activeEl?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [currentIndex]);
   const hasAutoStarted = useRef<string | null>(null);
   const isDesktop = useIsDesktop();
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
@@ -542,6 +652,8 @@ export default function ResumoJuridicoReaderSheet({
     exemplos: string | null;
     termos: string | null;
   } | null>(null);
+
+  const [carregandoConteudo, setCarregandoConteudo] = useState<boolean>(false);
 
   const handleClose = () => {
     onClose?.();
@@ -617,19 +729,20 @@ export default function ResumoJuridicoReaderSheet({
     setErroGerar(null);
     setFontOpen(false);
     setFav(resumosLocal.isFavorito(resumo.id));
+    setCarregandoConteudo(true);
 
     // 1. Sempre priorizar catálogo oficial dos resumos Word / Cloudflare R2
     let ativo = true;
     (async () => {
       try {
-        const { getResumosCatalog, findSubtemaInCatalog } = await import("@/services/resumosCatalog");
-        const catalog = await getResumosCatalog();
-        const found = findSubtemaInCatalog(catalog, resumo.area, resumo.tema, resumo.id || resumo.subtema);
+        const { getOrFetchSubtemaContent } = await import("@/services/resumosCatalog");
+        const found = await getOrFetchSubtemaContent(resumo.area, resumo.tema, resumo.id || resumo.subtema);
         if (found && found.markdown && ativo) {
           setCatalogSubtema(found);
           if (found.audio_url && !resumo.audio_url) {
             resumo.audio_url = found.audio_url;
           }
+          setCarregandoConteudo(false);
           return;
         }
       } catch (err) {
@@ -646,9 +759,17 @@ export default function ResumoJuridicoReaderSheet({
             .select("markdown, exemplos, termos")
             .eq("id", resumo.id)
             .maybeSingle()
-            .then(({ data }) => {
-              if (data && ativo) setBasicData(data);
-            });
+            .then(
+              ({ data }) => {
+                if (data && ativo) setBasicData(data);
+                if (ativo) setCarregandoConteudo(false);
+              },
+              () => {
+                if (ativo) setCarregandoConteudo(false);
+              }
+            );
+        } else {
+          if (ativo) setCarregandoConteudo(false);
         }
       } else {
         setBasicData({
@@ -656,13 +777,15 @@ export default function ResumoJuridicoReaderSheet({
           exemplos: resumo.exemplos,
           termos: resumo.termos,
         });
+        if (ativo) setCarregandoConteudo(false);
       }
     })();
 
     // Carrega metodologias existentes no Supabase
     (async () => {
+      const isOfficial = Boolean(resumo.id && String(resumo.id).includes('_cap'));
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(resumo.id || ''));
-      if (!isUuid) return;
+      if (!isUuid || isOfficial) return;
       const { data } = await supabase
         .from("resumo_metodologias")
         .select("metodo, conteudo")
@@ -680,7 +803,7 @@ export default function ResumoJuridicoReaderSheet({
 
       // Se o método inicial for conceitos e ainda NÃO tiver sido aprofundado e NÃO tiver markdown pronto, gera
       const jaTemMarkdown = Boolean(resumo.markdown || basicData?.markdown || catalogSubtema?.markdown);
-      if (targetMetodo === "conceitos" && !existentes.has("conceitos") && !jaTemMarkdown) {
+      if (targetMetodo === "conceitos" && !isOfficial && !existentes.has("conceitos") && !jaTemMarkdown) {
         void gerarMetodologia("conceitos", false);
       } else if (targetMetodo === "cornell" && !existentes.has("cornell")) {
         void gerarMetodologia("cornell", false);
@@ -732,13 +855,13 @@ export default function ResumoJuridicoReaderSheet({
     );
   };
 
-  const currentTitle =
+  const rawTitle =
     catalogSubtema?.subtema ||
     (resumo?.subtema && resumo.subtema !== resumo.tema ? resumo.subtema : null) ||
-    catalogSubtema?.subtema ||
     resumo?.subtema ||
     resumo?.tema ||
     "Resumo Jurídico";
+  const currentTitle = cleanTitulo(rawTitle);
 
   const currentMarkdown =
     catalogSubtema?.markdown ||
@@ -983,6 +1106,109 @@ export default function ResumoJuridicoReaderSheet({
                     />
                   </button>
                 </div>
+
+                {/* Linha de Cronologia com Setas */}
+                {siblings.length > 1 && (
+                  <div className="border-t border-white/5 bg-[#101012]/95 px-3 py-2 sm:px-4">
+                    <div className="max-w-4xl mx-auto flex items-center gap-2">
+                      {/* Botão Anterior */}
+                      <button
+                        onClick={() => navegarSubtema(currentIndex - 1)}
+                        disabled={currentIndex <= 0}
+                        aria-label="Tópico anterior na cronologia"
+                        className={cn(
+                          "w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all active:scale-95",
+                          currentIndex > 0
+                            ? "border-white/10 bg-white/5 text-white hover:bg-white/15 cursor-pointer"
+                            : "border-transparent bg-transparent text-white/20 cursor-not-allowed"
+                        )}
+                      >
+                        <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" strokeWidth={2.5} />
+                      </button>
+
+                      {/* Trilha Horizontal com Setas */}
+                      <div
+                        ref={timelineRef}
+                        className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 py-0.5 scroll-smooth"
+                      >
+                        {siblings.map((sub, idx) => {
+                          const isCurrent = idx === currentIndex;
+                          const isPast = idx < currentIndex;
+                          const numLabel = String(idx + 1).padStart(2, "0");
+                          const cleanSubTitle = cleanTitulo(sub.subtema || sub.tema);
+
+                          return (
+                            <div key={sub.id || idx} className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                onClick={() => navegarSubtema(idx)}
+                                className={cn(
+                                  "flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-xs sm:text-[13px] font-medium transition-all shrink-0 cursor-pointer active:scale-98 select-none",
+                                  isCurrent
+                                    ? "text-white shadow-md font-semibold"
+                                    : isPast
+                                    ? "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-white/20 hover:text-white"
+                                    : "border-white/5 bg-transparent text-zinc-500 hover:border-white/10 hover:text-zinc-300"
+                                )}
+                                style={
+                                  isCurrent
+                                    ? {
+                                        borderColor: `${materiaColor}aa`,
+                                        backgroundColor: `${materiaColor}26`,
+                                        color: "#FFFFFF",
+                                        boxShadow: `0 0 12px ${materiaColor}33`,
+                                      }
+                                    : undefined
+                                }
+                              >
+                                <span
+                                  className={cn(
+                                    "w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-md flex items-center justify-center text-[9.5px] sm:text-[10px] font-mono font-bold shrink-0",
+                                    isCurrent
+                                      ? "text-white"
+                                      : isPast
+                                      ? "bg-white/10 text-zinc-300"
+                                      : "bg-white/5 text-zinc-500"
+                                  )}
+                                  style={isCurrent ? { backgroundColor: materiaColor, color: "#FFFFFF" } : undefined}
+                                >
+                                  {numLabel}
+                                </span>
+                                <span className="truncate max-w-[120px] sm:max-w-[180px]">
+                                  {cleanSubTitle}
+                                </span>
+                              </button>
+
+                              {idx < siblings.length - 1 && (
+                                <ArrowRight
+                                  className={cn(
+                                    "w-3.5 h-3.5 shrink-0 transition-colors",
+                                    idx < currentIndex ? "text-zinc-400" : "text-white/20"
+                                  )}
+                                  strokeWidth={2.4}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Botão Próximo */}
+                      <button
+                        onClick={() => navegarSubtema(currentIndex + 1)}
+                        disabled={currentIndex >= siblings.length - 1}
+                        aria-label="Próximo tópico na cronologia"
+                        className={cn(
+                          "w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all active:scale-95",
+                          currentIndex < siblings.length - 1
+                            ? "border-white/10 bg-white/5 text-white hover:bg-white/15 cursor-pointer"
+                            : "border-transparent bg-transparent text-white/20 cursor-not-allowed"
+                        )}
+                      >
+                        <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5" strokeWidth={2.5} />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-6 md:pt-6 max-w-4xl mx-auto w-full">
@@ -1035,7 +1261,7 @@ export default function ResumoJuridicoReaderSheet({
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
-                        {gerando === "conceitos" || (!content && !erroGerar) ? (
+                        {gerando === "conceitos" ? (
                           <div className="w-full flex items-center justify-center py-10 not-prose">
                             <GeracaoAnimacaoOverlay
                               open={true}
@@ -1050,6 +1276,14 @@ export default function ResumoJuridicoReaderSheet({
                               ]}
                               estTotalSec={15}
                             />
+                          </div>
+                        ) : carregandoConteudo || (!content && !erroGerar) ? (
+                          <div className="space-y-4 py-8 max-w-2xl mx-auto not-prose animate-pulse">
+                            <div className="h-7 w-3/4 bg-white/10 rounded-lg" />
+                            <div className="h-4 w-full bg-white/5 rounded-lg" />
+                            <div className="h-4 w-5/6 bg-white/5 rounded-lg" />
+                            <div className="h-4 w-2/3 bg-white/5 rounded-lg" />
+                            <div className="h-28 w-full bg-white/[0.03] rounded-2xl border border-white/5 mt-6" />
                           </div>
                         ) : content ? (
                           <ReactMarkdown

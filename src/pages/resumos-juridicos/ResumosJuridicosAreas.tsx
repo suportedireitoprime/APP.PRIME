@@ -79,17 +79,17 @@ export default function ResumosJuridicosAreas() {
             </div>
           </div>
 
-          {/* Campo de Busca Rápida: ao clicar, abre a busca dedicada que surge de baixo para cima (90% da tela) */}
+          {/* Campo de Busca Rápida: estilo verde idêntico ao padrão de Audioaulas */}
           <div
             onClick={() => setSearchSheetOpen(true)}
             className="relative cursor-pointer group"
           >
-            <Search className="w-5 h-5 text-emerald-400/70 group-hover:text-emerald-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
             <input
               type="text"
               readOnly
               placeholder="Buscar matéria, tema ou tópico"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none group-hover:border-emerald-500/50 transition-colors shadow-sm cursor-pointer"
+              className="w-full rounded-2xl border border-emerald-500/35 bg-emerald-500/10 hover:border-emerald-500/55 hover:bg-emerald-500/15 py-3.5 pl-11 pr-11 text-sm sm:text-base text-white placeholder:text-zinc-400 outline-none transition-all focus:border-emerald-400 focus:bg-emerald-500/20 focus:ring-2 focus:ring-emerald-500/25 shadow-sm cursor-pointer"
             />
           </div>
 

@@ -287,7 +287,7 @@ export const ResumosSearchSheet: React.FC<ResumosSearchSheetProps> = ({
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
                     placeholder="Buscar matéria, tema ou tópico"
-                    className="w-full pl-11 pr-10 h-12 text-[14.5px] sm:text-[15.5px] rounded-2xl bg-[#18181c] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/70 transition-colors shadow-inner"
+                    className="w-full pl-11 pr-10 h-12 text-[14.5px] sm:text-[15.5px] rounded-2xl border border-emerald-500/35 bg-emerald-500/10 text-white placeholder:text-zinc-400 outline-none focus:border-emerald-400 focus:bg-emerald-500/20 focus:ring-2 focus:ring-emerald-500/25 transition-all shadow-inner"
                   />
                   {q && (
                     <button
