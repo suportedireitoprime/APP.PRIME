@@ -9,9 +9,6 @@ import { pullLeituraProgress } from '@/lib/leituraProgressSync';
 import { getUltimoModoLeitura, type UltimoModoLeitura } from '@/lib/leituraModoTracker';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
-const BEIGE_ACCENT = '#D1BA9A';
-const BEIGE_LIGHT = '#ECE0D1';
-
 interface BibliotecaContinuarLeituraBannerProps {
   onAbrirLivro: (livro: LivroNormalizado, modoInicial?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura') => void;
 }
@@ -75,15 +72,22 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
     return 0;
   }, [topProgress, currentSnap]);
 
-  const displayTag = 'CONTINUAR LEITURA';
-  const displayNome = currentSnap?.titulo || 'O Que é Direito · Roberto Lyra Filho';
-  const displaySubtitulo = topProgress
-    ? `Parou na pág. ${topProgress.index + 1}${topProgress.total ? ` de ${topProgress.total}` : ''}`
-    : topRecente
-    ? 'Último livro acessado'
-    : 'Comece sua leitura do acervo clássico';
+  const displayNome = currentSnap?.titulo || 'O Caso dos Exploradores de Cavernas';
+  
+  // Descrição minimalista consolidada em 1 linha única
+  const descricaoUmaLinha = useMemo(() => {
+    if (topProgress) {
+      const pag = `Pág. ${topProgress.index + 1}${topProgress.total ? ` de ${topProgress.total}` : ''}`;
+      const pct = percent > 0 ? `${percent}% concluído` : '';
+      return [pag, pct, 'Retomar'].filter(Boolean).join(' • ');
+    }
+    if (topRecente) {
+      return percent > 0 ? `Último acesso • ${percent}% concluído` : 'Último livro acessado • Retomar';
+    }
+    return 'Comece sua leitura do acervo clássico';
+  }, [topProgress, topRecente, percent]);
 
-  const capaUrl = currentSnap?.capa ? directImg(currentSnap.capa) : null;
+  const capaUrl = currentSnap?.capa ? directImg(currentSnap.capa, 200) : null;
 
   const handleClick = () => {
     haptic.selection();
@@ -92,13 +96,13 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
     } else {
       onAbrirLivro({
         id: '1',
-        titulo: 'O Que é Direito',
-        autor: 'Roberto Lyra Filho',
-        sobre: 'Uma das mais célebres introduções ao pensamento jurídico.',
+        titulo: 'O Caso dos Exploradores de Cavernas',
+        autor: 'Lon L. Fuller',
+        sobre: 'Uma das mais célebres introduções ao pensamento jurídico e dilemas morais.',
         capa: null,
         link: null,
         download: null,
-        area: 'Filosofia do Direito',
+        area: 'Teoria e Filosofia do Direito',
         colecaoId: 'classicos',
       }, 'nativa');
     }
@@ -111,88 +115,62 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       onClick={handleClick}
-      style={{
-        background: 'linear-gradient(to right, rgba(207, 186, 162, 0.22), rgba(207, 186, 162, 0.05))',
-        borderColor: 'rgba(207, 186, 162, 0.38)',
-      }}
-      className="w-full flex items-stretch rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer min-h-[84px] sm:min-h-[90px]"
+      className="w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border text-left active:scale-[0.99] transition-all overflow-hidden relative shadow-lg group cursor-pointer bg-gradient-to-r from-amber-950/20 via-[#181512] to-[#121110] border-amber-500/25 hover:border-amber-400/50"
     >
-      {/* Capa do Livro à esquerda — flush sem margens em cima, na esquerda e embaixo (idêntico a Resumos) */}
-      <div className="w-[72px] sm:w-[84px] shrink-0 self-stretch relative overflow-hidden bg-black flex flex-col justify-end border-r border-white/10">
+      {/* Capa Compacta Minimalista à Esquerda (Sem contorno) */}
+      <div className="w-12 sm:w-14 aspect-[3/4] rounded-xl overflow-hidden bg-black/60 shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
         {capaUrl ? (
           <img
             src={capaUrl}
             alt={displayNome}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover"
             loading="eager"
             decoding="async"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#3d3226] to-[#1c1611] flex items-center justify-center">
-            <BookOpen className="w-8 h-8 text-[#d1ba9a]" />
+          <div className="w-full h-full bg-gradient-to-br from-[#3d3226] to-[#1c1611] flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-amber-300/80" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
-        <span className="relative z-10 w-full bg-[#8c7355] text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider">
-          LIVRO
-        </span>
+        <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/30 to-transparent pointer-events-none" />
       </div>
 
-      {/* Textos centrais, progresso e seta indicativa */}
-      <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-3.5 sm:py-3.5 sm:pl-3.5 sm:pr-4 flex items-center justify-between gap-2.5">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <BookOpen className="w-2.5 h-2.5 fill-[#d1ba9a] text-[#d1ba9a]" />
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#d1ba9a]">
-              {displayTag}
-            </p>
-            <span className="text-[8.5px] sm:text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full bg-[#d1ba9a]/20 text-[#ece0d1] border border-[#d1ba9a]/30">
-              {modoBadge}
-            </span>
-          </div>
-
-          <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
-            {displayNome}
-          </p>
-
-          <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-[#e5d3b8]/90 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#d1ba9a] shrink-0" />
-            <span className="truncate">{displaySubtitulo}</span>
-            <span className="text-white/40">• Retomar</span>
-          </p>
-
-          {/* Barra de Progresso bege sutil */}
-          <div className="w-full mt-2">
-            <div className="flex items-center justify-between text-[9.5px] font-medium text-white/50 mb-0.5">
-              <span>Progresso</span>
-              <span className="font-bold text-[#e5d3b8]">
-                {percent > 0 ? `${percent}% concluído` : 'Início'}
-              </span>
-            </div>
-            <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#8c7355] via-[#bfa482] to-[#d1ba9a] rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(209,186,154,0.6)]"
-                style={{ width: `${Math.max(percent, percent > 0 ? 3 : 0)}%` }}
-              />
-            </div>
-          </div>
+      {/* Informações Minimalistas Centrais */}
+      <div className="flex-1 min-w-0 py-0.5">
+        {/* Linha 1: Label + Tag de Modo */}
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[9.5px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+            <BookOpen className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+            Continuar Leitura
+          </span>
+          <span className="text-[8.5px] font-mono font-bold uppercase px-1.5 py-0.2 rounded border tracking-wider bg-amber-400/15 text-amber-300 border-amber-400/30">
+            {modoBadge}
+          </span>
         </div>
 
-        {/* Seta indicativa à direita */}
-        <ArrowRight
-          className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-[#d1ba9a] group-hover:translate-x-1 transition-transform"
-          strokeWidth={2.4}
-        />
+        {/* Linha 2: Título da Obra (sem abreviação, traços limpos) */}
+        <h4 className="font-sans font-normal text-sm sm:text-base text-white leading-snug truncate">
+          {displayNome}
+        </h4>
+
+        {/* Linha 3: Descrição e Status em UMA LINHA ÚNICA com bolinha pulsante */}
+        <p className="text-[11px] sm:text-[11.5px] text-white/60 truncate mt-0.5 flex items-center gap-1.5 leading-snug">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+          <span className="truncate">{descricaoUmaLinha}</span>
+        </p>
+
+        {/* Linha 4: Barra de Progresso Fina e Minimalista (h-1) */}
+        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
+          <div
+            style={{ width: `${Math.max(percent, percent > 0 ? 4 : 0)}%` }}
+            className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-amber-500 to-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.5)]"
+          />
+        </div>
       </div>
 
-      {/* Decoração de fundo com BookOpen no canto direito */}
-      <div
-        className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center opacity-20"
-        style={{
-          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(209, 186, 154, 0.4))',
-        }}
-      >
-        <BookOpen className="w-24 h-24 text-[#d1ba9a]" strokeWidth={1.2} />
+      {/* Botão Ação Circular Minimalista à Direita */}
+      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/35 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 active:scale-95 shadow-md">
+        <ArrowRight className="w-3.5 h-3.5 stroke-[2.4]" />
       </div>
     </motion.button>
   );
