@@ -507,12 +507,27 @@ const Flashcards = () => {
         onAplicar={(filtro: FlashcardsFiltro) => {
           setFiltroAberto(false);
           const params = new URLSearchParams();
-          if (filtro.disciplinas && filtro.disciplinas.length > 0) params.set('disciplinas', filtro.disciplinas.join(','));
-          if (filtro.assuntos && filtro.assuntos.length > 0) params.set('assuntos', filtro.assuntos.join(','));
-          if (filtro.tipos && filtro.tipos.length > 0) params.set('tipos', filtro.tipos.join(','));
-          if (filtro.status && filtro.status.length > 0) params.set('status', filtro.status.join(','));
-          if (filtro.quantidade && filtro.quantidade > 0) params.set('quantidade', filtro.quantidade.toString());
-          navigate(`/flashcards/estudo?${params.toString()}`);
+          if (filtro.disciplinas && filtro.disciplinas.length > 0) {
+            params.set('area', filtro.disciplinas[0]);
+            params.set('areas', filtro.disciplinas.join('|'));
+            params.set('disciplinas', filtro.disciplinas.join(','));
+          }
+          if (filtro.assuntos && filtro.assuntos.length > 0) {
+            params.set('temas', filtro.assuntos.join('|'));
+            params.set('assuntos', filtro.assuntos.join(','));
+          }
+          if (filtro.tipos && filtro.tipos.length > 0) {
+            params.set('tipos', filtro.tipos.join('|'));
+          }
+          if (filtro.status && filtro.status.length > 0) {
+            params.set('modo', filtro.status[0]);
+            params.set('status', filtro.status[0]);
+          }
+          if (filtro.quantidade && filtro.quantidade > 0) {
+            params.set('quantidade', filtro.quantidade.toString());
+            params.set('limite', filtro.quantidade.toString());
+          }
+          navigate(`/flashcards/estudar?${params.toString()}`);
         }}
         disciplinaInicial={filtroDisciplinaPrevia}
         passoInicial={filtroPassoPrevio}

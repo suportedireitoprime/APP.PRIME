@@ -8,39 +8,55 @@ import { useFlashcardsSessao, FlashcardCard } from '@/lib/flashcardsQueries';
 import { saveFlashcardsSessao, getFlashcardsSessoes } from '@/lib/flashcardsSessoes';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 
+function parseList(val?: string | null): string[] | null {
+  if (!val) return null;
+  const items = val.split(/[|,]/).map(s => s.trim()).filter(Boolean);
+  return items.length > 0 ? items : null;
+}
+
 export function useFlashcardsEngine() {
   const [params, setParams] = useSearchParams();
 
-  const areaParam = params.get('area');
-  const areasParam = params.get('areas');
-  const temasParam = params.get('temas') || params.get('tema');
+  // Suporte flexível para área/disciplina, temas/assuntos, modo/status
+  const rawAreaParam = params.get('area') || params.get('areas') || params.get('disciplina') || params.get('disciplinas');
+  const rawTemasParam = params.get('temas') || params.get('tema') || params.get('assuntos') || params.get('assunto');
   const subtemaParam = params.get('subtema') || params.get('subtemas');
   const tiposParam = params.get('tipos') || params.get('tipo');
   const deckId = params.get('deck');
-  const modo = params.get('modo') || 'todos';
+  const modo = params.get('modo') || params.get('status') || 'todos';
   const ordemParam = params.get('ordem') || 'embaralhado';
-  const quantidadeParam = params.get('quantidade');
+  const quantidadeParam = params.get('quantidade') || params.get('limite') || params.get('qtd');
   const artigosParam = params.get('artigos');
-
   const escolhendo = false;
-  const rawLimitStr = params.get('limite');
+
+  const rawLimitStr = quantidadeParam;
   let limitParam = 10000;
   if (rawLimitStr === 'todos' || rawLimitStr === 'all') {
     limitParam = 10000;
   } else if (rawLimitStr) {
     const parsed = parseInt(rawLimitStr, 10);
     limitParam = isNaN(parsed) || parsed <= 0 ? 10000 : parsed;
-  } else if (temasParam || subtemaParam || deckId) {
+  } else if (rawTemasParam || subtemaParam || deckId) {
     // Ao estudar um tema, deck ou subtema específico, carrega todos os flashcards
     limitParam = 10000;
   } else {
     limitParam = 50;
   }
-  const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
-  const rawTemas = temasParam ? temasParam.split('|').filter(Boolean) : null;
+
+  const listaAreas = parseList(rawAreaParam);
+  const rawTemas = parseList(rawTemasParam);
   const cleanTemas = rawTemas ? rawTemas.map(t => t.replace(/^\d+[\.\-\s_:]+/, '').trim()) : null;
   const temasList = rawTemas && cleanTemas ? Array.from(new Set([...rawTemas, ...cleanTemas])) : rawTemas;
-  const tiposList = tiposParam ? tiposParam.split('|').filter(Boolean) : null;
+
+  const parsedTipos = parseList(tiposParam);
+  // Se 'todos' estiver na lista ou vazio ou cobrir todos os 7 tipos padrão, passa null para a RPC liberar todos os cards
+  const tiposList = (!parsedTipos || parsedTipos.length === 0 || parsedTipos.some(t => t.toLowerCase() === 'todos') || parsedTipos.length >= 7)
+    ? null
+    : parsedTipos;
+
+  const areaParam = listaAreas?.[0] || null;
+  const areasParam = rawAreaParam;
+  const temasParam = rawTemasParam;
   
   const [sessaoId] = useState(() => params.get('sessaoId') || Date.now().toString());
 
@@ -54,6 +70,7 @@ export function useFlashcardsEngine() {
   }, true);
 
   const [cards, setCards] = useState<FlashcardCard[]>([]);
+  const [totalCardsOriginal, setTotalCardsOriginal] = useState(0);
   const [idx, setIdx] = useState(0);
   const [virado, setVirado] = useState(false);
   const [feitos, setFeitos] = useState(0);
@@ -105,6 +122,7 @@ export function useFlashcardsEngine() {
       }
 
       setCards(finalCards);
+      setTotalCardsOriginal(finalCards.length);
       setIdx(0);
       setVirado(false);
     }
@@ -169,6 +187,8 @@ export function useFlashcardsEngine() {
     } else {
       setSessionRevisar(c => c + 1);
       if (shakeCallback) shakeCallback();
+      // SRS Inteligente: reinsere o card no final da fila da sessão para fixação ativa
+      setCards(prev => [...prev, { ...atual, _retryCount: (((atual as any)._retryCount || 0) + 1) }]);
     }
     
     salvando.current = true;
@@ -177,11 +197,14 @@ export function useFlashcardsEngine() {
     setFeitos((f) => f + 1);
     setVirado(false);
     
-    if (idx + 1 >= cards.length) {
+    // Se era o último card e foi compreendido (ou não há retestes pendentes)
+    const proximoIdx = idx + 1;
+    const totalAtualizado = status === 'revisar' ? cards.length + 1 : cards.length;
+    if (proximoIdx >= totalAtualizado) {
       toast.success('Sessão concluída!');
-      setIdx(cards.length);
+      setIdx(totalAtualizado);
     } else {
-      setIdx((i) => i + 1);
+      setIdx(proximoIdx);
     }
 
     const novoFeitos = feitos + 1;
@@ -258,6 +281,31 @@ export function useFlashcardsEngine() {
       .sort((a, b) => b.total - a.total);
   }, [cards, idx]);
 
+  // Atalhos de Teclado no Desktop
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (emContagem || !atual || salvando.current) return;
+
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        virar();
+      } else if (virado && (e.key === '1' || e.code === 'ArrowLeft')) {
+        e.preventDefault();
+        responder('revisar');
+      } else if (virado && (e.key === '2' || e.code === 'ArrowRight')) {
+        e.preventDefault();
+        responder('compreendido');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [emContagem, atual, virado, virar, responder]);
+
   return {
     params,
     setParam,
@@ -266,6 +314,7 @@ export function useFlashcardsEngine() {
     emContagem,
     setEmContagem,
     cards,
+    totalCardsOriginal,
     idx,
     feitos,
     atual,

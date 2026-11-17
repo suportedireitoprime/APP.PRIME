@@ -188,11 +188,11 @@ function getSmartDistractors(word: string, context?: string): string[] {
 
 function Bloco({ icon: Icon, titulo, texto }: { icon: any; titulo: string; texto: string }) {
   return (
-    <div className="rounded-2xl bg-muted/50 p-3">
-      <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {titulo}
+    <div className="rounded-2xl bg-zinc-850/80 border border-zinc-700/50 p-3.5 shadow-sm text-left">
+      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
+        <Icon className="h-4 w-4 text-blue-400 shrink-0" strokeWidth={2.2} /> <span>{titulo}</span>
       </p>
-      <div className="prose prose-invert max-w-none text-sm leading-relaxed prose-p:my-1 prose-strong:text-emerald-400 prose-ul:my-1 prose-li:my-0">
+      <div className="prose prose-invert max-w-none text-xs sm:text-sm leading-relaxed text-zinc-200 prose-p:my-1 prose-strong:text-emerald-400 prose-ul:my-1 prose-li:my-0">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{texto}</ReactMarkdown>
       </div>
     </div>
@@ -457,6 +457,17 @@ const Flashcard3D = memo(function Flashcard3D({
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={atual.id || idx}
+          drag={virado ? "x" : false}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.6}
+          onDragEnd={(_e, info) => {
+            if (!virado) return;
+            if (info.offset.x < -80) {
+              handleResponder('revisar');
+            } else if (info.offset.x > 80) {
+              handleResponder('compreendido');
+            }
+          }}
           initial={{ opacity: 0, y: -15, scale: 0.94, rotateX: 12 }}
           animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
           exit={
@@ -465,7 +476,7 @@ const Flashcard3D = memo(function Flashcard3D({
               : { opacity: 0, x: -160, rotateZ: -14, scale: 0.88, transition: { duration: 0.28, ease: 'easeInOut' } }
           }
           transition={{ duration: 0.35, ease: [0.34, 1.25, 0.64, 1] }}
-          className="relative z-10 w-full h-full [perspective:1600px]"
+          className="relative z-10 w-full h-full [perspective:1600px] touch-pan-y"
         >
           <div
             role="button"
@@ -487,33 +498,19 @@ const Flashcard3D = memo(function Flashcard3D({
                 transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
               }}
             >
-              {/* Frente da Carta — Formato Pergaminho Clássico */}
+              {/* Frente da Carta — Dark Glassmorphism Padrão Questões */}
               <div
-                className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col justify-between overflow-hidden text-[#fef3c7] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
+                className="absolute inset-0 rounded-[32px] border border-zinc-800/90 p-6 md:p-8 flex flex-col justify-between overflow-hidden text-zinc-100 [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl backdrop-blur-xl bg-zinc-900/95"
                 style={{
-                  borderColor: 'rgba(212, 185, 150, 0.55)',
-                  boxShadow: '0 24px 60px -20px rgba(0,0,0,0.95), 0 0 20px rgba(212, 185, 150, 0.15), inset 0 0 35px rgba(0,0,0,0.85), inset 0 1px 2px rgba(254, 240, 138, 0.35)',
-                  background: 'linear-gradient(155deg, rgba(38, 28, 19, 0.98) 0%, rgba(24, 18, 12, 0.99) 50%, rgba(14, 10, 7, 1) 100%)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 25px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
                 }}
               >
-                {/* Vinheta gradiente interna de envelhecimento do pergaminho */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75 pointer-events-none z-[1]" />
-
-                {/* Moldura Dupla de Pergaminho */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-[#d4b996]/35 pointer-events-none z-[2]" />
-                <div className="absolute inset-3.5 sm:inset-4 rounded-[18px] border border-[#d4b996]/15 pointer-events-none z-[2]" />
-
-                {/* Acabamento de Textura Quente */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#fef3c7]/[0.02] to-[#fef3c7]/[0.08] pointer-events-none z-[2]" />
-
-                {/* Gravura Majestosa da Deusa Têmis Vazada */}
-                <img
-                  src="/images/gamificacao/deusa_temis_vazada.webp"
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                  className="pointer-events-none absolute -right-3 -bottom-3 w-[150px] sm:w-[190px] md:w-[230px] h-auto object-contain opacity-35 select-none filter drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)] z-0"
+                {/* Linha sutil de glow no topo com a cor da matéria ou azul */}
+                <div
+                  className="absolute top-0 left-8 right-8 h-[2px] opacity-80 blur-[1px] pointer-events-none"
+                  style={{
+                    background: `linear-gradient(90deg, transparent 0%, ${palette.primary || '#2563eb'} 50%, transparent 100%)`,
+                  }}
                 />
 
                 {/* Topo Harmônico: Badges de Tipo & Nível/Artigo */}
@@ -579,10 +576,9 @@ const Flashcard3D = memo(function Flashcard3D({
                     initial={{ opacity: 0, y: 6 }} 
                     animate={{ opacity: 1, y: 0 }} 
                     transition={{ delay: 0.1, duration: 0.3 }} 
-                    className="prose prose-invert max-w-none text-lg md:text-2xl leading-snug font-normal text-white drop-shadow-md prose-p:my-1 prose-strong:text-emerald-400 prose-strong:underline prose-strong:underline-offset-4 prose-em:text-white/80" 
+                    className="prose prose-invert max-w-none text-lg md:text-2xl leading-relaxed font-semibold text-zinc-100 prose-p:my-1 prose-strong:text-blue-400 prose-strong:underline prose-strong:underline-offset-4 prose-em:text-zinc-300" 
                     style={{ 
-                      fontFamily: "'Merriweather','Georgia',serif", 
-                      textShadow: "0 2px 14px rgba(0,0,0,0.85)" 
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     }}
                   >
                     <PremiumMarkdown remarkPlugins={[remarkGfm]}>{displayPergunta}</PremiumMarkdown>
@@ -635,28 +631,20 @@ const Flashcard3D = memo(function Flashcard3D({
                 </div>
               </div>
 
-              {/* Verso da Carta — Formato Pergaminho Clássico */}
+              {/* Verso da Carta — Dark Glassmorphism Padrão Questões */}
               <div
-                className="absolute inset-0 rounded-[32px] border p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col text-[#fef3c7] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
+                className="absolute inset-0 rounded-[32px] border border-zinc-800/90 p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col text-zinc-100 [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl backdrop-blur-xl bg-zinc-900/95"
                 style={{
                   transform: 'rotateY(180deg)',
-                  borderColor: 'rgba(212, 185, 150, 0.45)',
-                  boxShadow: '0 24px 60px -20px rgba(0,0,0,0.95), 0 0 20px rgba(212, 185, 150, 0.12), inset 0 0 35px rgba(0,0,0,0.85), inset 0 1px 2px rgba(254, 240, 138, 0.25)',
-                  background: 'linear-gradient(155deg, rgba(32, 24, 16, 0.98) 0%, rgba(20, 15, 10, 0.99) 50%, rgba(12, 9, 6, 1) 100%)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
                 }}
               >
-                {/* Moldura Dupla de Pergaminho no Verso */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-[#d4b996]/30 pointer-events-none z-[2]" />
-                <div className="absolute inset-3.5 sm:inset-4 rounded-[18px] border border-[#d4b996]/15 pointer-events-none z-[2]" />
-
-                {/* Marca d'água / Gravura da Deusa Têmis no Verso */}
-                <img
-                  src="/images/gamificacao/deusa_temis_vazada.webp"
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  decoding="async"
-                  className="pointer-events-none absolute -right-3 -bottom-3 w-[150px] sm:w-[190px] md:w-[230px] h-auto object-contain opacity-20 select-none filter drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)] z-0"
+                {/* Linha sutil de glow esmeralda no topo */}
+                <div
+                  className="absolute top-0 left-8 right-8 h-[2px] opacity-80 blur-[1px] pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(90deg, transparent 0%, #10b981 50%, transparent 100%)',
+                  }}
                 />
 
                 <div className="relative z-10 flex-1 flex flex-col">
@@ -669,21 +657,22 @@ const Flashcard3D = memo(function Flashcard3D({
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2 gap-2">
+                  <div className="flex items-center justify-between mb-3 border-b border-zinc-800/80 pb-2 gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] uppercase tracking-[0.2em] font-black" style={{ color: palette.primary }}>
-                        Resposta Explicada
+                      <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-emerald-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                        <span>Resposta Explicada</span>
                       </p>
                       {cleanAssunto && (
                         <p
-                          className="text-[11.5px] font-medium text-white/70 truncate mt-0.5"
+                          className="text-[12px] font-semibold text-zinc-400 truncate mt-0.5"
                           style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
                         >
                           {cleanAssunto}
                         </p>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest shrink-0 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
+                    <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest shrink-0 bg-zinc-800/80 px-2.5 py-1 rounded-full border border-zinc-700/60">
                       {tipoCard}
                     </span>
                   </div>
@@ -694,13 +683,13 @@ const Flashcard3D = memo(function Flashcard3D({
                       atual.resposta.length < 80 ? 'text-xl sm:text-2xl prose-p:text-xl sm:prose-p:text-2xl' :
                       atual.resposta.length < 150 ? 'text-lg sm:text-xl prose-p:text-lg sm:prose-p:text-xl' :
                       'text-base sm:text-lg prose-p:text-base sm:prose-p:text-lg'
-                    } prose-strong:text-emerald-400 prose-ul:text-left prose-ul:mx-auto prose-li:my-1 prose-headings:mb-2`}>
+                    } text-zinc-100 font-medium prose-strong:text-emerald-400 prose-ul:text-left prose-ul:mx-auto prose-li:my-1 prose-headings:mb-2`}>
                       <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</PremiumMarkdown>
                     </div>
                   </div>
                   
                   {(atual.exemplo || atual.base_legal || atual.dica) && (
-                    <div className="mt-3 border-t border-border pt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="mt-3 border-t border-zinc-800/80 pt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
                       {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
                       {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
                       {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
@@ -1115,15 +1104,15 @@ const Flashcard3D = memo(function Flashcard3D({
             {/* 7. PERGUNTA E RESPOSTA (OU FALLBACK) */}
             {(tipoCard === 'Pergunta e Resposta' || (!parsedData?.alternativas && tipoCard !== 'Verdadeiro ou Falso' && tipoCard !== 'Ditado' && tipoCard !== 'Pegadinha' && tipoCard !== 'Completar Lacunas' && tipoCard !== 'Ache o Erro')) && (
               <Button
-                variant="outline"
-                className="w-full h-14 sm:h-16 rounded-2xl text-[15px] sm:text-base font-black gap-2 border-border/80 bg-zinc-900/90 text-zinc-100 hover:border-[#36AF85]/50 hover:bg-[#36AF85]/10 active:opacity-70 transition-all shadow-md"
+                className="w-full h-14 sm:h-16 rounded-2xl text-[15px] sm:text-base font-extrabold gap-2 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/30 active:scale-[0.98] transition-all border border-blue-400/30 cursor-pointer"
                 onClick={() => {
                   playFlipSound();
                   onVirar();
                 }}
               >
-                <RotateCcw className="h-5 w-5 text-[#36AF85]" />
+                <RotateCcw className="h-5 w-5 text-white" />
                 <span>Virar Flashcard (Ver Resposta)</span>
+                <span className="hidden sm:inline-block ml-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-white/20 text-white">Espaço</span>
               </Button>
             )}
           </motion.div>
@@ -1142,19 +1131,20 @@ const Flashcard3D = memo(function Flashcard3D({
           >
             <Button
               variant="outline"
-              className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:opacity-70 transition-all shadow-sm"
+              className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 bg-zinc-900/90 border border-rose-500/30 text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/50 active:scale-[0.98] transition-all shadow-lg shadow-rose-950/20 cursor-pointer"
               onClick={() => handleResponder('revisar')}
             >
-              <RotateCcw className="h-5 w-5 text-emerald-500" />
+              <RotateCcw className="h-5 w-5 text-rose-400" />
               <span>Revisar</span>
+              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">1</span>
             </Button>
             <Button
-              className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:opacity-70 transition-all shadow-md hover:opacity-90"
-              style={{ backgroundColor: palette.primary, color: '#ffffff' }}
+              className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-950/40 active:scale-[0.98] transition-all border border-emerald-400/30 cursor-pointer"
               onClick={() => handleResponder('compreendido')}
             >
               <CheckCircle2 className="h-5 w-5 text-white" />
               <span>Compreendi</span>
+              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white/20 text-white">2</span>
             </Button>
           </motion.div>
         )}
