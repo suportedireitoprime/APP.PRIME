@@ -79,6 +79,7 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastTrackedSecRef = useRef<number>(-1);
+  const selecionarCapituloRef = useRef<(idx: number) => void>(() => {});
 
   const capituloAtual = useMemo(() => {
     if (!livroAtual || !livroAtual.capitulos || livroAtual.capitulos.length === 0) return null;
@@ -196,7 +197,7 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
 
       const handleEnded = await NativeAudio.addListener('onEnded', () => {
         if (livroAtual && capituloIndex < livroAtual.capitulos.length - 1) {
-          selecionarCapitulo(capituloIndex + 1);
+          selecionarCapituloRef.current(capituloIndex + 1);
         } else {
           setTocando(false);
         }
@@ -219,7 +220,7 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
       cleanupEnded?.();
       cleanupRemote?.();
     };
-  }, [livroAtual, capituloIndex, selecionarCapitulo, salvarProgresso]);
+  }, [livroAtual, capituloIndex, salvarProgresso]);
 
   // MediaSession API
   useEffect(() => {
@@ -232,8 +233,8 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
       album: livroAtual.titulo,
       capaUrl: livroAtual.capaUrl,
       audio: el,
-      onNext: capituloIndex < livroAtual.capitulos.length - 1 ? () => selecionarCapitulo(capituloIndex + 1) : undefined,
-      onPrev: capituloIndex > 0 ? () => selecionarCapitulo(capituloIndex - 1) : undefined,
+      onNext: capituloIndex < livroAtual.capitulos.length - 1 ? () => selecionarCapituloRef.current(capituloIndex + 1) : undefined,
+      onPrev: capituloIndex > 0 ? () => selecionarCapituloRef.current(capituloIndex - 1) : undefined,
       onSeek: (t) => {
         if (el) {
           el.currentTime = t;
@@ -357,6 +358,8 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
       }
     }, 120);
   }, [livroAtual, velocidadeIndex]);
+
+  selecionarCapituloRef.current = selecionarCapitulo;
 
   const togglePlay = useCallback(() => {
     haptic.impact();

@@ -325,7 +325,18 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         setTocandoIntro(progress.trackIndex === 0);
 
         if (progress.trackIndex !== 0 && atualRef.current) {
-          salvarProgressoAudioaula(atualRef.current.id, progress.currentTime, progress.duration);
+          const a = atualRef.current;
+          salvarProgressoAudioaula({
+            id: a.id,
+            area: a.area,
+            tema: a.tema,
+            titulo: a.titulo,
+            sequencia: a.sequencia,
+            url_audio: a.url_audio,
+            tempo: progress.currentTime,
+            duracao: progress.duration,
+            timestamp: Date.now(),
+          });
         }
       });
       cleanupTime = () => handleTime?.remove();
