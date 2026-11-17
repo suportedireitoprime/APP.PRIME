@@ -298,8 +298,11 @@ const PdfPaginatedReader = ({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -60, opacity: 0 }}
             transition={{ type: 'tween', duration: 0.18 }}
-            className="fixed top-0 inset-x-0 z-[2510] h-14 border-b border-white/10 bg-[#0b0b0b]/90 backdrop-blur-xl flex items-center px-4 shrink-0 shadow-lg"
-            style={{ paddingTop: 'var(--sai-top)' }}
+            className="fixed top-0 inset-x-0 z-[2510] border-b border-white/10 bg-[#0b0b0b]/90 backdrop-blur-xl flex items-center px-4 shrink-0 shadow-lg"
+            style={{
+              paddingTop: 'var(--sai-top, env(safe-area-inset-top, 0px))',
+              height: 'calc(3.5rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+            }}
           >
             <button
               onClick={onClose}
@@ -371,9 +374,13 @@ const PdfPaginatedReader = ({
                       el.scrollTop = 0;
                     }
                   }}
-                  className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center pt-14 pb-36 px-0 select-none ${
+                  className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center px-0 select-none ${
                     isDarkPdf ? 'bg-[#18181b]' : 'bg-white'
                   }`}
+                  style={{
+                    paddingTop: 'calc(4rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+                    paddingBottom: 'calc(11.5rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+                  }}
                 >
                   <PdfPage
                     pdf={pdfRef.current}
@@ -529,8 +536,13 @@ const PdfPage = ({
         const baseScale = (availableWidth / unscaledViewport.width) * (zoom || 1.0);
 
         // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
-        const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.5), 3.5);
-        const finalScale = baseScale * dpr;
+        // No mobile, a largura CSS é de ~375-400px mas a resolução física é de 1080-1440px.
+        // A escala de renderização mínima de 2.8x garante ~2000px de resolução rasterizada,
+        // entregando fidelidade vetorial de impressão (300 DPI) idêntica ao Desktop!
+        const dpr = Math.max(window.devicePixelRatio || 2, 2.5);
+        const calculatedScale = baseScale * dpr;
+        const minUltraHdScale = 2.8 * (zoom || 1.0);
+        const finalScale = Math.max(calculatedScale, minUltraHdScale);
 
         const finalVp = page.getViewport({ scale: finalScale });
 

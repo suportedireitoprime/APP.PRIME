@@ -51,7 +51,7 @@ export default function PdfReaderFooter({
       transition={{ type: 'tween', duration: 0.2 }}
       className="fixed z-[2510] inset-x-0 bottom-0 border-t border-white/10 bg-[#0b0b0b] shadow-2xl backdrop-blur-xl"
       style={{
-        paddingBottom: 'var(--sai-bottom)',
+        paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 10px)',
       }}
     >
       {/* ── Linha 1: Progresso tabular idêntico ao Leitor Nativo ── */}
@@ -72,7 +72,7 @@ export default function PdfReaderFooter({
       </div>
 
       {/* ── Linha 2: 6 Botões circulares completos com avanço à direita ── */}
-      <div className="flex items-center justify-between px-3 pb-4 pt-2 gap-1 text-white max-w-lg mx-auto">
+      <div className="flex items-center justify-between px-3 pb-2 pt-1.5 gap-1 text-white max-w-lg mx-auto">
         {/* Botão 1: Página Anterior */}
         <button
           onClick={() => {

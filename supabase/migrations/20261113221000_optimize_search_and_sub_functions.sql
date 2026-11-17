@@ -34,6 +34,7 @@ CREATE OR REPLACE FUNCTION public.buscar_conteudo(_termo text, _tipo text DEFAUL
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'public', 'extensions'
+ SET statement_timeout TO '2500ms'
 AS $function$
 DECLARE
   q text := lower(public.f_unaccent(coalesce(_termo, '')));
@@ -43,9 +44,6 @@ DECLARE
 BEGIN
   -- Rejeita termos com menos de 3 caracteres para evitar full scans devastadores
   IF length(q) < 3 THEN RETURN; END IF;
-
-  -- Define timeout estrito para nunca prender conexões do pool
-  SET LOCAL statement_timeout = '2500ms';
 
   IF _tipo IS NULL OR _tipo = 'tudo' THEN
     tipos := ARRAY['videoaula','livro','blog','resumo','noticia','obra','dicionario','artigo','sumula','tese','informativo','pesquisa'];

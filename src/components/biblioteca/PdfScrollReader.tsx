@@ -216,9 +216,12 @@ const PdfScrollReader = ({
       const viewport = page.getViewport({ scale: 1 });
       
       // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
-      const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.5), 3.5);
+      // Garante resolução mínima de impressão (300 DPI) mesmo em telas mobile de alta densidade
+      const dpr = Math.max(window.devicePixelRatio || 2, 2.5);
       const baseScale = targetWidth / viewport.width;
-      const renderScale = baseScale * dpr;
+      const calculatedScale = baseScale * dpr;
+      const minUltraHdScale = 2.8;
+      const renderScale = Math.max(calculatedScale, minUltraHdScale);
       const finalVp = page.getViewport({ scale: renderScale });
 
       const displayWidth = Math.round(targetWidth);

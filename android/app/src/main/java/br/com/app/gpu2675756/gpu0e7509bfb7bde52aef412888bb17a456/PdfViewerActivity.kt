@@ -143,11 +143,12 @@ class PdfViewerActivity : ComponentActivity() {
             try {
                 page = renderer.openPage(pageIndex)
                 val density = resources.displayMetrics.density
-                val width = (page.width * density * 1.5f).toInt()
-                val height = (page.height * density * 1.5f).toInt()
+                // Renderização em Ultra HD / Print: garante qualidade vetorial máxima sem pixelização
+                val width = (page.width * density * 2.2f).toInt().coerceAtLeast(1800)
+                val height = (page.height * density * 2.2f).toInt().coerceAtLeast(2400)
 
                 val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
 
                 val finalBitmap = if (isDark) {
                     val darkBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
