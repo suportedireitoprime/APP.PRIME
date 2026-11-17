@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive } from 'lucide-react';
-import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.webp';
@@ -11,12 +10,12 @@ import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 interface Props {
   onBuscar?: () => void;
   onAbrirCustomPdf?: () => void;
+  onBack?: () => void;
   children?: React.ReactNode;
 }
 
-const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
+const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children }) => {
   const navigate = useNavigate();
-  const goBack = useGoBack();
   const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
   return (
@@ -54,9 +53,13 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, children }) => {
           <button
             onClick={() => {
               haptic.light();
-              goBack();
+              if (onBack) {
+                onBack();
+              } else {
+                navigate('/');
+              }
             }}
-            aria-label="Voltar"
+            aria-label="Voltar para o início"
             className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />

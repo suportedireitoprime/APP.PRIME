@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
-import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import videoaulasHeroCover from '@/assets/videoaulas-hero-cover.webp';
 import { VideoaulasHeroWave } from './VideoaulasHeroWave';
@@ -19,6 +19,7 @@ interface VideoaulasHeroProps {
   activeHeroTab: VideoaulasHeroTab;
   onSelectHeroTab: (tab: VideoaulasHeroTab) => void;
   onOpenSearch?: () => void;
+  onBack?: () => void;
   favoritosCount?: number;
 }
 
@@ -27,9 +28,10 @@ export const VideoaulasHero = memo(function VideoaulasHero({
   activeHeroTab,
   onSelectHeroTab,
   onOpenSearch,
+  onBack,
   favoritosCount = 0,
 }: VideoaulasHeroProps) {
-  const goBack = useGoBack();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -65,9 +67,13 @@ export const VideoaulasHero = memo(function VideoaulasHero({
           <button
             onClick={() => {
               haptic.light();
-              goBack();
+              if (onBack) {
+                onBack();
+              } else {
+                navigate('/');
+              }
             }}
-            aria-label="Voltar"
+            aria-label="Voltar para o início"
             className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-xl"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Search, X, Clock, Star, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 import type { BlogPost } from "@/data/blogPosts";
@@ -116,6 +116,7 @@ function readFavoritesFromStorage(): string[] {
 }
 
 const Blog = () => {
+  const navigate = useNavigate();
   const goBack = useGoBack();
   const location = useLocation();
 
@@ -302,8 +303,11 @@ const Blog = () => {
         {/* Top Header estilo App 12min */}
         <div className="flex items-center gap-2 mb-3">
           <button
-            onClick={() => goBack()}
-            aria-label="Voltar"
+            onClick={() => {
+              haptic.light();
+              navigate('/');
+            }}
+            aria-label="Voltar para o início"
             className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
           >
             <ChevronLeft className="w-7 h-7" strokeWidth={2.4} />

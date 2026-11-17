@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck, ArrowLeft } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/lib/nativeHaptics';
@@ -39,6 +40,7 @@ const RANKING_PRECISAO = [
 ];
 
 const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props) => {
+  const navigate = useNavigate();
   const [sheetAberto, setSheetAberto] = useState<'respondidas' | 'precisao' | 'banco' | null>(null);
   const { areas, loading: loadingAreas } = useQuestoesAreas();
 
@@ -51,10 +53,14 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
         <button 
           onClick={() => {
             try { haptic.selection(); } catch {}
-            onBack?.();
+            if (onBack) {
+              onBack();
+            } else {
+              navigate('/');
+            }
           }} 
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:opacity-70 cursor-pointer"
-          aria-label="Voltar"
+          aria-label="Voltar para o início"
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={2.4} />
         </button>

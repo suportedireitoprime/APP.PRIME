@@ -603,7 +603,7 @@ export default function AudiobooksPage() {
       <AudiobooksHeroPanel
         onBack={() => {
           haptic.selection();
-          navigate(-1);
+          navigate('/');
         }}
         onSelectAction={(action) => {
           setActiveQuickSheet(action);

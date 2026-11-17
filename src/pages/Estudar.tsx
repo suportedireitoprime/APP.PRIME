@@ -107,7 +107,7 @@ const Estudar = () => {
       case 'mapa_mental': setView('select-artigo'); break;
       case 'desempenho': setView('menu'); break;
       case 'questoes-dashboard': setView('menu'); break;
-      default: goBack();
+      default: navigate('/');
     }
   };
 
@@ -139,7 +139,7 @@ const Estudar = () => {
     <PageHeader
       title="Estudar"
       subtitle="Questões e flashcards por artigo"
-      onBack={() => goBack()}
+      onBack={() => navigate('/')}
       leading={
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
           <GraduationCap className="w-5 h-5 text-primary" />

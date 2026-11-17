@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, BookOpen, BookA, MessageSquare, Scale, Sparkles, Clock, Crown, AlertTriangle } from 'lucide-react';
 
@@ -23,7 +23,8 @@ export type ModoMeExplique = 'hub' | 'camera' | 'livros' | 'termos' | 'livre' | 
 
 export default function MeExplique() {
   useTrackArea('me_explique_hub');
-  const voltar = useGoBack('/ferramentas');
+  const navigate = useNavigate();
+  const voltar = () => navigate('/');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const cota = useMeExpliqueCota();

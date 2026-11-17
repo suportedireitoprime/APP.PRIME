@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, Calendar, LogIn, Shield } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,6 +27,7 @@ const providerName: Record<string, string> = {
 };
 
 const Perfil = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const sub = useSubscription();
 
@@ -66,7 +68,7 @@ const Perfil = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-24">
-      <AppHeader title="Meu Perfil" />
+      <AppHeader title="Meu Perfil" onBack={() => navigate('/')} />
 
       <div className="px-4 lg:px-8 pt-2 pb-4 space-y-5 max-w-lg lg:max-w-6xl mx-auto lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-8">
         <div className="space-y-5">

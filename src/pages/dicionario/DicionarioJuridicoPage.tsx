@@ -223,7 +223,7 @@ const DicionarioJuridicoPage = () => {
       subtitle={
         termos.length ? `${termos.length.toLocaleString('pt-BR')} termos` : 'Consulte termos e definições'
       }
-      onBack={() => goBack()}
+      onBack={() => navigate('/')}
     />
   );
 

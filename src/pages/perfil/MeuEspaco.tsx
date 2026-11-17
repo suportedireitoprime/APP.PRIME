@@ -313,7 +313,7 @@ const MeuEspaco = () => {
 
   const handleBack = () => {
     haptic.selection();
-    goBack();
+    navigate('/');
   };
 
   const clearStorage = async () => {
