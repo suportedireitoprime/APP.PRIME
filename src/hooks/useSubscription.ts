@@ -158,6 +158,23 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
       } catch { /* ignore */ }
     }
+    const isKnownPaidGlobal = typeof localStorage !== 'undefined' && localStorage.getItem('direitoprime:last_user_is_paid') === 'true';
+    if (isKnownPaidGlobal) {
+      return {
+        isPremium: true,
+        loading: true,
+        plano: 'vitalicio',
+        expiresAt: null,
+        startedAt: null,
+        source: null,
+        status: 'ACTIVE',
+        isAdminOverride: false,
+        isTrial: false,
+        isTrialExpired: false,
+        trialExpiresAt: null,
+        trialRemainingMs: 0,
+      };
+    }
     const initialTrial = calcTrial(user?.created_at);
     return {
       isPremium: initialTrial.inTrial,
@@ -179,8 +196,15 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     if (user) {
       subMemoryCache.set(user.id, { timestamp: Date.now(), data: s });
     }
-    if (cacheKey && typeof localStorage !== 'undefined') {
-      try { localStorage.setItem(cacheKey, JSON.stringify({ ...s, loading: false, __cache_timestamp: Date.now() })); } catch { /* ignore */ }
+    if (typeof localStorage !== 'undefined') {
+      if (s.isPremium && !s.isTrial) {
+        try { localStorage.setItem('direitoprime:last_user_is_paid', 'true'); } catch {}
+      } else if (!s.isPremium && !s.loading) {
+        try { localStorage.removeItem('direitoprime:last_user_is_paid'); } catch {}
+      }
+      if (cacheKey) {
+        try { localStorage.setItem(cacheKey, JSON.stringify({ ...s, loading: false, __cache_timestamp: Date.now() })); } catch { /* ignore */ }
+      }
     }
   }, [cacheKey, user]);
   const [nonce, setNonce] = useState(0);

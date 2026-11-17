@@ -10,18 +10,25 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
   const navigate = useNavigate();
   const sub = useSubscription();
 
-  // Assinante pago ou admin não vê o retângulo de contagem regressiva
+  // Assinante pago, vitalício ou admin não vê o retângulo de contagem regressiva
   const isPaidSubscriber =
     sub.isAdminOverride ||
-    (sub.isPremium && !sub.isTrial && (sub.source === 'asaas' || sub.source === 'play' || sub.source === 'apple'));
+    (sub.isPremium && !sub.isTrial) ||
+    sub.plano === 'vitalicio';
+
+  // Blindagem contra flash de renderização no carregamento inicial
+  const isKnownPaid = typeof localStorage !== 'undefined' && (
+    localStorage.getItem('direitoprime:last_user_is_paid') === 'true' ||
+    (user ? localStorage.getItem(`direitoprime:sub:${user.id}`)?.includes('"isPremium":true') : false)
+  );
 
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (isPaidSubscriber) return;
+    if (isPaidSubscriber || isKnownPaid) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [isPaidSubscriber]);
+  }, [isPaidSubscriber, isKnownPaid]);
 
   const trialInfo = useMemo(() => {
     return calcTrial(user?.created_at || sub.startedAt);
@@ -50,7 +57,8 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
     return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
   }, [remainingMs]);
 
-  if (isPaidSubscriber) {
+  // Se o usuário já é pago, admin ou o status ainda está sendo validado, não exibe o card de trial
+  if (isPaidSubscriber || isKnownPaid || sub.loading) {
     return null;
   }
 

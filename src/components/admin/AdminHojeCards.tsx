@@ -1975,9 +1975,9 @@ export function AdminHojeCards() {
         key={id}
         onClick={() => openCard(id)}
         className={cn(
-          "group relative rounded-xl border text-left transition-all duration-300 overflow-hidden flex flex-col justify-between",
+          "group relative rounded-xl border text-left transition-all duration-300 flex flex-col justify-between",
           isBottomRow
-            ? "p-1.5 min-h-[46px] sm:min-h-[50px]"
+            ? "p-1.5 sm:p-2 min-h-[58px] sm:min-h-[62px]"
             : "p-2 sm:p-2.5 min-h-[66px] sm:min-h-[70px]",
           isPulsing
             ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
@@ -2013,37 +2013,21 @@ export function AdminHojeCards() {
                 {cardCount}
               </span>
             </div>
-            {isFinancial && (
+            {isFinancial && valorFinanceiro > 0 && (
               <span className={cn(
                 "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 leading-none whitespace-nowrap",
                 isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]",
-                valorFinanceiro === 0 ? "text-zinc-500" : "text-emerald-400"
+                "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
-              </span>
-            )}
-            {id === 'paywall' && (
-              <span className={cn(
-                "block font-['Plus_Jakarta_Sans',sans-serif] font-semibold mt-0.5 text-zinc-400 leading-none whitespace-nowrap",
-                isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]"
-              )} title="Início do funil de vendas">
-                1º passo
-              </span>
-            )}
-            {id === 'viu_planos' && (
-              <span className={cn(
-                "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 text-sky-400 leading-none whitespace-nowrap",
-                isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]"
-              )} title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
-                {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
             )}
           </div>
         </div>
 
         <div className={cn(
-          "font-body leading-[1.05] mt-auto font-medium whitespace-normal break-words",
-          isBottomRow ? "text-[7.5px] xs:text-[8px] sm:text-[8.5px] line-clamp-2" : "text-[9px] sm:text-[10.5px]",
+          "font-body leading-tight mt-auto font-medium whitespace-normal break-words",
+          isBottomRow ? "text-[8px] xs:text-[8.5px] sm:text-[9.5px] line-clamp-2" : "text-[9px] sm:text-[10.5px]",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}
