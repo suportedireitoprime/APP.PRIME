@@ -17,6 +17,7 @@ import { NOVAS_AUDIOAULAS_CATALOG } from '@/data/novasAudioaulasCatalog';
 import { AUDIOAULAS_ACERVO_INICIAL } from '@/data/audioaulasAcervo';
 import { getCachedAudioaulas, saveCachedAudioaulas } from '@/services/audioaulasWarmup';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
+import { NativeAudio } from '@/plugins/NativeAudioPlugin';
 
 export const AUDIOAULAS_CACHE_KEY = 'audioaulas_acervo_cache_v2';
 let memoryAulasCache: AulaAudio[] | null = null;
@@ -293,13 +294,65 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   useEffect(() => {
     return subscribeMediaPlay((active) => {
       if (active !== 'audioaula') {
-        const el = audioRef.current;
-        if (el && !el.paused) el.pause();
-        const introEl = introAudioRef.current;
-        if (introEl && !introEl.paused) introEl.pause();
+        if (NativeAudio.isAvailable()) {
+          void NativeAudio.pause();
+        } else {
+          const el = audioRef.current;
+          if (el && !el.paused) el.pause();
+          const introEl = introAudioRef.current;
+          if (introEl && !introEl.paused) introEl.pause();
+        }
         setTocando(false);
       }
     });
+  }, []);
+
+  // Listeners do NativeAudio (segundo plano nativo com tela apagada)
+  useEffect(() => {
+    if (!NativeAudio.isAvailable()) return;
+
+    let cleanupTime: (() => void) | undefined;
+    let cleanupEnded: (() => void) | undefined;
+    let cleanupRemote: (() => void) | undefined;
+
+    void (async () => {
+      const handleTime = await NativeAudio.addListener('onTimeUpdate', (progress) => {
+        setTempo(progress.currentTime);
+        if (progress.duration > 0) {
+          setDur(progress.duration);
+        }
+        setTocando(progress.isPlaying);
+        setTocandoIntro(progress.trackIndex === 0);
+
+        if (progress.trackIndex !== 0 && atualRef.current) {
+          salvarProgressoAudioaula(atualRef.current.id, progress.currentTime, progress.duration);
+        }
+      });
+      cleanupTime = () => handleTime?.remove();
+
+      const handleEnded = await NativeAudio.addListener('onEnded', () => {
+        if (atualRef.current) {
+          marcarAulaConcluida(atualRef.current.id);
+        }
+        pularRef.current(1);
+      });
+      cleanupEnded = () => handleEnded?.remove();
+
+      const handleRemote = await NativeAudio.addListener('onRemoteAction', (action) => {
+        if (action.type === 'play') setTocando(true);
+        else if (action.type === 'pause') setTocando(false);
+        else if (action.type === 'seek' && typeof action.time === 'number') {
+          setTempo(action.time);
+        }
+      });
+      cleanupRemote = () => handleRemote?.remove();
+    })();
+
+    return () => {
+      cleanupTime?.();
+      cleanupEnded?.();
+      cleanupRemote?.();
+    };
   }, []);
 
   const [tocandoIntro, setTocandoIntro] = useState(false);
@@ -328,6 +381,30 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       setAtualId(a.id);
       setTempo(tempoInicialRef.current ?? 0);
       setDur(0);
+
+      if (NativeAudio.isAvailable()) {
+        try {
+          const streamUrl = normalizarStreamAudio(a.url_audio);
+          const src = await fonteDeAudio(audioIdOf(a), streamUrl);
+          await NativeAudio.prepare({
+            mainUrl: src,
+            title: a.titulo,
+            author: a.area || 'Direito Prime',
+            coverUrl: a.imagem_miniatura || (a as any).capa_url || undefined,
+            speed: velocidade,
+          });
+          if (tempoInicialRef.current !== null && tempoInicialRef.current > 0) {
+            await NativeAudio.seek(tempoInicialRef.current);
+          }
+          notifyMediaPlay('audioaula');
+          await NativeAudio.play();
+          setTocando(true);
+        } catch (err) {
+          console.error('[AudioaulasPlayer] Erro no NativeAudio:', err);
+          setTocando(false);
+        }
+        return;
+      }
 
       try {
         const streamUrl = normalizarStreamAudio(a.url_audio);
@@ -372,6 +449,18 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
       // Se já for a mesma aula tocando/pausada
       if (atualId === a.id) {
+        if (NativeAudio.isAvailable()) {
+          if (tocando) {
+            void NativeAudio.pause();
+            setTocando(false);
+          } else {
+            notifyMediaPlay('audioaula');
+            void NativeAudio.play();
+            setTocando(true);
+          }
+          return true;
+        }
+
         if (el?.paused && (!introEl || introEl.paused)) {
           notifyMediaPlay('audioaula');
           let started = false;
@@ -397,6 +486,9 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
       // Se for uma aula nova e o usuário estiver bloqueado pela cota mensal
       if (gateMes.blocked) {
+        if (NativeAudio.isAvailable()) {
+          void NativeAudio.pause();
+        }
         el?.pause();
         introEl?.pause();
         setTocando(false);
@@ -430,6 +522,28 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       setTocandoIntro(true);
       audioAulaPendenteRef.current = { aula: a, tempoInicial };
       aulaSobrepostaIniciadaRef.current = false;
+
+      if (NativeAudio.isAvailable()) {
+        try {
+          const streamUrl = normalizarStreamAudio(a.url_audio);
+          const src = await fonteDeAudio(audioIdOf(a), streamUrl);
+          await NativeAudio.prepare({
+            mainUrl: src,
+            introUrl: INTRO_AUDIOAULA_URL,
+            title: a.titulo,
+            author: a.area || 'Direito Prime',
+            coverUrl: a.imagem_miniatura || (a as any).capa_url || undefined,
+            speed: velocidade,
+          });
+          notifyMediaPlay('audioaula');
+          await NativeAudio.play();
+          setTocando(true);
+        } catch (err) {
+          console.warn('[AudioaulasPlayer] Falha no NativeAudio com intro, tocando direto:', err);
+          void tocarConteudoAula(a, tempoInicial);
+        }
+        return true;
+      }
 
       // Pré-carrega o áudio da aula em buffer no audioRef para disparo instantâneo após a vinheta (0ms de latência)
       void (async () => {
@@ -491,9 +605,22 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   }, [aulas, tocar]);
 
   const togglePlay = useCallback(() => {
+    if (!atual) return;
+
+    if (NativeAudio.isAvailable()) {
+      if (tocando) {
+        void NativeAudio.pause();
+        setTocando(false);
+      } else {
+        notifyMediaPlay('audioaula');
+        void NativeAudio.play();
+        setTocando(true);
+      }
+      return;
+    }
+
     const el = audioRef.current;
     const introEl = introAudioRef.current;
-    if (!atual) return;
 
     if (tocandoIntro && introEl) {
       if (!introEl.paused) {
@@ -522,7 +649,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           });
       }
     }
-  }, [atual, tocandoIntro]);
+  }, [atual, tocando, tocandoIntro]);
 
   const pular = useCallback(
     (dir: 1 | -1) => {
@@ -530,6 +657,9 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       const prox = fila[atualIdx + dir];
       if (prox) {
         if (gateMes.blocked && atualId !== prox.id) {
+          if (NativeAudio.isAvailable()) {
+            void NativeAudio.pause();
+          }
           audioRef.current?.pause();
           introAudioRef.current?.pause();
           setTocando(false);
@@ -553,6 +683,12 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   pularRef.current = pular;
 
   const seek = useCallback((v: number) => {
+    setTempo(v);
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.seek(v);
+      return;
+    }
+
     // Se o usuário mexer na barra de progresso, cancela a vinheta e foca no áudio da aula
     if (introAudioRef.current && !introAudioRef.current.paused) {
       introAudioRef.current.pause();
@@ -567,16 +703,22 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         el.play().catch(() => {});
       }
     }
-    setTempo(v);
   }, []);
 
   const setVelocidade = useCallback((rate: number) => {
     setVelocidadeState(rate);
-    const el = audioRef.current;
-    if (el) el.playbackRate = rate;
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.setSpeed(rate);
+    } else {
+      const el = audioRef.current;
+      if (el) el.playbackRate = rate;
+    }
   }, []);
 
   const fechar = useCallback(() => {
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.stop();
+    }
     const el = audioRef.current;
     if (el) {
       el.pause();

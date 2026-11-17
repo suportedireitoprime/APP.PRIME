@@ -1,6 +1,6 @@
-import { motion, useAnimation, AnimatePresence, type PanInfo } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
 import { RotateCcw } from 'lucide-react';
-import { useMotionValue, useTransform } from 'framer-motion';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const SWIPE_THRESHOLD = 80;
@@ -25,29 +25,30 @@ interface PilulaFlipCardProps {
 export function PilulaFlipCard({ pilulas, index, flipped, onFlip, onAdvance }: PilulaFlipCardProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const controls = useAnimation();
-
-  // Reset quando card muda
-  // Nota: o reset é controlado pelo parent via key/index
+  const [exitX, setExitX] = useState<number | null>(null);
 
   const handleDragEnd = async (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
     if (offset > SWIPE_THRESHOLD || velocity > 400) {
-      await controls.start({ x: window.innerWidth, opacity: 0, transition: { duration: 0.25 } });
+      setExitX(window.innerWidth || 500);
       await onAdvance('right');
+      setExitX(null);
+      x.set(0);
     } else if (offset < -SWIPE_THRESHOLD || velocity < -400) {
-      await controls.start({ x: -window.innerWidth, opacity: 0, transition: { duration: 0.25 } });
+      setExitX(-(window.innerWidth || 500));
       await onAdvance('left');
+      setExitX(null);
+      x.set(0);
     } else {
-      controls.start({ x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 20 } });
+      x.set(0);
     }
   };
 
   return (
     <div className="relative w-full max-w-[360px] aspect-[3/4] preserve-3d">
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {pilulas.map((pilula, i) => {
           if (i < index) return null;
           if (i > index + 2) return null;
@@ -69,12 +70,17 @@ export function PilulaFlipCard({ pilulas, index, flipped, onFlip, onAdvance }: P
                 willChange: 'transform, opacity',
                 z: 0,
               }}
-              animate={isFront ? controls : {
+              initial={isFront ? { scale: 0.95, opacity: 0 } : false}
+              animate={{
                 scale: 1 - offset * 0.05,
                 y: offset * 20,
                 opacity: 1 - offset * 0.3,
               }}
-              initial={isFront ? { scale: 0.95, opacity: 0 } : false}
+              exit={{
+                x: exitX ?? (offset === 0 ? 300 : 0),
+                opacity: 0,
+                transition: { duration: 0.25 },
+              }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               onClick={isFront ? onFlip : undefined}
               className="absolute inset-0 cursor-grab active:cursor-grabbing preserve-3d select-none"

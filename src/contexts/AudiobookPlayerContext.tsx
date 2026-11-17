@@ -4,6 +4,7 @@ import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { haptic } from '@/lib/nativeHaptics';
 import { audiobooksTracking } from '@/lib/audiobooksTracking';
+import { NativeAudio } from '@/plugins/NativeAudioPlugin';
 import type { AudiobookLivro, AudiobookCapitulo, AudiobookCue } from '@/data/audiobooksCatalogo';
 
 interface AudiobookPlayerContextType {
@@ -152,12 +153,73 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
   useEffect(() => {
     return subscribeMediaPlay((active) => {
       if (active !== 'audiobook') {
-        const el = audioRef.current;
-        if (el && !el.paused) el.pause();
+        if (NativeAudio.isAvailable()) {
+          void NativeAudio.pause();
+        } else {
+          const el = audioRef.current;
+          if (el && !el.paused) el.pause();
+        }
         setTocando(false);
       }
     });
   }, []);
+
+  // Listeners para o NativeAudio (Android / iOS em segundo plano com tela apagada)
+  useEffect(() => {
+    if (!NativeAudio.isAvailable()) return;
+
+    let cleanupTime: (() => void) | undefined;
+    let cleanupEnded: (() => void) | undefined;
+    let cleanupRemote: (() => void) | undefined;
+
+    void (async () => {
+      const handleTime = await NativeAudio.addListener('onTimeUpdate', (progress) => {
+        setTempo(progress.currentTime);
+        if (progress.duration > 0) {
+          setDur(progress.duration);
+        }
+        setTocando(progress.isPlaying);
+        setIsPlayingTitulo(progress.trackIndex === 0);
+
+        if (progress.trackIndex !== 0) {
+          const currentSec = Math.floor(progress.currentTime);
+          if (currentSec !== lastTrackedSecRef.current) {
+            lastTrackedSecRef.current = currentSec;
+            if (currentSec % 4 === 0) {
+              salvarProgresso(progress.currentTime);
+            }
+            audiobooksTracking.registrarTempoOuvidoSupabase(1);
+          }
+        }
+      });
+      cleanupTime = () => handleTime?.remove();
+
+      const handleEnded = await NativeAudio.addListener('onEnded', () => {
+        if (livroAtual && capituloIndex < livroAtual.capitulos.length - 1) {
+          selecionarCapitulo(capituloIndex + 1);
+        } else {
+          setTocando(false);
+        }
+      });
+      cleanupEnded = () => handleEnded?.remove();
+
+      const handleRemote = await NativeAudio.addListener('onRemoteAction', (action) => {
+        if (action.type === 'play') setTocando(true);
+        else if (action.type === 'pause') setTocando(false);
+        else if (action.type === 'seek' && typeof action.time === 'number') {
+          setTempo(action.time);
+          salvarProgresso(action.time);
+        }
+      });
+      cleanupRemote = () => handleRemote?.remove();
+    })();
+
+    return () => {
+      cleanupTime?.();
+      cleanupEnded?.();
+      cleanupRemote?.();
+    };
+  }, [livroAtual, capituloIndex, selecionarCapitulo, salvarProgresso]);
 
   // MediaSession API
   useEffect(() => {
@@ -216,6 +278,24 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
     });
     audiobooksTracking.registrarProgresso(livro.id, capIdx, tempoInicial, duracaoCap);
 
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.prepare({
+        mainUrl: cap.audioUrl,
+        introUrl: temTitulo ? cap.audioTituloUrl : undefined,
+        title: cap.titulo,
+        author: livro.autor,
+        coverUrl: livro.capaUrl,
+        speed: VELOCIDADES[velocidadeIndex],
+      }).then(() => {
+        if (tempoInicial > 2 && !temTitulo) {
+          void NativeAudio.seek(tempoInicial);
+        }
+        void NativeAudio.play();
+        setTocando(true);
+      });
+      return;
+    }
+
     setTimeout(() => {
       const el = audioRef.current;
       if (!el) return;
@@ -227,7 +307,7 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
         .then(() => setTocando(true))
         .catch(() => {});
     }, 100);
-  }, []);
+  }, [velocidadeIndex]);
 
   const selecionarCapitulo = useCallback((idx: number) => {
     if (!livroAtual || !livroAtual.capitulos[idx]) return;
@@ -252,6 +332,21 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
     });
     audiobooksTracking.registrarProgresso(livroAtual.id, idx, 0, duracaoCap);
 
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.prepare({
+        mainUrl: cap.audioUrl,
+        introUrl: temTitulo ? cap.audioTituloUrl : undefined,
+        title: cap.titulo,
+        author: livroAtual.autor,
+        coverUrl: livroAtual.capaUrl,
+        speed: VELOCIDADES[velocidadeIndex],
+      }).then(() => {
+        void NativeAudio.play();
+        setTocando(true);
+      });
+      return;
+    }
+
     setTimeout(() => {
       const el = audioRef.current;
       if (el) {
@@ -261,10 +356,22 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
           .catch(() => {});
       }
     }, 120);
-  }, [livroAtual]);
+  }, [livroAtual, velocidadeIndex]);
 
   const togglePlay = useCallback(() => {
     haptic.impact();
+    if (NativeAudio.isAvailable()) {
+      if (tocando) {
+        void NativeAudio.pause();
+        setTocando(false);
+      } else {
+        notifyMediaPlay('audiobook');
+        void NativeAudio.play();
+        setTocando(true);
+      }
+      return;
+    }
+
     const el = audioRef.current;
     if (!el) return;
 
@@ -281,27 +388,41 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
 
   const pularSegundos = useCallback((delta: number) => {
     haptic.selection();
-    const el = audioRef.current;
-    if (!el) return;
     if (isPlayingTitulo) {
       setIsPlayingTitulo(false);
     }
-    const maxDur = dur || el.duration || 9999;
-    const novo = Math.max(0, Math.min(maxDur, el.currentTime + delta));
-    el.currentTime = novo;
+    const maxDur = dur || capituloAtual?.duracaoSegundos || 9999;
+    const novo = Math.max(0, Math.min(maxDur, tempo + delta));
     setTempo(novo);
     salvarProgresso(novo);
-  }, [dur, isPlayingTitulo, salvarProgresso]);
+
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.seek(novo);
+      return;
+    }
+
+    const el = audioRef.current;
+    if (el) {
+      el.currentTime = novo;
+    }
+  }, [dur, capituloAtual, tempo, isPlayingTitulo, salvarProgresso]);
 
   const seek = useCallback((novoTempo: number) => {
-    const el = audioRef.current;
-    if (!el) return;
     if (isPlayingTitulo) {
       setIsPlayingTitulo(false);
     }
-    el.currentTime = novoTempo;
     setTempo(novoTempo);
     salvarProgresso(novoTempo);
+
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.seek(novoTempo);
+      return;
+    }
+
+    const el = audioRef.current;
+    if (el) {
+      el.currentTime = novoTempo;
+    }
   }, [isPlayingTitulo, salvarProgresso]);
 
   const mudarVelocidade = useCallback(() => {
@@ -309,7 +430,9 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
     const proximoIdx = (velocidadeIndex + 1) % VELOCIDADES.length;
     setVelocidadeIndex(proximoIdx);
     const taxa = VELOCIDADES[proximoIdx];
-    if (audioRef.current) {
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.setSpeed(taxa);
+    } else if (audioRef.current) {
       audioRef.current.playbackRate = taxa;
     }
   }, [velocidadeIndex]);
@@ -333,7 +456,9 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
 
   const fechar = useCallback(() => {
     haptic.selection();
-    if (audioRef.current) {
+    if (NativeAudio.isAvailable()) {
+      void NativeAudio.stop();
+    } else if (audioRef.current) {
       audioRef.current.pause();
     }
     setTocando(false);
