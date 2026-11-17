@@ -58,8 +58,10 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           </div>
         </header>
 
-        {/* Conteúdo: Logo à esquerda e Card de Status à direita — idêntico ao Início do App */}
-        <div className="relative z-10 pt-2.5 sm:pt-3.5 flex flex-col justify-start">
+        {/* Conteúdo: Logo à esquerda e Card de Status à direita — posicionado abaixo do botão voltar */}
+        <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[145px] sm:min-h-[160px]">
+          {/* Espaçador calibrado para o botão de voltar padrão ouro (desce o título com folga elegante para ficar abaixo e não atrás) */}
+          <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
           <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
             <VadeMecumHeroBrand />
             <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-0.5 sm:pt-1 pr-1 sm:pr-2 empty:hidden">
@@ -69,7 +71,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
         </div>
 
         {/* ── 4 Botões de Ação Rápida no Rodapé do Painel ────────────────── */}
-        <div className="relative z-10 px-3 sm:px-5 pt-1.5 pb-2.5 sm:pb-3">
+        <div className="relative z-10 px-3 sm:px-5 pt-2.5 pb-4 sm:pb-5">
           <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
       </div>

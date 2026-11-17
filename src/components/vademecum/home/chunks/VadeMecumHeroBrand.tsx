@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 
 const VadeMecumHeroBrand: React.FC = () => {
   return (
-    <div className="flex flex-col items-start text-left z-10 relative ml-1 xs:ml-2 sm:ml-4 max-w-[260px] sm:max-w-[320px] pt-6 xs:pt-8 sm:pt-10">
+    <div className="flex flex-col items-start text-left z-10 relative ml-1 xs:ml-2 sm:ml-4 max-w-[260px] sm:max-w-[320px] pt-1 xs:pt-1.5 sm:pt-2">
       {/* Tipografia de Marca: Vade Mecum (branco) + Legislação (verde esmeralda da onda/Constituição) */}
       <h1 className="tracking-tight leading-[1.04] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
         <span className="font-serif text-[22px] xs:text-[24px] sm:text-[27px] md:text-[30px] font-medium text-white block">

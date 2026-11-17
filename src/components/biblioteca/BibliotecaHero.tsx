@@ -82,9 +82,9 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children })
       </header>
 
       {/* Conteúdo: Altura calibrada, desobstruindo o botão voltar */}
-      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
+      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[155px] sm:min-h-[170px]">
         {/* Espaçamento vertical para livrar os botões superiores */}
-        <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
+        <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
 
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
           <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[250px]">

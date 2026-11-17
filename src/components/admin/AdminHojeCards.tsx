@@ -1975,9 +1975,9 @@ export function AdminHojeCards() {
         key={id}
         onClick={() => openCard(id)}
         className={cn(
-          "group relative rounded-xl border text-left transition-all duration-300 flex flex-col justify-between",
+          "group relative rounded-xl border text-left transition-all duration-300 flex flex-col justify-between overflow-hidden",
           isBottomRow
-            ? "p-1.5 sm:p-2 min-h-[58px] sm:min-h-[62px]"
+            ? "p-1.5 sm:p-2 h-[52px] sm:h-[56px] min-h-[52px] max-h-[56px]"
             : "p-2 sm:p-2.5 min-h-[66px] sm:min-h-[70px]",
           isPulsing
             ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
@@ -1987,7 +1987,7 @@ export function AdminHojeCards() {
         <div className="flex items-start justify-between w-full gap-0.5 sm:gap-1">
           <div className={cn(
             "rounded-md flex items-center justify-center transition-colors shrink-0",
-            isBottomRow ? "w-4 h-4 sm:w-4.5 sm:h-4.5" : "w-5 h-5 sm:w-6 sm:h-6",
+            isBottomRow ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-5 h-5 sm:w-6 sm:h-6",
             isPulsing
               ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 animate-pulse"
               : "bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20"
@@ -2007,7 +2007,7 @@ export function AdminHojeCards() {
               )}
               <span className={cn(
                 "font-['Plus_Jakarta_Sans',sans-serif] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
-                isBottomRow ? "text-[11.5px] sm:text-[13px]" : "text-[15px] sm:text-[19px]",
+                isBottomRow ? "text-[11px] sm:text-[12.5px]" : "text-[15px] sm:text-[19px]",
                 isPulsing ? "text-emerald-300" : isZero ? "text-zinc-500" : "text-foreground"
               )}>
                 {cardCount}
@@ -2026,8 +2026,8 @@ export function AdminHojeCards() {
         </div>
 
         <div className={cn(
-          "font-body leading-tight mt-auto font-medium whitespace-normal break-words",
-          isBottomRow ? "text-[8px] xs:text-[8.5px] sm:text-[9.5px] line-clamp-2" : "text-[9px] sm:text-[10.5px]",
+          "font-body leading-[1.1] mt-auto font-medium whitespace-normal break-words",
+          isBottomRow ? "text-[7.5px] xs:text-[8px] sm:text-[9px] line-clamp-1 xs:line-clamp-2" : "text-[9px] sm:text-[10.5px]",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}

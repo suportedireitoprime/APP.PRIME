@@ -95,11 +95,11 @@ export const VideoaulasHero = memo(function VideoaulasHero({
       </header>
 
       {/* Conteúdo Tipográfico Editorial Estilo Pílulas */}
-      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px]">
+      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[155px] sm:min-h-[170px]">
         <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
           <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[260px]">
             {/* Espaçamento vertical para livrar o botão de voltar */}
-            <div className="h-[46px] sm:h-[50px] mb-1 shrink-0 w-full" aria-hidden="true" />
+            <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
 
             {/* Tipografia de Marca: Videoaulas (branco) + em Trilhas (vermelho carmesim nobre) */}
             <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">

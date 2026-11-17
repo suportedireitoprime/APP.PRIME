@@ -73,10 +73,10 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
         </header>
 
         {/* ── Conteúdo Central do Painel (Marca e Conceito à Esquerda com Alto Contraste abaixo do Botão Voltar) ── */}
-        <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[130px] sm:min-h-[140px] px-4 sm:px-6">
+        <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[155px] sm:min-h-[170px] px-4 sm:px-6">
           <div className="flex flex-col items-start text-left z-10 relative ml-0 sm:ml-2 max-w-[280px]">
             {/* Espaçador calibrado para o botão de voltar padrão ouro (desce o título com folga elegante) */}
-            <div className="h-[58px] sm:h-[64px] mb-2 shrink-0 w-full" aria-hidden="true" />
+            <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
 
             <h2 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
               <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">

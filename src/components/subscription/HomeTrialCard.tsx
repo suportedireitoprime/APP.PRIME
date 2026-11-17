@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, memo } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, Sparkles, ArrowRight, Lock } from 'lucide-react';
 import { useSubscription, calcTrial } from '@/hooks/useSubscription';

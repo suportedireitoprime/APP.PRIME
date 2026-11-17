@@ -66,7 +66,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
   "/admin-laboratorio-aulas": () => import("./AdminLaboratorioAulas"),
-  "/admin-atlas-juridico": () => import("../laboratorio/atlas-juridico/AtlasJuridicoView"),
   "/admin-lousa-magica": () => import("./AdminLousaMagica"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
