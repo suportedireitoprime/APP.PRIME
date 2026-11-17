@@ -5,7 +5,6 @@ import AtlasGlobe from './components/AtlasGlobe'
 import FooterMenu from './components/FooterMenu'
 import PreviewCard from './components/PreviewCard'
 import FunctionSheet from './components/FunctionSheet'
-import FpsMeter from './components/FpsMeter'
 import { useAdaptiveQuality } from './hooks/useAdaptiveQuality'
 import Texto from './features/Texto'
 import Ouvir from './features/Ouvir'
@@ -48,7 +47,6 @@ export default function AtlasJuridicoView() {
   const progress = useProgress()
   const reducedMotion = usePrefersReducedMotion()
   const quality = useAdaptiveQuality()
-  const [fpsVisible, setFpsVisible] = useState(false)
 
   const [currentArticle, setCurrentArticle] = useState(5)
   const [traveling, setTraveling] = useState(false)
@@ -159,26 +157,6 @@ export default function AtlasJuridicoView() {
 
   return (
     <div className="atlas-app" data-fx={activeFx ?? undefined}>
-      <FpsMeter
-        fps={quality.fps}
-        quality={quality.quality}
-        lite={quality.lite}
-        autoDropped={quality.autoDropped}
-        visible={fpsVisible}
-        onHide={() => setFpsVisible(false)}
-        onToggleLite={() => quality.setLite(!quality.lite)}
-      />
-      {!fpsVisible && (
-        <button
-          type="button"
-          className="fps-show"
-          onClick={() => setFpsVisible(true)}
-          aria-label="Mostrar medidor de FPS"
-        >
-          FPS
-        </button>
-      )}
-
       <header className="top">
         <div className="flex items-center justify-between w-full max-w-2xl mx-auto mb-1 relative">
           <button
@@ -189,16 +167,19 @@ export default function AtlasJuridicoView() {
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
-          <div className="kicker flex-1 text-center truncate px-2">{ARTICLE_LAW}</div>
-          <div className="w-12 h-12" />
+          <div className="kicker flex-1 text-center truncate px-2">
+            <span className="hidden sm:inline">Atlas Jurídico · </span>Código Penal
+          </div>
+          <div className="min-w-[48px] flex items-center justify-end">
+            {currentArticle === 5 && (
+              <span className="progress-pill-inline">{progress.summary.pct}%</span>
+            )}
+          </div>
         </div>
         <h1>
           <span className="art">{neighbor.label}</span> — {neighbor.name}
         </h1>
         <p className="sub">{neighbor.sub}</p>
-        {currentArticle === 5 && (
-          <span className="progress-pill">{progress.summary.pct}% estudado</span>
-        )}
       </header>
 
       <AtlasGlobe
@@ -245,23 +226,25 @@ export default function AtlasJuridicoView() {
         {sheetId === 'estudo' && <MeuEstudo summary={progress.summary} />}
       </FunctionSheet>
 
-      {/* Viagem pelo espaço entre artigos */}
+      {/* Viagem pelo espaço entre artigos (Hiperespaço) */}
       <div className={`travel${traveling ? ' active' : ''}`} aria-hidden={!traveling}>
-        <div className="warp">
-          {warpStars.map((s) => (
-            <i
-              key={s.key}
-              style={
-                {
-                  '--dx': s.dx,
-                  '--dy': s.dy,
-                  animationDelay: s.delay,
-                  background: s.gold ? '#ffe9a8' : undefined,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
+        {traveling && (
+          <div className="warp" key={travelDest ?? 'warp'}>
+            {warpStars.map((s) => (
+              <i
+                key={s.key}
+                style={
+                  {
+                    '--dx': s.dx,
+                    '--dy': s.dy,
+                    animationDelay: s.delay,
+                    background: s.gold ? '#ffe9a8' : undefined,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
+        )}
         {travelDest !== null && (
           <div className="travel-label">
             <small>Viajando pelo espaço…</small>

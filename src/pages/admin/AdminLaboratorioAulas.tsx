@@ -102,22 +102,25 @@ export default function AdminLaboratorioAulas() {
       <PageHeader 
         title="LABORATÓRIO" 
         subtitle="Ambiente de Testes Visuais & Protótipos"
-        onBack={() => navigate(-1)}
+        onBack={() => {
+          try { haptic.selection(); } catch {}
+          navigate('/admin-funcoes');
+        }}
         variant="dark"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 space-y-4">
         
-        {/* ── MENU DE ALTERNÂNCIA MINIMALISTA ── */}
-        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex items-center gap-2">
+        {/* ── MENU DE ALTERNÂNCIA MINIMALISTA (Segmented Control Elegante) ── */}
+        <div className="flex items-center overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="inline-flex items-center p-1 rounded-full bg-zinc-900/90 border border-white/10 backdrop-blur-md gap-1 shadow-inner">
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('todos'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                 filtroAtivo === 'todos'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
               Todos (3)
@@ -125,41 +128,37 @@ export default function AdminLaboratorioAulas() {
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('atlas'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                 filtroAtivo === 'atlas'
-                  ? 'bg-amber-400 text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-amber-400 text-zinc-950 font-semibold shadow-sm shadow-amber-500/20'
+                  : 'text-zinc-400 hover:text-amber-300'
               }`}
             >
-              Atlas Jurídico 3D
+              Atlas 3D
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('aulas'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                 filtroAtivo === 'aulas'
-                  ? 'bg-emerald-500 text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-emerald-400 text-zinc-950 font-semibold shadow-sm shadow-emerald-500/20'
+                  : 'text-zinc-400 hover:text-emerald-300'
               }`}
             >
-              Aulas Diagramadas
+              Aulas
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('conversao'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                 filtroAtivo === 'conversao'
-                  ? 'bg-amber-400 text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-amber-400 text-zinc-950 font-semibold shadow-sm shadow-amber-500/20'
+                  : 'text-zinc-400 hover:text-amber-300'
               }`}
             >
-              Telas de Conversão (Pós-Trial)
+              Pós-Trial
             </button>
           </div>
-
-          <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-500">
-            Ambiente Isolado
-          </span>
         </div>
 
         {/* ── GRID DE PROTÓTIPOS MINIMALISTAS ── */}

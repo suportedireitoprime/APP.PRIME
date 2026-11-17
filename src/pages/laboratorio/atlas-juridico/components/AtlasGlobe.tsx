@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { MARKERS } from '../data/article5'
 import { cloudTexture, earthTexture, glowDiscTexture, latLon, starSpriteTexture } from '../three/earth'
 import PlanetNav from './PlanetNav'
+import { ICONS } from './FooterMenu'
 import type { QualityConfig } from '../hooks/useAdaptiveQuality'
 import type { FocusRequest, FunctionId } from '../types'
 
@@ -32,6 +33,7 @@ function buildFingerGroup(
   reach: number,
   material: THREE.Material,
   nailMaterial: THREE.Material,
+  knuckleMaterial: THREE.Material,
 ): THREE.Group {
   const grp = new THREE.Group()
   const a = (angleDeg * Math.PI) / 180
@@ -40,44 +42,62 @@ function buildFingerGroup(
   const P = (rad: number, y: number, zOff = 0) =>
     new THREE.Vector3(dx * rad, y, dz * rad + zOff)
 
+  // Curva anatômica da mão em concha sustentando a esfera
   const points = [
-    P(0.42, -1.6),
-    P(0.95, -1.52),
-    P(1.38, -1.28),
-    P(reach, -0.92),
-    P(reach + 0.03, -0.52),
-    P(reach - 0.1, tipY),
+    P(0.40, -1.60),
+    P(0.85, -1.48),
+    P(1.22, -1.24), // Articulação proximal (MCP)
+    P(reach, -0.92), // Articulação média (PIP)
+    P(reach + 0.04, -0.52), // Articulação distal (DIP)
+    P(reach - 0.08, tipY), // Polpa da ponta do dedo
   ]
   const curve = new THREE.CatmullRomCurve3(points)
-  const knuckle = points[3]
+  const knuckle1 = points[2]
+  const knuckle2 = points[3]
+  const knuckle3 = points[4]
   const tip = points[5]
 
-  // Tubo do dedo
-  const tubeGeo = new THREE.TubeGeometry(curve, 12, tubeR, 8, false)
+  // Corpo do dedo em bronze polido com conicidade
+  const tubeGeo = new THREE.TubeGeometry(curve, 16, tubeR, 12, false)
   const tubeMesh = new THREE.Mesh(tubeGeo, material)
   grp.add(tubeMesh)
 
-  // Articulação (knuckle)
-  const knuckleGeo = new THREE.SphereGeometry(tubeR * 1.18, 12, 12)
-  const knuckleMesh = new THREE.Mesh(knuckleGeo, material)
-  knuckleMesh.position.copy(knuckle)
-  grp.add(knuckleMesh)
+  // Articulação proximal (MCP)
+  const k1Geo = new THREE.SphereGeometry(tubeR * 1.15, 12, 12)
+  const k1Mesh = new THREE.Mesh(k1Geo, knuckleMaterial)
+  k1Mesh.position.copy(knuckle1)
+  k1Mesh.scale.set(1.1, 0.9, 1.1)
+  grp.add(k1Mesh)
 
-  // Ponta
-  const tipGeo = new THREE.SphereGeometry(tubeR * 1.02, 12, 12)
-  const tipMesh = new THREE.Mesh(tipGeo, material)
-  tipMesh.position.copy(tip)
-  grp.add(tipMesh)
+  // Articulação média (PIP)
+  const k2Geo = new THREE.SphereGeometry(tubeR * 1.18, 12, 12)
+  const k2Mesh = new THREE.Mesh(k2Geo, knuckleMaterial)
+  k2Mesh.position.copy(knuckle2)
+  k2Mesh.scale.set(1.12, 0.92, 1.12)
+  grp.add(k2Mesh)
 
-  // Unha dourada
-  const nailGeo = new THREE.SphereGeometry(tubeR * 0.72, 10, 10)
+  // Articulação distal (DIP)
+  const k3Geo = new THREE.SphereGeometry(tubeR * 1.08, 12, 12)
+  const k3Mesh = new THREE.Mesh(k3Geo, knuckleMaterial)
+  k3Mesh.position.copy(knuckle3)
+  grp.add(k3Mesh)
+
+  // Polpa tátil do dedo apoiada na Terra
+  const pulpGeo = new THREE.SphereGeometry(tubeR * 1.04, 14, 14)
+  const pulpMesh = new THREE.Mesh(pulpGeo, material)
+  pulpMesh.position.copy(tip)
+  pulpMesh.scale.set(1.1, 0.95, 1.2)
+  grp.add(pulpMesh)
+
+  // Unha dourada esculpida em ouro clássico
+  const nailGeo = new THREE.SphereGeometry(tubeR * 0.72, 12, 12)
   const nailMesh = new THREE.Mesh(nailGeo, nailMaterial)
   nailMesh.position.set(
-    tip.x + Math.sin(a) * tubeR * 0.55,
-    tip.y + 0.012,
-    tip.z + Math.cos(a) * tubeR * 0.55,
+    tip.x + Math.sin(a) * tubeR * 0.52,
+    tip.y + 0.015,
+    tip.z + Math.cos(a) * tubeR * 0.52,
   )
-  nailMesh.scale.set(1, 0.55, 1.25)
+  nailMesh.scale.set(1, 0.45, 1.3)
   grp.add(nailMesh)
 
   return grp
@@ -86,97 +106,146 @@ function buildFingerGroup(
 function buildThemisHand(glowTex: THREE.Texture): THREE.Group {
   const hand = new THREE.Group()
 
+  // Material bronze nobre dourado (estátua de Têmis)
   const statueMat = new THREE.MeshStandardMaterial({
-    color: 0xd8b36a,
+    color: 0xdeb972,
     metalness: 0.88,
-    roughness: 0.3,
+    roughness: 0.22,
+    emissive: 0x221706,
+    emissiveIntensity: 0.25,
+  })
+  const knuckleMat = new THREE.MeshStandardMaterial({
+    color: 0xd4a858,
+    metalness: 0.90,
+    roughness: 0.26,
+    emissive: 0x281905,
+    emissiveIntensity: 0.28,
   })
   const statueDarkMat = new THREE.MeshStandardMaterial({
-    color: 0xa87f35,
-    metalness: 0.85,
-    roughness: 0.42,
+    color: 0x8a6422,
+    metalness: 0.84,
+    roughness: 0.36,
   })
   const nailMat = new THREE.MeshStandardMaterial({
-    color: 0xf3e2b3,
-    metalness: 0.6,
-    roughness: 0.25,
+    color: 0xffe8b5,
+    metalness: 0.82,
+    roughness: 0.14,
+    emissive: 0x3d2b06,
+    emissiveIntensity: 0.25,
   })
   const goldMat = new THREE.MeshStandardMaterial({
-    color: 0xd9a92c,
+    color: 0xf5bf38,
+    metalness: 0.94,
+    roughness: 0.18,
+    emissive: 0x472f05,
+    emissiveIntensity: 0.35,
+  })
+  const bronzeMat = new THREE.MeshStandardMaterial({
+    color: 0xad8224,
     metalness: 0.9,
     roughness: 0.28,
   })
-  const bronzeMat = new THREE.MeshStandardMaterial({
-    color: 0x9a7420,
-    metalness: 0.85,
-    roughness: 0.38,
+  const rubyMat = new THREE.MeshStandardMaterial({
+    color: 0xd92b20,
+    metalness: 0.2,
+    roughness: 0.08,
+    emissive: 0x7a0c06,
+    emissiveIntensity: 0.95,
   })
-  const gemMat = new THREE.MeshStandardMaterial({
-    color: 0xb3352c,
-    metalness: 0.3,
-    roughness: 0.12,
-    emissive: 0x4d0d08,
-    emissiveIntensity: 0.7,
+  const sapphireMat = new THREE.MeshStandardMaterial({
+    color: 0x2472d9,
+    metalness: 0.2,
+    roughness: 0.08,
+    emissive: 0x06225a,
+    emissiveIntensity: 0.95,
   })
 
-  // Palma principal
+  // 1. Palma principal esculpida
   const palm1 = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), statueMat)
   palm1.position.set(0, -1.66, -0.08)
-  palm1.scale.set(1.18, 0.4, 1.02)
+  palm1.scale.set(1.18, 0.42, 1.05)
   hand.add(palm1)
 
-  // Base da palma
+  // 2. Base do calcanhar da palma
   const palm2 = new THREE.Mesh(new THREE.SphereGeometry(0.72, 24, 18), statueMat)
   palm2.position.set(0, -1.82, -0.28)
   palm2.scale.set(1.05, 0.5, 0.9)
   hand.add(palm2)
 
-  // 5 Dedos esculpidos em bronze sustentando a terra
-  hand.add(buildFingerGroup(-50, 0.135, -0.34, 1.56, statueMat, nailMat))
-  hand.add(buildFingerGroup(-17, 0.155, -0.1, 1.58, statueMat, nailMat))
-  hand.add(buildFingerGroup(16, 0.16, -0.04, 1.58, statueMat, nailMat))
-  hand.add(buildFingerGroup(49, 0.145, -0.26, 1.56, statueMat, nailMat))
-  hand.add(buildFingerGroup(112, 0.17, -0.62, 1.5, statueMat, nailMat))
+  // 3. Eminência Tenar (almofada anatômica carnuda do polegar)
+  const thenar = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), statueMat)
+  thenar.position.set(-0.52, -1.62, 0.22)
+  thenar.scale.set(1.15, 0.75, 1.25)
+  hand.add(thenar)
 
-  // Pulso
-  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.58, 1.05, 24), statueMat)
+  // 4. Eminência Hipotenar (almofada lateral externa da mão)
+  const hypothenar = new THREE.Mesh(new THREE.SphereGeometry(0.38, 20, 16), statueMat)
+  hypothenar.position.set(0.52, -1.65, 0.16)
+  hypothenar.scale.set(1.1, 0.7, 1.2)
+  hand.add(hypothenar)
+
+  // 5. Cinco dedos esculpidos em bronze com anatomia clássica
+  // Polegar
+  hand.add(buildFingerGroup(-52, 0.150, -0.32, 1.55, statueMat, nailMat, knuckleMat))
+  // Indicador
+  hand.add(buildFingerGroup(-18, 0.160, -0.08, 1.58, statueMat, nailMat, knuckleMat))
+  // Médio (mais alto)
+  hand.add(buildFingerGroup(15, 0.165, -0.02, 1.59, statueMat, nailMat, knuckleMat))
+  // Anelar
+  hand.add(buildFingerGroup(48, 0.150, -0.24, 1.56, statueMat, nailMat, knuckleMat))
+  // Mínimo
+  hand.add(buildFingerGroup(112, 0.170, -0.60, 1.51, statueMat, nailMat, knuckleMat))
+
+  // 6. Pulso e antebraço escultural
+  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.58, 1.05, 32), statueMat)
   wrist.position.set(0, -2.28, -0.52)
   wrist.rotation.set(0.5, 0, 0)
   hand.add(wrist)
 
-  // Pulseira de ouro superior
-  const b1 = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.055, 12, 32), goldMat)
+  // 7. Bracelete grego de ouro superior com friso
+  const b1 = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.055, 16, 40), goldMat)
   b1.position.set(0, -2.14, -0.4)
   b1.rotation.set(Math.PI / 2 - 0.5, 0, 0)
   hand.add(b1)
 
-  // Pulseira de bronze
-  const b2 = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.035, 12, 32), bronzeMat)
+  // 8. Gemas preciosas cravadas em pontos cardeais no bracelete de Têmis
+  const ruby1 = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), rubyMat)
+  ruby1.position.set(0, -2.08, 0.15)
+  hand.add(ruby1)
+
+  const ruby2 = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), rubyMat)
+  ruby2.position.set(0, -2.20, -0.95)
+  hand.add(ruby2)
+
+  const sapphire1 = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), sapphireMat)
+  sapphire1.position.set(0.54, -2.14, -0.4)
+  hand.add(sapphire1)
+
+  const sapphire2 = new THREE.Mesh(new THREE.SphereGeometry(0.065, 14, 14), sapphireMat)
+  sapphire2.position.set(-0.54, -2.14, -0.4)
+  hand.add(sapphire2)
+
+  // 9. Segundo bracelete frisado de bronze nobre
+  const b2 = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.035, 16, 40), bronzeMat)
   b2.position.set(0, -2.3, -0.47)
   b2.rotation.set(Math.PI / 2 - 0.5, 0, 0)
   hand.add(b2)
 
-  // Rubi cravado no bracelete
-  const ruby = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 12), gemMat)
-  ruby.position.set(0, -2.08, 0.14)
-  ruby.scale.set(1, 0.8, 1)
-  hand.add(ruby)
-
-  // Manga da toga da deusa da justiça
-  const toga = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.02, 0.9, 24, 1, true), statueDarkMat)
+  // 10. Manga da toga clássica com pregas esculpidas
+  const toga = new THREE.Mesh(new THREE.CylinderGeometry(0.60, 1.05, 0.95, 32, 1, true), statueDarkMat)
   toga.position.set(0, -2.82, -0.72)
   toga.rotation.set(0.5, 0, 0)
   hand.add(toga)
 
-  // Borda inferior da toga em ouro
-  const togaRim = new THREE.Mesh(new THREE.TorusGeometry(0.99, 0.045, 12, 32), goldMat)
-  togaRim.position.set(0, -3.12, -0.92)
-  togaRim.rotation.set(Math.PI / 2 - 0.5, 0, 0)
-  hand.add(togaRim)
+  // 11. Borda de ouro entalhada na terminação da toga
+  const togaBorder = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 12, 32), goldMat)
+  togaBorder.position.set(0, -2.48, -0.58)
+  togaBorder.rotation.set(Math.PI / 2 - 0.5, 0, 0)
+  hand.add(togaBorder)
 
-  // Disco de luz dourada no pedestal
+  // 12. Disco de pedestal de luz dourada
   const glowPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(4.6, 4.6),
+    new THREE.PlaneGeometry(4.8, 4.8),
     new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false }),
   )
   glowPlane.position.set(0, -2.92, 0)
@@ -201,14 +270,15 @@ export default function AtlasGlobe({
 }: AtlasGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const progressRingRef = useRef<SVGSVGElement | null>(null)
   const markerEls = useRef<Partial<Record<FunctionId, HTMLButtonElement | null>>>({})
   const [ready, setReady] = useState(false)
   const [webglFailed, setWebglFailed] = useState(false)
 
   // Rastreamento de interação e coordenadas esféricas
-  const sphericalRef = useRef({ theta: 0.25, phi: 1.32, radius: 6.4 })
-  const targetRef = useRef({ theta: 0.25, phi: 1.32, radius: 6.4 })
-  const baseRadiusRef = useRef(6.4)
+  const sphericalRef = useRef({ theta: 0.25, phi: 1.32, radius: 11.5 })
+  const targetRef = useRef({ theta: 0.25, phi: 1.32, radius: 11.5 })
+  const baseRadiusRef = useRef(11.5)
   const lastInteractRef = useRef(0)
   const draggingRef = useRef(false)
   const boostUntilRef = useRef(0)
@@ -224,8 +294,7 @@ export default function AtlasGlobe({
   const wireRef = useRef<THREE.Mesh | null>(null)
   const cloudsRef = useRef<THREE.Mesh | null>(null)
   const handRef = useRef<THREE.Group | null>(null)
-  const ringGroupRef = useRef<THREE.Group | null>(null)
-  const ring1Ref = useRef<THREE.Mesh | null>(null)
+  // ringGroupRef e ring1Ref removidos (astrolábio deletado)
   const atmoRef = useRef<THREE.Mesh | null>(null)
   const atmoGoldRef = useRef<THREE.Mesh | null>(null)
   const starFarRef = useRef<THREE.Points | null>(null)
@@ -236,9 +305,7 @@ export default function AtlasGlobe({
   const glintRef = useRef<THREE.PointLight | null>(null)
   const brazilRingRef = useRef<THREE.Mesh | null>(null)
   const brazilGlowRef = useRef<THREE.Sprite | null>(null)
-  const planeOrbitRef = useRef<THREE.Group | null>(null)
-  const planeRef = useRef<THREE.Group | null>(null)
-  const linkRef = useRef<THREE.Line | null>(null)
+  // planeOrbitRef, planeRef, linkRef removidos (avião deletado)
   const haloDotsRef = useRef<(THREE.Mesh | null)[]>([])
 
   // Posições estáticas pré-calculadas
@@ -295,26 +362,31 @@ export default function AtlasGlobe({
     const scene = new THREE.Scene()
     sceneRef.current = scene
 
-    // Iluminação
-    const ambientLight = new THREE.AmbientLight(0x8fb4e8, 0.7)
+    // Iluminação cinematográfica
+    const ambientLight = new THREE.AmbientLight(0x8fb4e8, 0.55)
     scene.add(ambientLight)
 
-    const hemiLight = new THREE.HemisphereLight(0xbcd6ff, 0x2a1f08, 0.55)
+    const hemiLight = new THREE.HemisphereLight(0xbcd6ff, 0x2a1f08, 0.65)
     scene.add(hemiLight)
 
-    const dir1 = new THREE.DirectionalLight(0xfff1cf, 1.9)
+    const dir1 = new THREE.DirectionalLight(0xfff1cf, 2.1)
     dir1.position.set(4, 2.5, 3.5)
     scene.add(dir1)
 
-    const dir2 = new THREE.DirectionalLight(0xd9a92c, 1.1)
+    const dir2 = new THREE.DirectionalLight(0xd9a92c, 1.3)
     dir2.position.set(-4, -1.5, -3)
     scene.add(dir2)
 
-    const dir3 = new THREE.DirectionalLight(0x6aa6e8, 0.5)
+    const dir3 = new THREE.DirectionalLight(0x6aa6e8, 0.6)
     dir3.position.set(-3, 1.5, 4)
     scene.add(dir3)
 
-    const pointLight = new THREE.PointLight(0xf0c94e, 1.5, 9, 1.6)
+    // Rim light azulada para contorno da Terra
+    const rimLight = new THREE.DirectionalLight(0x4488cc, 0.8)
+    rimLight.position.set(-2, 0, -4)
+    scene.add(rimLight)
+
+    const pointLight = new THREE.PointLight(0xf0c94e, 1.8, 9, 1.6)
     pointLight.position.set(0, -2.1, 1.1)
     scene.add(pointLight)
 
@@ -337,10 +409,10 @@ export default function AtlasGlobe({
     const earthGeo = new THREE.SphereGeometry(R, ew, eh)
     const earthMat = new THREE.MeshStandardMaterial({
       map: earthTex,
-      roughness: 0.36,
-      metalness: 0.2,
+      roughness: 0.42,
+      metalness: 0.15,
       emissive: 0x0a1a30,
-      emissiveIntensity: 0.35,
+      emissiveIntensity: 0.3,
     })
     const earthMesh = new THREE.Mesh(earthGeo, earthMat)
     globeGroup.add(earthMesh)
@@ -353,7 +425,7 @@ export default function AtlasGlobe({
 
     if (config.clouds) {
       const cloudsGeo = new THREE.SphereGeometry(R * 1.025, 32, 24)
-      const cloudsMat = new THREE.MeshStandardMaterial({ map: cloudTex, transparent: true, opacity: 0.75, depthWrite: false, roughness: 1 })
+      const cloudsMat = new THREE.MeshStandardMaterial({ map: cloudTex, transparent: true, opacity: 0.42, depthWrite: false, roughness: 1 })
       const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat)
       cloudsRef.current = cloudsMesh
       globeGroup.add(cloudsMesh)
@@ -401,15 +473,29 @@ export default function AtlasGlobe({
       globeGroup.add(grp)
     })
 
-    // 2. Atmosfera
-    const atmoGeo = new THREE.SphereGeometry(R * 1.16, 32, 24)
-    const atmoMat = new THREE.MeshBasicMaterial({ color: 0x3f7fd1, transparent: true, opacity: 0.13, side: THREE.BackSide, depthWrite: false })
+    // 2. Atmosfera realista com dispersão Rayleigh azul e halo dourado sutil
+    const atmoGeo = new THREE.SphereGeometry(R * 1.18, 32, 24)
+    const atmoMat = new THREE.MeshBasicMaterial({
+      color: 0x3d8be8,
+      transparent: true,
+      opacity: 0.22,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
     const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat)
     atmoRef.current = atmoMesh
     scene.add(atmoMesh)
 
-    const atmoGoldGeo = new THREE.SphereGeometry(R * 1.07, 32, 24)
-    const atmoGoldMat = new THREE.MeshBasicMaterial({ color: 0xf0c94e, transparent: true, opacity: 0.05, side: THREE.BackSide, depthWrite: false })
+    const atmoGoldGeo = new THREE.SphereGeometry(R * 1.09, 32, 24)
+    const atmoGoldMat = new THREE.MeshBasicMaterial({
+      color: 0xf0c94e,
+      transparent: true,
+      opacity: 0.08,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
     const atmoGoldMesh = new THREE.Mesh(atmoGoldGeo, atmoGoldMat)
     atmoGoldRef.current = atmoGoldMesh
     scene.add(atmoGoldMesh)
@@ -419,18 +505,7 @@ export default function AtlasGlobe({
     handRef.current = handGroup
     scene.add(handGroup)
 
-    // 4. Astrolábio
-    const ringGrp = new THREE.Group()
-    ringGroupRef.current = ringGrp
-    const r1Geo = new THREE.TorusGeometry(R * 1.24, 0.014, 12, 128)
-    const r1Mat = new THREE.MeshStandardMaterial({ color: 0xd9a92c, metalness: 0.9, roughness: 0.28 })
-    const r1Mesh = new THREE.Mesh(r1Geo, r1Mat)
-    r1Mesh.rotation.set(Math.PI / 2.25, 0.35, 0)
-    ring1Ref.current = r1Mesh
-    ringGrp.add(r1Mesh)
-    scene.add(ringGrp)
-
-    // 5. Estrelas e Poeira
+    // 4. Estrelas e Poeira
     const makeStarGeo = (count: number, rMin: number, rMax: number) => {
       const geo = new THREE.BufferGeometry()
       const arr = new Float32Array(count * 3)
@@ -446,14 +521,14 @@ export default function AtlasGlobe({
 
     const starFarPts = new THREE.Points(
       makeStarGeo(config.starFar, 13, 24),
-      new THREE.PointsMaterial({ size: 0.2, map: starTex, transparent: true, depthWrite: false, color: 0xcfe0f5, opacity: 0.85 }),
+      new THREE.PointsMaterial({ size: 0.22, map: starTex, transparent: true, depthWrite: false, color: 0xd8e8ff, opacity: 0.9 }),
     )
     starFarRef.current = starFarPts
     scene.add(starFarPts)
 
     const starNearPts = new THREE.Points(
       makeStarGeo(config.starNear, 7.5, 11),
-      new THREE.PointsMaterial({ size: 0.3, map: starTex, transparent: true, depthWrite: false, color: 0xffe9a8, opacity: 0.9 }),
+      new THREE.PointsMaterial({ size: 0.35, map: starTex, transparent: true, depthWrite: false, color: 0xffe9a8, opacity: 0.95 }),
     )
     starNearRef.current = starNearPts
     scene.add(starNearPts)
@@ -503,65 +578,6 @@ export default function AtlasGlobe({
       scene.add(rdPts)
     }
 
-    // Halo luminoso respirando atrás do globo
-    if (config.halo) {
-      const hMat = new THREE.SpriteMaterial({ map: starTex, transparent: true, depthWrite: false, color: 0xf0c94e, opacity: 0.65 })
-      const hSpr = new THREE.Sprite(hMat)
-      hSpr.position.set(0, -0.4, -2.6)
-      hSpr.scale.set(8.6, 8.6, 1)
-      haloRef.current = hSpr
-      scene.add(hSpr)
-    }
-
-    // Avião em órbita com linha de voo
-    let linkLineObj: THREE.Line | null = null
-    const linkGeo = new THREE.BufferGeometry()
-    linkGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(21 * 3), 3))
-
-    if (config.plane) {
-      const orbitPts: THREE.Vector3[] = []
-      for (let i = 0; i <= 90; i++) {
-        const a = (i / 90) * Math.PI * 2
-        orbitPts.push(new THREE.Vector3(Math.cos(a) * 2.85, 0, Math.sin(a) * 2.85))
-      }
-      const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPts)
-      const orbitLine = new THREE.Line(orbitGeo, new THREE.LineBasicMaterial({ color: 0xf0c94e, transparent: true, opacity: 0.22 }))
-
-      const planeOrbit = new THREE.Group()
-      planeOrbit.rotation.set(-0.85, 0, -0.3)
-      planeOrbit.add(orbitLine)
-      planeOrbitRef.current = planeOrbit
-
-      const planeGrp = new THREE.Group()
-      const planeFus = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.02, 0.36, 12), new THREE.MeshStandardMaterial({ color: 0xf3e9d2, metalness: 0.35, roughness: 0.45 }))
-      planeFus.rotation.set(Math.PI / 2, 0, 0)
-      planeGrp.add(planeFus)
-
-      const planeNose = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 12), new THREE.MeshStandardMaterial({ color: 0xf3e9d2, metalness: 0.35, roughness: 0.45 }))
-      planeNose.position.set(0, 0, 0.18)
-      planeGrp.add(planeNose)
-
-      const planeWing = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.012, 0.09), new THREE.MeshStandardMaterial({ color: 0xd9a92c, metalness: 0.9, roughness: 0.28 }))
-      planeWing.position.set(0, 0, 0.03)
-      planeGrp.add(planeWing)
-
-      const planeTail = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.01, 0.06), new THREE.MeshStandardMaterial({ color: 0xd9a92c, metalness: 0.9, roughness: 0.28 }))
-      planeTail.position.set(0, 0, -0.17)
-      planeGrp.add(planeTail)
-
-      const planeFin = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.07, 0.06), new THREE.MeshStandardMaterial({ color: 0xd9a92c, metalness: 0.9, roughness: 0.28 }))
-      planeFin.position.set(0, 0.035, -0.17)
-      planeGrp.add(planeFin)
-
-      planeRef.current = planeGrp
-      planeOrbit.add(planeGrp)
-      scene.add(planeOrbit)
-
-      linkLineObj = new THREE.Line(linkGeo, new THREE.LineBasicMaterial({ color: 0xffd95e, transparent: true, opacity: 0.55 }))
-      linkRef.current = linkLineObj
-      scene.add(linkLineObj)
-    }
-
     setReady(true)
 
     // Ajuste de raio base inicial
@@ -575,8 +591,16 @@ export default function AtlasGlobe({
       camera.updateProjectionMatrix()
 
       const a = w / Math.max(h, 1)
-      let r = a < 0.65 ? 8.0 : a < 0.75 ? 7.6 : a < 1.05 ? 6.5 : 5.8
-      if (a >= 1.05 && h < 560) r = 6.7
+      let r = 5.8
+      if (a < 0.55) {
+        r = 13.2
+      } else if (a < 0.75) {
+        r = 11.2
+      } else if (a < 1.05) {
+        r = 8.2
+      } else {
+        r = h < 560 ? 6.8 : 5.8
+      }
       sphericalRef.current.radius = r
       targetRef.current.radius = r
       baseRadiusRef.current = r
@@ -618,8 +642,8 @@ export default function AtlasGlobe({
         if (pinchDist > 0) {
           targetRef.current.radius = THREE.MathUtils.clamp(
             targetRef.current.radius - (d - pinchDist) * 0.008,
-            3.1,
-            9.2,
+            3.2,
+            18.0,
           )
         }
         pinchDist = d
@@ -643,7 +667,7 @@ export default function AtlasGlobe({
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
-      targetRef.current.radius = THREE.MathUtils.clamp(targetRef.current.radius + e.deltaY * 0.0035, 3.1, 9.2)
+      targetRef.current.radius = THREE.MathUtils.clamp(targetRef.current.radius + e.deltaY * 0.0035, 3.2, 18.0)
       lastInteractRef.current = performance.now()
     }
 
@@ -658,12 +682,8 @@ export default function AtlasGlobe({
     const posNorm = new THREE.Vector3()
     const camDir = new THREE.Vector3()
     const mid = new THREE.Vector3()
-    const bw = new THREE.Vector3()
-    const tw = new THREE.Vector3()
     const centerVec = new THREE.Vector3()
     const sphObj = new THREE.Spherical(6.4, 1.32, 0.25)
-    const linkCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3())
-    const linkPts = Array.from({ length: 21 }, () => new THREE.Vector3())
 
     // Loop de Animação
     let animId: number
@@ -712,8 +732,6 @@ export default function AtlasGlobe({
       // Animações rotacionais
       if (wireRef.current) wireRef.current.rotation.y = t * 0.01
       if (cloudsRef.current) cloudsRef.current.rotation.y = t * 0.016
-      if (ringGroupRef.current) ringGroupRef.current.rotation.y = t * 0.02
-      if (ring1Ref.current) ring1Ref.current.rotation.y = t * 0.14
       if (dustRef.current) dustRef.current.rotation.y = t * 0.012
       if (starFarRef.current) starFarRef.current.rotation.y = -sph.theta * 0.05 + t * 0.0022
       if (starNearRef.current) {
@@ -770,30 +788,6 @@ export default function AtlasGlobe({
         brazilGlowRef.current.material.opacity = 0.5 + 0.35 * Math.sin(t * 2)
       }
 
-      // Avião em órbita
-      if (planeRef.current && planeOrbitRef.current) {
-        const planeA = -t * 0.24 + 2.4
-        planeRef.current.position.set(Math.cos(planeA) * 2.85, 0, Math.sin(planeA) * 2.85)
-        planeRef.current.rotation.y = -planeA + Math.PI
-        if (linkRef.current) {
-          bw.copy(brazil.pos)
-          bw.y += globeY
-          planeRef.current.getWorldPosition(tw)
-          mid.copy(bw).add(tw).multiplyScalar(0.5)
-          const lift = bw.distanceTo(tw) * 0.22 + 0.25
-          mid.normalize().multiplyScalar(mid.length() + lift)
-          linkCurve.v0.copy(bw)
-          linkCurve.v1.copy(mid)
-          linkCurve.v2.copy(tw)
-          const attr = linkGeo.getAttribute('position') as THREE.BufferAttribute
-          for (let i = 0; i < 21; i++) {
-            linkCurve.getPoint(i / 20, linkPts[i])
-            attr.setXYZ(i, linkPts[i].x, linkPts[i].y, linkPts[i].z)
-          }
-          attr.needsUpdate = true
-        }
-      }
-
       // Respiração do conjunto 3D
       if (!reducedMotion) {
         const bob = Math.sin(t * 0.55) * 0.045
@@ -801,7 +795,6 @@ export default function AtlasGlobe({
         if (cloudsRef.current) cloudsRef.current.position.y = bob
         if (atmoRef.current) atmoRef.current.position.y = bob
         if (atmoGoldRef.current) atmoGoldRef.current.position.y = bob
-        if (ringGroupRef.current) ringGroupRef.current.position.y = bob
         if (handRef.current) handRef.current.position.y = bob * 0.45
       }
 
@@ -814,6 +807,19 @@ export default function AtlasGlobe({
       centerVec.set(0, globeY, 0).project(camera)
       const cx = (centerVec.x * 0.5 + 0.5) * w
       const cy = (-centerVec.y * 0.5 + 0.5) * h
+
+      if (progressRingRef.current) {
+        const ringPx = radiusPx * 2.34
+        progressRingRef.current.style.width = `${ringPx}px`
+        progressRingRef.current.style.height = `${ringPx}px`
+        progressRingRef.current.style.left = `${cx}px`
+        progressRingRef.current.style.top = `${cy}px`
+        progressRingRef.current.style.transform = 'translate(-50%, -50%)'
+      }
+
+      // Margens de segurança dinâmicas para evitar colisão com barra de status e navegação inferior
+      const topSafe = h < 768 ? 130 : 90
+      const bottomSafe = h < 768 ? 120 : 65
 
       MARKERS.forEach((m, i) => {
         const chip = markerEls.current[m.id]
@@ -841,8 +847,6 @@ export default function AtlasGlobe({
 
         const hw = (chip.offsetWidth || 90) / 2
         const hh = (chip.offsetHeight || 36) / 2
-        const topSafe = h < 768 ? 96 : 80
-        const bottomSafe = h < 768 ? 72 : 52
         sx = Math.max(hw + 4, Math.min(w - hw - 4, sx))
         sy = Math.max(hh + topSafe, Math.min(h - hh - bottomSafe, sy))
 
@@ -928,7 +932,7 @@ export default function AtlasGlobe({
       )}
 
       {/* Anel de progresso em 5 trechos ao redor do globo */}
-      <svg className="progress-ring" viewBox="0 0 200 200" aria-hidden="true">
+      <svg ref={progressRingRef} className="progress-ring" viewBox="0 0 200 200" aria-hidden="true">
         <circle className="pr-track" cx="100" cy="100" r="96" />
         {progressSegments.map((on, i) => (
           <circle
@@ -959,15 +963,16 @@ export default function AtlasGlobe({
           aria-label={`Abrir a função ${m.label} do artigo 5º do Código Penal`}
           onClick={handleMarkerClick(m.id)}
         >
-          <span className="dot" aria-hidden />
-          {m.label}
+          <span className="gmarker-ico" aria-hidden>
+            {ICONS[m.id]}
+          </span>
+          <span>{m.label}</span>
         </button>
       ))}
 
       {/* Planetas vizinhos (mini-globos) nas laterais do palco */}
       <PlanetNav currentArticle={currentArticle} onTravel={onTravel} />
 
-      <p className="hint">Arraste para girar · toque numa função para ver a prévia</p>
       {webglFailed && (
         <p className="globe-error" role="alert">
           O globo 3D não carregou neste aparelho. As sete funções continuam disponíveis no menu de rodapé, aqui embaixo.

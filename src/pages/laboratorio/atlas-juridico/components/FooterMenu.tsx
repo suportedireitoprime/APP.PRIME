@@ -2,7 +2,7 @@ import { memo, type ReactNode } from 'react'
 import { FUNCTIONS } from '../data/article5'
 import type { FunctionId } from '../types'
 
-const ICONS: Record<FunctionId, ReactNode> = {
+export const ICONS: Record<FunctionId, ReactNode> = {
   texto: (
     <svg viewBox="0 0 24 24">
       <path d="M6 3h9l4 4v14H6z" />

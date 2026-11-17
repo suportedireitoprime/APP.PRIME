@@ -16,14 +16,17 @@ import { earthTextureDataURL } from '../three/earth'
  * isso no compositor, quase de graça). Visual igual, custo perto de zero.
  * O globo central continua 3D — é ele que o usuário gira com o dedo.
  */
-function MiniGlobe({ label }: { label: string }) {
+function MiniGlobe({ label, travelLabel }: { label: string; travelLabel: string }) {
   return (
-    <span
-      className="planet-globe"
-      role="img"
-      aria-label={`Mini-globo do ${label}`}
-      style={{ backgroundImage: `url(${earthTextureDataURL()})` }}
-    />
+    <div className="planet-globe-wrapper">
+      <span
+        className="planet-globe"
+        role="img"
+        aria-label={`Mini-globo do ${label}`}
+        style={{ backgroundImage: `url(${earthTextureDataURL()})` }}
+      />
+      <span className="planet-tag-inside">{travelLabel}</span>
+    </div>
   )
 }
 
@@ -39,24 +42,13 @@ function PlanetNav({ currentArticle, onTravel }: PlanetNavProps) {
 
   return (
     <>
-      {/* Linhas douradas tracejadas ligando os planetas ao globo central */}
-      <svg className="planet-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <line x1="10" y1="50" x2="50" y2="50" />
-        <line x1="50" y1="50" x2="90" y2="50" />
-      </svg>
-
       <button
         type="button"
         className="planet planet-left"
         onClick={() => onTravel(left.num)}
         aria-label={`Viajar para o ${left.label} — ${left.name}`}
       >
-        <MiniGlobe label={left.label} />
-        <span className="planet-label">
-          <strong>{left.label}</strong>
-          {left.name}
-        </span>
-        <span className="planet-travel">← Viajar</span>
+        <MiniGlobe label={left.label} travelLabel={`← ${left.label}`} />
       </button>
 
       <button
@@ -65,12 +57,7 @@ function PlanetNav({ currentArticle, onTravel }: PlanetNavProps) {
         onClick={() => onTravel(right.num)}
         aria-label={`Viajar para o ${right.label} — ${right.name}`}
       >
-        <MiniGlobe label={right.label} />
-        <span className="planet-label">
-          <strong>{right.label}</strong>
-          {right.name}
-        </span>
-        <span className="planet-travel">Viajar →</span>
+        <MiniGlobe label={right.label} travelLabel={`${right.label} →`} />
       </button>
     </>
   )

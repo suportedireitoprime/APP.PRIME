@@ -1,5 +1,5 @@
-/* Atlas Jurídico — tema azul-marinho + dourado (mesmo do protótipo). */
-:root, .atlas-app {
+/* Atlas Jurídico — tema azul-marinho + dourado (escopado exclusivamente para .atlas-app). */
+.atlas-app {
   --bg: #050d1a;
   --bg2: #0a1120;
   --surface: #121d31;
@@ -80,9 +80,9 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: calc(8px + env(safe-area-inset-top, 6px)) 12px 6px;
+  padding: calc(12px + max(env(safe-area-inset-top, 0px), var(--sai-top, 0px), 12px)) 16px 6px;
   flex: none;
-  background: linear-gradient(to bottom, rgba(5, 13, 26, 0.92) 0%, rgba(5, 13, 26, 0.6) 75%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(4, 9, 18, 0.94) 0%, rgba(4, 9, 18, 0.6) 75%, transparent 100%);
   pointer-events: none;
 }
 .top * {
@@ -94,32 +94,41 @@
   text-transform: uppercase;
   color: var(--gold);
   font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 .top h1 {
-  margin: 2px 0 0;
-  font-size: clamp(1.2rem, 4vw, 2.1rem);
+  margin: 1px 0 0;
+  font-size: clamp(1.1rem, 3.8vw, 1.9rem);
   line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85), 0 0 20px rgba(217, 169, 44, 0.2);
 }
 .top h1 .art {
   color: var(--gold-bright);
 }
 .top .sub {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   color: var(--ink2);
-  font-size: clamp(0.78rem, 2.8vw, 0.95rem);
+  font-size: clamp(0.72rem, 2.6vw, 0.9rem);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
 }
 
-/* Selo "% estudado": pílula discreta embaixo do título, nunca sobre o globo. */
-.progress-pill {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 2px 10px;
-  border: 1px solid rgba(217, 169, 44, 0.55);
+/* Selo "% estudado": pílula discreta no topo */
+.progress-pill, .progress-pill-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 9px;
+  border: 1px solid rgba(240, 201, 78, 0.65);
   border-radius: 999px;
-  background: rgba(18, 29, 49, 0.85);
+  background: rgba(14, 25, 46, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--gold-bright);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(240, 201, 78, 0.2);
 }
 
 /* ---------- Palco do globo (Fundo Imersivo Total) ---------- */
@@ -153,28 +162,22 @@
 .hint {
   position: absolute;
   left: 50%;
-  bottom: calc(66px + env(safe-area-inset-bottom, 12px));
+  bottom: calc(58px + env(safe-area-inset-bottom, 8px));
   transform: translateX(-50%);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(5, 13, 26, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(5, 13, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--ink2);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   white-space: nowrap;
   pointer-events: none;
   z-index: 10;
 }
 
-/* Anel de progresso em 5 trechos ao redor do globo (SVG sobre o palco). */
+/* Anel de progresso em 5 trechos ao redor do globo (Ocultado para total liberdade do espaço) */
 .progress-ring {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: min(60dvh, 88vw);
-  aspect-ratio: 1;
-  pointer-events: none;
-  z-index: 2;
+  display: none !important;
 }
 .progress-ring circle {
   fill: none;
@@ -200,35 +203,66 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 11px;
+  min-height: auto;
+  padding: 5px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(217, 169, 44, 0.6);
-  background: rgba(10, 17, 32, 0.82);
+  border: 1px solid rgba(217, 169, 44, 0.5);
+  background: linear-gradient(135deg, rgba(14, 25, 46, 0.88) 0%, rgba(6, 12, 22, 0.92) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--ink);
   font-size: 0.82rem;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: var(--shadow);
-  transition: opacity 0.25s ease;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(217, 169, 44, 0.12);
+  transition: opacity 0.25s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   will-change: left, top;
+}
+.gmarker:hover {
+  border-color: var(--gold-bright);
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(240, 201, 78, 0.35);
+  color: #fff;
 }
 @media (max-width: 767px) {
   .gmarker {
+    min-height: auto;
     padding: 3px 8px;
     font-size: 0.72rem;
     gap: 4px;
+    letter-spacing: 0.01em;
   }
   .gmarker .dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 }
-.gmarker .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold-bright);
+.gmarker-ico {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-bright);
   flex: none;
+}
+.gmarker-ico svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (max-width: 767px) {
+  .gmarker-ico {
+    width: 12px;
+    height: 12px;
+  }
 }
 /* Atrás do globo: some para a borda, meio transparente, sem sumir. */
 .gmarker.behind {
@@ -260,13 +294,12 @@
   to { transform: scale(9); opacity: 0; }
 }
 
-/* ---------- Planetas vizinhos (Mobile: Menores e mais abaixo) ---------- */
+/* ---------- Planetas vizinhos (Mini-globos com botão interno) ---------- */
 .planet {
   position: absolute;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
   background: none;
   border: none;
   padding: 0;
@@ -277,49 +310,51 @@
 .planet:active {
   transform: scale(0.94);
 }
+.planet-globe-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.planet-tag-inside {
+  position: absolute;
+  inset: auto 0 auto 0;
+  margin: auto;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  background: rgba(5, 12, 24, 0.78);
+  border-top: 1px solid rgba(240, 201, 78, 0.75);
+  border-bottom: 1px solid rgba(240, 201, 78, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 1.5px 0;
+  width: 100%;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
 
 @media (max-width: 767px) {
   .planet {
     top: auto;
-    bottom: calc(68px + env(safe-area-inset-bottom, 12px));
-    max-width: 90px;
+    bottom: calc(112px + max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px), 18px));
   }
-  .planet-left { left: calc(10px + env(safe-area-inset-left, 0px)); }
-  .planet-right { right: calc(10px + env(safe-area-inset-right, 0px)); }
+  .planet-left { left: calc(18px + max(env(safe-area-inset-left, 0px), 4px)); }
+  .planet-right { right: calc(18px + max(env(safe-area-inset-right, 0px), 4px)); }
   .planet-globe {
     width: 44px;
     height: 44px;
     box-shadow:
-      inset -8px -4px 14px rgba(2, 6, 15, 0.85),
-      inset 4px 2px 8px rgba(140, 190, 255, 0.25),
+      inset -6px -4px 10px rgba(2, 6, 15, 0.95),
+      inset 4px 3px 8px rgba(160, 210, 255, 0.35),
       0 0 0 1px rgba(217, 169, 44, 0.5),
-      0 0 14px rgba(63, 127, 209, 0.4),
-      0 6px 16px rgba(0, 0, 0, 0.5);
-  }
-  .planet-label {
-    text-align: center;
-    background: rgba(10, 17, 32, 0.9);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 2px 6px;
-    font-size: 0.6rem;
-    line-height: 1.15;
-    max-width: 84px;
-  }
-  .planet-label strong {
-    display: block;
-    color: var(--gold-bright);
-    font-size: 0.62rem;
-  }
-  .planet-travel {
-    border: 1px solid var(--gold);
-    background: var(--gold);
-    color: #1a1405;
-    border-radius: 999px;
-    padding: 1px 8px;
-    font-size: 0.6rem;
-    font-weight: 700;
-    min-height: 1.35rem;
+      0 0 12px rgba(63, 127, 209, 0.4),
+      0 4px 14px rgba(0, 0, 0, 0.6);
   }
   .planet-links {
     display: none;
@@ -330,23 +365,16 @@
   .planet {
     top: 50%;
     transform: translateY(-50%);
-    max-width: 132px;
-    gap: 6px;
   }
-  .planet-left { left: 16px; }
-  .planet-right { right: 16px; }
+  .planet-left { left: 28px; }
+  .planet-right { right: 28px; }
   .planet-globe {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
   }
-  .planet-label {
-    font-size: 0.75rem;
-    padding: 5px 8px;
-  }
-  .planet-travel {
-    font-size: 0.78rem;
-    padding: 2px 12px;
-    min-height: 1.8rem;
+  .planet-tag-inside {
+    font-size: 0.72rem;
+    padding: 2.5px 0;
   }
 }
 
@@ -412,11 +440,12 @@
   justify-content: flex-start;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 12px));
-  background: linear-gradient(to top, rgba(5, 13, 26, 0.98) 0%, rgba(5, 13, 26, 0.8) 75%, transparent 100%);
+  padding: 8px 16px calc(14px + max(env(safe-area-inset-bottom, 0px), var(--sai-bottom, 0px), 18px));
+  background: linear-gradient(to top, rgba(4, 9, 18, 0.98) 0%, rgba(4, 9, 18, 0.72) 75%, transparent 100%);
   border: none;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   pointer-events: auto;
 }
@@ -430,17 +459,23 @@
   gap: 5px;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
-  font-size: 0.78rem;
+  border: 1px solid rgba(217, 169, 44, 0.3);
+  background: rgba(14, 24, 42, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ink);
+  font-size: 0.76rem;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
-  min-height: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  min-height: 38px;
+  scroll-snap-align: start;
   transition: all 0.2s ease;
+}
+.dock button:hover {
+  border-color: rgba(240, 201, 78, 0.6);
+  background: rgba(20, 34, 60, 0.85);
+  color: #fff;
 }
 .dock button:active {
   transform: scale(0.96);
@@ -460,9 +495,11 @@
   stroke-linejoin: round;
 }
 .dock button.active {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: #1a1405;
+  background: linear-gradient(135deg, #f0c94e 0%, #d9a92c 100%);
+  border-color: #fce89e;
+  color: #120e03;
+  box-shadow: 0 0 16px rgba(240, 201, 78, 0.4), 0 2px 10px rgba(0, 0, 0, 0.4);
+  font-weight: 700;
 }
 
 @media (min-width: 768px) {
@@ -838,39 +875,93 @@
   margin: 12px 0;
 }
 
-/* ---------- Viagem entre planetas ---------- */
+/* ---------- Viagem entre planetas (Hiperespaço / Warp) ---------- */
 .travel {
   position: fixed;
   inset: 0;
   z-index: 70;
   display: grid;
   place-items: center;
-  background: #02060f;
+  background: radial-gradient(circle at center, #0a1426 0%, #030812 60%, #01040a 100%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.35s ease;
   overflow: hidden;
 }
-.travel.active { opacity: 1; pointer-events: auto; }
-.travel .warp { position: absolute; inset: 0; }
+.travel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.travel .warp {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
 .travel .warp i {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 2px;
-  height: 2px;
-  background: #fff;
+  width: 3px;
+  height: 3px;
+  background: #ffffff;
   border-radius: 50%;
-  animation: warp-fly 1.1s ease-in forwards;
+  box-shadow: 0 0 8px #fff, 0 0 16px rgba(100, 180, 255, 0.8);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: warp-fly 1.1s cubic-bezier(0.12, 0.8, 0.32, 1) infinite;
 }
 @keyframes warp-fly {
-  from { transform: translate(0, 0) scale(1); opacity: 1; }
-  to { transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(4.5);
+    opacity: 0;
+  }
 }
-.travel .travel-label { position: relative; text-align: center; }
-.travel .travel-label small { display: block; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.72rem; font-weight: 700; }
-.travel .travel-label strong { font-size: 1.8rem; display: block; margin-top: 6px; }
-.travel .travel-label span { color: var(--ink2); }
+.travel .travel-label {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+  padding: 24px 32px;
+  border-radius: 20px;
+  background: rgba(5, 12, 24, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(217, 169, 44, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(217, 169, 44, 0.15);
+  animation: travel-pulse 1.8s ease-in-out infinite alternate;
+}
+@keyframes travel-pulse {
+  from { transform: scale(0.96); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(217, 169, 44, 0.1); }
+  to { transform: scale(1.02); box-shadow: 0 14px 45px rgba(0, 0, 0, 0.8), 0 0 40px rgba(240, 201, 78, 0.25); }
+}
+.travel .travel-label small {
+  display: block;
+  color: var(--gold-bright);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(240, 201, 78, 0.5);
+}
+.travel .travel-label strong {
+  font-size: 2.2rem;
+  display: block;
+  margin: 6px 0 2px;
+  color: #fff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 20px rgba(217, 169, 44, 0.4);
+}
+.travel .travel-label span {
+  color: var(--ink2);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
 
 .globe-fallback {
   position: absolute;
@@ -971,21 +1062,21 @@
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  /* A textura da Terra em cache, girando por background-position. */
+  /* A textura da Terra em cache, girando suavemente em 360 graus */
   background-size: 200% 100%;
   background-repeat: repeat-x;
   background-position: 0 0;
   animation: planet-spin 26s linear infinite;
-  /* Lado noturno + atmosfera, só com sombra: sem custo de shader. */
+  /* Iluminação esférica 3D: luz suave na borda, relevo e sombra atmosférica */
   box-shadow:
-    inset -14px -8px 22px rgba(2, 6, 15, 0.85),
-    inset 6px 4px 14px rgba(140, 190, 255, 0.25),
+    inset -10px -6px 18px rgba(2, 6, 15, 0.92),
+    inset 6px 4px 14px rgba(160, 210, 255, 0.35),
     0 0 0 1px rgba(217, 169, 44, 0.45),
-    0 0 22px rgba(63, 127, 209, 0.45),
-    0 8px 24px rgba(0, 0, 0, 0.5);
+    0 0 20px rgba(63, 127, 209, 0.4),
+    0 6px 22px rgba(0, 0, 0, 0.6);
 }
 @keyframes planet-spin {
-  to { background-position: -168px 0; }
+  to { background-position: -200% 0; }
 }
 
 /* ---------- Loading do globo ---------- */
