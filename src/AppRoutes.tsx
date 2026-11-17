@@ -279,6 +279,7 @@ const BibliotecaTrilhas = lazy(() => import("./pages/biblioteca/BibliotecaTrilha
 const AdminAulasInterativas = lazyWithRetry(() => import("./pages/admin/AdminAulasInterativas.tsx"));
 const AdminLousaMagica = lazyWithRetry(() => import("./pages/admin/AdminLousaMagica.tsx"));
 const AdminLaboratorioAulas = lazyWithRetry(() => import("./pages/admin/AdminLaboratorioAulas.tsx"));
+const AtlasJuridicoView = lazyWithRetry(() => import("./pages/laboratorio/atlas-juridico/AtlasJuridicoView.tsx"));
 const AdminHorus = lazyWithRetry(() => import("./pages/admin/AdminHorus.tsx"));
 const AdminOmniRouteTeste = lazyWithRetry(() => import("./pages/admin/AdminOmniRouteTeste.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
@@ -964,6 +965,8 @@ function AnimatedRoutes() {
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lousa-magica" element={<ProtectedRoute><PageTransition><AdminLousaMagica /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-laboratorio-aulas" element={<ProtectedRoute><PageTransition><AdminLaboratorioAulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-atlas-juridico" element={<ProtectedRoute><PageTransition><AtlasJuridicoView /></PageTransition></ProtectedRoute>} />
+          <Route path="/atlas-juridico" element={<ProtectedRoute><PageTransition><AtlasJuridicoView /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />

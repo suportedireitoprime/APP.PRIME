@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as AdminAtlasJuridicoRouteImport } from './routes/admin-atlas-juridico'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
@@ -21,6 +22,7 @@ import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
+import { Route as AtlasJuridicoRouteImport } from './routes/atlas-juridico'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudiobooksRouteImport } from './routes/audiobooks'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -167,6 +169,11 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAtlasJuridicoRoute = AdminAtlasJuridicoRouteImport.update({
+  id: '/admin-atlas-juridico',
+  path: '/admin-atlas-juridico',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAulasInterativasRoute = AdminAulasInterativasRouteImport.update({
   id: '/admin-aulas-interativas',
   path: '/admin-aulas-interativas',
@@ -215,6 +222,11 @@ const AssinaturaRoute = AssinaturaRouteImport.update({
 const AssistenteHorusRoute = AssistenteHorusRouteImport.update({
   id: '/assistente-horus',
   path: '/assistente-horus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtlasJuridicoRoute = AtlasJuridicoRouteImport.update({
+  id: '/atlas-juridico',
+  path: '/atlas-juridico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AudioaulasRoute = AudioaulasRouteImport.update({
@@ -916,6 +928,7 @@ const LeiSecaSlugParteLicaoIdRoute = LeiSecaSlugParteLicaoIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/admin-atlas-juridico': typeof AdminAtlasJuridicoRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
@@ -926,6 +939,7 @@ export interface FileRoutesByFullPath {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
+  '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
@@ -1065,6 +1079,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/admin-atlas-juridico': typeof AdminAtlasJuridicoRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
@@ -1075,6 +1090,7 @@ export interface FileRoutesByTo {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
+  '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
@@ -1215,6 +1231,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/admin-atlas-juridico': typeof AdminAtlasJuridicoRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-horus': typeof AdminHorusRoute
@@ -1225,6 +1242,7 @@ export interface FileRoutesById {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
+  '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
@@ -1366,6 +1384,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$'
+    | '/admin-atlas-juridico'
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
@@ -1376,6 +1395,7 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
+    | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1515,6 +1535,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/admin-atlas-juridico'
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
@@ -1525,6 +1546,7 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
+    | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1664,6 +1686,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$'
+    | '/admin-atlas-juridico'
     | '/admin-aulas-interativas'
     | '/admin-funcoes'
     | '/admin-horus'
@@ -1674,6 +1697,7 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
+    | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1814,6 +1838,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
+  AdminAtlasJuridicoRoute: typeof AdminAtlasJuridicoRoute
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminHorusRoute: typeof AdminHorusRoute
@@ -1824,6 +1849,7 @@ export interface RootRouteChildren {
   AdminRotasRoute: typeof AdminRotasRoute
   AssinaturaRoute: typeof AssinaturaRoute
   AssistenteHorusRoute: typeof AssistenteHorusRoute
+  AtlasJuridicoRoute: typeof AtlasJuridicoRoute
   AudioaulasRoute: typeof AudioaulasRoute
   AudiobooksRoute: typeof AudiobooksRoute
   AuthRoute: typeof AuthRoute
@@ -1895,6 +1921,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-atlas-juridico': {
+      id: '/admin-atlas-juridico'
+      path: '/admin-atlas-juridico'
+      fullPath: '/admin-atlas-juridico'
+      preLoaderRoute: typeof AdminAtlasJuridicoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin-aulas-interativas': {
       id: '/admin-aulas-interativas'
       path: '/admin-aulas-interativas'
@@ -1963,6 +1996,13 @@ declare module '@tanstack/react-router' {
       path: '/assistente-horus'
       fullPath: '/assistente-horus'
       preLoaderRoute: typeof AssistenteHorusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atlas-juridico': {
+      id: '/atlas-juridico'
+      path: '/atlas-juridico'
+      fullPath: '/atlas-juridico'
+      preLoaderRoute: typeof AtlasJuridicoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audioaulas': {
@@ -3363,6 +3403,7 @@ const RadarProposicoesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
+  AdminAtlasJuridicoRoute: AdminAtlasJuridicoRoute,
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminHorusRoute: AdminHorusRoute,
@@ -3373,6 +3414,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRotasRoute: AdminRotasRoute,
   AssinaturaRoute: AssinaturaRoute,
   AssistenteHorusRoute: AssistenteHorusRoute,
+  AtlasJuridicoRoute: AtlasJuridicoRoute,
   AudioaulasRoute: AudioaulasRoute,
   AudiobooksRoute: AudiobooksRoute,
   AuthRoute: AuthRoute,

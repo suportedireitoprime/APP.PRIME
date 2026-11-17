@@ -1,0 +1,867 @@
+/* Atlas Jurídico — tema azul-marinho + dourado (mesmo do protótipo). */
+:root, .atlas-app {
+  --bg: #050d1a;
+  --bg2: #0a1120;
+  --surface: #121d31;
+  --surface2: #182740;
+  --ink: #e9edf4;
+  --ink2: #a9b6c9;
+  --line: #2a3a56;
+  --navy: #0d1c31;
+  --navy2: #1b3a5f;
+  --gold: #d9a92c;
+  --gold-bright: #f0c94e;
+  --gold-soft: #3a2f10;
+  --accent: #6aa6e8;
+  --good: #4cc084;
+  --bad: #ef8a80;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --radius: 16px;
+}
+
+.atlas-app * {
+  box-sizing: border-box;
+}
+
+.atlas-app button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  min-height: 2.25rem;
+}
+
+.atlas-app button:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+/* Texto só para leitores de tela. */
+.atlas-app .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Tela fixa (sem rolagem da página) ---------- */
+.atlas-app {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #10263f 0%, var(--bg2) 55%, var(--bg) 100%);
+  transition: background 0.6s ease;
+}
+
+/* Fundo muda sutilmente conforme a função em foco (data-fx no .atlas-app). */
+.atlas-app[data-fx='ouvir'] {
+  background:
+    radial-gradient(120% 90% at 50% 0%, #142c46 0%, var(--bg2) 55%, var(--bg) 100%);
+}
+.atlas-app[data-fx='assistir'],
+.atlas-app[data-fx='praticar'] {
+  background:
+    radial-gradient(120% 90% at 50% 0%, #2a2110 0%, var(--bg2) 60%, var(--bg) 100%);
+}
+
+.top {
+  text-align: center;
+  padding: 10px 16px 0;
+  flex: none;
+}
+.top .kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+.top h1 {
+  margin: 2px 0 0;
+  font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+  line-height: 1.1;
+}
+.top h1 .art {
+  color: var(--gold-bright);
+}
+.top .sub {
+  margin: 4px 0 0;
+  color: var(--ink2);
+  font-size: 0.95rem;
+}
+
+/* Selo "% estudado": pílula discreta embaixo do título, nunca sobre o globo. */
+.progress-pill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 12px;
+  border: 1px solid rgba(217, 169, 44, 0.55);
+  border-radius: 999px;
+  background: rgba(18, 29, 49, 0.8);
+  color: var(--gold-bright);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ---------- Palco do globo ---------- */
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.stage canvas {
+  display: block;
+  touch-action: none;
+}
+.globe-error {
+  position: absolute;
+  inset: auto 16px 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(18, 29, 49, 0.95);
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  font-size: 0.85rem;
+  display: none;
+}
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(5, 13, 26, 0.65);
+  color: var(--ink2);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Anel de progresso em 5 trechos ao redor do globo (SVG sobre o palco). */
+.progress-ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(64dvh, 92vw);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+.progress-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+.progress-ring .pr-track {
+  stroke: rgba(217, 169, 44, 0.18);
+}
+.progress-ring .pr-seg {
+  stroke: var(--gold);
+  stroke-linecap: round;
+  opacity: 0.25;
+  transition: opacity 0.4s ease;
+}
+.progress-ring .pr-seg.on {
+  opacity: 1;
+}
+
+/* ---------- Marcadores flutuantes sobre o globo ---------- */
+.gmarker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 169, 44, 0.6);
+  background: rgba(10, 17, 32, 0.82);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  transition: opacity 0.25s ease;
+  will-change: left, top;
+}
+.gmarker .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  flex: none;
+}
+/* Atrás do globo: some para a borda, meio transparente, sem sumir. */
+.gmarker.behind {
+  opacity: 0.55;
+  background: rgba(10, 17, 32, 0.6);
+}
+/* Pulso dourado ao centralizar (foco): escala + brilho + ondazinha. */
+.gmarker.popped {
+  animation: marker-pop 0.9s ease;
+}
+@keyframes marker-pop {
+  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(240, 201, 78, 0.7); }
+  35% { transform: translate(-50%, -50%) scale(1.18); box-shadow: 0 0 0 14px rgba(240, 201, 78, 0); }
+  100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(240, 201, 78, 0); }
+}
+.tap-ripple {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-bright);
+  pointer-events: none;
+  z-index: 60;
+  animation: ripple 0.75s ease-out forwards;
+}
+@keyframes ripple {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(9); opacity: 0; }
+}
+
+/* ---------- Planetas vizinhos ---------- */
+.planet {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 8;
+  max-width: 132px;
+}
+.planet-left { left: 6px; }
+.planet-right { right: 6px; }
+.planet-canvas {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(217, 169, 44, 0.45), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.planet-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.planet-label {
+  text-align: center;
+  background: rgba(10, 17, 32, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 5px 8px;
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+.planet-label strong { display: block; color: var(--gold-bright); }
+.planet-travel {
+  border: 1px solid var(--gold);
+  background: var(--gold);
+  color: #1a1405;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  min-height: 1.8rem;
+}
+/* Linha dourada tracejada ligando os planetas ao globo central. */
+.planet-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.planet-links line {
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-dasharray: 7 7;
+  opacity: 0.55;
+  animation: dash-move 1.6s linear infinite;
+}
+@keyframes dash-move {
+  to { stroke-dashoffset: -28; }
+}
+
+/* ---------- Menu de rodapé: pílulas flutuantes meio brancas ---------- */
+.dock {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+  background: transparent;
+  border: none;
+}
+.dock button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.dock button .ico {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
+.dock button .ico svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dock button.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1a1405;
+}
+
+/* ---------- Card flutuante de prévia ---------- */
+.pv-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 40;
+}
+.pv-backdrop.show { opacity: 1; pointer-events: auto; }
+.pv-card {
+  position: fixed;
+  left: 50%;
+  bottom: 92px;
+  transform: translate(-50%, 16px) scale(0.96);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  z-index: 41;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform-origin: 50% 100%;
+}
+.pv-card.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0) scale(1);
+}
+.pv-card.born { animation: pv-born 0.35s ease; }
+@keyframes pv-born {
+  from { transform: translate(-50%, 12px) scale(0.92); }
+  to { transform: translate(-50%, 0) scale(1); }
+}
+.pv-kicker { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+.pv-title { margin: 2px 0 6px; font-size: 1.25rem; }
+.pv-desc { margin: 0 0 10px; color: var(--ink2); font-size: 0.92rem; line-height: 1.5; }
+.pv-list { margin: 0 0 10px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.pv-list li { display: flex; gap: 8px; font-size: 0.9rem; }
+.pv-list .ck { color: var(--good); font-weight: 700; }
+.pv-time { color: var(--ink2); font-size: 0.82rem; margin-bottom: 12px; }
+.pv-cta {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gold);
+  color: #1a1405;
+  font-weight: 700;
+}
+.pv-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 2rem;
+  height: 2rem;
+  min-height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink2);
+}
+
+/* ---------- Tela da função (abre de baixo para cima) ---------- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bg2);
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  display: flex;
+  flex-direction: column;
+}
+.sheet.open { transform: translateY(0); }
+.sheet-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.back-btn {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 600;
+}
+.sheet-head .meta { flex: 1; }
+.sheet-head .meta small { display: block; color: var(--gold); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+.sheet-head .meta strong { font-size: 1.05rem; }
+.sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+.sheet-foot {
+  flex: none;
+  padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 10px;
+}
+.sheet-foot .primary {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gold);
+  color: #1a1405;
+  font-weight: 700;
+}
+.sheet-foot .ghost {
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+}
+
+/* ---------- Conteúdo das funções ---------- */
+.lead { color: var(--ink2); line-height: 1.55; }
+.block {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 12px 0;
+  background: var(--surface);
+}
+.block .kicker { color: var(--gold); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; }
+.block h3 { margin: 4px 0 8px; }
+.block p { line-height: 1.55; margin: 8px 0; }
+.block .official {
+  border-left: 3px solid var(--gold);
+  padding-left: 10px;
+  font-style: italic;
+  color: var(--ink);
+}
+.nc, .case {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.nc { background: rgba(106, 166, 232, 0.12); }
+.case { background: rgba(217, 169, 44, 0.1); }
+.search {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  margin: 10px 0;
+}
+.inciso {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  line-height: 1.5;
+}
+.inciso .rn { display: block; color: var(--gold); font-weight: 700; font-size: 0.8rem; margin-bottom: 4px; }
+.inciso .tag {
+  float: right;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--good);
+  border: 1px solid var(--good);
+  border-radius: 999px;
+  padding: 1px 8px;
+  display: none;
+}
+.inciso.read { border-color: var(--good); }
+.inciso.read .tag { display: inline-block; }
+
+.player {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 12px 0;
+  background: var(--surface);
+}
+.player h3 { margin: 0 0 6px; }
+.player p { color: var(--ink2); font-size: 0.9rem; line-height: 1.5; }
+.player-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.play-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gold);
+  color: #1a1405;
+  font-size: 1rem;
+  flex: none;
+}
+.bar { flex: 1; height: 6px; border-radius: 999px; background: var(--surface2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--gold); }
+.speeds { display: flex; gap: 6px; margin-top: 10px; }
+.speeds button {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  min-height: 1.8rem;
+}
+.speeds button.on { background: var(--gold); border-color: var(--gold); color: #1a1405; font-weight: 700; }
+
+.video-card {
+  display: flex;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin: 10px 0;
+  background: var(--surface);
+  align-items: center;
+}
+.video-card .thumb {
+  width: 64px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--navy2);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  flex: none;
+}
+.video-card h3 { margin: 0 0 4px; font-size: 0.98rem; }
+.video-card p { margin: 0; color: var(--ink2); font-size: 0.86rem; line-height: 1.45; }
+.video-card .dur { color: var(--gold); font-size: 0.78rem; font-weight: 700; }
+.video-card button {
+  margin-left: auto;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-bright);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.qa { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.qa strong { display: block; margin-bottom: 4px; }
+.qa p { margin: 0; color: var(--ink2); line-height: 1.55; }
+.mindmap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 12px 0;
+  background: var(--surface);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.mindmap .root { color: var(--gold-bright); font-weight: 800; }
+.mindmap ul { margin: 4px 0 4px 18px; padding: 0; }
+
+.qopt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  line-height: 1.45;
+}
+.qopt.right { border-color: var(--good); background: rgba(76, 192, 132, 0.14); }
+.qopt.wrong { border-color: var(--bad); background: rgba(239, 138, 128, 0.12); }
+.qopt:disabled { cursor: default; }
+.qexp {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  display: none;
+  background: var(--surface2);
+}
+.qexp.show { display: block; }
+.quiz-next {
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gold);
+  color: #1a1405;
+  font-weight: 700;
+}
+.quiz-next:disabled { opacity: 0.45; }
+
+.fc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+.fc {
+  min-height: 132px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 12px;
+  text-align: left;
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+.fc .k { display: block; color: var(--gold); font-size: 0.72rem; font-weight: 700; margin-bottom: 6px; }
+.fc.flipped { background: var(--gold-soft); border-color: var(--gold); }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  background: var(--surface);
+}
+.stat b { display: block; font-size: 1.3rem; }
+.stat span { font-size: 0.78rem; color: var(--ink2); }
+.big-pct { font-size: 2rem; font-weight: 800; color: var(--gold-bright); }
+.check-list { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 8px; }
+.check-list li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.45; }
+.check-list li.done { color: var(--ink2); text-decoration: line-through; }
+.check-list .ck { color: var(--good); font-weight: 700; }
+
+.note {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--ink2);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+
+/* ---------- Viagem entre planetas ---------- */
+.travel {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  background: #02060f;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow: hidden;
+}
+.travel.active { opacity: 1; pointer-events: auto; }
+.travel .warp { position: absolute; inset: 0; }
+.travel .warp i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: warp-fly 1.1s ease-in forwards;
+}
+@keyframes warp-fly {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(3); opacity: 0; }
+}
+.travel .travel-label { position: relative; text-align: center; }
+.travel .travel-label small { display: block; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.72rem; font-weight: 700; }
+.travel .travel-label strong { font-size: 1.8rem; display: block; margin-top: 6px; }
+.travel .travel-label span { color: var(--ink2); }
+
+.globe-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 24px;
+  color: var(--ink2);
+}
+.globe-fallback .fake-globe {
+  font-size: 5rem;
+  line-height: 1;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .atlas-app { scroll-behavior: auto; }
+}
+
+/* ---------- Medidor de FPS + Modo leve ---------- */
+.fps-meter {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(5, 13, 26, 0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink2);
+}
+.fps-value.good { color: var(--good); }
+.fps-value.warn { color: var(--gold-bright); }
+.fps-value.bad { color: var(--bad); }
+.fps-quality { color: var(--ink2); font-weight: 600; }
+.fps-note {
+  color: var(--gold-bright);
+  font-size: 0.68rem;
+  cursor: help;
+}
+.fps-lite {
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-bright);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-height: 1.6rem;
+}
+.fps-lite[aria-pressed='true'] {
+  background: var(--gold);
+  color: #1a1405;
+}
+.fps-hide {
+  width: 1.4rem;
+  height: 1.4rem;
+  min-height: 1.4rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink2);
+  font-size: 0.7rem;
+  padding: 0;
+}
+.fps-show {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 80;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(5, 13, 26, 0.8);
+  color: var(--ink2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+/* ---------- Mini-globo dos planetas (CSS, sem WebGL) ---------- */
+.planet-globe {
+  display: block;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  /* A textura da Terra em cache, girando por background-position. */
+  background-size: 200% 100%;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  animation: planet-spin 26s linear infinite;
+  /* Lado noturno + atmosfera, só com sombra: sem custo de shader. */
+  box-shadow:
+    inset -14px -8px 22px rgba(2, 6, 15, 0.85),
+    inset 6px 4px 14px rgba(140, 190, 255, 0.25),
+    0 0 0 1px rgba(217, 169, 44, 0.45),
+    0 0 22px rgba(63, 127, 209, 0.45),
+    0 8px 24px rgba(0, 0, 0, 0.5);
+}
+@keyframes planet-spin {
+  to { background-position: -168px 0; }
+}
+
+/* ---------- Loading do globo ---------- */
+.globe-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink2);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+/* ---------- Modo leve: sem animações pesadas de fundo ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .planet-globe { animation: none; }
+}
