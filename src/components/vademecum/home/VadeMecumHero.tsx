@@ -24,7 +24,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll (mesma estrutura e proporção do Início) */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
@@ -59,17 +59,17 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
         </header>
 
         {/* Conteúdo: Logo à esquerda e Card de Status à direita — idêntico ao Início do App */}
-        <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[120px]">
+        <div className="relative z-10 pt-2.5 sm:pt-3.5 flex flex-col justify-start">
           <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
             <VadeMecumHeroBrand />
-            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-1 sm:pt-2 pr-1 sm:pr-2">
+            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-0.5 sm:pt-1 pr-1 sm:pr-2 empty:hidden">
               <HomeTrialCard />
             </div>
           </div>
         </div>
 
         {/* ── 4 Botões de Ação Rápida no Rodapé do Painel ────────────────── */}
-        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
+        <div className="relative z-10 px-3 sm:px-5 pt-1.5 pb-2.5 sm:pb-3">
           <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
       </div>

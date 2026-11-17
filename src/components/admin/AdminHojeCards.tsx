@@ -1977,7 +1977,7 @@ export function AdminHojeCards() {
         className={cn(
           "group relative rounded-xl border text-left transition-all duration-300 overflow-hidden flex flex-col justify-between",
           isBottomRow
-            ? "p-1.5 sm:p-2 min-h-[58px] sm:min-h-[64px]"
+            ? "p-1.5 min-h-[46px] sm:min-h-[50px]"
             : "p-2 sm:p-2.5 min-h-[66px] sm:min-h-[70px]",
           isPulsing
             ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
@@ -1987,12 +1987,12 @@ export function AdminHojeCards() {
         <div className="flex items-start justify-between w-full gap-0.5 sm:gap-1">
           <div className={cn(
             "rounded-md flex items-center justify-center transition-colors shrink-0",
-            isBottomRow ? "w-[18px] h-[18px] sm:w-5 sm:h-5" : "w-5 h-5 sm:w-6 sm:h-6",
+            isBottomRow ? "w-4 h-4 sm:w-4.5 sm:h-4.5" : "w-5 h-5 sm:w-6 sm:h-6",
             isPulsing
               ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 animate-pulse"
               : "bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20"
           )}>
-            <Icon className={isBottomRow ? "w-2.5 h-2.5 sm:w-3 sm:h-3" : "w-3 h-3 sm:w-3.5 sm:h-3.5"} />
+            <Icon className={isBottomRow ? "w-2.5 h-2.5" : "w-3 h-3 sm:w-3.5 sm:h-3.5"} />
           </div>
 
           <div className="text-right flex flex-col items-end min-w-0">
@@ -2000,14 +2000,14 @@ export function AdminHojeCards() {
               {cardCount - (seenCounts[id] || 0) > 0 && (
                 <span className={cn(
                   "inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 font-body font-bold text-emerald-400 animate-pulse shrink-0",
-                  isBottomRow ? "px-0.5 py-[0.5px] text-[7px] sm:text-[7.5px]" : "px-1 py-[0.5px] text-[7.5px] sm:text-[8.5px]"
+                  isBottomRow ? "px-0.5 py-0 text-[6.5px]" : "px-1 py-[0.5px] text-[7.5px] sm:text-[8.5px]"
                 )}>
                   +{cardCount - (seenCounts[id] || 0)}
                 </span>
               )}
               <span className={cn(
                 "font-['Plus_Jakarta_Sans',sans-serif] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
-                isBottomRow ? "text-[13px] sm:text-[16px]" : "text-[15px] sm:text-[19px]",
+                isBottomRow ? "text-[11.5px] sm:text-[13px]" : "text-[15px] sm:text-[19px]",
                 isPulsing ? "text-emerald-300" : isZero ? "text-zinc-500" : "text-foreground"
               )}>
                 {cardCount}
@@ -2016,7 +2016,7 @@ export function AdminHojeCards() {
             {isFinancial && (
               <span className={cn(
                 "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 leading-none whitespace-nowrap",
-                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]",
+                isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]",
                 valorFinanceiro === 0 ? "text-zinc-500" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
@@ -2025,7 +2025,7 @@ export function AdminHojeCards() {
             {id === 'paywall' && (
               <span className={cn(
                 "block font-['Plus_Jakarta_Sans',sans-serif] font-semibold mt-0.5 text-zinc-400 leading-none whitespace-nowrap",
-                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]"
+                isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]"
               )} title="Início do funil de vendas">
                 1º passo
               </span>
@@ -2033,7 +2033,7 @@ export function AdminHojeCards() {
             {id === 'viu_planos' && (
               <span className={cn(
                 "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 text-sky-400 leading-none whitespace-nowrap",
-                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]"
+                isBottomRow ? "text-[6.5px] xs:text-[7px] sm:text-[7.5px]" : "text-[7.5px] sm:text-[8.5px]"
               )} title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
                 {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
@@ -2042,8 +2042,8 @@ export function AdminHojeCards() {
         </div>
 
         <div className={cn(
-          "font-body leading-tight mt-1 font-medium whitespace-normal break-words",
-          isBottomRow ? "text-[8px] xs:text-[8.5px] sm:text-[9.5px]" : "text-[9px] sm:text-[10.5px]",
+          "font-body leading-[1.05] mt-auto font-medium whitespace-normal break-words",
+          isBottomRow ? "text-[7.5px] xs:text-[8px] sm:text-[8.5px] line-clamp-2" : "text-[9px] sm:text-[10.5px]",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}
