@@ -1975,7 +1975,7 @@ export function AdminHojeCards() {
         key={id}
         onClick={() => openCard(id)}
         className={cn(
-          "group relative rounded-xl border p-2 sm:p-2.5 text-left transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[74px] sm:min-h-[78px]",
+          "group relative rounded-xl border p-2 sm:p-2.5 text-left transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[66px] sm:min-h-[70px]",
           isPulsing
             ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
             : "border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98]"
@@ -1994,12 +1994,12 @@ export function AdminHojeCards() {
           <div className="text-right flex flex-col items-end min-w-0">
             <div className="flex items-center gap-1 shrink-0">
               {cardCount - (seenCounts[id] || 0) > 0 && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1 py-[0.5px] font-body text-[8px] sm:text-[9px] font-bold text-emerald-400 animate-pulse shrink-0">
+                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1 py-[0.5px] font-body text-[7.5px] sm:text-[8.5px] font-bold text-emerald-400 animate-pulse shrink-0">
                   +{cardCount - (seenCounts[id] || 0)}
                 </span>
               )}
               <span className={cn(
-                "font-['Plus_Jakarta_Sans',sans-serif] text-base sm:text-[20px] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
+                "font-['Plus_Jakarta_Sans',sans-serif] text-[15px] sm:text-[19px] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
                 isPulsing ? "text-emerald-300" : isZero ? "text-zinc-500" : "text-foreground"
               )}>
                 {cardCount}
@@ -2007,19 +2007,19 @@ export function AdminHojeCards() {
             </div>
             {isFinancial && (
               <span className={cn(
-                "block font-['Plus_Jakarta_Sans',sans-serif] text-[8px] sm:text-[9.5px] font-bold mt-0.5 truncate max-w-full",
+                "block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-bold mt-0.5 truncate max-w-full leading-none",
                 valorFinanceiro === 0 ? "text-zinc-500" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
               </span>
             )}
             {id === 'paywall' && (
-              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8px] sm:text-[9px] font-bold mt-0.5 text-zinc-400 truncate max-w-full" title="Início do funil de vendas">
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-semibold mt-0.5 text-zinc-400 truncate max-w-full leading-none" title="Início do funil de vendas">
                 1º passo
               </span>
             )}
             {id === 'viu_planos' && (
-              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[8px] sm:text-[9px] font-bold mt-0.5 text-sky-400 truncate max-w-full" title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
+              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-bold mt-0.5 text-sky-400 truncate max-w-full leading-none" title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
                 {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
             )}
@@ -2027,7 +2027,7 @@ export function AdminHojeCards() {
         </div>
 
         <div className={cn(
-          "font-body text-[9.5px] sm:text-[11px] leading-tight mt-1.5 sm:mt-2 font-medium line-clamp-2",
+          "font-body text-[9px] sm:text-[10.5px] leading-tight mt-1 font-medium truncate sm:line-clamp-2",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}
@@ -2085,8 +2085,8 @@ export function AdminHojeCards() {
         {CARDS.slice(0, 3).map(renderCardButton)}
       </div>
 
-      {/* Linha 2: 4 cards de Conversão, Vendas e Renovações (responsivo: 2 colunas mobile, 4 desktop) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2.5 mb-2">
+      {/* Linha 2: 4 cards de Conversão, Vendas e Renovações na mesma linha */}
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2">
         {CARDS.slice(3).map(renderCardButton)}
       </div>
 

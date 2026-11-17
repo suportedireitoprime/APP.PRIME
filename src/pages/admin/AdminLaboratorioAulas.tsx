@@ -111,16 +111,16 @@ export default function AdminLaboratorioAulas() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 space-y-4">
         
-        {/* ── MENU DE ALTERNÂNCIA MINIMALISTA (Segmented Control Elegante) ── */}
-        <div className="flex items-center overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="inline-flex items-center p-1 rounded-full bg-zinc-900/90 border border-white/10 backdrop-blur-md gap-1 shadow-inner">
+        {/* ── MENU DE ALTERNÂNCIA (Botões Brancos como antes) ── */}
+        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('todos'); }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'todos'
-                  ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-white text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
               Todos (3)
@@ -128,37 +128,41 @@ export default function AdminLaboratorioAulas() {
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('atlas'); }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'atlas'
-                  ? 'bg-amber-400 text-zinc-950 font-semibold shadow-sm shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-amber-300'
+                  ? 'bg-white text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Atlas 3D
+              Atlas Jurídico 3D
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('aulas'); }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'aulas'
-                  ? 'bg-emerald-400 text-zinc-950 font-semibold shadow-sm shadow-emerald-500/20'
-                  : 'text-zinc-400 hover:text-emerald-300'
+                  ? 'bg-white text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Aulas
+              Aulas Diagramadas
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('conversao'); }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'conversao'
-                  ? 'bg-amber-400 text-zinc-950 font-semibold shadow-sm shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-amber-300'
+                  ? 'bg-white text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Pós-Trial
+              Telas de Conversão (Pós-Trial)
             </button>
           </div>
+
+          <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-500">
+            Ambiente Isolado
+          </span>
         </div>
 
         {/* ── GRID DE PROTÓTIPOS MINIMALISTAS ── */}
