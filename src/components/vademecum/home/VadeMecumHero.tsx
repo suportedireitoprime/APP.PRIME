@@ -24,7 +24,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll (mesma estrutura e proporção do Início) */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] sm:min-h-[340px]"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
