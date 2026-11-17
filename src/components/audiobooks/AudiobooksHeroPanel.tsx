@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bookmark, History, BarChart3, Flame } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { AudiobookQuickActionType } from './AudiobooksQuickActionSheet';
@@ -16,6 +17,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
   onBack,
   onSelectAction,
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="relative mb-6">
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll (mesma altura e proporção do Início do App) */}
@@ -56,10 +58,14 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
               type="button"
               onClick={() => {
                 haptic.selection();
-                if (onBack) onBack();
+                if (onBack) {
+                  onBack();
+                } else {
+                  navigate('/');
+                }
               }}
               className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/50 border border-white/15 text-white backdrop-blur-md transition-colors hover:bg-black/70 active:opacity-70 cursor-pointer shadow-lg"
-              aria-label="Voltar"
+              aria-label="Voltar para o início"
             >
               <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
             </button>

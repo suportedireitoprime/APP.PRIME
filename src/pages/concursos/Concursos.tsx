@@ -329,7 +329,7 @@ const Concursos = () => {
         <PageHeader
           title="Concursos Públicos"
           subtitle="Últimas oportunidades"
-          onBack={() => goBack()}
+          onBack={() => navigate('/')}
         />
 
         {/* Barra de 5 Dias */}

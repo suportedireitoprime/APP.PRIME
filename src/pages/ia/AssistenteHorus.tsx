@@ -104,7 +104,7 @@ const AssistenteHorus = () => {
   const back = () => {
     haptic.selection();
     if (tab !== 'main') setTab('main');
-    else goBack();
+    else navigate('/');
   };
 
   const titles: Record<HorusTab, string> = {
