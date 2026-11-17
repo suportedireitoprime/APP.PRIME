@@ -1962,7 +1962,7 @@ export function AdminHojeCards() {
       })
     : rows;
 
-  const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0]) => {
+  const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0], isBottomRow = false) => {
     const cardCount = typeof counts[id] === 'number' && Number.isFinite(counts[id]) ? counts[id] : 0;
     const isZero = cardCount === 0;
     const isFinancial = id === 'trial' || id === 'renovou';
@@ -1975,31 +1975,39 @@ export function AdminHojeCards() {
         key={id}
         onClick={() => openCard(id)}
         className={cn(
-          "group relative rounded-xl border p-2 sm:p-2.5 text-left transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[66px] sm:min-h-[70px]",
+          "group relative rounded-xl border text-left transition-all duration-300 overflow-hidden flex flex-col justify-between",
+          isBottomRow
+            ? "p-1.5 sm:p-2 min-h-[58px] sm:min-h-[64px]"
+            : "p-2 sm:p-2.5 min-h-[66px] sm:min-h-[70px]",
           isPulsing
             ? "border-emerald-400 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/60 scale-[1.02]"
             : "border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98]"
         )}
       >
-        <div className="flex items-start justify-between w-full gap-1">
+        <div className="flex items-start justify-between w-full gap-0.5 sm:gap-1">
           <div className={cn(
-            "w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-colors shrink-0",
+            "rounded-md flex items-center justify-center transition-colors shrink-0",
+            isBottomRow ? "w-[18px] h-[18px] sm:w-5 sm:h-5" : "w-5 h-5 sm:w-6 sm:h-6",
             isPulsing
               ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 animate-pulse"
               : "bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20"
           )}>
-            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <Icon className={isBottomRow ? "w-2.5 h-2.5 sm:w-3 sm:h-3" : "w-3 h-3 sm:w-3.5 sm:h-3.5"} />
           </div>
 
           <div className="text-right flex flex-col items-end min-w-0">
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
               {cardCount - (seenCounts[id] || 0) > 0 && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1 py-[0.5px] font-body text-[7.5px] sm:text-[8.5px] font-bold text-emerald-400 animate-pulse shrink-0">
+                <span className={cn(
+                  "inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 font-body font-bold text-emerald-400 animate-pulse shrink-0",
+                  isBottomRow ? "px-0.5 py-[0.5px] text-[7px] sm:text-[7.5px]" : "px-1 py-[0.5px] text-[7.5px] sm:text-[8.5px]"
+                )}>
                   +{cardCount - (seenCounts[id] || 0)}
                 </span>
               )}
               <span className={cn(
-                "font-['Plus_Jakarta_Sans',sans-serif] text-[15px] sm:text-[19px] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
+                "font-['Plus_Jakarta_Sans',sans-serif] font-extrabold tracking-tight leading-none tabular-nums shrink-0",
+                isBottomRow ? "text-[13px] sm:text-[16px]" : "text-[15px] sm:text-[19px]",
                 isPulsing ? "text-emerald-300" : isZero ? "text-zinc-500" : "text-foreground"
               )}>
                 {cardCount}
@@ -2007,19 +2015,26 @@ export function AdminHojeCards() {
             </div>
             {isFinancial && (
               <span className={cn(
-                "block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-bold mt-0.5 truncate max-w-full leading-none",
+                "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 leading-none whitespace-nowrap",
+                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]",
                 valorFinanceiro === 0 ? "text-zinc-500" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
               </span>
             )}
             {id === 'paywall' && (
-              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-semibold mt-0.5 text-zinc-400 truncate max-w-full leading-none" title="Início do funil de vendas">
+              <span className={cn(
+                "block font-['Plus_Jakarta_Sans',sans-serif] font-semibold mt-0.5 text-zinc-400 leading-none whitespace-nowrap",
+                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]"
+              )} title="Início do funil de vendas">
                 1º passo
               </span>
             )}
             {id === 'viu_planos' && (
-              <span className="block font-['Plus_Jakarta_Sans',sans-serif] text-[7.5px] sm:text-[8.5px] font-bold mt-0.5 text-sky-400 truncate max-w-full leading-none" title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
+              <span className={cn(
+                "block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 text-sky-400 leading-none whitespace-nowrap",
+                isBottomRow ? "text-[7px] xs:text-[7.5px] sm:text-[8px]" : "text-[7.5px] sm:text-[8.5px]"
+              )} title="Taxa de conversão de quem abriu a tela de assinaturas para o checkout">
                 {counts.paywall > 0 ? `${((cardCount / counts.paywall) * 100).toFixed(0)}% conv.` : '0% conv.'}
               </span>
             )}
@@ -2027,7 +2042,8 @@ export function AdminHojeCards() {
         </div>
 
         <div className={cn(
-          "font-body text-[9px] sm:text-[10.5px] leading-tight mt-1 font-medium truncate sm:line-clamp-2",
+          "font-body leading-tight mt-1 font-medium whitespace-normal break-words",
+          isBottomRow ? "text-[8px] xs:text-[8.5px] sm:text-[9.5px]" : "text-[9px] sm:text-[10.5px]",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}
@@ -2082,12 +2098,12 @@ export function AdminHojeCards() {
 
       {/* Linha 1: 3 cards de Tráfego e Cadastros */}
       <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-2 sm:mb-2.5">
-        {CARDS.slice(0, 3).map(renderCardButton)}
+        {CARDS.slice(0, 3).map(c => renderCardButton(c, false))}
       </div>
 
       {/* Linha 2: 4 cards de Conversão, Vendas e Renovações na mesma linha */}
-      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2">
-        {CARDS.slice(3).map(renderCardButton)}
+      <div className="grid grid-cols-4 gap-1 xs:gap-1.5 sm:gap-2 mb-2">
+        {CARDS.slice(3).map(c => renderCardButton(c, true))}
       </div>
 
       {/* Régua Visual do Funil de Conversão (Item 4) */}

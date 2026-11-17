@@ -147,17 +147,17 @@ const HomeHeaderHero = ({
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
-        <div className="relative z-10 pt-4 sm:pt-5 flex flex-col justify-start">
+        <div className="relative z-10 pt-2.5 sm:pt-3.5 flex flex-col justify-start">
           <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
             <HomeBrandBanner />
-            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-1 sm:pt-2 pr-1 sm:pr-2">
+            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-0.5 sm:pt-1 pr-1 sm:pr-2">
               <HomeTrialCard />
             </div>
           </div>
         </div>
 
         {/* Atalhos Rápidos — dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3 sm:pb-3.5">
+        <div className="relative z-10 px-3 sm:px-5 pt-1.5 pb-2.5 sm:pb-3">
           <HomeActionShortcuts />
         </div>
       </div>

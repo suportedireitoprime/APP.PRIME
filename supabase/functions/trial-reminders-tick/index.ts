@@ -26,7 +26,7 @@ serve(async (req) => {
     const connection = await pool.connect();
 
     try {
-      // 1. Garante que a tabela de idempotência exista
+      // 1. Garante que a tabela de idempotência exista e tenha todos os privilégios concedidos
       await connection.queryObject`
         CREATE TABLE IF NOT EXISTS public.trial_notifications_sent (
           id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -37,6 +37,18 @@ serve(async (req) => {
           metadata jsonb DEFAULT '{}'::jsonb,
           CONSTRAINT uq_trial_notif UNIQUE(user_id, notification_type)
         );
+      `;
+
+      await connection.queryObject`
+        GRANT ALL ON TABLE public.trial_notifications_sent TO service_role, postgres;
+        GRANT SELECT, INSERT, UPDATE ON TABLE public.trial_notifications_sent TO anon, authenticated;
+        ALTER TABLE public.trial_notifications_sent ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS service_role_trial_notifications ON public.trial_notifications_sent;
+        CREATE POLICY service_role_trial_notifications ON public.trial_notifications_sent 
+          FOR ALL TO service_role USING (true) WITH CHECK (true);
+        DROP POLICY IF EXISTS all_trial_notifications ON public.trial_notifications_sent;
+        CREATE POLICY all_trial_notifications ON public.trial_notifications_sent 
+          FOR ALL TO public USING (true) WITH CHECK (true);
       `;
 
       // 2. Busca usuários elegíveis para o aviso de "Últimas 6 Horas"
