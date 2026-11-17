@@ -575,7 +575,7 @@ export default function AtlasGlobe({
       camera.updateProjectionMatrix()
 
       const a = w / Math.max(h, 1)
-      let r = a < 0.75 ? 7.5 : a < 1.05 ? 6.5 : 5.8
+      let r = a < 0.65 ? 8.0 : a < 0.75 ? 7.6 : a < 1.05 ? 6.5 : 5.8
       if (a >= 1.05 && h < 560) r = 6.7
       sphericalRef.current.radius = r
       targetRef.current.radius = r
@@ -841,8 +841,10 @@ export default function AtlasGlobe({
 
         const hw = (chip.offsetWidth || 90) / 2
         const hh = (chip.offsetHeight || 36) / 2
+        const topSafe = h < 768 ? 96 : 80
+        const bottomSafe = h < 768 ? 72 : 52
         sx = Math.max(hw + 4, Math.min(w - hw - 4, sx))
-        sy = Math.max(hh + 4, Math.min(h - hh - 34, sy))
+        sy = Math.max(hh + topSafe, Math.min(h - hh - bottomSafe, sy))
 
         chip.style.left = `${sx}px`
         chip.style.top = `${sy}px`

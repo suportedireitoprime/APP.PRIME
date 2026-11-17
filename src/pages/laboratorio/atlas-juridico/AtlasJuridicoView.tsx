@@ -184,13 +184,13 @@ export default function AtlasJuridicoView() {
           <button
             type="button"
             onClick={() => navigate('/admin-laboratorio-aulas')}
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-amber-400/20 flex items-center justify-center text-amber-300 transition-all shadow-lg"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-amber-400/20 flex items-center justify-center text-amber-300 transition-all shadow-lg min-h-[48px]"
             aria-label="Voltar para Laboratório"
           >
-            <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
           <div className="kicker flex-1 text-center truncate px-2">{ARTICLE_LAW}</div>
-          <div className="w-10" />
+          <div className="w-12 h-12" />
         </div>
         <h1>
           <span className="art">{neighbor.label}</span> — {neighbor.name}

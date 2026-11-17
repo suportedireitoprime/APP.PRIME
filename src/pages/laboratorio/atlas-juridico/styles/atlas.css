@@ -58,6 +58,7 @@
   color: var(--ink);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
   background:
     radial-gradient(120% 90% at 50% 0%, #10263f 0%, var(--bg2) 55%, var(--bg) 100%);
@@ -76,9 +77,16 @@
 }
 
 .top {
+  position: relative;
+  z-index: 10;
   text-align: center;
-  padding: 10px 16px 0;
+  padding: calc(8px + env(safe-area-inset-top, 6px)) 12px 6px;
   flex: none;
+  background: linear-gradient(to bottom, rgba(5, 13, 26, 0.92) 0%, rgba(5, 13, 26, 0.6) 75%, transparent 100%);
+  pointer-events: none;
+}
+.top * {
+  pointer-events: auto;
 }
 .top .kicker {
   font-size: 0.68rem;
@@ -89,38 +97,45 @@
 }
 .top h1 {
   margin: 2px 0 0;
-  font-size: clamp(1.5rem, 4.5vw, 2.3rem);
-  line-height: 1.1;
+  font-size: clamp(1.2rem, 4vw, 2.1rem);
+  line-height: 1.15;
 }
 .top h1 .art {
   color: var(--gold-bright);
 }
 .top .sub {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--ink2);
-  font-size: 0.95rem;
+  font-size: clamp(0.78rem, 2.8vw, 0.95rem);
 }
 
 /* Selo "% estudado": pílula discreta embaixo do título, nunca sobre o globo. */
 .progress-pill {
   display: inline-block;
-  margin-top: 8px;
-  padding: 3px 12px;
+  margin-top: 4px;
+  padding: 2px 10px;
   border: 1px solid rgba(217, 169, 44, 0.55);
   border-radius: 999px;
-  background: rgba(18, 29, 49, 0.8);
+  background: rgba(18, 29, 49, 0.85);
   color: var(--gold-bright);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 700;
 }
 
-/* ---------- Palco do globo ---------- */
+/* ---------- Palco do globo (Fundo Imersivo Total) ---------- */
 .stage {
-  position: relative;
-  flex: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
   min-height: 0;
+  overflow: hidden;
+  pointer-events: auto;
 }
 .stage canvas {
+  width: 100% !important;
+  height: 100% !important;
   display: block;
   touch-action: none;
 }
@@ -138,15 +153,17 @@
 .hint {
   position: absolute;
   left: 50%;
-  bottom: 10px;
+  bottom: calc(66px + env(safe-area-inset-bottom, 12px));
   transform: translateX(-50%);
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(5, 13, 26, 0.65);
+  background: rgba(5, 13, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--ink2);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   white-space: nowrap;
   pointer-events: none;
+  z-index: 10;
 }
 
 /* Anel de progresso em 5 trechos ao redor do globo (SVG sobre o palco). */
@@ -154,9 +171,10 @@
   position: absolute;
   inset: 0;
   margin: auto;
-  width: min(64dvh, 92vw);
+  width: min(60dvh, 88vw);
   aspect-ratio: 1;
   pointer-events: none;
+  z-index: 2;
 }
 .progress-ring circle {
   fill: none;
@@ -193,6 +211,17 @@
   box-shadow: var(--shadow);
   transition: opacity 0.25s ease;
   will-change: left, top;
+}
+@media (max-width: 767px) {
+  .gmarker {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+  .gmarker .dot {
+    width: 6px;
+    height: 6px;
+  }
 }
 .gmarker .dot {
   width: 8px;
@@ -231,23 +260,96 @@
   to { transform: scale(9); opacity: 0; }
 }
 
-/* ---------- Planetas vizinhos ---------- */
+/* ---------- Planetas vizinhos (Mobile: Menores e mais abaixo) ---------- */
 .planet {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   background: none;
   border: none;
   padding: 0;
-  z-index: 8;
-  max-width: 132px;
+  z-index: 15;
+  pointer-events: auto;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.planet-left { left: 6px; }
-.planet-right { right: 6px; }
+.planet:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 767px) {
+  .planet {
+    top: auto;
+    bottom: calc(68px + env(safe-area-inset-bottom, 12px));
+    max-width: 90px;
+  }
+  .planet-left { left: calc(10px + env(safe-area-inset-left, 0px)); }
+  .planet-right { right: calc(10px + env(safe-area-inset-right, 0px)); }
+  .planet-globe {
+    width: 44px;
+    height: 44px;
+    box-shadow:
+      inset -8px -4px 14px rgba(2, 6, 15, 0.85),
+      inset 4px 2px 8px rgba(140, 190, 255, 0.25),
+      0 0 0 1px rgba(217, 169, 44, 0.5),
+      0 0 14px rgba(63, 127, 209, 0.4),
+      0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+  .planet-label {
+    text-align: center;
+    background: rgba(10, 17, 32, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 2px 6px;
+    font-size: 0.6rem;
+    line-height: 1.15;
+    max-width: 84px;
+  }
+  .planet-label strong {
+    display: block;
+    color: var(--gold-bright);
+    font-size: 0.62rem;
+  }
+  .planet-travel {
+    border: 1px solid var(--gold);
+    background: var(--gold);
+    color: #1a1405;
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-height: 1.35rem;
+  }
+  .planet-links {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .planet {
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 132px;
+    gap: 6px;
+  }
+  .planet-left { left: 16px; }
+  .planet-right { right: 16px; }
+  .planet-globe {
+    width: 80px;
+    height: 80px;
+  }
+  .planet-label {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+  }
+  .planet-travel {
+    font-size: 0.78rem;
+    padding: 2px 12px;
+    min-height: 1.8rem;
+  }
+}
+
 .planet-canvas {
   width: 84px;
   height: 84px;
@@ -299,35 +401,53 @@
   to { stroke-dashoffset: -28; }
 }
 
-/* ---------- Menu de rodapé: pílulas flutuantes meio brancas ---------- */
+/* ---------- Menu de rodapé (Dock com Carrossel Tátil no Mobile) ---------- */
 .dock {
+  position: relative;
+  z-index: 20;
+  margin-top: auto;
   flex: none;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
-  background: transparent;
-  border: none;
-}
-.dock button {
-  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 12px));
+  background: linear-gradient(to top, rgba(5, 13, 26, 0.98) 0%, rgba(5, 13, 26, 0.8) 75%, transparent 100%);
+  border: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  pointer-events: auto;
+}
+.dock::-webkit-scrollbar {
+  display: none;
+}
+.dock button {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+  min-height: 40px;
+  transition: all 0.2s ease;
+}
+.dock button:active {
+  transform: scale(0.96);
 }
 .dock button .ico {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   display: inline-flex;
 }
 .dock button .ico svg {
@@ -343,6 +463,21 @@
   background: var(--gold);
   border-color: var(--gold);
   color: #1a1405;
+}
+
+@media (min-width: 768px) {
+  .dock {
+    justify-content: center;
+    flex-wrap: wrap;
+    background: transparent;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 12px));
+    gap: 8px;
+  }
+  .dock button {
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    min-height: 42px;
+  }
 }
 
 /* ---------- Card flutuante de prévia ---------- */
@@ -429,7 +564,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
   border-bottom: 1px solid var(--line);
 }
 .back-btn {
@@ -438,6 +573,9 @@
   border-radius: 999px;
   padding: 6px 14px;
   font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 .sheet-head .meta { flex: 1; }
 .sheet-head .meta small { display: block; color: var(--gold); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
