@@ -188,6 +188,36 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
     })();
   }, [boletimId, comentariosOpen, idx]);
 
+  const goTo = (n: number) => {
+    const clamped = Math.max(0, Math.min(scenes.length - 1, n));
+    if (clamped === idx) return;
+    setDirection(clamped > idx ? 1 : -1);
+    setAudioProgress(0);
+    setIdx(clamped);
+    haptic.selection();
+  };
+
+  // Navegação por teclado no desktop (hook no topo, antes de retornos condicionais)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (comentariosOpen) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (idx + 1 < scenes.length) goTo(idx + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (idx > 0) goTo(idx - 1);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setPlaying((p) => !p);
+      } else if (e.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [idx, scenes.length, comentariosOpen, onClose]);
+
   if (!scene && !youtubeUrl) return null;
 
   // Player do YouTube (prioridade quando houver link)
@@ -215,36 +245,6 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
       </div>
     );
   }
-
-  const goTo = (n: number) => {
-    const clamped = Math.max(0, Math.min(scenes.length - 1, n));
-    if (clamped === idx) return;
-    setDirection(clamped > idx ? 1 : -1);
-    setAudioProgress(0);
-    setIdx(clamped);
-    haptic.selection();
-  };
-
-  // Navegação por teclado no desktop
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (comentariosOpen) return;
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        if (idx + 1 < scenes.length) goTo(idx + 1);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        if (idx > 0) goTo(idx - 1);
-      } else if (e.key === ' ') {
-        e.preventDefault();
-        setPlaying((p) => !p);
-      } else if (e.key === 'Escape') {
-        onClose?.();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [idx, scenes.length, comentariosOpen, onClose]);
 
   // Compartilhamento nativo ou cópia de link
   const compartilhar = async () => {

@@ -57,6 +57,7 @@ class MainActivity : BridgeActivity() {
         registerPlugin(ResumosNativePlugin::class.java)
         registerPlugin(NativeVideoaulasPlugin::class.java)
         registerPlugin(NativeRadar360Plugin::class.java)
+        registerPlugin(NativePdfViewerPlugin::class.java)
 
         // Injeta a view customizada da Splash Nativa por cima do WebView
         setupNativeSplash()

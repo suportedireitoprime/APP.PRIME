@@ -362,26 +362,8 @@ const ArtigoBottomSheet = ({
   const [anotacoesCount, setAnotacoesCount] = useState<number>(0);
   const [anotacoesRefreshTick, setAnotacoesRefreshTick] = useState(0);
 
-  // Realtime Presence
-  const [onlineCount, setOnlineCount] = useState(0);
-  useEffect(() => {
-    if (!tabelaNome || !artigo?.numero) return;
-    const channelName = `artigo:${tabelaNome}:${artigo.numero}`;
-    const channel = supabase.channel(channelName);
-    channel
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState();
-        setOnlineCount(Object.keys(state).length);
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          await channel.track({ online_at: new Date().toISOString() });
-        }
-      });
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [tabelaNome, artigo?.numero]);
+  // Realtime Presence removido para poupar cota de conexões e eliminar rate limit no Supabase
+  const [onlineCount] = useState(0);
 
   // Hook de narração
   const {

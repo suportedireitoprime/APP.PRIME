@@ -1,4 +1,5 @@
 import { Suspense, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useTrackArea } from "@/hooks/useTrackArea";
@@ -10,6 +11,7 @@ const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
 const Bibliotecas = () => {
   useTrackArea("biblioteca_aberta");
+  const navigate = useNavigate();
   const isDesktop = useIsDesktop();
 
   useEffect(() => {
@@ -48,6 +50,7 @@ const Bibliotecas = () => {
             setCustomPdfUrl(url);
           }}
           onAbrirMateria={(m) => setMateriaAberta(m)}
+          onBack={() => navigate('/')}
         />
 
         <BibliotecaModals
