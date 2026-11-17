@@ -146,6 +146,18 @@ const DEMAIS_CATEGORIAS_CARROSSEL: CategoriaMeioConfig[] = [
   },
 ];
 
+// Configuração do Carrossel Infinito Circular (Loop infinito Contínuo)
+const CARROSSEL_REPEAT = 9;
+const CARROSSEL_SET_SIZE = DEMAIS_CATEGORIAS_CARROSSEL.length;
+const CARROSSEL_MID_SET = Math.floor(CARROSSEL_REPEAT / 2); // 4
+
+const INFINITE_CATEGORIAS_CARROSSEL = Array.from({ length: CARROSSEL_REPEAT }, (_, setIdx) =>
+  DEMAIS_CATEGORIAS_CARROSSEL.map((cat) => ({
+    ...cat,
+    uniqueKey: `cat-meio-set${setIdx}-${cat.id}`,
+  }))
+).flat();
+
 // Configuração das Abas 3D das Grandes Matérias de Direito (Lista de Baixo)
 interface MateriaTabConfig {
   id: string;
@@ -413,19 +425,20 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   const [visibleLimit, setVisibleLimit] = useState<number>(30);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
-  // Estado do carrossel do meio (sempre inicia centralizado no meio)
+  // Estado do carrossel do meio (sempre inicia centralizado no meio do bloco infinito)
   const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(() =>
-    Math.floor(DEMAIS_CATEGORIAS_CARROSSEL.length / 2)
+    Math.floor(CARROSSEL_SET_SIZE / 2)
   );
   const carouselScrollerRef = useRef<HTMLDivElement>(null);
+  const recenterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Ao entrar na biblioteca, centraliza o carrossel no item do meio
+  // Ao entrar na biblioteca, centraliza o carrossel no item do meio do set central
   useEffect(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const midIdx = Math.floor(DEMAIS_CATEGORIAS_CARROSSEL.length / 2);
+    const startIndex = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + Math.floor(CARROSSEL_SET_SIZE / 2);
     const timer = setTimeout(() => {
-      const child = el.children[midIdx] as HTMLElement;
+      const child = el.children[startIndex] as HTMLElement;
       if (child) {
         const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
         el.scrollTo({ left: target, behavior: 'instant' as ScrollBehavior });
@@ -583,7 +596,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     toast.success(now ? 'Livro salvo na sua estante!' : 'Livro removido dos salvos');
   }, []);
 
-  // Manipuladores de rolagem e dots do carrossel do meio (idêntico a Leis em Alta)
+  // Manipuladores de rolagem e dots do carrossel do meio (Loop infinito contínuo e suave)
   const handleCarouselScroll = useCallback(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
@@ -599,20 +612,51 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         best = i;
       }
     }
-    setActiveCarouselIndex(best);
+    const realIdx = best % CARROSSEL_SET_SIZE;
+    setActiveCarouselIndex(realIdx);
+
+    // Re-centralização suave e invisível para manter o loop verdadeiramente infinito
+    if (recenterTimerRef.current) clearTimeout(recenterTimerRef.current);
+    recenterTimerRef.current = setTimeout(() => {
+      const currentSet = Math.floor(best / CARROSSEL_SET_SIZE);
+      if (currentSet < 2 || currentSet > CARROSSEL_REPEAT - 3) {
+        const targetIdx = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + realIdx;
+        const targetChild = el.children[targetIdx] as HTMLElement;
+        const currentChild = el.children[best] as HTMLElement;
+        if (targetChild && currentChild) {
+          const shift = targetChild.offsetLeft - currentChild.offsetLeft;
+          el.scrollLeft += shift;
+        }
+      }
+    }, 120);
   }, []);
 
-  const scrollCarouselToIndex = useCallback((index: number) => {
+  const scrollCarouselToIndex = useCallback((targetRealIndex: number) => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const child = el.children[index] as HTMLElement;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let closestIdx = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + targetRealIndex;
+    let closestDist = Infinity;
+    for (let set = 1; set < CARROSSEL_REPEAT - 1; set++) {
+      const idx = set * CARROSSEL_SET_SIZE + targetRealIndex;
+      const child = el.children[idx] as HTMLElement;
+      if (child) {
+        const mid = child.offsetLeft + child.clientWidth / 2;
+        const dist = Math.abs(mid - center);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestIdx = idx;
+        }
+      }
+    }
+    const child = el.children[closestIdx] as HTMLElement;
     if (!child) return;
     const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
     el.scrollTo({
       left: target,
       behavior: 'smooth',
     });
-    setActiveCarouselIndex(index);
+    setActiveCarouselIndex(targetRealIndex);
   }, []);
 
   return (
@@ -655,8 +699,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             onScroll={handleCarouselScroll}
             className="-mx-4 sm:-mx-6 md:-mx-8 px-[calc(50vw-68px)] sm:px-[calc(50vw-75px)] flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pt-3 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none items-center"
           >
-            {DEMAIS_CATEGORIAS_CARROSSEL.map((cat, idx) => {
-              const isActive = idx === activeCarouselIndex;
+            {INFINITE_CATEGORIAS_CARROSSEL.map((cat, idx) => {
+              const realIdx = idx % CARROSSEL_SET_SIZE;
+              const isActive = realIdx === activeCarouselIndex;
               const colecao = findColecao(cat.id);
               const coverUrl = colecao?.cover || bibliotecaCoverImg;
               const countVal = counts[cat.id] || cat.defaultCount;
@@ -664,7 +709,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
 
               return (
                 <div
-                  key={`cat-meio-${cat.id}`}
+                  key={cat.uniqueKey}
                   onClick={() => {
                     haptic.selection();
                     navigate(`/bibliotecas/${cat.id}`);
