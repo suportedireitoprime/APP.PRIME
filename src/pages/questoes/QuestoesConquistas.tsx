@@ -15,7 +15,7 @@ const QuestoesConquistas = () => {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-28">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Conquistas" subtitle="Desafios que você concluiu" onBack={() => goBack()} />
+        <PageHeader title="Conquistas" subtitle="Desafios que você concluiu" onBack={() => navigate('/questoes/desafios')} />
 
         <div className="px-4 py-5">
           {loading && <p className="text-sm text-muted-foreground">Carregando…</p>}

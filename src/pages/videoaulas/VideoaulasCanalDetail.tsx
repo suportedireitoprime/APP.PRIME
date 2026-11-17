@@ -59,7 +59,7 @@ export default function VideoaulasCanalDetail() {
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-background">
-      <PageHeader title={titulo} onBack={() => navigate(-1)} />
+      <PageHeader title={titulo} onBack={() => navigate('/videoaulas')} />
 
       <main className="flex-1 overflow-y-auto pb-32">
         {loading ? (

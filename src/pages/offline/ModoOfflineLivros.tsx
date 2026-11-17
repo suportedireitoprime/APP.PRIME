@@ -169,7 +169,7 @@ export default function ModoOfflineLivros() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => navigate("/biblioteca")}
+              onClick={() => navigate("/bibliotecas")}
               className="flex-1 min-w-[140px] h-10 rounded-xl bg-primary text-primary-foreground text-xs font-bold"
             >
               Escolher livros

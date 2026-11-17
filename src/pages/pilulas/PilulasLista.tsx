@@ -54,7 +54,7 @@ export default function PilulasLista() {
       <div className="relative z-10">
         <PageHeader
           title={title}
-          onBack={() => navigate(-1)}
+          onBack={() => navigate('/pilulas')}
           rightAction={<div className="w-8" />}
         />
         

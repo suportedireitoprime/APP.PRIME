@@ -70,7 +70,7 @@ const VideoaulasLeiSecaArtigos = () => {
       <PageHeader
         title={lei.sigla || lei.nome}
         description="Selecione o artigo para buscar aulas"
-        onBack={() => navigate(-1)}
+        onBack={() => navigate('/videoaulas/lei-seca')}
         theme="red"
       />
       <div className="px-4 mt-6 space-y-4">
