@@ -17,6 +17,7 @@ import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import { DesktopBibliotecaTabsBar, DESKTOP_TABS } from '@/components/desktop/DesktopBibliotecaTabsBar';
 import { DesktopBibliotecaModals } from '@/components/desktop/DesktopBibliotecaModals';
 import { DesktopColecaoCard } from '@/components/desktop/DesktopColecaoCard';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const BibliotecasDesktop = () => {
   const navigate = useNavigate();
@@ -42,10 +43,13 @@ const BibliotecasDesktop = () => {
   }, [navigate]);
 
   return (
-    <div className="h-[calc(100dvh-104px)] bg-background flex flex-col">
+    <div className="h-[calc(100dvh-104px)] bg-[#0D0D0D] flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <ShapeGrid />
+      </div>
       <DesktopOnboardingOverlay />
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 relative z-10">
         <DesktopSidebar activeTab="biblioteca" onTabChange={handleTabChange} />
 
         <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">

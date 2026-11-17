@@ -9,6 +9,7 @@ import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import { BibliotecaCategoriaLivroCard } from './BibliotecaCategoriaLivroCard';
 import { BibliotecaCategoriaAreaCard, type AreaItem } from './BibliotecaCategoriaAreaCard';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import type { ColecaoConfig, LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 interface BibliotecaCategoriaMobileViewProps {
@@ -96,9 +97,13 @@ export const BibliotecaCategoriaMobileView: React.FC<BibliotecaCategoriaMobileVi
   }, [livrosVisiveis, filtroAba, isLivroLendo, isLivroFavorito]);
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(24px+var(--sai-bottom,0px))]">
-      {/* Topo Minimalista Sem Capa */}
-      <PageHeader
+    <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(24px+var(--sai-bottom,0px))] relative overflow-x-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid />
+      </div>
+      <div className="relative z-10">
+        {/* Topo Minimalista Sem Capa */}
+        <PageHeader
         title={areaAtiva || colecao.label}
         subtitle={areaAtiva ? colecao.label : `${livros.length} obras disponíveis`}
         onBack={() => {
@@ -321,6 +326,7 @@ export const BibliotecaCategoriaMobileView: React.FC<BibliotecaCategoriaMobileVi
         open={!!livroAberto}
         onClose={handleCloseLivro}
       />
+      </div>
     </div>
   );
 };

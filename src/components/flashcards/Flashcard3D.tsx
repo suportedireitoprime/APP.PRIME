@@ -2,9 +2,17 @@ import { memo, useRef, useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen,
-  ListOrdered, XCircle, Mic, AlertTriangle, Edit3, HelpCircle, Undo2
+  ListOrdered, XCircle, Mic, AlertTriangle, Edit3, HelpCircle, Undo2,
+  ChevronDown, Sparkles, Maximize2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { FlashcardCard } from '@/lib/flashcardsQueries';
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { PremiumMarkdown } from '@/components/ui/PremiumMarkdown';
@@ -241,6 +249,21 @@ const Flashcard3D = memo(function Flashcard3D({
   const [selectedVF, setSelectedVF] = useState<boolean | null>(null);
   const [selectedPegadinha, setSelectedPegadinha] = useState<boolean | null>(null);
 
+  // Estados de Aprofundamento do Flashcard
+  const [aprofundar, setAprofundar] = useState(false);
+  const [modalAprofundarOpen, setModalAprofundarOpen] = useState(false);
+  const versoScrollRef = useRef<HTMLDivElement>(null);
+
+  const hasAprofundar = useMemo(() => {
+    return Boolean(
+      atual.exemplo ||
+      atual.base_legal ||
+      atual.dica ||
+      atual.reforco_conteudo ||
+      atual.resumo_ia
+    );
+  }, [atual.exemplo, atual.base_legal, atual.dica, atual.reforco_conteudo, atual.resumo_ia]);
+
   // Estados de Completar Lacunas
   const palavrasCorretas = useMemo(() => {
     if (tipoCard !== 'Completar Lacunas') return [];
@@ -302,10 +325,20 @@ const Flashcard3D = memo(function Flashcard3D({
     setSelectedWord(null);
     setIsListening(false);
     setTranscript('');
+    setAprofundar(false);
+    setModalAprofundarOpen(false);
     if (recognitionRef.current) {
       try { recognitionRef.current.abort(); } catch {}
     }
   }, [atual.id, idx]);
+
+  // Fecha aprofundamento ao desvirar o card
+  useEffect(() => {
+    if (!virado) {
+      setAprofundar(false);
+      setModalAprofundarOpen(false);
+    }
+  }, [virado]);
 
   const handleResponder = (status: 'compreendido' | 'revisar') => {
     onResponder(status, () => {
@@ -633,6 +666,7 @@ const Flashcard3D = memo(function Flashcard3D({
 
               {/* Verso da Carta — Dark Glassmorphism Padrão Questões */}
               <div
+                ref={versoScrollRef}
                 className="absolute inset-0 rounded-[32px] border border-zinc-800/90 p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col text-zinc-100 [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl backdrop-blur-xl bg-zinc-900/95"
                 style={{
                   transform: 'rotateY(180deg)',
@@ -677,7 +711,10 @@ const Flashcard3D = memo(function Flashcard3D({
                     </span>
                   </div>
 
-                  <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
+                  <div
+                    className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className={`prose prose-invert max-w-prose text-center flex-1 flex flex-col justify-center ${
                       atual.resposta.length < 40 ? 'text-2xl sm:text-3xl prose-p:text-2xl sm:prose-p:text-3xl' :
                       atual.resposta.length < 80 ? 'text-xl sm:text-2xl prose-p:text-xl sm:prose-p:text-2xl' :
@@ -688,11 +725,89 @@ const Flashcard3D = memo(function Flashcard3D({
                     </div>
                   </div>
                   
-                  {(atual.exemplo || atual.base_legal || atual.dica) && (
-                    <div className="mt-3 border-t border-zinc-800/80 pt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
-                      {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
-                      {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
-                      {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+                  {hasAprofundar && (
+                    <div className="mt-3 border-t border-zinc-800/80 pt-3" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          haptic.selection?.();
+                          const nextState = !aprofundar;
+                          setAprofundar(nextState);
+                          if (nextState) {
+                            setTimeout(() => {
+                              if (versoScrollRef.current) {
+                                versoScrollRef.current.scrollTo({
+                                  top: versoScrollRef.current.scrollHeight,
+                                  behavior: 'smooth',
+                                });
+                              }
+                            }, 120);
+                          }
+                        }}
+                        className={cn(
+                          "w-full flex items-center justify-between px-4 py-3 rounded-2xl border transition-all duration-300 font-semibold text-xs sm:text-sm select-none cursor-pointer",
+                          aprofundar
+                            ? "bg-blue-950/50 border-blue-500/50 text-blue-200 shadow-lg shadow-blue-950/40"
+                            : "bg-zinc-800/80 hover:bg-zinc-800 border-zinc-700/70 hover:border-zinc-600 text-zinc-200 hover:text-white shadow-md active:scale-[0.99]"
+                        )}
+                        aria-expanded={aprofundar}
+                        aria-label="Aprofundar conceito do flashcard"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Sparkles className={cn("w-4 h-4 transition-colors", aprofundar ? "text-blue-400" : "text-amber-400")} />
+                          <span className="font-extrabold tracking-wide">
+                            {aprofundar ? "Recolher Aprofundamento" : "Aprofundar"}
+                          </span>
+                          <span className="text-[11px] font-medium text-zinc-400 hidden xs:inline">
+                            • {[
+                              atual.exemplo && "Exemplo Prático",
+                              atual.base_legal && "Base Legal",
+                              atual.dica && "Dica",
+                              atual.reforco_conteudo && "Reforço",
+                              atual.resumo_ia && "Resumo",
+                            ].filter(Boolean).join(", ")}
+                          </span>
+                        </span>
+                        <ChevronDown className={cn("w-4 h-4 text-zinc-400 transition-transform duration-300 shrink-0", aprofundar && "rotate-180 text-blue-400")} />
+                      </button>
+
+                      <AnimatePresence>
+                        {aprofundar && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                            className="overflow-hidden space-y-3"
+                          >
+                            <div className="flex items-center justify-between px-1 pb-1">
+                              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <Sparkles className="w-3 h-3 text-blue-400" />
+                                Detalhamento Completo
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  haptic.selection?.();
+                                  setModalAprofundarOpen(true);
+                                }}
+                                className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                              >
+                                <Maximize2 className="w-3 h-3" />
+                                <span>Tela Cheia</span>
+                              </button>
+                            </div>
+
+                            {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
+                            {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
+                            {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+                            {atual.reforco_conteudo && <Bloco icon={Sparkles} titulo="Reforço de Conteúdo" texto={atual.reforco_conteudo} />}
+                            {atual.resumo_ia && <Bloco icon={Sparkles} titulo="Resumo Inteligente" texto={atual.resumo_ia} />}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   )}
                 </div>
@@ -1149,6 +1264,38 @@ const Flashcard3D = memo(function Flashcard3D({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modal / Dialog de Aprofundamento em Tela Cheia */}
+      <Dialog open={modalAprofundarOpen} onOpenChange={setModalAprofundarOpen}>
+        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto bg-zinc-900 border border-zinc-800 text-zinc-100 rounded-3xl p-6 shadow-2xl">
+          <DialogHeader className="pb-3 border-b border-zinc-800">
+            <DialogTitle className="flex items-center gap-2 text-base font-extrabold text-white">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Aprofundamento • {cleanAssunto || cleanTema}</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-zinc-400">
+              Detalhes práticos, fundamentação jurídica e dicas de fixação.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="rounded-2xl bg-zinc-950/60 border border-zinc-800/80 p-4">
+              <p className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Resposta Essencial
+              </p>
+              <div className="text-sm font-medium text-zinc-200">
+                <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</PremiumMarkdown>
+              </div>
+            </div>
+
+            {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
+            {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
+            {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+            {atual.reforco_conteudo && <Bloco icon={Sparkles} titulo="Reforço de Conteúdo" texto={atual.reforco_conteudo} />}
+            {atual.resumo_ia && <Bloco icon={Sparkles} titulo="Resumo Inteligente" texto={atual.resumo_ia} />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 });

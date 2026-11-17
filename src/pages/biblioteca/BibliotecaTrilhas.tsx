@@ -14,6 +14,7 @@ import { readLeituraProgress } from '@/lib/leituraProgress';
 import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { PrimeImage } from '@/components/ui/PrimeImage';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -270,8 +271,12 @@ export const BibliotecaTrilhas = () => {
   ) : [];
 
   return (
-    <div className="min-h-screen bg-background">
-      <AnimatePresence mode="wait">
+    <div className="min-h-screen bg-[#0D0D0D] relative overflow-x-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid />
+      </div>
+      <div className="relative z-10">
+        <AnimatePresence mode="wait">
         {!isTimelineView && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }} className="w-full flex flex-col pb-32">
             <PageHeader
@@ -371,6 +376,7 @@ export const BibliotecaTrilhas = () => {
       )}
       
       {!isTimelineView && <BibliotecaBottomNav />}
+      </div>
     </div>
   );
 };

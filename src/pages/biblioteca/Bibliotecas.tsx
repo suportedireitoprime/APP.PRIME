@@ -6,6 +6,7 @@ import { useTrackArea } from "@/hooks/useTrackArea";
 import { useBibliotecasData } from '@/components/biblioteca/useBibliotecasData';
 import { BibliotecaMobileContent } from '@/components/biblioteca/BibliotecaMobileContent';
 import { BibliotecaModals } from '@/components/biblioteca/BibliotecaModals';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
@@ -33,14 +34,17 @@ const Bibliotecas = () => {
 
   if (isDesktop) {
     return (
-      <Suspense fallback={<div className="min-h-dvh bg-[#181818]" />}>
+      <Suspense fallback={<div className="min-h-dvh bg-[#0D0D0D]" />}>
         <BibliotecasDesktop />
       </Suspense>
     );
   }
 
   return (
-    <main className="min-h-dvh bg-[#181818] text-white pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
+    <main className="min-h-dvh bg-[#0D0D0D] text-white pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid />
+      </div>
       <div className="relative z-10">
         <BibliotecaMobileContent
           counts={counts}
