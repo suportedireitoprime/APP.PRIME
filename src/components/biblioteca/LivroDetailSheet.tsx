@@ -66,6 +66,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
   useEscapeKey(open, handleCloseSafe);
   const isDesktop = useIsDesktop();
   const contentRef = useRef<HTMLDivElement>(null);
+  const initialTriggeredRef = useRef(false);
   const [readerMode, setReaderMode] = useState<null | 'pdf' | 'nativa' | 'online'>(null);
   const [lerDialog, setLerDialog] = useState(false);
 
@@ -162,16 +163,14 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
     if (el) el.scrollTop = 0;
   }, [open, currentLivro?.id]);
 
-  if (!currentLivro) return null;
-
-  const hasOnline = !!currentLivro.link;
-  const hasPdf = !!(currentLivro.download || currentLivro.versoesPdf?.clara);
-  const hasVersaoEscura = !!(currentLivro.downloadEscura || currentLivro.versoesPdf?.escura);
-  const urlClara = currentLivro.versoesPdf?.clara || currentLivro.download;
-  const urlEscura = currentLivro.versoesPdf?.escura || currentLivro.downloadEscura;
+  const hasOnline = !!currentLivro?.link;
+  const hasPdf = !!(currentLivro?.download || currentLivro?.versoesPdf?.clara);
+  const hasVersaoEscura = !!(currentLivro?.downloadEscura || currentLivro?.versoesPdf?.escura);
+  const urlClara = currentLivro?.versoesPdf?.clara || currentLivro?.download;
+  const urlEscura = currentLivro?.versoesPdf?.escura || currentLivro?.downloadEscura;
 
   const ensurePdfLocalUrl = async (urlTarget?: string | null): Promise<string> => {
-    const raw = urlTarget || currentLivro.download;
+    const raw = urlTarget || currentLivro?.download;
     if (!raw) return '';
     if (Capacitor.isNativePlatform()) {
       const local = await getLocalPdfUrl(raw);
@@ -202,6 +201,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
   };
 
   const onSelectModo = async (modo: LerModo) => {
+    if (!currentLivro) return;
     haptic.selection();
     // Bloqueio de leitura: 1 livro por mês (bypass se este mesmo livro já foi liberado)
     if (!canUse) { setLerDialog(false); setGateOpen(true); return; }
@@ -242,7 +242,6 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
   };
 
   // Se veio com modo inicial direto (ex: continuar leitura), abre direto sem passar pelo dialog
-  const initialTriggeredRef = useRef(false);
   useEffect(() => {
     if (open && initialMode && currentLivro && !initialTriggeredRef.current) {
       initialTriggeredRef.current = true;
@@ -252,6 +251,8 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
       initialTriggeredRef.current = false;
     }
   }, [open, initialMode, currentLivro?.id]);
+
+  if (!currentLivro) return null;
 
   const renderContent = () => (
     <>
