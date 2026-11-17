@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { BookMarked, Heart, HardDrive, Library, Route as RouteIcon, Search, GraduationCap, Briefcase, Mic, Crown } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
-export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'personalizado' | 'trilhas';
+export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'personalizado' | 'trilhas' | 'em-alta';
 
 /** Abre um dos painéis da BibliotecaAtalhosBar (Leitura, Favoritos, Recentes, Personalizado). */
 export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {

@@ -1,12 +1,11 @@
 import { memo } from 'react';
-import { useNavigate, type NavigateFunction } from 'react-router-dom';
-import { BookOpen, Map, Bookmark, HardDrive } from 'lucide-react';
+import { BookOpen, Flame, Bookmark, HardDrive } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 
 const SHORTCUT_ITEMS = [
   { label: 'Leitura',     icon: BookOpen,   action: () => abrirAtalhoBiblioteca('leitura'),       color: '#C084FC' },
-  { label: 'Trilhas',     icon: Map,        action: (navigate: NavigateFunction) => navigate('/bibliotecas/trilhas'), color: '#C084FC' },
+  { label: 'Em Alta',     icon: Flame,      action: () => abrirAtalhoBiblioteca('em-alta'),       color: '#FB923C' },
   { label: 'Favoritos',   icon: Bookmark,   action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#C084FC' },
   { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#C084FC' },
 ];
@@ -16,8 +15,6 @@ interface BibliotecaActionShortcutsProps {
 }
 
 const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcutsProps) => {
-  const navigate = useNavigate();
-
   return (
     <div
       className={`flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl ${className}`}
@@ -30,7 +27,7 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
             type="button"
             onClick={() => {
               haptic.selection();
-              item.action(navigate);
+              item.action();
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
             className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"

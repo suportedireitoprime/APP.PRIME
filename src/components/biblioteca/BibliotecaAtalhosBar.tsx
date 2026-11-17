@@ -29,7 +29,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-type Tab = 'favoritos' | 'recentes' | 'leitura' | 'personalizado' | 'offline';
+import BibliotecaEmAltaSheet from './BibliotecaEmAltaSheet';
+type Tab = 'favoritos' | 'recentes' | 'leitura' | 'personalizado' | 'offline' | 'em-alta';
 
 interface Props {
   onAbrirLivro: (livro: LivroNormalizado) => void;
@@ -138,7 +139,17 @@ const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null, onAbrirCustomPd
           montado apenas para hospedar os painéis abertos pelo rodapé. */}
 
 
-      <Sheet open={!!active} onOpenChange={(o) => !o && setActive(null)}>
+      {/* Sheet dedicada do Ranking / Obras Em Alta */}
+      <BibliotecaEmAltaSheet
+        open={active === 'em-alta'}
+        onClose={() => setActive(null)}
+        onAbrirLivro={(l) => {
+          setActive(null);
+          onAbrirLivro(l);
+        }}
+      />
+
+      <Sheet open={!!active && active !== 'em-alta'} onOpenChange={(o) => !o && setActive(null)}>
         <SheetContent
           side="bottom"
           className="h-[90vh] p-0 rounded-t-3xl border-border/60 bg-background flex flex-col"

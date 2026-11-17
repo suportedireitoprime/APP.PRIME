@@ -389,6 +389,25 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/bibliotecas/em-alta",
+    "group": "Biblioteca Digital",
+    "label": "Biblioteca — Obras Em Alta & Ranking",
+    "description": "Ranking dos livros mais acessados, horas de leitura coletivas acumuladas e métricas",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "BibliotecaEmAlta",
+    "exampleUrl": "/bibliotecas/em-alta",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~95 KB",
+    "weightReasons": [
+      "Vitrine de obras jurídicas em alta",
+      "Capas otimizadas WebP"
+    ]
+  },
+  {
     "path": "/bibliotecas/trilhas",
     "group": "Biblioteca Digital",
     "label": "Biblioteca — Trilhas de Leitura",

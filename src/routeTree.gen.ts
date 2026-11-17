@@ -64,6 +64,7 @@ import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
 import { Route as AulasModuloModuloIdRouteImport } from './routes/aulas-modulo.$moduloId'
 import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$colecaoId'
+import { Route as BibliotecasEmAltaRouteImport } from './routes/bibliotecas.em-alta'
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
 import { Route as FerramentasDicionarioRouteImport } from './routes/ferramentas.dicionario'
@@ -432,6 +433,11 @@ const AulasModuloModuloIdRoute = AulasModuloModuloIdRouteImport.update({
 const BibliotecasColecaoIdRoute = BibliotecasColecaoIdRouteImport.update({
   id: '/$colecaoId',
   path: '/$colecaoId',
+  getParentRoute: () => BibliotecasRoute,
+} as any)
+const BibliotecasEmAltaRoute = BibliotecasEmAltaRouteImport.update({
+  id: '/em-alta',
+  path: '/em-alta',
   getParentRoute: () => BibliotecasRoute,
 } as any)
 const BibliotecasTrilhasRoute = BibliotecasTrilhasRouteImport.update({
@@ -981,6 +987,7 @@ export interface FileRoutesByFullPath {
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
+  '/bibliotecas/em-alta': typeof BibliotecasEmAltaRoute
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
@@ -1132,6 +1139,7 @@ export interface FileRoutesByTo {
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
+  '/bibliotecas/em-alta': typeof BibliotecasEmAltaRoute
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
@@ -1284,6 +1292,7 @@ export interface FileRoutesById {
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/aulas-modulo/$moduloId': typeof AulasModuloModuloIdRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
+  '/bibliotecas/em-alta': typeof BibliotecasEmAltaRoute
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
@@ -1437,6 +1446,7 @@ export interface FileRouteTypes {
     | '/ajustes/excluir-conta'
     | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
+    | '/bibliotecas/em-alta'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
@@ -1588,6 +1598,7 @@ export interface FileRouteTypes {
     | '/ajustes/excluir-conta'
     | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
+    | '/bibliotecas/em-alta'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
@@ -1739,6 +1750,7 @@ export interface FileRouteTypes {
     | '/ajustes/excluir-conta'
     | '/aulas-modulo/$moduloId'
     | '/bibliotecas/$colecaoId'
+    | '/bibliotecas/em-alta'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
@@ -2290,6 +2302,13 @@ declare module '@tanstack/react-router' {
       path: '/$colecaoId'
       fullPath: '/bibliotecas/$colecaoId'
       preLoaderRoute: typeof BibliotecasColecaoIdRouteImport
+      parentRoute: typeof BibliotecasRoute
+    }
+    '/bibliotecas/em-alta': {
+      id: '/bibliotecas/em-alta'
+      path: '/em-alta'
+      fullPath: '/bibliotecas/em-alta'
+      preLoaderRoute: typeof BibliotecasEmAltaRouteImport
       parentRoute: typeof BibliotecasRoute
     }
     '/bibliotecas/trilhas': {
@@ -2966,11 +2985,13 @@ const BibliotecasColecaoIdRouteWithChildren =
 
 interface BibliotecasRouteChildren {
   BibliotecasColecaoIdRoute: typeof BibliotecasColecaoIdRouteWithChildren
+  BibliotecasEmAltaRoute: typeof BibliotecasEmAltaRoute
   BibliotecasTrilhasRoute: typeof BibliotecasTrilhasRoute
 }
 
 const BibliotecasRouteChildren: BibliotecasRouteChildren = {
   BibliotecasColecaoIdRoute: BibliotecasColecaoIdRouteWithChildren,
+  BibliotecasEmAltaRoute: BibliotecasEmAltaRoute,
   BibliotecasTrilhasRoute: BibliotecasTrilhasRoute,
 }
 

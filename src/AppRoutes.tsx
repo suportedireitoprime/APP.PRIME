@@ -275,6 +275,7 @@ const DesktopLinkConfirm = lazy(() => import("./pages/compartilhado/DesktopLinkC
 const Bibliotecas = lazy(() => import("./pages/biblioteca/Bibliotecas.tsx"));
 const BibliotecaCategoria = lazy(() => import("./pages/biblioteca/BibliotecaCategoria.tsx"));
 const BibliotecaTrilhas = lazy(() => import("./pages/biblioteca/BibliotecaTrilhas.tsx"));
+const BibliotecaEmAlta = lazy(() => import("./pages/biblioteca/BibliotecaEmAlta.tsx"));
 
 const AdminAulasInterativas = lazyWithRetry(() => import("./pages/admin/AdminAulasInterativas.tsx"));
 const AdminLousaMagica = lazyWithRetry(() => import("./pages/admin/AdminLousaMagica.tsx"));
@@ -952,11 +953,13 @@ function AnimatedRoutes() {
           
           {/* Biblioteca Digital: Rota Principal, Sub-rotas e Aliases */}
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
-          <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition instant><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/em-alta" element={<ProtectedRoute><PageTransition instant><BibliotecaEmAlta /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/trilhas" element={<Navigate to="/bibliotecas/em-alta" replace />} />
           <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca" element={<Navigate to="/bibliotecas" replace />} />
-          <Route path="/biblioteca/trilhas" element={<Navigate to="/bibliotecas/trilhas" replace />} />
+          <Route path="/biblioteca/em-alta" element={<Navigate to="/bibliotecas/em-alta" replace />} />
+          <Route path="/biblioteca/trilhas" element={<Navigate to="/bibliotecas/em-alta" replace />} />
           <Route path="/biblioteca/:colecaoId" element={<Navigate to="/bibliotecas/:colecaoId" replace />} />
           <Route path="/biblioteca/:colecaoId/:areaSlug" element={<Navigate to="/bibliotecas/:colecaoId/:areaSlug" replace />} />
 
