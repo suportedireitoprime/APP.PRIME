@@ -49,10 +49,20 @@ export default defineConfig({
       },
     ],
     resolve: {
-      alias: {
-        // Imported Direito Prime code uses the react-router API; serve it from a TanStack-backed shim.
-        "react-router-dom": path.resolve(__dirname, "src/lib/router-compat.tsx"),
-      },
+      alias: [
+        {
+          find: "react-router-dom",
+          replacement: path.resolve(__dirname, "src/lib/router-compat.tsx"),
+        },
+        {
+          find: /^use-sync-external-store\/shim\/with-selector(\.js)?$/,
+          replacement: path.resolve(__dirname, "src/lib/useSyncExternalStoreShim.ts"),
+        },
+        {
+          find: /^use-sync-external-store\/with-selector(\.js)?$/,
+          replacement: path.resolve(__dirname, "src/lib/useSyncExternalStoreShim.ts"),
+        },
+      ],
     },
     server: {
       watch: { ignored: ["**/public/**"] },
