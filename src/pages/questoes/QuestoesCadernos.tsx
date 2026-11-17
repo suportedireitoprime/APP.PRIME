@@ -39,7 +39,7 @@ const QuestoesCadernos = () => {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-24">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Cadernos" subtitle="Monte seus blocos de estudo" onBack={() => goBack()} />
+        <PageHeader title="Cadernos" subtitle="Monte seus blocos de estudo" onBack={() => navigate('/questoes')} />
 
         <div className="px-4 py-5">
           {/* Novo caderno */}

@@ -12,7 +12,7 @@ const QuestoesRevisar = () => {
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-32">
-      <PageHeader title="Revisar" subtitle="O que você errou volta aqui" onBack={goBack} />
+      <PageHeader title="Revisar" subtitle="O que você errou volta aqui" onBack={() => navigate('/questoes')} />
       <div className="mx-auto w-full max-w-3xl px-4 py-5">
         <ResolverPadrao
           questoes={questoes}

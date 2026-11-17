@@ -61,7 +61,7 @@ export default function QuestoesHistorico() {
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-safe">
-      <PageHeader title="Histórico de Sessões" onBack={() => goBack()} />
+      <PageHeader title="Histórico de Sessões" onBack={() => navigate('/questoes')} />
 
       <div className="mx-auto w-full max-w-3xl px-4 py-6">
         {sessoes.length === 0 ? (

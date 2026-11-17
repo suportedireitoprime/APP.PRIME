@@ -108,7 +108,7 @@ export default function ResumosLeis() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-dvh">
-        <PageHeader title="Leis" onBack={() => navigate(-1)} rightAction={<div className="w-8" />} />
+        <PageHeader title="Leis" onBack={() => navigate('/resumos-juridicos')} rightAction={<div className="w-8" />} />
 
         <div className="px-4 py-4 space-y-4">
           <div className="flex items-center gap-2">

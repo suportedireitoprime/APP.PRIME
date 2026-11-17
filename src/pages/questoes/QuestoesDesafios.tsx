@@ -36,7 +36,7 @@ const QuestoesDesafios = () => {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-28">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Desafios" subtitle="Constância vale mais que pressa" onBack={() => goBack()} />
+        <PageHeader title="Desafios" subtitle="Constância vale mais que pressa" onBack={() => navigate('/questoes')} />
 
         {/* Menu de alternância das trilhas */}
         <div className="-mx-0 mt-1 flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

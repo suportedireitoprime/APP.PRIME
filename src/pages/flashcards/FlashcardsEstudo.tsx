@@ -55,8 +55,6 @@ const FlashcardsEstudo = () => {
     
     if (fromPath) {
       navigate(fromPath);
-    } else if (window.history.length > 2) {
-      navigate(-1);
     } else {
       navigate('/flashcards');
     }

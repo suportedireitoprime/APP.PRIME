@@ -83,10 +83,10 @@ export default function PilulasLeiSeca({ slug }: { slug: LeiSecaSlug }) {
             <button
               onClick={() => {
                 haptic.selection();
-                navigate(-1);
+                navigate('/pilulas');
               }}
               className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 flex items-center justify-center border border-white/10 active:opacity-70 transition-transform"
-              aria-label="Voltar"
+              aria-label="Voltar para Pílulas"
             >
               <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />
             </button>

@@ -257,7 +257,7 @@ export const BibliotecaTrilhas = () => {
       setColecaoAberta(null);
       return;
     }
-    navigate('/biblioteca');
+    navigate('/bibliotecas');
   };
 
   const handleOpenReader = (livro: LivroNormalizado) => {
