@@ -54,6 +54,7 @@ import {
   Route as RouteIcon,
   Presentation,
   FlaskConical,
+  Globe,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -65,6 +66,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
   "/admin-laboratorio-aulas": () => import("./AdminLaboratorioAulas"),
+  "/admin-atlas-juridico": () => import("../laboratorio/atlas-juridico/AtlasJuridicoView"),
   "/admin-lousa-magica": () => import("./AdminLousaMagica"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
@@ -195,10 +197,17 @@ const CATEGORIES: Category[] = [
   {
     id: "laboratorio-cat",
     title: "Laboratório",
-    desc: "Aulas teste com novo layout visual: diagramas, tabelas e setas",
+    desc: "Aulas teste e experimentos de layout visual, 3D e novas dinâmicas",
     icon: FlaskConical,
     route: "/admin-laboratorio-aulas",
     items: [
+      {
+        id: "atlas-juridico",
+        label: "Atlas Jurídico 3D",
+        icon: Globe,
+        desc: "Globo 3D interativo com as 7 funções do Art. 5º do CP (Territorialidade)",
+        route: "/admin-atlas-juridico",
+      },
       {
         id: "laboratorio-aulas",
         label: "Laboratório de Layout",

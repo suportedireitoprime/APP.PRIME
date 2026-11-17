@@ -13,7 +13,8 @@ import {
   Unlock,
   CheckCircle2,
   FileCode2,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
@@ -27,7 +28,7 @@ const PlayerAulaNativo = lazy(() =>
   import('@/components/aulas-interativas/PlayerAulaNativo').then(m => ({ default: m.PlayerAulaNativo }))
 );
 
-type LabFiltro = 'todos' | 'aulas' | 'conversao';
+type LabFiltro = 'todos' | 'atlas' | 'aulas' | 'conversao';
 
 export default function AdminLaboratorioAulas() {
   const navigate = useNavigate();
@@ -119,7 +120,18 @@ export default function AdminLaboratorioAulas() {
                   : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Todos (2)
+              Todos (3)
+            </button>
+            <button
+              type="button"
+              onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('atlas'); }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                filtroAtivo === 'atlas'
+                  ? 'bg-amber-400 text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+              }`}
+            >
+              Atlas Jurídico 3D
             </button>
             <button
               type="button"
@@ -152,6 +164,56 @@ export default function AdminLaboratorioAulas() {
 
         {/* ── GRID DE PROTÓTIPOS MINIMALISTAS ── */}
         <div className="space-y-3.5">
+
+          {/* ── PROTÓTIPO NOVO: ATLAS JURÍDICO 3D (CP ART. 5º) ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'atlas') && (
+            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-gradient-to-r from-blue-950/40 via-zinc-900/70 to-amber-950/20 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all hover:border-amber-400/60 relative overflow-hidden group">
+              <div className="flex items-start gap-3.5 sm:gap-4.5">
+                {/* Miniatura do Globo */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-gradient-to-br from-blue-900 to-zinc-950 shadow-md flex items-center justify-center p-2">
+                  <Globe className="w-8 h-8 text-amber-400 animate-spin" style={{ animationDuration: '20s' }} />
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
+                    3D TERRA
+                  </span>
+                </div>
+
+                {/* Conteúdo */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      NOVO · 3D INTERATIVO
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      CP Art. 5º · Territorialidade
+                    </span>
+                  </div>
+
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    Atlas Jurídico 3D
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                  </h3>
+
+                  <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                    Globo 3D segurado pela mão de Têmis com 7 funções de estudo (Texto, Ouvir, Assistir, Entender, Praticar, Aprofundar e Meu Estudo), avião em órbita e planetas vizinhos.
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('medium'); } catch {}
+                        navigate('/admin-atlas-juridico');
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:scale-95 text-black font-mono font-bold text-xs tracking-wider transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-black" />
+                      ABRIR ATLAS 3D
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── PROTÓTIPO 1: TELA PÓS-TRIAL DE 3 DIAS (NOVA FUNÇÃO) ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'conversao') && (
