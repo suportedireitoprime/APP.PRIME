@@ -83,9 +83,9 @@ const HomeHeaderHero = ({
 
   return (
     <>
-      {/* Shell sÃ³lido, opaco e com blindagem contra culling e overscroll */}
+      {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
         style={{
           transform: "translateZ(0)",
           backgroundColor: "#050505",
@@ -147,7 +147,7 @@ const HomeHeaderHero = ({
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
-        <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[120px]">
+        <div className="relative z-10 pt-4 sm:pt-5 flex flex-col justify-start">
           <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
             <HomeBrandBanner />
             <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-1 sm:pt-2 pr-1 sm:pr-2">
@@ -157,7 +157,7 @@ const HomeHeaderHero = ({
         </div>
 
         {/* Atalhos Rápidos — dentro do painel */}
-        <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
+        <div className="relative z-10 px-3 sm:px-5 pt-2 pb-3 sm:pb-3.5">
           <HomeActionShortcuts />
         </div>
       </div>
