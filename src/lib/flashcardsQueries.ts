@@ -212,16 +212,20 @@ export const useFlashcardsSessao = (params: {
           }
         }
 
+        const effectiveTipos = (params.tipos && params.tipos.length > 0 && !params.tipos.some(t => t.toLowerCase() === 'todos') && params.tipos.length < 7)
+          ? params.tipos
+          : null;
+
         let { data, error } = await supabase.rpc('flashcards_sessao', {
           _areas: normalizedAreas,
           _temas: effectiveTemas,
           _modo: params.modo,
           _deck_id: params.deckId,
           _limit: effectiveLimit,
-          _tipos: params.tipos && params.tipos.length > 0 ? params.tipos : null,
+          _tipos: effectiveTipos,
         });
 
-        // Fallback seguro: se com o filtro de temas retornou 0 cards, tenta sem filtro de temas
+        // Fallback 1: se com o filtro de temas retornou 0 cards, tenta sem filtro de temas
         if ((!data || data.length === 0) && effectiveTemas && effectiveTemas.length > 0) {
           const retry = await supabase.rpc('flashcards_sessao', {
             _areas: normalizedAreas,
@@ -229,10 +233,25 @@ export const useFlashcardsSessao = (params: {
             _modo: params.modo,
             _deck_id: params.deckId,
             _limit: effectiveLimit,
-            _tipos: params.tipos && params.tipos.length > 0 ? params.tipos : null,
+            _tipos: effectiveTipos,
           });
           if (!retry.error && retry.data && retry.data.length > 0) {
             data = retry.data;
+          }
+        }
+
+        // Fallback 2: se com o filtro de tipos retornou 0 cards, tenta com tipos livres
+        if ((!data || data.length === 0) && effectiveTipos && effectiveTipos.length > 0) {
+          const retryTipos = await supabase.rpc('flashcards_sessao', {
+            _areas: normalizedAreas,
+            _temas: null,
+            _modo: params.modo,
+            _deck_id: params.deckId,
+            _limit: effectiveLimit,
+            _tipos: null,
+          });
+          if (!retryTipos.error && retryTipos.data && retryTipos.data.length > 0) {
+            data = retryTipos.data;
           }
         }
 

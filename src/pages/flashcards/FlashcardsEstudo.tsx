@@ -7,7 +7,7 @@ import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import Flashcard3D from '@/components/flashcards/Flashcard3D';
 import {
-  CheckCircle2, Shuffle, ArrowDownNarrowWide, BarChart3,
+  CheckCircle2, Shuffle, ArrowDownNarrowWide, BarChart3, Filter,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -78,7 +78,7 @@ const FlashcardsEstudo = () => {
   const corParam = params.get('cor');
   const areaNome = atual?.area || areaParam || (cards[0]?.area ?? null);
   const theme = getDisciplinaVisualTheme(areaNome);
-  const cardAccent = corParam || (areaNome ? areaIconFor(areaNome).color : theme.accent);
+  const cardAccent = corParam || (areaNome ? areaIconFor(areaNome).color : '#2563eb');
 
   useEffect(() => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
@@ -138,23 +138,7 @@ const FlashcardsEstudo = () => {
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]">
-      {/* Imagem de Fundo Temática da Disciplina com Ofuscamento Mínimo e Escurecimento Suave */}
-      {theme?.fundoAssetUrl && (
-        <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden">
-          <img
-            src={theme.fundoAssetUrl}
-            alt=""
-            aria-hidden="true"
-            loading="eager"
-            fetchpriority="high"
-            decoding="async"
-            className="w-full h-full object-cover select-none pointer-events-none filter blur-[0.5px] brightness-[0.96] contrast-[1.05] scale-105 transition-opacity duration-700"
-          />
-          {/* Escurecimento suave */}
-          <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-        </div>
-      )}
-
+      {/* ── Fundo Animado Oficial ShapeGrid Padrão do App ── */}
       <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
         <ShapeGrid 
           speed={0.5} 
@@ -332,9 +316,31 @@ const FlashcardsEstudo = () => {
           )}
 
           {!loading && !emContagem && cards.length === 0 && (
-            <div className="rounded-3xl border border-border bg-card p-10 text-center">
-              <p className="text-base font-extrabold text-foreground">Nenhum card encontrado neste filtro.</p>
-              <Button className="mt-4 rounded-xl" onClick={handleBack}>Voltar</Button>
+            <div className="rounded-3xl border border-border/80 bg-zinc-900/90 backdrop-blur-md p-8 sm:p-10 text-center max-w-md mx-auto shadow-2xl">
+              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 mx-auto flex items-center justify-center text-blue-400 mb-4">
+                <Filter className="w-7 h-7" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Nenhum flashcard encontrado</h3>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Tente ajustar os filtros de temas ou status para carregar novos cards.
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-2.5 justify-center">
+                <Button 
+                  onClick={handleBack} 
+                  className="rounded-2xl font-bold bg-blue-600 hover:bg-blue-500 text-white h-11 px-6 shadow-md shadow-blue-900/30 cursor-pointer"
+                >
+                  Voltar e ajustar
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    refetchCards();
+                  }}
+                  className="rounded-2xl font-bold border-zinc-700 hover:bg-white/5 h-11 px-5 cursor-pointer text-zinc-300"
+                >
+                  Tentar novamente
+                </Button>
+              </div>
             </div>
           )}
 
