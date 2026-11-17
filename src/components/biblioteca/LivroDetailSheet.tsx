@@ -28,6 +28,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import PremiumGate from '@/components/PremiumGate';
 import LembreteSheet from '@/components/lembretes/LembreteSheet';
 import LeitorNativo from './LeitorNativo';
+import { NativePdfViewer } from '@/plugins/NativePdfViewerPlugin';
 import LerAgoraDialog, { LerModo } from './LerAgoraDialog';
 import InAppWebView from './InAppWebView';
 
@@ -229,11 +230,27 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
     } else if (modo === 'pdf' || modo === 'pdf-clara') {
       saveUltimoModoLeitura(currentLivro.id, 'pdf-clara');
       const url = await ensurePdfLocalUrl(urlClara);
+      if (NativePdfViewer.isAvailable()) {
+        void NativePdfViewer.openPdf({
+          url,
+          title: currentLivro.titulo,
+          isDarkMode: false,
+        });
+        return;
+      }
       setPdfUrlForReader(url);
       setReaderMode('pdf');
     } else if (modo === 'pdf-escura') {
       saveUltimoModoLeitura(currentLivro.id, 'pdf-escura');
       const url = await ensurePdfLocalUrl(urlEscura);
+      if (NativePdfViewer.isAvailable()) {
+        void NativePdfViewer.openPdf({
+          url,
+          title: currentLivro.titulo,
+          isDarkMode: true,
+        });
+        return;
+      }
       setPdfUrlForReader(url);
       setReaderMode('pdf');
     } else if (modo === 'online' && currentLivro.link) {
@@ -430,6 +447,14 @@ const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDe
             onOpenPdf={currentLivro.download ? () => {
               void (async () => {
                 const url = await ensurePdfLocalUrl();
+                if (NativePdfViewer.isAvailable()) {
+                  void NativePdfViewer.openPdf({
+                    url,
+                    title: currentLivro.titulo,
+                    isDarkMode: false,
+                  });
+                  return;
+                }
                 setPdfUrlForReader(url);
                 setReaderMode('pdf');
               })();

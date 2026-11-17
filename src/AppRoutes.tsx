@@ -949,11 +949,15 @@ function AnimatedRoutes() {
           <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           <Route path="/blog/:slug" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           
-          {/* Biblioteca Digital: Rota Principal e Sub-rotas */}
+          {/* Biblioteca Digital: Rota Principal, Sub-rotas e Aliases */}
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition instant><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/biblioteca" element={<Navigate to="/bibliotecas" replace />} />
+          <Route path="/biblioteca/trilhas" element={<Navigate to="/bibliotecas/trilhas" replace />} />
+          <Route path="/biblioteca/:colecaoId" element={<Navigate to="/bibliotecas/:colecaoId" replace />} />
+          <Route path="/biblioteca/:colecaoId/:areaSlug" element={<Navigate to="/bibliotecas/:colecaoId/:areaSlug" replace />} />
 
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />

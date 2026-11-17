@@ -395,6 +395,7 @@ interface BibliotecaMobileContentProps {
   onAbrirLivro: (livro: LivroNormalizado, modoInicial?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura') => void;
   onAbrirCustomPdf: (titulo: string, url: string) => void;
   onAbrirMateria: (materia: string) => void;
+  onBack?: () => void;
 }
 
 export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = ({
@@ -402,6 +403,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   onAbrirLivro,
   onAbrirCustomPdf,
   onAbrirMateria,
+  onBack,
 }) => {
   const navigate = useNavigate();
 
@@ -621,8 +623,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         onAbrirCustomPdf={onAbrirCustomPdf}
       />
 
-      {/* Hero Padrão Vade Mecum / Audiobooks */}
-      <BibliotecaHero onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')} />
+      {/* Hero Padrão Vade Mecum / Audiobooks com rota de voltar garantida para o início */}
+      <BibliotecaHero
+        onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')}
+        onBack={onBack ?? (() => navigate('/'))}
+      />
 
       {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem generosa e responsiva sem colar) */}
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-9 md:pt-12 mt-4 sm:mt-6 space-y-10 sm:space-y-14">

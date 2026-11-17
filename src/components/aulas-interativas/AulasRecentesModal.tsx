@@ -25,17 +25,18 @@ export const AulasRecentesModal: React.FC<AulasRecentesModalProps> = ({
   calcularProgressoCiclo,
   onIniciarAula,
 }) => {
-  if (!isOpen) return null;
-
-  // Filtra aulas em andamento ou recentemente concluídas
+  // Filtra aulas em andamento ou recentemente concluídas (hook sempre invocado no topo)
   const aulasRecentes = useMemo(() => {
+    if (!isOpen) return [];
     if (!calcularProgressoCiclo) return aulas.slice(0, 10);
     const emProgresso = aulas.filter((a) => {
       const p = calcularProgressoCiclo(a);
       return p.porcentagemTotal > 0;
     });
     return emProgresso.length > 0 ? emProgresso : aulas.slice(0, 10);
-  }, [aulas, calcularProgressoCiclo]);
+  }, [isOpen, aulas, calcularProgressoCiclo]);
+
+  if (!isOpen) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[9990] bg-black/85 backdrop-blur-md flex flex-col justify-end sm:justify-center items-center p-0 sm:p-4 animate-in fade-in duration-200">
