@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import Flashcard3D from '@/components/flashcards/Flashcard3D';
 import {
   CheckCircle2, Shuffle, ArrowDownNarrowWide, BarChart3, Filter,
+  Trophy, Sparkles, RotateCcw, Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -345,16 +346,50 @@ const FlashcardsEstudo = () => {
           )}
 
           {!loading && cards.length > 0 && !atual && (
-            <div className="rounded-3xl border border-border bg-card p-10 text-center">
-              <CheckCircle2 className="mx-auto mb-3 h-12 w-12" style={{ color: cardAccent }} />
-              <h3 className="text-xl font-black text-foreground">Sessão Concluída!</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{feitos} flashcards estudados com sucesso.</p>
-              <div className="mt-5 flex items-center justify-center gap-3">
-                <Button variant="outline" className="rounded-2xl px-5 font-bold" onClick={handleBack}>
+            <div className="rounded-[32px] border border-zinc-800/90 bg-zinc-900/95 backdrop-blur-xl p-8 sm:p-10 text-center max-w-lg mx-auto shadow-2xl space-y-6">
+              <div className="relative mx-auto w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <Trophy className="h-10 w-10 text-emerald-400" />
+                <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-amber-400 animate-pulse" />
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-black text-zinc-100 tracking-tight">Sessão Concluída!</h3>
+                <p className="mt-1.5 text-sm text-zinc-400">Você dominou os conceitos essenciais desta rodada.</p>
+              </div>
+
+              {/* Grid de Estatísticas */}
+              <div className="grid grid-cols-3 gap-2.5 pt-2">
+                <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-3 text-center">
+                  <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Estudados</p>
+                  <p className="text-xl font-black text-zinc-100 mt-1">{feitos}</p>
+                </div>
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-center">
+                  <p className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Compreendidos</p>
+                  <p className="text-xl font-black text-emerald-300 mt-1">{sessionCompreendidos}</p>
+                </div>
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3 text-center">
+                  <p className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">XP Ganho</p>
+                  <p className="text-xl font-black text-amber-300 mt-1 flex items-center justify-center gap-0.5">
+                    <Zap className="h-4 w-4 fill-amber-400 text-amber-400" />
+                    +{sessionCompreendidos * 10 + sessionRevisar * 5}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  className="rounded-2xl h-12 px-6 font-bold border-zinc-700 bg-zinc-800/50 hover:bg-zinc-800 text-zinc-200 cursor-pointer"
+                  onClick={handleBack}
+                >
                   Voltar para a Trilha
                 </Button>
-                <Button className="rounded-2xl px-6 font-bold" style={{ backgroundColor: cardAccent }} onClick={() => { setFeitos(0); setEmContagem(true); refetchCards(); }}>
-                  Nova sessão
+                <Button
+                  className="rounded-2xl h-12 px-7 font-black bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/30 cursor-pointer"
+                  onClick={() => { setFeitos(0); setEmContagem(true); refetchCards(); }}
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Praticar Novamente
                 </Button>
               </div>
             </div>
@@ -362,17 +397,17 @@ const FlashcardsEstudo = () => {
 
           {atual && (
             <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px]">
-              {/* Efeito de pilha em estilo pergaminho (cards no fundo) */}
+              {/* Efeito de pilha em estilo dark glassmorphism (cards no fundo) */}
               {cards[idx + 2] && (
                 <div 
                   className="absolute inset-0 rounded-[32px] border pointer-events-none transition-all duration-300"
                   style={{
-                    borderColor: 'rgba(212, 185, 150, 0.3)',
-                    transform: 'translateY(18px) scale(0.91)',
-                    opacity: 0.45,
+                    borderColor: 'rgba(63, 63, 70, 0.4)',
+                    transform: 'translateY(16px) scale(0.92)',
+                    opacity: 0.4,
                     zIndex: 1,
-                    background: 'linear-gradient(160deg, #231b12 0%, #17120c 60%, #0d0a07 100%)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.85)',
+                    background: 'linear-gradient(160deg, #18181b 0%, #09090b 100%)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
                   }}
                 />
               )}
@@ -380,12 +415,12 @@ const FlashcardsEstudo = () => {
                 <div 
                   className="absolute inset-0 rounded-[32px] border pointer-events-none transition-all duration-300"
                   style={{
-                    borderColor: 'rgba(212, 185, 150, 0.45)',
-                    transform: 'translateY(10px) scale(0.955)',
-                    opacity: 0.75,
+                    borderColor: 'rgba(63, 63, 70, 0.6)',
+                    transform: 'translateY(8px) scale(0.96)',
+                    opacity: 0.7,
                     zIndex: 2,
-                    background: 'linear-gradient(160deg, #2a2016 0%, #1c150e 60%, #110d08 100%)',
-                    boxShadow: '0 14px 40px rgba(0,0,0,0.85), inset 0 0 20px rgba(0,0,0,0.5)',
+                    background: 'linear-gradient(160deg, #27272a 0%, #18181b 100%)',
+                    boxShadow: '0 14px 40px rgba(0,0,0,0.7)',
                   }}
                 />
               )}

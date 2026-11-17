@@ -70,6 +70,7 @@ export function useFlashcardsEngine() {
   }, true);
 
   const [cards, setCards] = useState<FlashcardCard[]>([]);
+  const [totalCardsOriginal, setTotalCardsOriginal] = useState(0);
   const [idx, setIdx] = useState(0);
   const [virado, setVirado] = useState(false);
   const [feitos, setFeitos] = useState(0);
@@ -121,6 +122,7 @@ export function useFlashcardsEngine() {
       }
 
       setCards(finalCards);
+      setTotalCardsOriginal(finalCards.length);
       setIdx(0);
       setVirado(false);
     }
@@ -185,6 +187,8 @@ export function useFlashcardsEngine() {
     } else {
       setSessionRevisar(c => c + 1);
       if (shakeCallback) shakeCallback();
+      // SRS Inteligente: reinsere o card no final da fila da sessão para fixação ativa
+      setCards(prev => [...prev, { ...atual, _retryCount: (((atual as any)._retryCount || 0) + 1) }]);
     }
     
     salvando.current = true;
@@ -193,11 +197,14 @@ export function useFlashcardsEngine() {
     setFeitos((f) => f + 1);
     setVirado(false);
     
-    if (idx + 1 >= cards.length) {
+    // Se era o último card e foi compreendido (ou não há retestes pendentes)
+    const proximoIdx = idx + 1;
+    const totalAtualizado = status === 'revisar' ? cards.length + 1 : cards.length;
+    if (proximoIdx >= totalAtualizado) {
       toast.success('Sessão concluída!');
-      setIdx(cards.length);
+      setIdx(totalAtualizado);
     } else {
-      setIdx((i) => i + 1);
+      setIdx(proximoIdx);
     }
 
     const novoFeitos = feitos + 1;
@@ -274,6 +281,31 @@ export function useFlashcardsEngine() {
       .sort((a, b) => b.total - a.total);
   }, [cards, idx]);
 
+  // Atalhos de Teclado no Desktop
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (emContagem || !atual || salvando.current) return;
+
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        virar();
+      } else if (virado && (e.key === '1' || e.code === 'ArrowLeft')) {
+        e.preventDefault();
+        responder('revisar');
+      } else if (virado && (e.key === '2' || e.code === 'ArrowRight')) {
+        e.preventDefault();
+        responder('compreendido');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [emContagem, atual, virado, virar, responder]);
+
   return {
     params,
     setParam,
@@ -282,6 +314,7 @@ export function useFlashcardsEngine() {
     emContagem,
     setEmContagem,
     cards,
+    totalCardsOriginal,
     idx,
     feitos,
     atual,
