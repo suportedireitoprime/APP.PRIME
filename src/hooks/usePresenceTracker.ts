@@ -15,6 +15,7 @@ export function usePresenceTracker() {
   const location = useLocation();
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const trackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const routeRef = useRef(location.pathname);
 
   // Keep routeRef in sync without re-running the channel effect
@@ -22,20 +23,26 @@ export function usePresenceTracker() {
     routeRef.current = location.pathname;
   }, [location.pathname]);
 
-  // Update presence track when route changes (without recreating channel)
+  // Update presence track com debounce de 1500ms para evitar rate limit no Supabase Realtime
   useEffect(() => {
     if (!user) return;
     if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
 
-    if (channelRef.current) {
-      channelRef.current.track({
-        user_id: user.id,
-        email: user.email ?? '',
-        display_name: user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? '',
-        current_route: location.pathname,
-        online_at: new Date().toISOString(),
-      }).catch(() => {});
+    if (trackTimeoutRef.current) {
+      clearTimeout(trackTimeoutRef.current);
     }
+
+    trackTimeoutRef.current = setTimeout(() => {
+      if (channelRef.current) {
+        channelRef.current.track({
+          user_id: user.id,
+          email: user.email ?? '',
+          display_name: user.user_metadata?.display_name ?? user.email?.split('@')[0] ?? '',
+          current_route: location.pathname,
+          online_at: new Date().toISOString(),
+        }).catch(() => {});
+      }
+    }, 1500);
 
     // Registra page_view somente com sessão ativa para evitar 401/42501 no Gateway e Postgres
     supabase.auth.getSession().then(({ data }) => {
@@ -47,6 +54,12 @@ export function usePresenceTracker() {
         metadata: { route: location.pathname }
       }).then(() => {}, () => {});
     }).catch(() => {});
+
+    return () => {
+      if (trackTimeoutRef.current) {
+        clearTimeout(trackTimeoutRef.current);
+      }
+    };
   }, [location.pathname, user]);
 
   // Connect channel and heartbeat once per user session
