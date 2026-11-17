@@ -897,7 +897,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                         style={{
                           background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #4C1D95 100%)',
                           borderColor: '#A855F7',
-                          boxShadow: '0 -6px 22px rgba(124, 58, 237, 0.6), inset 0 2px 10px rgba(255, 255, 255, 0.35)',
+                          boxShadow: 'inset 0 1px 4px rgba(255, 255, 255, 0.25)',
                         }}
                         initial={false}
                         transition={{
@@ -945,7 +945,6 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
               className="min-w-full w-max h-0.5 relative z-20"
               style={{
                 backgroundColor: '#8B5CF6',
-                boxShadow: '0 0 14px rgba(139, 92, 246, 0.6)',
               }}
             />
           </div>
