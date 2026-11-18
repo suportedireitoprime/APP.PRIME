@@ -29,7 +29,27 @@ const maskCPF = (v: string) => v.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2').slice(0, 9);
 const maskPhone = (v: string) => v.replace(/\D/g, '').replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2').slice(0, 15);
 const maskCard = (v: string) => v.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').slice(0, 19);
-const maskExpiry = (v: string) => v.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2').slice(0, 5);
+const maskExpiry = (v: string) => {
+  if (!v) return '';
+  const trimmed = v.trim();
+  // Se vier no formato ISO YYYY-MM ou YYYY/MM (comum em autofill)
+  if (/^\d{4}[-/]\d{1,2}$/.test(trimmed)) {
+    const parts = trimmed.split(/[-/]/);
+    const mm = parts[1].padStart(2, '0');
+    const yy = parts[0].slice(-2);
+    return `${mm}/${yy}`;
+  }
+  const digits = trimmed.replace(/\D/g, '');
+  // Se vier 6 dígitos (ex: MMYYYY "082029" ou YYYYMM "202908")
+  if (digits.length === 6) {
+    if (Number(digits.slice(0, 2)) >= 1 && Number(digits.slice(0, 2)) <= 12) {
+      return `${digits.slice(0, 2)}/${digits.slice(4, 6)}`;
+    } else if (Number(digits.slice(4, 6)) >= 1 && Number(digits.slice(4, 6)) <= 12) {
+      return `${digits.slice(4, 6)}/${digits.slice(2, 4)}`;
+    }
+  }
+  return digits.replace(/(\d{2})(\d)/, '$1/$2').slice(0, 5);
+};
 const maskCVC = (v: string) => v.replace(/\D/g, '').slice(0, 4);
 
 const isValidCPF = (cpf: string) => {
@@ -210,6 +230,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const isProcessingRef = useRef(false);
   const hasWarnedExpiryRef = useRef(false);
+  const cardNumberInputRef = useRef<HTMLInputElement>(null);
 
 
 
@@ -463,7 +484,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const processCheckout = async () => {
     if (!isPix) {
-      if (formData.cardNumber.length < 18) {
+      const cleanCard = formData.cardNumber.replace(/\D/g, '');
+      if (cleanCard.length < 13 || cleanCard.length > 19) {
         toast.error('Número de Cartão inválido.');
         return;
       }
@@ -495,7 +517,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       };
 
       if (!isPix) {
-        const [expMonth, expYear] = formData.cardExpiry.split('/');
+        const [expMonth, expRawYear] = formData.cardExpiry.split('/');
+        const expYear = (expRawYear || '').trim().length === 4 
+          ? (expRawYear || '').trim() 
+          : `20${(expRawYear || '').trim().slice(-2)}`;
         
         // Remove accents for Asaas
         const normalizedHolderName = formData.cardName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
@@ -503,9 +528,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         payload.creditCard = {
           holderName: normalizedHolderName,
           number: formData.cardNumber.replace(/\D/g, ''),
-          expiryMonth: expMonth,
-          expiryYear: `20${expYear}`,
-          ccv: formData.cardCvc
+          expiryMonth: (expMonth || '').trim(),
+          expiryYear: expYear,
+          ccv: formData.cardCvc.trim()
         };
         payload.creditCardHolderInfo = {
           name: normalizedHolderName || userName,
@@ -1025,6 +1050,51 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                        isFlipped={isFlipped}
                     />
 
+                    {/* Banner de Carteira Digital: Google Pay & Apple Pay (Opção C) */}
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-950 via-black to-zinc-950 p-3.5 shadow-lg backdrop-blur-md">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="text-[11px] font-black uppercase tracking-wider text-white">
+                            Carteira Digital
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {/* Badge Google Pay */}
+                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-white/10 border border-white/15 text-[10px] font-bold text-white tracking-wide">
+                            <span className="text-[#4285F4]">G</span>
+                            <span className="text-[#EA4335]">o</span>
+                            <span className="text-[#FBBC05]">o</span>
+                            <span className="text-[#4285F4]">g</span>
+                            <span className="text-[#34A853]">l</span>
+                            <span className="text-[#EA4335]">e</span>
+                            <span className="ml-0.5 text-zinc-300">Pay</span>
+                          </span>
+                          {/* Badge Apple Pay */}
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 border border-white/15 text-[10px] font-bold text-white tracking-wide">
+                            <span className="text-white text-xs"></span>
+                            <span className="text-zinc-300">Pay</span>
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-zinc-400">
+                        Preenchimento automático com 1 toque via biometria dos cartões salvos no seu aparelho.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          cardNumberInputRef.current?.focus();
+                          haptic.selection();
+                        }}
+                        className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/30 text-xs font-bold text-primary active:scale-[0.98] transition-all"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Puxar Cartão da Carteira Digital</span>
+                      </button>
+                    </div>
+
                     {/* Seleção de Parcelamento em 1º Lugar antes dos dados do cartão */}
                     {(activePlan === 'anual' || activePlan.startsWith('vitalicio')) && (
                       <div className="space-y-1.5 p-3 rounded-2xl bg-primary/10 border border-primary/30">
@@ -1053,80 +1123,104 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </div>
                     )}
 
-                    <div className="space-y-1">
-                      <Label className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                        <CreditCard className="w-3 h-3"/> Número do Cartão
-                      </Label>
-                      <Input 
-                        value={formData.cardNumber} 
-                        onChange={handleChange('cardNumber', maskCard)}
-                        onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
-                        placeholder="0000 0000 0000 0000" 
-                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
-                        inputMode="numeric"
-                        autoComplete="cc-number"
-                        autoCorrect="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no Cartão</Label>
-                      <Input 
-                        value={formData.cardName} 
-                        onChange={handleChange('cardName')}
-                        onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
-                        placeholder="JOAO S SILVA" 
-                        className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-sm backdrop-blur-md transition-all"
-                        autoComplete="cc-name"
-                        autoCorrect="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+                    <form 
+                      id="payment-cc-form"
+                      name="payment-cc-form"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        processCheckout();
+                      }}
+                      autoComplete="on"
+                      className="space-y-3"
+                    >
                       <div className="space-y-1">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Validade</Label>
+                        <Label htmlFor="cardnumber" className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
+                          <CreditCard className="w-3 h-3"/> Número do Cartão
+                        </Label>
                         <Input 
-                          value={formData.cardExpiry} 
-                          onChange={handleChange('cardExpiry', maskExpiry)}
+                          ref={cardNumberInputRef}
+                          id="cardnumber"
+                          name="cardnumber"
+                          value={formData.cardNumber} 
+                          onChange={handleChange('cardNumber', maskCard)}
                           onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
-                          placeholder="MM/AA" 
+                          placeholder="0000 0000 0000 0000" 
                           className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
+                          type="tel"
                           inputMode="numeric"
-                          autoComplete="cc-exp"
+                          autoComplete="cc-number"
                           autoCorrect="off"
                           spellCheck={false}
                         />
                       </div>
-                      <div className="space-y-1">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">CVV</Label>
-                        <Input 
-                          value={formData.cardCvc} 
-                          onChange={handleChange('cardCvc', maskCVC)}
-                          onFocus={(e) => { setIsFlipped(true); handleFocus(e); }}
-                          onBlur={() => setIsFlipped(false)}
-                          placeholder="123" 
-                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
-                          inputMode="numeric"
-                          type="password"
-                          autoComplete="cc-csc"
-                          autoCorrect="off"
-                          spellCheck={false}
-                        />
-                      </div>
-                    </div>
 
-                    <div className="pt-4">
-                      <Button 
-                        onClick={processCheckout}
-                        disabled={loading}
-                        className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:opacity-70 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
-                      >
-                        {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirmar Assinatura'}
-                        {!loading && <CheckCircle2 className="w-5 h-5 ml-2" />}
-                      </Button>
-                    </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="ccname" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no Cartão</Label>
+                        <Input 
+                          id="ccname"
+                          name="ccname"
+                          value={formData.cardName} 
+                          onChange={handleChange('cardName')}
+                          onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
+                          placeholder="JOAO S SILVA" 
+                          className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium uppercase text-sm backdrop-blur-md transition-all"
+                          autoComplete="cc-name"
+                          autoCapitalize="characters"
+                          autoCorrect="off"
+                          spellCheck={false}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="ccexp" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Validade</Label>
+                          <Input 
+                            id="ccexp"
+                            name="ccexp"
+                            value={formData.cardExpiry} 
+                            onChange={handleChange('cardExpiry', maskExpiry)}
+                            onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
+                            placeholder="MM/AA" 
+                            className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
+                            type="tel"
+                            inputMode="numeric"
+                            autoComplete="cc-exp"
+                            autoCorrect="off"
+                            spellCheck={false}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="cvc" className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">CVV</Label>
+                          <Input 
+                            id="cvc"
+                            name="cvc"
+                            value={formData.cardCvc} 
+                            onChange={handleChange('cardCvc', maskCVC)}
+                            onFocus={(e) => { setIsFlipped(true); handleFocus(e); }}
+                            onBlur={() => setIsFlipped(false)}
+                            placeholder="123" 
+                            className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium font-mono text-sm backdrop-blur-md transition-all"
+                            type="password"
+                            inputMode="numeric"
+                            autoComplete="cc-csc"
+                            maxLength={4}
+                            autoCorrect="off"
+                            spellCheck={false}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-4">
+                        <Button 
+                          type="submit"
+                          disabled={loading}
+                          className="w-full h-12 rounded-xl font-black bg-primary hover:bg-primary/90 text-white text-sm transition-all active:opacity-70 shadow-[0_8px_30px_rgba(224,31,71,0.4)]"
+                        >
+                          {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Confirmar Assinatura'}
+                          {!loading && <CheckCircle2 className="w-5 h-5 ml-2" />}
+                        </Button>
+                      </div>
+                    </form>
                   </motion.div>
                 )}
 
