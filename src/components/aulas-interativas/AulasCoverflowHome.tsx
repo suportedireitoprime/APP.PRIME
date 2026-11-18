@@ -226,17 +226,17 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </button>
 
             {/* Título Imperial Centralizado */}
-            <div className="text-center px-2 flex-1 min-w-0">
-              <h1 className="inline-flex items-center justify-center gap-1.5 xs:gap-2 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-xl text-[10.5px] xs:text-xs sm:text-sm font-mono font-black text-amber-300 bg-black/80 border border-amber-500/50 shadow-inner tracking-wider">
-                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.192'}
+            <div className="text-center px-1 flex-1 min-w-0">
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] xs:text-[10px] sm:text-xs font-mono font-black text-amber-300 bg-amber-500/15 border border-amber-500/40 shadow-inner tracking-wider">
+                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} AULAS
                 </span>
-                <span className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
-                  Aulas em Trilha
-                </span>
+              </div>
+              <h1 className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] truncate">
+                Aulas em Trilha
               </h1>
               <p className="text-[10px] xs:text-[11px] sm:text-xs font-serif italic text-zinc-300/85 mt-0.5 truncate">
-                Metodologia ativa cronológica • 106 módulos • 22 matérias
+                106 Módulos Oficiais • 22 Matérias Estruturadas
               </p>
             </div>
 

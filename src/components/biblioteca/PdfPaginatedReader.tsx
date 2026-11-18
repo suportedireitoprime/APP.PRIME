@@ -129,6 +129,30 @@ const PdfPaginatedReader = ({
 
   const [dualPage, setDualPage] = useState<boolean>(false);
   const isDarkPdf = url.includes('escura') || url.includes('dark');
+  const [docAspect, setDocAspect] = useState<number>(595 / 842);
+  const [containerDimensions, setContainerDimensions] = useState<{ width: number; height: number }>({
+    width: typeof window !== 'undefined' ? window.innerWidth : 800,
+    height: typeof window !== 'undefined' ? window.innerHeight : 600,
+  });
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      } else {
+        setContainerDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   const { termo, setTermo, matches, buscando, buscar } = usePdfSearch(pdfRef.current);
 
@@ -190,6 +214,14 @@ const PdfPaginatedReader = ({
         pdfRef.current = pdf;
         setTotalPages(pdf.numPages);
         setLoading(false);
+
+        try {
+          const firstPage = await pdf.getPage(1);
+          const vp = firstPage.getViewport({ scale: 1 });
+          if (vp?.width && vp?.height) {
+            setDocAspect(vp.width / vp.height);
+          }
+        } catch {}
 
         try {
           const out = await pdf.getOutline();
@@ -362,43 +394,111 @@ const PdfPaginatedReader = ({
             </button>
           </div>
         ) : (
-          <div className="w-full h-full relative">
-            <BookPageFlip3D
-              ref={flip3DRef}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              renderPage={(pageNum, isBackFace) => (
+          (() => {
+            const isMobile = containerDimensions.width < 640;
+            const isTabletOrDesktop = containerDimensions.width >= 640;
+            const topInset = showBars ? 64 : 16;
+            const bottomInset = showBars ? 116 : 16;
+            const availableHeight = Math.max(320, containerDimensions.height - topInset - bottomInset);
+
+            let activeTargetWidth: number;
+            if (isMobile) {
+              activeTargetWidth = Math.round(containerDimensions.width * (zoom || 1.0));
+            } else {
+              const heightFitWidth = availableHeight * docAspect;
+              const maxAllowedWidth = dualPage
+                ? Math.min(containerDimensions.width * 0.48, 620)
+                : Math.min(containerDimensions.width * 0.88, 860);
+              const fitWidth = Math.min(heightFitWidth, maxAllowedWidth);
+              activeTargetWidth = Math.round(fitWidth * (zoom || 1.0));
+            }
+
+            return (
+              <div className="w-full h-full relative flex items-center justify-center overflow-hidden">
+                {/* ── Setas laterais de navegação flutuantes no Desktop ── */}
+                {isTabletOrDesktop && totalPages > 0 && (
+                  <>
+                    <button
+                      onClick={() => {
+                        haptic.selection();
+                        goPrev();
+                      }}
+                      disabled={currentPage <= 1}
+                      aria-label="Página anterior"
+                      title="Página anterior (Seta Esquerda)"
+                      className="absolute left-3 lg:left-6 top-1/2 -translate-y-1/2 z-[2520] w-12 h-12 rounded-full bg-white/[0.08] hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition cursor-pointer"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        haptic.selection();
+                        goNext();
+                      }}
+                      disabled={currentPage >= totalPages}
+                      aria-label="Próxima página"
+                      title="Próxima página (Seta Direita / Espaço)"
+                      className="absolute right-3 lg:right-6 top-1/2 -translate-y-1/2 z-[2520] w-12 h-12 rounded-full bg-white/[0.08] hover:bg-white/20 active:scale-95 disabled:opacity-20 disabled:pointer-events-none text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition cursor-pointer"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+
                 <div
-                  ref={(el) => {
-                    if (el && !isBackFace) {
-                      el.scrollTop = 0;
-                    }
-                  }}
-                  className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center px-0 select-none ${
-                    isDarkPdf ? 'bg-[#18181b]' : 'bg-white'
-                  }`}
+                  className="h-full relative flex items-center justify-center transition-all duration-200"
                   style={{
-                    paddingTop: 'calc(4rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
-                    paddingBottom: 'calc(11.5rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))',
+                    width: isMobile ? '100%' : `${activeTargetWidth}px`,
+                    maxWidth: '100%',
+                    margin: '0 auto',
                   }}
                 >
-                  <PdfPage
-                    pdf={pdfRef.current}
-                    pageNumber={pageNum}
-                    isDual={dualPage}
-                    containerRef={containerRef}
-                    renderTasksRef={renderTasksRef}
-                    isDark={isDarkPdf}
-                    zoom={zoom}
-                    isBackFace={isBackFace}
-                    titulo={titulo}
+                  <BookPageFlip3D
+                    ref={flip3DRef}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    renderPage={(pageNum, isBackFace) => (
+                      <div
+                        ref={(el) => {
+                          if (el && !isBackFace) {
+                            el.scrollTop = 0;
+                          }
+                        }}
+                        className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center justify-start select-none ${
+                          isDarkPdf ? 'bg-[#0e0e11]' : 'bg-[#141417]'
+                        }`}
+                        style={{
+                          paddingTop: showBars
+                            ? 'calc(3.75rem + var(--sai-top, env(safe-area-inset-top, 0px)) + 8px)'
+                            : 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)) + 8px)',
+                          paddingBottom: showBars
+                            ? 'calc(7.25rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 8px)'
+                            : 'calc(1.5rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 8px)',
+                        }}
+                      >
+                        <PdfPage
+                          pdf={pdfRef.current}
+                          pageNumber={pageNum}
+                          isDual={dualPage}
+                          containerRef={containerRef}
+                          renderTasksRef={renderTasksRef}
+                          isDark={isDarkPdf}
+                          zoom={zoom}
+                          isBackFace={isBackFace}
+                          titulo={titulo}
+                          targetWidth={activeTargetWidth}
+                          showBars={showBars}
+                        />
+                      </div>
+                    )}
+                    onPageChange={(p) => setCurrentPage(p)}
+                    onTapCenter={() => setShowBars((v) => !v)}
                   />
                 </div>
-              )}
-              onPageChange={(p) => setCurrentPage(p)}
-              onTapCenter={() => setShowBars((v) => !v)}
-            />
-          </div>
+              </div>
+            );
+          })()
         )}
       </div>
 
@@ -494,6 +594,8 @@ const PdfPage = ({
   zoom = DEFAULT_ZOOM,
   isBackFace = false,
   titulo = '',
+  targetWidth,
+  showBars = true,
 }: {
   pdf: any;
   pageNumber: number;
@@ -504,6 +606,8 @@ const PdfPage = ({
   zoom?: number;
   isBackFace?: boolean;
   titulo?: string;
+  targetWidth: number;
+  showBars?: boolean;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState(false);
@@ -521,24 +625,17 @@ const PdfPage = ({
         const page = await pdf.getPage(pageNumber);
         if (cancelled) return;
 
-        const containerWidth =
-          containerRef.current.clientWidth > 100
-            ? containerRef.current.clientWidth
-            : window.innerWidth;
-
         const unscaledViewport = page.getViewport({ scale: 1 });
+        const pageAspect = unscaledViewport.width / unscaledViewport.height;
 
-        // Zero margens: adaptação total à tela do usuário (100% de largura)
-        const availableWidth = isDual
-          ? containerWidth / 2
-          : containerWidth;
+        const displayWidth = Math.max(260, Math.round(targetWidth));
+        const displayHeight = Math.round(displayWidth / pageAspect);
+        setPageSize({ width: displayWidth, height: displayHeight });
 
-        const baseScale = (availableWidth / unscaledViewport.width) * (zoom || 1.0);
+        const baseScale = displayWidth / unscaledViewport.width;
 
         // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
-        // No mobile, a largura CSS é de ~375-400px mas a resolução física é de 1080-1440px.
-        // A escala de renderização mínima de 2.8x garante ~2000px de resolução rasterizada,
-        // entregando fidelidade vetorial de impressão (300 DPI) idêntica ao Desktop!
+        // Garante resolução mínima de impressão (300 DPI) idêntica ao Desktop em qualquer dispositivo
         const dpr = Math.max(window.devicePixelRatio || 2, 2.5);
         const calculatedScale = baseScale * dpr;
         const minUltraHdScale = 2.8 * (zoom || 1.0);
@@ -550,14 +647,12 @@ const PdfPage = ({
         canvas.width = Math.floor(finalVp.width);
         canvas.height = Math.floor(finalVp.height);
 
-        const displayWidth = Math.round(unscaledViewport.width * baseScale);
-        const displayHeight = Math.round(unscaledViewport.height * baseScale);
-        setPageSize({ width: displayWidth, height: displayHeight });
-
-        canvas.style.width = '100%';
-        canvas.style.height = 'auto';
+        canvas.style.width = `${displayWidth}px`;
         canvas.style.maxWidth = '100%';
+        canvas.style.height = `${displayHeight}px`;
         canvas.style.aspectRatio = `${unscaledViewport.width} / ${unscaledViewport.height}`;
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
 
         const ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx) return;
@@ -600,19 +695,22 @@ const PdfPage = ({
         } catch {}
       }
     };
-  }, [pdf, pageNumber, isDual, containerRef, zoom, isBackFace]);
+  }, [pdf, pageNumber, isDual, containerRef, zoom, isBackFace, targetWidth]);
 
   if (isBackFace) {
     return (
       <div
-        className="w-full h-full flex flex-col justify-between p-8 select-none border-l rounded-sm"
+        className="relative mx-auto my-auto flex flex-col justify-between p-6 sm:p-8 select-none border-l rounded-sm shadow-xl"
         style={{
+          width: pageSize.width ? `${pageSize.width}px` : `${targetWidth}px`,
+          maxWidth: '100%',
+          minHeight: pageSize.height ? `${pageSize.height}px` : '400px',
           background: isDark ? '#18181b' : '#ffffff',
           color: isDark ? '#ffffff' : '#1a1a1a',
           borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
           boxShadow: isDark
-            ? 'inset 25px 0 35px -15px rgba(0,0,0,0.4)'
-            : 'inset 20px 0 30px -15px rgba(0,0,0,0.06)',
+            ? 'inset 25px 0 35px -15px rgba(0,0,0,0.4), 0 10px 30px -10px rgba(0,0,0,0.8)'
+            : 'inset 20px 0 30px -15px rgba(0,0,0,0.06), 0 10px 30px -10px rgba(0,0,0,0.2)',
         }}
       >
         <div className="flex items-center justify-between text-[11px] opacity-40 font-mono tracking-widest uppercase">
@@ -632,20 +730,23 @@ const PdfPage = ({
 
   return (
     <div
-      className={`relative w-full mx-auto transition-opacity duration-200 ${
+      className={`relative mx-auto my-auto shrink-0 transition-opacity duration-200 ${
         isDark ? 'bg-[#18181b]' : 'bg-white'
       } ${rendered ? 'opacity-100' : 'opacity-0'}`}
       style={{
-        width: '100%',
-        maxWidth: isDual ? '50%' : '100%',
-        boxShadow: 'none',
-        borderRadius: '0px',
+        width: `${pageSize.width || targetWidth}px`,
+        maxWidth: '100%',
+        boxShadow: isDark
+          ? '0 12px 40px -10px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.06)'
+          : '0 12px 36px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06)',
+        borderRadius: '3px',
+        overflow: 'hidden',
       }}
     >
-      <canvas ref={canvasRef} className="block w-full h-auto" />
+      <canvas ref={canvasRef} className="block mx-auto w-full h-auto" />
       {!rendered && (
         <div
-          className={`absolute inset-0 flex items-center justify-center min-h-[500px] ${
+          className={`absolute inset-0 flex items-center justify-center min-h-[400px] ${
             isDark ? 'bg-[#18181b]/80' : 'bg-white/50'
           }`}
         >

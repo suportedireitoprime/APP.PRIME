@@ -3,7 +3,7 @@ import { History, Flame, BarChart3, Bookmark } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AudioActionShortcutsProps {
-  colorScheme?: 'purple' | 'blue' | 'salmon';
+  colorScheme?: 'purple' | 'blue' | 'salmon' | 'sky';
   onRecentes?: () => void;
   onFavoritos?: () => void; // compatibilidade legada
   onEmAlta: () => void;
@@ -30,6 +30,7 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
   }) {
     const isPurple = colorScheme === 'purple';
     const isSalmon = colorScheme === 'salmon';
+    const isSky = colorScheme === 'blue' || colorScheme === 'sky';
     const acaoRecentes = onRecentes || onFavoritos || (() => {});
     const badgeRecentesFinal = badgeRecentes !== undefined ? badgeRecentes : badgeFavoritos;
 
@@ -38,36 +39,36 @@ export const AudioActionShortcuts: React.FC<AudioActionShortcutsProps> = memo(
         id: 'recentes',
         label: 'Recentes',
         icon: History,
-        color: isSalmon ? '#FFA285' : isPurple ? '#C084FC' : '#d4d4d8',
+        color: isSky ? '#38BDF8' : isSalmon ? '#FFA285' : isPurple ? '#C084FC' : '#d4d4d8',
         badge: badgeRecentesFinal,
-        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#9333EA' : '#52525b',
+        badgeColor: isSky ? '#0284C7' : isSalmon ? '#D94D2E' : isPurple ? '#9333EA' : '#52525b',
         action: acaoRecentes,
       },
       {
         id: 'em_alta',
         label: 'Em alta',
         icon: Flame,
-        color: isSalmon ? '#FF7E5F' : '#FB923C',
+        color: isSky ? '#7DD3FC' : isSalmon ? '#FF7E5F' : '#FB923C',
         badge: 0,
-        badgeColor: isSalmon ? '#D94D2E' : '#EA580C',
+        badgeColor: isSky ? '#0369A1' : isSalmon ? '#D94D2E' : '#EA580C',
         action: onEmAlta,
       },
       {
         id: 'estatistica',
         label: 'Estatística',
         icon: BarChart3,
-        color: isSalmon ? '#FFB49A' : isPurple ? '#A78BFA' : '#d4d4d8',
+        color: isSky ? '#BAE6FD' : isSalmon ? '#FFB49A' : isPurple ? '#A78BFA' : '#d4d4d8',
         badge: 0,
-        badgeColor: isSalmon ? '#D94D2E' : isPurple ? '#7C3AED' : '#52525b',
+        badgeColor: isSky ? '#0284C7' : isSalmon ? '#D94D2E' : isPurple ? '#7C3AED' : '#52525b',
         action: onEstatistica,
       },
       {
         id: 'favoritos',
         label: 'Favoritos',
         icon: Bookmark,
-        color: isSalmon ? '#FFA285' : '#F43F5E',
+        color: isSky ? '#38BDF8' : isSalmon ? '#FFA285' : '#F43F5E',
         badge: badgeFavoritos > 0 ? badgeFavoritos : badgeTrilhas,
-        badgeColor: isSalmon ? '#D94D2E' : '#E11D48',
+        badgeColor: isSky ? '#0284C7' : isSalmon ? '#D94D2E' : '#E11D48',
         action: onFavoritos || onTrilhas || (() => {}),
       },
     ];

@@ -208,11 +208,13 @@ const PdfScrollReader = ({
       pagesRef.current.set(idx, page);
       
       const hostParent = host.parentElement;
-      const containerWidth = hostParent?.clientWidth || containerRef.current?.clientWidth || window.innerWidth;
-      // Largura total sem margens de padrão
-      const targetWidth = dualPage
-        ? containerWidth / 2
-        : containerWidth;
+      const rawWidth = hostParent?.clientWidth || containerRef.current?.clientWidth || window.innerWidth;
+      const isMobile = rawWidth < 640;
+      // No mobile, ocupa 100% da tela para máxima legibilidade. No tablet/desktop limita ao tamanho ergonômico centrado.
+      const maxAllowedWidth = dualPage
+        ? Math.min(rawWidth * 0.48, 620)
+        : Math.min(rawWidth * 0.88, 840);
+      const targetWidth = isMobile ? rawWidth : maxAllowedWidth;
       const viewport = page.getViewport({ scale: 1 });
       
       // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
@@ -236,6 +238,10 @@ const PdfScrollReader = ({
       canvas.style.aspectRatio = `${viewport.width} / ${viewport.height}`;
       canvas.style.display = 'block';
       canvas.style.margin = '0 auto';
+      canvas.style.boxShadow = isDarkPdf
+        ? '0 12px 35px -10px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06)'
+        : '0 12px 35px -10px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)';
+      canvas.style.borderRadius = '3px';
       const ctx = canvas.getContext('2d', { alpha: false });
       if (!ctx) return;
       ctx.imageSmoothingEnabled = true;
@@ -342,9 +348,7 @@ const PdfScrollReader = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-      className={`fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden ${
-        isDarkPdf ? 'bg-[#18181b]' : 'bg-white'
-      }`}
+      className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-[#0a0a0c]"
     >
       {/* Prompt: Continuar de onde parou */}
       <PdfContinuarPrompt
@@ -470,7 +474,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && !dualPage && (
             <div
-              className="pb-44 space-y-0 w-full"
+              className="pb-44 space-y-4 w-full flex flex-col items-center"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -483,12 +487,14 @@ const PdfScrollReader = ({
                 <div
                   key={i}
                   data-page={i + 1}
-                  className={`w-full min-h-[400px] flex items-center justify-center overflow-hidden transition-colors ${
+                  className={`w-full max-w-full md:max-w-[840px] mx-auto min-h-[400px] flex items-center justify-center overflow-hidden transition-colors rounded-sm shadow-xl ${
                     isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                   }`}
                   style={{
-                    boxShadow: 'none',
-                    borderRadius: '0px',
+                    boxShadow: isDarkPdf
+                      ? '0 12px 35px -10px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06)'
+                      : '0 12px 35px -10px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)',
+                    borderRadius: '3px',
                   }}
                 >
                   <div className="text-xs py-8">Página {i + 1}</div>
@@ -498,7 +504,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && dualPage && (
             <div
-              className="pb-44 flex flex-wrap items-start justify-center gap-0 w-full"
+              className="pb-44 flex flex-wrap items-start justify-center gap-4 w-full max-w-[1340px] mx-auto"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -513,16 +519,18 @@ const PdfScrollReader = ({
                 return (
                   <div
                     key={`spread-${spreadIdx}`}
-                    className="w-full flex flex-col md:flex-row items-center justify-center gap-0 border-b border-white/5 pb-2 mb-2"
+                    className="w-full flex flex-col md:flex-row items-center justify-center gap-3 border-b border-white/5 pb-4 mb-4"
                   >
                     <div
                       data-page={p1}
-                      className={`w-full md:w-1/2 min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                      className={`w-full md:w-1/2 max-w-[620px] min-h-[450px] flex items-center justify-center overflow-hidden transition-colors rounded-sm ${
                         isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                       }`}
                       style={{
-                        boxShadow: 'none',
-                        borderRadius: '0px',
+                        boxShadow: isDarkPdf
+                          ? '0 10px 30px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)'
+                          : '0 10px 30px -10px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06)',
+                        borderRadius: '3px',
                       }}
                     >
                       <div className="text-xs py-8">Página {p1}</div>
@@ -530,12 +538,14 @@ const PdfScrollReader = ({
                     {p2 <= totalPages && (
                       <div
                         data-page={p2}
-                        className={`w-full md:w-1/2 min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                        className={`w-full md:w-1/2 max-w-[620px] min-h-[450px] flex items-center justify-center overflow-hidden transition-colors rounded-sm ${
                           isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                         }`}
                         style={{
-                          boxShadow: 'none',
-                          borderRadius: '0px',
+                          boxShadow: isDarkPdf
+                            ? '0 10px 30px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)'
+                            : '0 10px 30px -10px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06)',
+                          borderRadius: '3px',
                         }}
                       >
                         <div className="text-xs py-8">Página {p2}</div>

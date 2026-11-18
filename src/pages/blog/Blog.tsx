@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Search, X, Clock, Star, Bookmark } from "lucide-react";
+import { Search, X, Clock, Star, Bookmark, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import type { BlogPost } from "@/data/blogPosts";
 import BlogPostSheet from "@/components/vademecum/blog/BlogPostSheet";
@@ -8,7 +8,6 @@ import { useBlogPostsCache } from "@/hooks/useBlogPostsCache";
 import { useFeatureLimit } from "@/hooks/useFeatureLimit";
 import PremiumGate from "@/components/PremiumGate";
 import { recordActivity } from "@/lib/continuity";
-import { useGoBack } from "@/hooks/useGoBack";
 import { blogThumb, blogHero } from "@/lib/blogImg";
 import { prefetchImage, prefetchImages } from "@/lib/cdnImg";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -16,9 +15,10 @@ import { blogTracking } from "@/lib/blogTracking";
 import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
 import { useBlogTrending } from "@/hooks/useBlogTrending";
 import { haptic } from "@/lib/nativeHaptics";
+import BlogHero from "@/components/blog/BlogHero";
 
-// Capas de alta resolução que mudam dinamicamente conforme o menu de alternância
-import bibliotecaCoverImg from "@/assets/biblioteca-cover.webp";
+// Capas de alta resolução
+import blogRomaCover from "@/assets/blog/blog-roma-antiga-cover.webp";
 import filosofiaImg from "@/assets/capa-filosofia.webp";
 import stfImg from "@/assets/blog/stf.webp";
 import constitucionalImg from "@/assets/lei-cover-cf88.webp";
@@ -40,9 +40,9 @@ const CATEGORIES: CategoryItem[] = [
   {
     id: "todos",
     label: "Todos",
-    title: "Siga sua curiosidade.",
-    subtitle: "Descubra artigos, teses e reflexões jurídicas que valem o seu tempo.",
-    coverImg: bibliotecaCoverImg,
+    title: "Siga sua curiosidade jurídica.",
+    subtitle: "Descubra teses, artigos e reflexões profundas que valem o seu tempo.",
+    coverImg: blogRomaCover,
   },
   {
     id: "em-alta",
@@ -100,6 +100,13 @@ const CATEGORIES: CategoryItem[] = [
     subtitle: "Artigos que você marcou para ler com atenção ou consultar mais tarde.",
     coverImg: salvosImg,
   },
+  {
+    id: "recentes",
+    label: "Recentes",
+    title: "Lidos recentemente.",
+    subtitle: "Continue a leitura de artigos consultados recentemente.",
+    coverImg: blogRomaCover,
+  },
 ];
 
 function readFavoritesFromStorage(): string[] {
@@ -109,22 +116,32 @@ function readFavoritesFromStorage(): string[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
     }
-  } catch {
-    /* ignore */
-  }
+  } catch {}
+  return [];
+}
+
+function readRecentsFromStorage(): string[] {
+  try {
+    const raw = localStorage.getItem("blog:recentes");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
   return [];
 }
 
 const Blog = () => {
   const navigate = useNavigate();
-  const goBack = useGoBack();
   const location = useLocation();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [activeCategory, setActiveCategory] = useState<string>("todos");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [gateOpen, setGateOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavoritesFromStorage());
+  const [recentIds, setRecentIds] = useState<string[]>(() => readRecentsFromStorage());
 
   const { canUse, register, used, config } = useFeatureLimit("blog_read");
   const { posts: allPosts } = useBlogPostsCache();
@@ -136,7 +153,7 @@ const Blog = () => {
     return CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
   }, [activeCategory]);
 
-  // Pré-carregamento instantâneo (0ms) de todas as capas de categorias na memória
+  // Pré-carregamento instantâneo (0ms) das capas de categorias na memória
   useEffect(() => {
     CATEGORIES.forEach((cat) => {
       const img = new Image();
@@ -159,6 +176,7 @@ const Blog = () => {
   useEffect(() => {
     const syncFavs = () => {
       setFavoriteIds(readFavoritesFromStorage());
+      setRecentIds(readRecentsFromStorage());
     };
     window.addEventListener("blog:favorites-updated", syncFavs);
     window.addEventListener("storage", syncFavs);
@@ -235,6 +253,8 @@ const Blog = () => {
       );
     } else if (activeCategory === "salvos") {
       result = result.filter((p) => favoriteIds.includes(p.id));
+    } else if (activeCategory === "recentes") {
+      result = result.filter((p) => recentIds.includes(p.id));
     }
 
     // Filtro de busca textual
@@ -250,14 +270,14 @@ const Blog = () => {
     }
 
     return result;
-  }, [allPosts, activeCategory, searchQuery, trendingIds, favoriteIds]);
+  }, [allPosts, activeCategory, searchQuery, trendingIds, favoriteIds, recentIds]);
 
   // SEO & título da aba
   useEffect(() => {
     if (selectedPost) {
-      document.title = `${selectedPost.titulo} | Blogger Jurídico`;
+      document.title = `${selectedPost.titulo} | Blog Jurídico`;
     } else {
-      document.title = `${currentCategory.title} | Blogger Jurídico`;
+      document.title = `${currentCategory.title} | Blog Jurídico`;
     }
   }, [selectedPost, currentCategory]);
 
@@ -283,62 +303,88 @@ const Blog = () => {
       setSelectedPost(post);
       register(post.id);
       recordActivity({ path: `/blog?post=${post.id}`, label: post.titulo, kind: "blog" });
+
+      // Salva histórico de recentes
+      try {
+        const cur = readRecentsFromStorage().filter((id) => id !== post.id);
+        const upd = [post.id, ...cur].slice(0, 30);
+        localStorage.setItem("blog:recentes", JSON.stringify(upd));
+        setRecentIds(upd);
+      } catch {}
     },
     [canUse, register, registerPostClick]
   );
 
+  const handleFocusSearch = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+      searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-      {/* Fundo ShapeGrid Padrão Oficial do App */}
+    <div className="min-h-dvh bg-[#070b12] text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      {/* Fundo ShapeGrid Padrão Oficial com Matiz Azul Claro Celeste */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid
           speed={0.5}
-          squareSize={40}
+          squareSize={42}
           direction="diagonal"
-          borderColor="rgba(124, 58, 237, 0.05)"
+          borderColor="rgba(56, 189, 248, 0.05)"
         />
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6">
-        {/* Top Header estilo App 12min */}
-        <div className="flex items-center gap-2 mb-3">
-          <button
-            onClick={() => {
-              haptic.light();
-              navigate('/');
-            }}
-            aria-label="Voltar para o início"
-            className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
-          >
-            <ChevronLeft className="w-7 h-7" strokeWidth={2.4} />
-          </button>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-sans tracking-tight">
-            Todos os artigos
-          </h1>
-        </div>
+      {/* ── Painel de Topo Idêntico ao de Áudio Aulas com Capa de Roma Antiga & Céu Azul Claro ── */}
+      <BlogHero
+        totalArtigos={allPosts.length}
+        totalFavoritos={favoriteIds.length}
+        totalRecentes={recentIds.length}
+        onBuscar={handleFocusSearch}
+        onVoltar={() => navigate('/')}
+        onRecentes={() => {
+          haptic.selection();
+          setActiveCategory("recentes");
+        }}
+        onEmAlta={() => {
+          haptic.selection();
+          setActiveCategory("em-alta");
+        }}
+        onEstatistica={() => {
+          haptic.selection();
+          setActiveCategory("filosofia");
+        }}
+        onFavoritos={() => {
+          haptic.selection();
+          setActiveCategory("salvos");
+        }}
+        categoriaAtual={activeCategory}
+      />
 
-        {/* Barra de Pesquisa Arredondada */}
-        <div className="relative mb-3.5">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+      {/* ── Conteúdo Principal em Layout Responsivo (Mobile, Tablet, Desktop) ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Barra de Pesquisa com Estilo Azul Celeste */}
+        <div className="relative mb-5 max-w-2xl">
+          <Search className="w-4 h-4 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar livros, ideias ou autores..."
-            className="w-full rounded-2xl bg-[#171520] sm:bg-zinc-900/90 border border-white/10 pl-11 pr-10 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/25 transition-all font-sans"
+            placeholder="Buscar teses, doutrina, autores ou temas..."
+            className="w-full rounded-2xl bg-[#0d1522]/90 border border-sky-500/20 pl-11 pr-10 py-3.5 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all font-sans shadow-lg shadow-black/40 backdrop-blur-md"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-white"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Menu de Alternância (Pílulas Horizontais no Topo) */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 mb-5">
+        {/* Menu de Alternância (Pílulas Horizontais com Tom Azul Claro) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
@@ -350,8 +396,8 @@ const Blog = () => {
                 }}
                 className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
                   isActive
-                    ? "bg-[#7C3AED] text-white shadow-lg shadow-purple-600/30"
-                    : "bg-[#1E1B2E] text-zinc-300 hover:text-white border border-white/10 hover:bg-zinc-800"
+                    ? "bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30 border border-sky-400/40"
+                    : "bg-[#0c1320]/80 text-sky-100/70 hover:text-white border border-sky-500/15 hover:bg-[#121c2e]"
                 }`}
               >
                 {cat.label}
@@ -360,47 +406,36 @@ const Blog = () => {
           })}
         </div>
 
-        {/* Capa que muda conforme o menu de alternância */}
-        <div className="mb-7">
-          <div className="w-full aspect-[16/9] max-h-[220px] sm:max-h-[300px] rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-zinc-900 group">
-            <img
-              src={currentCategory.coverImg}
-              alt={currentCategory.title}
-              className="w-full h-full object-cover transform-gpu"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+        {/* ── Cabeçalho da Seção: TÍTULO EM UMA LINHA GARANTIDA ── */}
+        <div className="mb-6 px-1">
+          {/* Linha de Metadados: Badge e Categoria no topo */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/15 border border-sky-400/25 text-[11px] font-bold font-serif text-sky-300 tabular-nums shadow-sm">
+              <BookOpen className="w-3 h-3 text-sky-400" />
+              <span>{filteredPosts.length} artigos</span>
+            </span>
+            <span className="text-zinc-600">•</span>
+            <span className="text-xs font-serif italic text-zinc-400">
+              {currentCategory.label}
+            </span>
           </div>
 
-          {/* Tipografia Moderna e Dinâmica sob a Capa */}
-          <div className="mt-4 px-0.5">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-sans">
-              {currentCategory.title}
-            </h2>
-            <p className="text-sm sm:text-base text-zinc-400 font-normal leading-relaxed mt-1.5 font-sans">
-              {currentCategory.subtitle}
-            </p>
-          </div>
+          {/* Título Oficial: 100% em uma única linha com truncate e tipografia de Audiobook */}
+          <h2 className="font-serif font-bold text-xl sm:text-2xl md:text-3xl tracking-tight text-white truncate max-w-full leading-tight drop-shadow-sm">
+            {currentCategory.title}
+          </h2>
+
+          {/* Subtítulo suave */}
+          <p className="font-serif italic text-xs sm:text-sm md:text-base text-zinc-400 mt-1 leading-relaxed truncate max-w-full">
+            {currentCategory.subtitle}
+          </p>
         </div>
 
-        {/* Título da Seção */}
-        <div className="flex items-center justify-between mb-2 px-0.5">
-          <h3 className="text-lg sm:text-xl font-bold text-white font-sans tracking-tight">
-            {activeCategory === "todos"
-              ? "Selecionados para você"
-              : `Artigos em ${currentCategory.label}`}
-          </h3>
-          <span className="text-xs sm:text-sm font-semibold text-purple-400 font-sans">
-            {filteredPosts.length} artigos
-          </span>
-        </div>
-
-        {/* Lista de Artigos: Apenas uma linha fina dividindo cada item */}
-        <div className="divide-y divide-white/[0.08]">
+        {/* ── Lista de Artigos Responsiva (1 col Mobile, 2 cols Tablet, 3 cols Desktop) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
           {filteredPosts.length === 0 ? (
-            <div className="py-12 text-center text-zinc-400 text-sm font-sans">
+            <div className="col-span-full py-16 text-center text-zinc-400 text-sm font-serif italic bg-[#0b121e]/40 rounded-3xl border border-white/5 p-8">
+              <BookOpen className="w-10 h-10 text-sky-400/40 mx-auto mb-3" />
               Nenhum artigo encontrado nesta categoria.
             </div>
           ) : (
@@ -416,60 +451,87 @@ const Blog = () => {
                   onTouchStart={() => {
                     if (post.imagem_url) prefetchImage(blogHero(post.imagem_url));
                   }}
-                  className="flex items-center gap-3.5 sm:gap-4 py-3.5 sm:py-4 cursor-pointer group hover:bg-white/[0.03] px-2 rounded-2xl transition-all active:scale-[0.99]"
+                  className="group relative flex items-start gap-4 p-4 rounded-3xl bg-[#0a111c]/70 hover:bg-[#0f1a2a]/90 border border-sky-500/15 hover:border-sky-400/40 transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-lg shadow-black/30 backdrop-blur-md h-full flex-col justify-between"
                 >
-                  {/* Capa em miniatura (proporção 3:4 com cantos arredondados) */}
-                  <div className="relative w-[56px] h-[74px] sm:w-[64px] sm:h-[84px] shrink-0 rounded-xl overflow-hidden bg-zinc-900 border border-white/10 shadow-md">
-                    <img
-                      src={blogThumb(post.imagem_url, 160)}
-                      alt={post.titulo}
-                      loading={idx < 10 ? "eager" : "lazy"}
-                      fetchPriority={idx < 6 ? "high" : "auto"}
-                      decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = bibliotecaCoverImg;
-                      }}
-                    />
+                  <div className="flex items-start gap-3.5 sm:gap-4 w-full">
+                    {/* Capa em Proporção de Livro / Audiobook (3:4) com cantos curvados */}
+                    <div className="relative w-[76px] h-[102px] sm:w-[84px] sm:h-[112px] shrink-0 rounded-2xl overflow-hidden bg-zinc-900 border border-white/10 shadow-md">
+                      <img
+                        src={blogThumb(post.imagem_url, 160)}
+                        alt={post.titulo}
+                        loading={idx < 8 ? "eager" : "lazy"}
+                        fetchPriority={idx < 4 ? "high" : "auto"}
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = blogRomaCover;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                    </div>
+
+                    {/* Informações Editoriais no Padrão de Audiobook */}
+                    <div className="flex-1 min-w-0 pr-1">
+                      {/* Categoria / Tema em Badge Azul Claro e Botão Salvar na mesma linha */}
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="px-2 py-0.5 rounded-md bg-sky-500/15 border border-sky-400/25 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-sky-300 font-sans truncate">
+                          {post.tema || "Doutrina"}
+                        </span>
+
+                        {/* Botão Salvar / Estante */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleFavorite(post.id);
+                          }}
+                          aria-label="Salvar artigo"
+                          className="w-8 h-8 -mr-1 rounded-full flex items-center justify-center shrink-0 hover:bg-sky-500/15 active:scale-90 text-zinc-400 hover:text-sky-300 transition-all cursor-pointer"
+                        >
+                          <Bookmark
+                            className={`w-4 h-4 transition-transform ${
+                              isSaved ? "fill-sky-400 text-sky-400 scale-110 drop-shadow-[0_0_8px_rgba(56,189,248,0.7)]" : "text-zinc-400"
+                            }`}
+                            strokeWidth={1.8}
+                          />
+                        </button>
+                      </div>
+
+                      {/* Título do Artigo em Playfair Display / Serif */}
+                      <h3 className="font-serif font-bold text-base sm:text-[17px] text-white leading-snug group-hover:text-sky-300 transition-colors line-clamp-2 drop-shadow-sm">
+                        {post.titulo}
+                      </h3>
+
+                      {/* Resumo sutil em 1-2 linhas */}
+                      {post.resumo && (
+                        <p className="font-sans text-xs text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
+                          {post.resumo}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Detalhes do Artigo */}
-                  <div className="flex-1 min-w-0 pr-1">
-                    <h4 className="font-bold text-sm sm:text-base text-white leading-snug line-clamp-2 group-hover:text-purple-300 transition-colors font-sans">
-                      {post.titulo}
-                    </h4>
-                    <p className="text-xs text-zinc-400 font-medium mt-1 truncate font-sans">
-                      {post.autor || post.tema}
-                    </p>
-                    <div className="flex items-center gap-2.5 mt-1.5 text-xs text-zinc-400 font-sans">
+                  {/* Metadados no Rodapé do Card */}
+                  <div className="w-full flex items-center justify-between flex-wrap gap-2 pt-2.5 mt-2 border-t border-white/[0.06] text-xs text-zinc-400 font-sans">
+                    {post.autor ? (
+                      <span className="font-serif italic text-zinc-300 text-xs truncate max-w-[150px]">
+                        {post.autor}
+                      </span>
+                    ) : (
+                      <span className="text-zinc-500 text-xs">Estudos Jurídicos</span>
+                    )}
+
+                    <div className="flex items-center gap-2.5">
                       <span className="flex items-center gap-1 text-zinc-400">
-                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                        <Clock className="w-3.5 h-3.5 text-sky-400" />
                         <span>{post.tempo_leitura_min || 8} min</span>
                       </span>
                       <span className="text-zinc-600">•</span>
                       <span className="flex items-center gap-1 font-semibold text-zinc-300">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span>4.8</span>
+                        <span>4.9</span>
                       </span>
                     </div>
                   </div>
-
-                  {/* Ícone de Salvar / Estante */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleFavorite(post.id);
-                    }}
-                    aria-label="Salvar artigo"
-                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 hover:bg-white/10 active:scale-90 text-zinc-400 hover:text-white transition-all cursor-pointer"
-                  >
-                    <Bookmark
-                      className={`w-5 h-5 transition-transform ${
-                        isSaved ? "fill-purple-500 text-purple-500 scale-110" : "text-zinc-400"
-                      }`}
-                      strokeWidth={1.8}
-                    />
-                  </button>
                 </div>
               );
             })
