@@ -316,6 +316,9 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     if (curObj.download_escura) downloadEscura = curObj.download_escura;
     if (curObj.versoes_pdf) versoesPdf = curObj.versoes_pdf;
   }
+  if (!downloadEscura && row.download_escura) downloadEscura = row.download_escura;
+  if (!downloadEscura && row.downloadEscura) downloadEscura = row.downloadEscura;
+  if (!versoesPdf && row.versoesPdf) versoesPdf = row.versoesPdf;
 
   // Tratamento especial para Dos Delitos e das Penas e O Caso dos Exploradores de Cavernas com versões no R2
   const isDelitos = String(titulo).toLowerCase().includes('delitos e das penas') || String(row.id) === '123';
