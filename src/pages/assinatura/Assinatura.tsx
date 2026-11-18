@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { Capacitor } from '@capacitor/core';
-import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles, Lock, X } from "lucide-react";
+import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles, Lock, X, Crown } from "lucide-react";
 
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import WelcomePremiumOverlay from "@/components/planos/WelcomePremiumOverlay";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
 import PaywallImageStack from '@/components/planos/PaywallImageStack';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 
 import { TrialCountdownBanner } from '@/components/assinatura/TrialCountdownBanner';
 
@@ -202,17 +203,18 @@ export default function Assinatura() {
   }
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(4rem+var(--sai-bottom))] relative overflow-x-hidden">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
-          shape="square"
-          hoverTrailAmount={5}
+    <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(4rem+var(--sai-bottom))] relative overflow-x-hidden text-white">
+      {/* ── Fundo Imersivo Oficial com Imagem Nobre e Vinheta (Igual Aulas Interativas) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
+        <img
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga e Filósofos"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.88] contrast-[1.08]"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85 pointer-events-none" />
       </div>
       
       <div className="relative z-10 flex flex-col">
@@ -233,7 +235,7 @@ export default function Assinatura() {
         />
 
         <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
-          <SheetContent side="bottom" className="h-[92dvh] sm:h-auto sm:max-w-lg mx-auto rounded-t-[32px] sm:rounded-3xl px-0 pt-0 bg-[#0D0D0D] border-border/40 flex flex-col overflow-hidden">
+          <SheetContent side="bottom" className="h-[92dvh] sm:h-auto sm:max-w-lg mx-auto rounded-t-[32px] sm:rounded-3xl px-0 pt-0 bg-[#0D0D0D] border-border/40 flex flex-col overflow-hidden [&>button.absolute]:hidden">
             <div className="flex-1 w-full max-w-md mx-auto flex flex-col overflow-y-auto px-6 pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-6">
               <div className="absolute inset-0 pointer-events-none opacity-[0.15] -z-10">
                 <ShapeGrid />
@@ -366,7 +368,7 @@ export default function Assinatura() {
 
         {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
 
-        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(9.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
+        <div className="max-w-2xl mx-auto pt-1 space-y-3.5 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
             {/* Folhas de louro caindo */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
               {falling.map((i) => (
@@ -392,15 +394,16 @@ export default function Assinatura() {
 
             <PaywallImageStack />
 
-            <div className="space-y-3 text-center px-4 flex flex-col items-center mt-2">
-              <div className="inline-flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-widest mb-1">
-                Acesso Total Liberado
+            <div className="space-y-1.5 text-center px-4 flex flex-col items-center">
+              <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/15 backdrop-blur-md text-white px-3 py-0.5 rounded-full text-[10.5px] font-black uppercase tracking-wider shadow-sm">
+                <Crown className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                <span>DIREITO PRIME</span>
               </div>
-              <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15] uppercase tracking-tight">
-                Acesso a todo conteúdo <span className="text-primary">do aplicativo</span>
+              <h1 className="font-display text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-tight">
+                Acesso Total ao <span className="text-primary">Aplicativo</span>
               </h1>
-              <p className="text-[14px] text-muted-foreground font-medium max-w-[280px] sm:max-w-sm mx-auto leading-relaxed">
-                O passaporte definitivo para a sua aprovação. Desbloqueie todo o poder da Inteligência Artificial e ferramentas exclusivas para estudar com o máximo rendimento.
+              <p className="text-xs sm:text-[13.5px] text-zinc-300/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
+                O método definitivo para acelerar a sua aprovação. Aprenda com máxima retenção, domine o conteúdo e conquiste a sua vaga.
               </p>
             </div>
 
@@ -410,20 +413,19 @@ export default function Assinatura() {
               onSelectPlan={setTab} 
             />
 
-            <div className="px-4 flex flex-col gap-3 -mt-1">
+            <div className="px-4 flex flex-col gap-2 -mt-1">
               <Button
                 onClick={handleAssinarAgoraClick}
-                className="btn-shine-loop relative overflow-hidden w-full h-[62px] rounded-[22px] font-display text-[20px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/95 text-white shadow-[0_12px_35px_rgba(224,31,71,0.45)] border border-white/15"
+                className="btn-shine-loop relative overflow-hidden w-full h-[58px] rounded-[20px] font-display text-[18px] sm:text-[19px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/95 text-white shadow-[0_12px_35px_rgba(224,31,71,0.45)] border border-white/15"
               >
-                <span className="flex items-center justify-center gap-2.5">
-                  <Sparkles className="w-5 h-5 text-amber-300" />
-                  ASSINAR AGORA
+                <span className="flex items-center justify-center gap-2">
+                  <span>ASSINAR AGORA</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>
-              <div className="flex items-center justify-center gap-2 text-[12px] text-muted-foreground font-medium">
+              <div className="flex items-center justify-center gap-2 text-[11.5px] text-zinc-400 font-medium">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Liberação imediata • PIX ou Cartão • 100% Seguro</span>
+                <span>7 dias de garantia incondicional • Liberação imediata</span>
               </div>
             </div>
 

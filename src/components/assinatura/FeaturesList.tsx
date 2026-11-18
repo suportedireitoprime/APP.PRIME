@@ -1,4 +1,6 @@
-import { Scale, Brain, Library, Sparkles, Briefcase, CheckCircle2, ShieldCheck, Headphones, Gavel, Globe, BookOpen, Zap, FileText, Bell, BarChart3, Bookmark, MessageSquare, Tv, Map, Gamepad2, GraduationCap, Newspaper, Landmark, Search, Mic, PenTool, Trophy, Layers, FolderOpen, Podcast, Star, Crown } from "lucide-react";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Scale, Brain, Library, Sparkles, Briefcase, CheckCircle2, ShieldCheck, Headphones, Gavel, Globe, BookOpen, Zap, FileText, Bell, BarChart3, Bookmark, MessageSquare, Tv, Map, Gamepad2, GraduationCap, Newspaper, Landmark, Search, Mic, PenTool, Trophy, Layers, FolderOpen, Podcast, Star, Crown, ChevronDown, ChevronUp } from "lucide-react";
 
 const CATEGORIZED_FEATURES = [
   {
@@ -367,58 +369,136 @@ const CATEGORIZED_FEATURES = [
   }
 ];
 
-export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
-  return (
-    <div className="mx-4 rounded-3xl p-5 sm:p-7 bg-card/60 border border-border/80 backdrop-blur-md shadow-xl overflow-hidden relative">
-      <div className="text-center mb-6 relative z-10">
+const CORE_PILLARS = [
+  {
+    title: "IA Jurídica Horus",
+    desc: "Tira-dúvidas de artigos, resumos, gerador de peças e mapas mentais em segundos.",
+    icon: Brain,
+    badge: "24h Ilimitada"
+  },
+  {
+    title: "Vade Mecum & Códigos",
+    desc: "Legislação federal compilada, súmulas vinculantes, busca instantânea e grifos.",
+    icon: Scale,
+    badge: "Atualizado"
+  },
+  {
+    title: "Audioaulas & Podcasts",
+    desc: "Centenas de aulas narradas e explicadas para você estudar onde e quando quiser.",
+    icon: Headphones,
+    badge: "Modo Offline"
+  },
+  {
+    title: "Questões & Simulados OAB",
+    desc: "Milhares de questões com gabarito comentado por IA e trilhas progressivas.",
+    icon: GraduationCap,
+    badge: "OAB & Concursos"
+  }
+];
 
-        <h3 className="font-display text-lg sm:text-xl font-black text-white uppercase tracking-wider mb-2">
-          Acesso Premium Desbloqueado
+export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
+  const [showAll, setShowAll] = useState(false);
+
+  return (
+    <div className="mx-4 rounded-3xl p-5 sm:p-6 bg-card/40 border border-white/10 backdrop-blur-md shadow-xl overflow-hidden relative">
+      <div className="text-center mb-5 relative z-10">
+        <h3 className="font-display text-base sm:text-lg font-black text-white uppercase tracking-wider mb-1">
+          O que está incluído na sua assinatura
         </h3>
-        <p className="text-[12.5px] sm:text-[13px] text-zinc-400 font-medium max-w-[90%] mx-auto leading-relaxed">
-          Sua assinatura inclui <strong className="text-white font-bold">+200 ferramentas exclusivas</strong> em 25 módulos. O arsenal definitivo para sua aprovação.
+        <p className="text-[12px] text-zinc-400 font-medium max-w-sm mx-auto leading-relaxed">
+          Tudo o que você precisa para dominar o Direito e acelerar a sua aprovação.
         </p>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
-        {CATEGORIZED_FEATURES.map((cat, i) => {
-          const Icon = cat.icon;
-          const isLastOdd = i === CATEGORIZED_FEATURES.length - 1 && CATEGORIZED_FEATURES.length % 2 !== 0;
-          
+
+      {/* 4 Pilares Principais Minimalistas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 relative z-10">
+        {CORE_PILLARS.map((p, i) => {
+          const Icon = p.icon;
           return (
-            <div 
-              key={i} 
-              className={`rounded-2xl border border-white/5 bg-black/20 p-3.5 sm:p-4 flex flex-col transition-all duration-300 hover:border-white/10 hover:bg-black/40 ${
-                isLastOdd ? 'md:col-span-2' : ''
-              }`}
+            <div
+              key={i}
+              className="rounded-2xl border border-white/5 bg-black/30 p-3.5 flex flex-col justify-between transition-all hover:border-white/10"
             >
-              {/* Cabeçalho */}
-              <div className="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-white/5">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 shrink-0 text-zinc-400" />
-                  <h4 className="font-display font-black text-[12px] sm:text-[13px] tracking-wide leading-tight text-white">
-                    {cat.category}
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-display font-black text-xs text-white tracking-wide">
+                    {p.title}
                   </h4>
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                  INCLUSO
+                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  {p.badge}
                 </span>
               </div>
-
-              {/* Lista compacta em grid 2 colunas */}
-              <ul className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 flex-1">
-                {cat.features.map((feat, idx) => (
-                  <li key={idx} className="flex items-center gap-1.5 min-w-0">
-                    <CheckCircle2 className="w-3 h-3 shrink-0 text-emerald-500/90" />
-                    <span className="font-body text-[10.5px] sm:text-[11px] text-zinc-400 leading-tight font-medium truncate">
-                      {feat}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">
+                {p.desc}
+              </p>
             </div>
           );
         })}
+      </div>
+
+      {/* Botão Retrátil para Ver Todas as Ferramentas */}
+      <div className="mt-4 pt-3 border-t border-white/5 relative z-10 flex flex-col items-center">
+        <button
+          type="button"
+          onClick={() => setShowAll(prev => !prev)}
+          className="inline-flex items-center justify-center gap-1.5 py-2 px-4 rounded-xl text-xs font-bold text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all active:scale-[0.98]"
+        >
+          <span>{showAll ? 'Ocultar detalhes' : 'Ver todos os 25 módulos (+200 ferramentas)'}</span>
+          {showAll ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        <AnimatePresence>
+          {showAll && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full mt-4 grid grid-cols-1 md:grid-cols-2 gap-2.5 overflow-hidden"
+            >
+              {CATEGORIZED_FEATURES.map((cat, i) => {
+                const Icon = cat.icon;
+                const isLastOdd = i === CATEGORIZED_FEATURES.length - 1 && CATEGORIZED_FEATURES.length % 2 !== 0;
+
+                return (
+                  <div 
+                    key={i} 
+                    className={`rounded-2xl border border-white/5 bg-black/20 p-3.5 flex flex-col transition-all ${
+                      isLastOdd ? 'md:col-span-2' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-white/5">
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
+                        <h4 className="font-display font-black text-xs text-white">
+                          {cat.category}
+                        </h4>
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        INCLUSO
+                      </span>
+                    </div>
+
+                    <ul className="grid grid-cols-2 gap-x-2 gap-y-1">
+                      {cat.features.map((feat, idx) => (
+                        <li key={idx} className="flex items-center gap-1.5 min-w-0">
+                          <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-emerald-500/90" />
+                          <span className="font-body text-[10px] text-zinc-400 font-medium truncate">
+                            {feat}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
