@@ -238,6 +238,7 @@ const Flashcard3D = memo(function Flashcard3D({
   const parsedData = useMemo(() => {
     if (!atual.reforco_conteudo) return null;
     try {
+      if (typeof atual.reforco_conteudo === 'object') return atual.reforco_conteudo;
       return JSON.parse(atual.reforco_conteudo);
     } catch {
       return null;
@@ -267,11 +268,16 @@ const Flashcard3D = memo(function Flashcard3D({
   // Estados de Completar Lacunas
   const palavrasCorretas = useMemo(() => {
     if (tipoCard !== 'Completar Lacunas') return [];
-    if (Array.isArray(parsedData?.palavras)) {
+    if (Array.isArray(parsedData?.palavras) && parsedData.palavras.length > 0) {
       return parsedData.palavras.filter(Boolean).map(String);
     }
+    // Fallback inteligente: se a resposta for concisa (< 60 caracteres), ela é o termo da lacuna
+    const resp = atual.resposta?.replace(/[*_#]/g, '').trim();
+    if (resp && resp.length > 0 && resp.length < 60) {
+      return [resp];
+    }
     return [];
-  }, [tipoCard, parsedData]);
+  }, [tipoCard, parsedData, atual.resposta]);
 
   const [lacunasPreenchidas, setLacunasPreenchidas] = useState<string[]>([]);
   const [lacunaStatus, setLacunaStatus] = useState<'idle' | 'correto' | 'erro'>('idle');
@@ -436,6 +442,16 @@ const Flashcard3D = memo(function Flashcard3D({
 
   const isFormatoPadrao = tipoCard === 'Pergunta e Resposta';
 
+  const isInteractiveRendered = useMemo(() => {
+    if (tipoCard === 'Múltipla Escolha') return Boolean(parsedData?.alternativas);
+    if (tipoCard === 'Verdadeiro ou Falso') return true;
+    if (tipoCard === 'Ditado') return true;
+    if (tipoCard === 'Pegadinha') return true;
+    if (tipoCard === 'Completar Lacunas') return palavrasCorretas.length > 0;
+    if (tipoCard === 'Ache o Erro') return true;
+    return false;
+  }, [tipoCard, parsedData, palavrasCorretas]);
+
   const cleanAssunto = useMemo(() => {
     return cleanTextoTitulo(atual.subtema);
   }, [atual.subtema]);
@@ -455,12 +471,11 @@ const Flashcard3D = memo(function Flashcard3D({
       return;
     }
 
-    // Se estiver na frente:
-    if (isFormatoPadrao) {
-      // Formato padrão (Pergunta e Resposta): vira normalmente com o clique
+    // Se estiver na frente: se for formato padrão OU se não houver interativo renderizado, vira direto
+    if (isFormatoPadrao || !isInteractiveRendered) {
       onVirar();
     } else {
-      // Formatos interativos (Completar Lacunas, Múltipla Escolha, V/F, Ditado, Ache o Erro, Pegadinha):
+      // Formatos interativos com opções na tela:
       // SÓ VIRA SE A PESSOA SELECIONAR AS OPÇÕES/RESPOSTAS!
       haptic.selection?.();
       const dicasInterativas: Record<string, string> = {
@@ -1190,7 +1205,11 @@ const Flashcard3D = memo(function Flashcard3D({
                     onClick={(e) => {
                       e.stopPropagation();
                       haptic.success?.();
-                      toast.info(`Palavra com erro: "${parsedData?.palavraErrada || 'Identificada'}".`, { duration: 1500 });
+                      if (parsedData?.palavraErrada) {
+                        toast.info(`Palavra com erro: "${parsedData.palavraErrada}".`, { duration: 1500 });
+                      } else {
+                        toast.info('Conferindo erro e fundamentação no verso...', { duration: 1500 });
+                      }
                       playFlipSound();
                       setTimeout(() => onVirar(), 750);
                     }}
@@ -1216,8 +1235,8 @@ const Flashcard3D = memo(function Flashcard3D({
               </div>
             )}
 
-            {/* 7. PERGUNTA E RESPOSTA (OU FALLBACK) */}
-            {(tipoCard === 'Pergunta e Resposta' || (!parsedData?.alternativas && tipoCard !== 'Verdadeiro ou Falso' && tipoCard !== 'Ditado' && tipoCard !== 'Pegadinha' && tipoCard !== 'Completar Lacunas' && tipoCard !== 'Ache o Erro')) && (
+            {/* 7. PERGUNTA E RESPOSTA (OU FALLBACK SE NÃO HOUVER INTERATIVO) */}
+            {(!isInteractiveRendered || isFormatoPadrao) && (
               <Button
                 className="w-full h-14 sm:h-16 rounded-2xl text-[15px] sm:text-base font-extrabold gap-2 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/30 active:scale-[0.98] transition-all border border-blue-400/30 cursor-pointer"
                 onClick={() => {
