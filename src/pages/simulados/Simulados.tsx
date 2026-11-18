@@ -132,6 +132,76 @@ export default function Simulados() {
     };
   }, [simuladosList]);
 
+  // Lista estruturada dos simulados oficiais em destaque
+  const itensDestaque = useMemo(() => [
+    {
+      id: 'oab',
+      cargo: 'oab',
+      titulo: 'OAB Nacional',
+      icone: Timer,
+      corIcone: '#a855f7',
+      corBg: 'bg-purple-500/10 border-purple-500/25',
+      corDestaque: 'text-purple-400',
+      questoes: contagensDestaque.oab.questoes,
+      edicoes: `${contagensDestaque.oab.provas} Edições • 1ª Fase Oficial`,
+    },
+    {
+      id: 'prf',
+      cargo: 'prf',
+      titulo: 'PRF (Polícia Rodoviária)',
+      icone: Shield,
+      corIcone: '#eab308',
+      corBg: 'bg-amber-500/10 border-amber-500/25',
+      corDestaque: 'text-amber-400',
+      questoes: contagensDestaque.prf.questoes,
+      edicoes: `${contagensDestaque.prf.provas} provas • Cebraspe`,
+    },
+    {
+      id: 'delegado',
+      cargo: 'delegado',
+      titulo: 'Delegado de Polícia',
+      icone: ShieldAlert,
+      corIcone: '#3b82f6',
+      corBg: 'bg-blue-500/10 border-blue-500/25',
+      corDestaque: 'text-blue-400',
+      questoes: contagensDestaque.delegado.questoes,
+      edicoes: `${contagensDestaque.delegado.provas} provas • PF & PC`,
+    },
+    {
+      id: 'escrevente',
+      cargo: 'escrevente',
+      titulo: 'Escrevente TJ-SP',
+      icone: BookOpen,
+      corIcone: '#10b981',
+      corBg: 'bg-emerald-500/10 border-emerald-500/25',
+      corDestaque: 'text-emerald-400',
+      questoes: contagensDestaque.escrevente.questoes,
+      edicoes: `${contagensDestaque.escrevente.provas} provas • Vunesp`,
+    },
+    {
+      id: 'juiz',
+      cargo: 'juiz',
+      titulo: 'Juiz Substituto',
+      icone: Scale,
+      corIcone: '#8b5cf6',
+      corBg: 'bg-violet-500/10 border-violet-500/25',
+      corDestaque: 'text-violet-400',
+      questoes: contagensDestaque.juiz.questoes,
+      edicoes: `${contagensDestaque.juiz.provas} provas • Magistratura`,
+    },
+    {
+      id: 'promotor',
+      cargo: 'promotor',
+      titulo: 'Promotor de Justiça',
+      icone: Gavel,
+      corIcone: '#ef4444',
+      corBg: 'bg-rose-500/10 border-rose-500/25',
+      corDestaque: 'text-rose-400',
+      questoes: contagensDestaque.promotor.questoes,
+      edicoes: `${contagensDestaque.promotor.provas} provas • Ministério Público`,
+    },
+  ], [contagensDestaque]);
+
   // Iniciar Simulado a partir do Filtro Rápido
   const handleIniciarFiltro = (cfg: SimuladoFiltroConfig) => {
     setFiltroAberto(false);
@@ -303,156 +373,50 @@ export default function Simulados() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {/* Card OAB */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('oab');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
-                    <Timer className="h-7 w-7 sm:h-8 sm:w-8 text-[#7c3aed]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">OAB Nacional</span>
-                    <span className="text-xs font-black text-purple-400 mt-1">
-                      {contagensDestaque.oab.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.oab.provas} Edições • 1ª Fase Oficial
-                    </span>
-                  </div>
-                </motion.button>
+              <div className="flex flex-col gap-2.5">
+                {itensDestaque.map((item) => {
+                  const Icon = item.icone;
+                  return (
+                    <motion.button
+                      key={item.id}
+                      whileHover={{ scale: 1.01, x: 2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        setFiltroCargoProvasSheet(item.cargo);
+                        setProvasSheetAberto(true);
+                      }}
+                      className="group w-full flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 hover:bg-card/90 transition-all focus-visible:outline-none text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${item.corBg}`}>
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: item.corIcone }} strokeWidth={2} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[14.5px] sm:text-base font-bold text-foreground group-hover:text-purple-300 transition-colors block truncate">
+                            {item.titulo}
+                          </span>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className={`text-xs font-black ${item.corDestaque}`}>
+                              {item.questoes.toLocaleString('pt-BR')} questões
+                            </span>
+                            <span className="text-muted-foreground/40 text-xs">•</span>
+                            <span className="text-[11px] sm:text-xs text-muted-foreground truncate">
+                              {item.edicoes}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                {/* Card PRF */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('prf');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#eab308] group-hover:scale-110 transition-transform">
-                    <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-[#eab308]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">PRF (Polícia Rodoviária)</span>
-                    <span className="text-xs font-black text-amber-400 mt-1">
-                      {contagensDestaque.prf.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.prf.provas} provas • Cebraspe
-                    </span>
-                  </div>
-                </motion.button>
-
-                {/* Card Delegado */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('delegado');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#3b82f6] group-hover:scale-110 transition-transform">
-                    <ShieldAlert className="h-7 w-7 sm:h-8 sm:w-8 text-[#3b82f6]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">Delegado de Polícia</span>
-                    <span className="text-xs font-black text-blue-400 mt-1">
-                      {contagensDestaque.delegado.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.delegado.provas} provas • PF & PC
-                    </span>
-                  </div>
-                </motion.button>
-
-                {/* Card Escrevente TJ-SP */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('escrevente');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#10b981] group-hover:scale-110 transition-transform">
-                    <BookOpen className="h-7 w-7 sm:h-8 sm:w-8 text-[#10b981]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">Escrevente TJ-SP</span>
-                    <span className="text-xs font-black text-emerald-400 mt-1">
-                      {contagensDestaque.escrevente.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.escrevente.provas} provas • Vunesp
-                    </span>
-                  </div>
-                </motion.button>
-
-                {/* Card Juiz */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('juiz');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#8b5cf6] group-hover:scale-110 transition-transform">
-                    <Scale className="h-7 w-7 sm:h-8 sm:w-8 text-[#8b5cf6]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">Juiz Substituto</span>
-                    <span className="text-xs font-black text-violet-400 mt-1">
-                      {contagensDestaque.juiz.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.juiz.provas} provas • Magistratura
-                    </span>
-                  </div>
-                </motion.button>
-
-                {/* Card Promotor MP */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroCargoProvasSheet('promotor');
-                    setProvasSheetAberto(true);
-                  }}
-                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
-                >
-                  <div className="flex items-center justify-center text-[#ef4444] group-hover:scale-110 transition-transform">
-                    <Gavel className="h-7 w-7 sm:h-8 sm:w-8 text-[#ef4444]" strokeWidth={1.8} />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs sm:text-sm font-bold text-foreground">Promotor de Justiça</span>
-                    <span className="text-xs font-black text-rose-400 mt-1">
-                      {contagensDestaque.promotor.questoes.toLocaleString('pt-BR')} questões
-                    </span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">
-                      {contagensDestaque.promotor.provas} provas • Ministério Público
-                    </span>
-                  </div>
-                </motion.button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold text-purple-300 bg-purple-500/10 border border-purple-500/20">
+                          Praticar
+                        </span>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" strokeWidth={2.2} />
+                      </div>
+                    </motion.button>
+                  );
+                })}
               </div>
             </motion.section>
           </motion.div>
