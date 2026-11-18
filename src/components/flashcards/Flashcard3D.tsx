@@ -467,12 +467,14 @@ const Flashcard3D = memo(function Flashcard3D({
   const handleCardClick = () => {
     // Se o card já está virado (mostrando o verso/resposta), o usuário pode clicar para virar de volta
     if (virado) {
+      playFlipSound();
       onVirar();
       return;
     }
 
     // Se estiver na frente: se for formato padrão OU se não houver interativo renderizado, vira direto
     if (isFormatoPadrao || !isInteractiveRendered) {
+      playFlipSound();
       onVirar();
     } else {
       // Formatos interativos com opções na tela:
@@ -747,36 +749,27 @@ const Flashcard3D = memo(function Flashcard3D({
                         onClick={(e) => {
                           e.stopPropagation();
                           haptic.selection?.();
-                          const nextState = !aprofundar;
-                          setAprofundar(nextState);
-                          if (nextState) {
-                            setTimeout(() => {
-                              if (versoScrollRef.current) {
-                                versoScrollRef.current.scrollTo({
-                                  top: versoScrollRef.current.scrollHeight,
-                                  behavior: 'smooth',
-                                });
-                              }
-                            }, 120);
-                          }
+                          setModalAprofundarOpen(true);
                         }}
-                        className={cn(
-                          "w-full flex items-center justify-between px-4 py-3 rounded-2xl border transition-all duration-300 font-semibold text-xs sm:text-sm select-none cursor-pointer",
-                          aprofundar
-                            ? "bg-blue-950/50 border-blue-500/50 text-blue-200 shadow-lg shadow-blue-950/40"
-                            : "bg-zinc-800/80 hover:bg-zinc-800 border-zinc-700/70 hover:border-zinc-600 text-zinc-200 hover:text-white shadow-md active:scale-[0.99]"
-                        )}
-                        aria-expanded={aprofundar}
-                        aria-label="Aprofundar conceito do flashcard"
+                        className="btn-shine-loop relative overflow-hidden w-full flex items-center justify-between px-4 py-3 rounded-2xl border transition-all duration-300 font-semibold text-xs sm:text-sm select-none cursor-pointer bg-zinc-800/90 hover:bg-zinc-800 border-zinc-700/80 hover:border-zinc-500 text-zinc-100 hover:text-white shadow-md active:scale-[0.99] group"
+                        aria-label="Aprofundar conceito do flashcard em card maior"
                       >
-                        <span className="flex items-center gap-2">
-                          <Sparkles className={cn("w-4 h-4 transition-colors", aprofundar ? "text-blue-400" : "text-amber-400")} />
+                        {/* Efeito de reflexo de luz contínuo */}
+                        <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
+                          <span
+                            className="absolute inset-y-0 -left-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                            style={{ animation: 'shimmer-reflect-loop 2.8s ease-out infinite' }}
+                          />
+                        </span>
+
+                        <span className="relative z-10 flex items-center gap-2">
+                          <span className="text-base sm:text-lg leading-none select-none">⚖️</span>
                           <span className="font-extrabold tracking-wide">
-                            {aprofundar ? "Recolher Aprofundamento" : "Aprofundar"}
+                            Aprofundar
                           </span>
                           <span className="text-[11px] font-medium text-zinc-400 hidden xs:inline">
                             • {[
-                              atual.exemplo && "Exemplo Prático",
+                              atual.exemplo && "Exemplo",
                               atual.base_legal && "Base Legal",
                               atual.dica && "Dica",
                               atual.reforco_conteudo && "Reforço",
@@ -784,45 +777,11 @@ const Flashcard3D = memo(function Flashcard3D({
                             ].filter(Boolean).join(", ")}
                           </span>
                         </span>
-                        <ChevronDown className={cn("w-4 h-4 text-zinc-400 transition-transform duration-300 shrink-0", aprofundar && "rotate-180 text-blue-400")} />
+                        <div className="relative z-10 flex items-center gap-1.5 text-zinc-400 group-hover:text-white transition-colors">
+                          <span className="text-[11px] font-bold hidden sm:inline">Ver Tudo</span>
+                          <Maximize2 className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform text-blue-400" />
+                        </div>
                       </button>
-
-                      <AnimatePresence>
-                        {aprofundar && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                            className="overflow-hidden space-y-3"
-                          >
-                            <div className="flex items-center justify-between px-1 pb-1">
-                              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                                <Sparkles className="w-3 h-3 text-blue-400" />
-                                Detalhamento Completo
-                              </span>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  haptic.selection?.();
-                                  setModalAprofundarOpen(true);
-                                }}
-                                className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
-                              >
-                                <Maximize2 className="w-3 h-3" />
-                                <span>Tela Cheia</span>
-                              </button>
-                            </div>
-
-                            {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
-                            {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
-                            {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
-                            {atual.reforco_conteudo && <Bloco icon={Sparkles} titulo="Reforço de Conteúdo" texto={atual.reforco_conteudo} />}
-                            {atual.resumo_ia && <Bloco icon={Sparkles} titulo="Resumo Inteligente" texto={atual.resumo_ia} />}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </div>
                   )}
                 </div>
@@ -832,9 +791,9 @@ const Flashcard3D = memo(function Flashcard3D({
         </motion.div>
       </AnimatePresence>
 
-      {/* Controles Interativos por Tipo — exibidos ANTES de virar o card */}
+      {/* Controles Interativos por Tipo — exibidos ANTES de virar o card (apenas quando há alternativas/inputs) */}
       <AnimatePresence>
-        {!virado && (
+        {!virado && isInteractiveRendered && !isFormatoPadrao && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1234,21 +1193,6 @@ const Flashcard3D = memo(function Flashcard3D({
                 </div>
               </div>
             )}
-
-            {/* 7. PERGUNTA E RESPOSTA (OU FALLBACK SE NÃO HOUVER INTERATIVO) */}
-            {(!isInteractiveRendered || isFormatoPadrao) && (
-              <Button
-                className="w-full h-14 sm:h-16 rounded-2xl text-[15px] sm:text-base font-extrabold gap-2 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/30 active:scale-[0.98] transition-all border border-blue-400/30 cursor-pointer"
-                onClick={() => {
-                  playFlipSound();
-                  onVirar();
-                }}
-              >
-                <RotateCcw className="h-5 w-5 text-white" />
-                <span>Virar Flashcard (Ver Resposta)</span>
-                <span className="hidden sm:inline-block ml-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-white/20 text-white">Espaço</span>
-              </Button>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -1284,34 +1228,62 @@ const Flashcard3D = memo(function Flashcard3D({
         )}
       </AnimatePresence>
 
-      {/* Modal / Dialog de Aprofundamento em Tela Cheia */}
+      {/* Modal / Card Maior de Aprofundamento Completo */}
       <Dialog open={modalAprofundarOpen} onOpenChange={setModalAprofundarOpen}>
-        <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto bg-zinc-900 border border-zinc-800 text-zinc-100 rounded-3xl p-6 shadow-2xl">
-          <DialogHeader className="pb-3 border-b border-zinc-800">
-            <DialogTitle className="flex items-center gap-2 text-base font-extrabold text-white">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Aprofundamento • {cleanAssunto || cleanTema}</span>
+        <DialogContent className="max-w-2xl w-[94vw] sm:w-full max-h-[90vh] overflow-y-auto bg-zinc-950/98 border border-zinc-800 text-zinc-100 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-2xl">
+          <DialogHeader className="pb-3 border-b border-zinc-800/80">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl leading-none">⚖️</span>
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400">
+                Aprofundamento Jurídico Completo
+              </span>
+            </div>
+            <DialogTitle className="text-lg sm:text-xl font-black text-white text-left">
+              {cleanAssunto || cleanTema}
             </DialogTitle>
-            <DialogDescription className="text-xs text-zinc-400">
-              Detalhes práticos, fundamentação jurídica e dicas de fixação.
+            <DialogDescription className="text-xs text-zinc-400 text-left">
+              Pergunta, fundamentação jurídica, exemplos práticos e reforço doutrinário.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 pt-2">
-            <div className="rounded-2xl bg-zinc-950/60 border border-zinc-800/80 p-4">
-              <p className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Resposta Essencial
+          <div className="space-y-4 pt-3">
+            {/* 1. Pergunta Original */}
+            <div className="rounded-2xl bg-zinc-900/90 border border-zinc-800 p-4">
+              <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <HelpCircle className="w-3.5 h-3.5 text-blue-400" /> Pergunta / Enunciado
               </p>
-              <div className="text-sm font-medium text-zinc-200">
+              <div className="text-sm sm:text-base font-semibold text-zinc-100 leading-relaxed">
+                <PremiumMarkdown remarkPlugins={[remarkGfm]}>{displayPergunta}</PremiumMarkdown>
+              </div>
+            </div>
+
+            {/* 2. Resposta Essencial Explicada */}
+            <div className="rounded-2xl bg-emerald-950/30 border border-emerald-500/30 p-4 shadow-sm">
+              <p className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Resposta & Fundamentação
+              </p>
+              <div className="text-sm sm:text-base font-medium text-zinc-200 leading-relaxed prose prose-invert max-w-none prose-strong:text-emerald-400">
                 <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</PremiumMarkdown>
               </div>
             </div>
 
+            {/* 3. Seções Detalhadas de Aprofundamento */}
             {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
             {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
             {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
             {atual.reforco_conteudo && <Bloco icon={Sparkles} titulo="Reforço de Conteúdo" texto={atual.reforco_conteudo} />}
             {atual.resumo_ia && <Bloco icon={Sparkles} titulo="Resumo Inteligente" texto={atual.resumo_ia} />}
+
+            {/* 4. Botão de Fechar no Rodapé */}
+            <div className="pt-2">
+              <Button
+                type="button"
+                onClick={() => setModalAprofundarOpen(false)}
+                className="w-full h-12 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm transition-all cursor-pointer"
+              >
+                Fechar Detalhamento
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
