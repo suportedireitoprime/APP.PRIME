@@ -50,7 +50,6 @@ const RAMAL_VADEMECUM: RamalSubItem[] = [
 ];
 
 const RAMAL_ESTUDOS: RamalSubItem[] = [
-  { id: 'biblioteca', label: 'Biblioteca Digital', icon: Library, iconColor: 'text-emerald-400' },
   { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-emerald-300' },
   { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-blue-400' },
   { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-indigo-400' },
@@ -320,8 +319,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           )}
         </div>
 
-        {/* Funções por Categoria (Design Clássico com Ramais Expansíveis) */}
-        <GroupCard title="Funções">
+        {/* Categoria 1: Assistentes de IA (Separada de Funções) */}
+        <GroupCard title="Assistentes">
           <MenuRow
             icon={Bird}
             iconColor="text-rose-500"
@@ -339,6 +338,16 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             iconColor="text-cyan-400"
             label="Chat Jurídico"
             onClick={() => handleItemClick('chat-juridico')}
+          />
+        </GroupCard>
+
+        {/* Categoria 2: Funções por Categoria (Biblioteca separada + Vade Mecum, Estudos e Praticar) */}
+        <GroupCard title="Funções">
+          <MenuRow
+            icon={Library}
+            iconColor="text-emerald-400"
+            label="Biblioteca"
+            onClick={() => handleItemClick('biblioteca')}
           />
           <RamalRow
             icon={Scale}
@@ -646,17 +655,27 @@ function TrialStrip({
   }, [expiresAt]);
 
   return (
-    <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between gap-2">
-      <div className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-sky-400">
-        <Timer className="w-3.5 h-3.5 text-sky-400 shrink-0" strokeWidth={2.2} />
+    <div className="mt-3 pt-2.5 border-t border-amber-500/25 flex items-center justify-between gap-2 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent -mx-4 -mb-4 px-4 py-2.5 rounded-b-3xl">
+      <div className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-amber-300 drop-shadow-sm">
+        <Timer className="w-3.5 h-3.5 text-amber-400 shrink-0" strokeWidth={2.4} />
         <span>{timeLeft}</span>
       </div>
       <button
         type="button"
         onClick={onAssinar}
-        className="text-[11.5px] font-bold text-amber-400 hover:text-amber-300 active:scale-95 transition-all cursor-pointer shrink-0"
+        className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/60 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 text-[11px] font-black uppercase tracking-wider text-amber-300 shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
       >
-        Assinar plano →
+        {/* Faixa de reflexo luminoso dinâmico (Shine reflection sweep) */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 -left-full w-full -skew-x-12 animate-[planos-shine_2.8s_ease-in-out_infinite]"
+          style={{
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 50%, transparent 100%)',
+          }}
+        />
+        <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/25 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" strokeWidth={2.4} />
+        <span className="relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Assinar plano →</span>
       </button>
     </div>
   );
