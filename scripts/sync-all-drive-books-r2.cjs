@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, HeadObjectCommand } = require('@aws-sdk/client-s3');
 
 const s3 = new S3Client({
   region: 'auto',
@@ -113,6 +113,27 @@ async function processFile(fileInfo, key) {
     return { key, status: 'already_done', size: progress[key].size };
   }
 
+  // Verifica se o arquivo já está publicado no Cloudflare R2
+  try {
+    const head = await s3.send(new HeadObjectCommand({ Bucket: BUCKET, Key: key }));
+    if (head.ContentLength && head.ContentLength > 0) {
+      const sizeMB = (head.ContentLength / 1024 / 1024).toFixed(2);
+      console.log(`[R2 JÁ EXISTE] ${key} (${sizeMB} MB). Ignorando download.`);
+      progress[key] = {
+        status: 'done',
+        fileId: fileInfo.id,
+        fileName: fileInfo.name,
+        size: head.ContentLength,
+        sizeMB: parseFloat(sizeMB),
+        url: `${R2_DOMAIN}/${key}`
+      };
+      saveProgress();
+      return { key, status: 'already_done', size: head.ContentLength };
+    }
+  } catch (err) {
+    // Arquivo não existe no R2, continuar para download e upload
+  }
+
   const startTime = Date.now();
   console.log(`[START] Baixando: ${fileInfo.name} (${fileInfo.id})...`);
   const buf = await downloadDriveFile(fileInfo.id);
@@ -140,7 +161,10 @@ async function processFile(fileInfo, key) {
 }
 
 async function main() {
-  const books = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'books_drive_map.json'), 'utf8'))
+  const mapPath = fs.existsSync(path.join(__dirname, '..', 'books_drive_map_all.json'))
+    ? path.join(__dirname, '..', 'books_drive_map_all.json')
+    : path.join(__dirname, '..', 'books_drive_map.json');
+  const books = JSON.parse(fs.readFileSync(mapPath, 'utf8'))
     .filter(b => b.folderName !== 'Clássicos possíveis para editar' && b.clara && b.escura);
 
   console.log(`Iniciando sincronização de ${books.length} livros (${books.length * 2} PDFs) para Cloudflare R2...`);

@@ -17,8 +17,11 @@ function normalize(s) {
 }
 
 async function main() {
+  const mapPath = fs.existsSync(path.join(__dirname, '..', 'books_drive_map_all.json'))
+    ? path.join(__dirname, '..', 'books_drive_map_all.json')
+    : path.join(__dirname, '..', 'books_drive_map.json');
   const driveBooks = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '..', 'books_drive_map.json'), 'utf8')
+    fs.readFileSync(mapPath, 'utf8')
   ).filter(b => b.folderName !== 'Clássicos possíveis para editar' && b.clara && b.escura);
 
   const offlineBundlePath = path.join(__dirname, '..', 'public', 'offline-bundle', 'biblioteca-classicos.json');

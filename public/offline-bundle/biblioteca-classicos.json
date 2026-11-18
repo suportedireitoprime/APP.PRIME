@@ -93,17 +93,15 @@
         "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-clara.pdf",
         "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-escura.pdf"
       },
-      "curiosidades": [
-        "O autor James C. Hunter possui mais de 40 anos de experiência como consultor de liderança para grandes corporações globais.",
-        "O livro vendeu mais de 5 milhões de exemplares apenas no Brasil, tornando-se leitura obrigatória em cursos de gestão e liderança."
-      ],
       "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-clara.pdf",
       "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-escura.pdf"
     },
     "analise_detalhada": "A obra estabelece a distinção crucial entre poder (a capacidade de forçar o cumprimento de ordens) e autoridade (a habilidade de levar pessoas a fazerem voluntariamente o que é correto devido à influência pessoal). Aplica-se diretamente à gestão jurídica e à liderança ético-institucional.",
     "audio_resumo_url": null,
     "paginas": 140,
-    "minutos_leitura": 160
+    "minutos_leitura": 160,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-monge-e-o-executivo/o-monge-e-o-executivo-versao-escura.pdf"
   },
   {
     "id": 125,
@@ -179,7 +177,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 100,
-    "minutos_leitura": 120
+    "minutos_leitura": 120,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-que-e-direito/o-que-e-direito-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-que-e-direito/o-que-e-direito-versao-escura.pdf"
   },
   {
     "id": 128,
@@ -359,7 +359,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 140,
-    "minutos_leitura": 160
+    "minutos_leitura": 160,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-ultimo-dia-de-um-condenado/o-ultimo-dia-de-um-condenado-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-ultimo-dia-de-um-condenado/o-ultimo-dia-de-um-condenado-versao-escura.pdf"
   },
   {
     "id": 135,
@@ -403,17 +405,15 @@
         "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-clara.pdf",
         "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-escura.pdf"
       },
-      "curiosidades": [
-        "Franz Kafka pediu em seu testamento para que todos os seus manuscritos fossem queimados após sua morte, mas seu amigo Max Brod desobedeceu o pedido e publicou a obra.",
-        "O romance inspirou diversas teorias sobre a burocracia moderna e a alienação do indivíduo perante as instituições."
-      ],
       "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-clara.pdf",
       "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-escura.pdf"
     },
     "analise_detalhada": "O Processo é a maior alegoria literária sobre a arbitrariedade estatal, a perda de transparência judiciária e a ausência do devido processo legal. A obra demonstra o terror psicológico de um indivíduo desprovido de ampla defesa e do contraditório, servindo de alerta permanente para o direito constitucional contemporâneo.",
     "audio_resumo_url": null,
     "paginas": 280,
-    "minutos_leitura": 330
+    "minutos_leitura": 330,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-processo/o-processo-versao-escura.pdf"
   },
   {
     "id": 137,
@@ -437,7 +437,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 450,
-    "minutos_leitura": 540
+    "minutos_leitura": 540,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-mundo-assombrado-pelos-demonios/o-mundo-assombrado-pelos-demonios-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-mundo-assombrado-pelos-demonios/o-mundo-assombrado-pelos-demonios-versao-escura.pdf"
   },
   {
     "id": 138,
@@ -461,7 +463,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 200,
-    "minutos_leitura": 240
+    "minutos_leitura": 240,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sobre-a-liberdade/sobre-a-liberdade-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sobre-a-liberdade/sobre-a-liberdade-versao-escura.pdf"
   },
   {
     "id": 139,
@@ -511,7 +515,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 140,
-    "minutos_leitura": 160
+    "minutos_leitura": 160,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-principe/o-principe-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-principe/o-principe-versao-escura.pdf"
   },
   {
     "id": 141,
@@ -572,15 +578,24 @@
     "imagem": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/virando_a_propria_mesa_manual.jpg",
     "sobre": "O livro \"Virando a Própria Mesa\", de Ricardo Semler, transcende a esfera da gestão empresarial para se posicionar como um marco teórico e prático de profunda relevância para o estudo e a aplicação do Direito, especialmente para estudantes e profissionais da área jurídica. Publicado em um período de efervescência na busca por modelos organizacionais mais humanos e eficientes, a obra narra a experiência transformadora de Semler na Semco, empresa brasileira que, sob sua liderança, rompeu com as estruturas hierárquicas e burocráticas tradicionais. A filosofia central de Semler reside na implementação de uma gestão radicalmente democrática, onde a autonomia e a responsabilidade dos colaboradores são elevadas a patamares sem precedentes. Isso se manifesta na participação ativa dos funcionários em decisões cruciais, que vão desde a definição de seus próprios salários e a escolha de seus líderes até a gestão de suas rotinas de trabalho e horários. Essa abordagem desafia diretamente os paradigmas convencionais de organização empresarial e as relações de trabalho, levantando questões fundamentais sobre a natureza do poder, a autonomia individual e a responsabilidade coletiva no ambiente corporativo.\n\nOs pilares conceituais da obra incluem a desconstrução da hierarquia rígida, a promoção da autogestão como ferramenta de empoderamento, a adoção de uma transparência radical nas informações e nos processos, a flexibilização de normas internas e, sobretudo, a profunda confiança no indivíduo como agente intrínseco de transformação e inovação. Semler argumenta, com base em sua vasta experiência, que a rigidez inerente às estruturas empresariais clássicas, muitas vezes espelhada em modelos de governança e regulamentação jurídica, tende a inibir a criatividade, a iniciativa e o bem-estar dos trabalhadores. A Semco é apresentada não apenas como uma empresa, mas como um laboratório vivo, um \"case study\" em tempo real onde esses princípios são incessantemente testados, aprimorados e validados, resultando em um ecossistema de trabalho notavelmente produtivo e inovador.\n\nA estrutura narrativa do livro, enriquecida por exemplos concretos e anedotas perspicazes, torna a leitura acessível e envolvente, sem comprometer a profundidade conceitual. Para o estudante de Direito, a importância de \"Virando a Própria Mesa\" reside na sua capacidade de provocar uma reflexão crítica e profunda sobre a aplicação, a interpretação e a adaptação das normas jurídicas. A obra demonstra empiricamente como a flexibilização de regras, a negociação contínua e a busca por soluções consensuais podem pavimentar o caminho para ambientes de trabalho mais justos, eficientes e, crucialmente, alinhados com os princípios constitucionais basilares da dignidade da pessoa humana e do valor social do trabalho. Semler não advoga pela ausência de regras, mas sim pela sua construção colaborativa e pela sua capacidade de adaptação às necessidades dinâmicas e reais do contexto, um conceito que ressoa diretamente com a imperativa necessidade de um Direito cada vez mais ágil, responsivo e adaptável às contínuas transformações sociais, econômicas e tecnológicas.\n\nA relevância contemporânea da obra é inegável e crescente. Em um cenário global cada vez mais marcado pela busca por modelos de trabalho flexíveis, pela ascensão da economia colaborativa, pela valorização do \"work-life balance\" e pela crescente demanda por ambientes de trabalho que priorizem o bem-estar dos colaboradores, os princípios defendidos por Semler ganham ainda mais força e aplicabilidade. O livro oferece um olhar pioneiro e inspirador sobre a interseção intrínseca entre gestão empresarial, o arcabouço jurídico e a psicologia organizacional. Ele evidencia como a inovação nas práticas de gestão pode, e deve, impactar positivamente a aplicação e a interpretação do Direito do Trabalho, do Direito Empresarial e até mesmo do Direito Constitucional. \"Virando a Própria Mesa\" serve, portanto, como um poderoso convite à desmistificação de modelos organizacionais e jurídicos rígidos e arcaicos, incentivando a exploração de novas formas de organizar o trabalho e as relações jurídicas que o permeiam, inspirando juristas a pensar \"fora da caixa\" e a propor soluções mais humanizadas, eficazes e socialmente responsáveis.",
     "link": "https://online.fliphtml5.com/zmzll/vfxf/",
-    "download": "https://drive.google.com/file/d/1x5vajS0qlOspDRT9PmYCiWIIbz1Q5SfE/view?usp=drivesdk",
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-clara.pdf",
     "capa_horizontal": "https://izspjvegxdfgkgibpyst.supabase.co/storage/v1/object/public/imagens/noticias/81Yo9XfI7SLSL1500jpg-1766360543434.webp",
     "ano_lancamento": "1988",
     "editora": null,
-    "curiosidades": null,
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-escura.pdf"
+    },
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 280,
-    "minutos_leitura": 330
+    "minutos_leitura": 330,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/virando-a-propria-mesa/virando-a-propria-mesa-versao-escura.pdf"
   },
   {
     "id": 144,
@@ -604,7 +619,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 450,
-    "minutos_leitura": 540
+    "minutos_leitura": 540,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/teoria-pura-do-direito/teoria-pura-do-direito-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/teoria-pura-do-direito/teoria-pura-do-direito-versao-escura.pdf"
   },
   {
     "id": 145,
@@ -628,7 +645,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 330,
-    "minutos_leitura": 400
+    "minutos_leitura": 400,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/vigiar-e-punir/vigiar-e-punir-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/vigiar-e-punir/vigiar-e-punir-versao-escura.pdf"
   },
   {
     "id": 146,
@@ -730,7 +749,9 @@
     "analise_detalhada": null,
     "audio_resumo_url": null,
     "paginas": 560,
-    "minutos_leitura": 670
+    "minutos_leitura": 670,
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-mundo-de-sofia/o-mundo-de-sofia-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-mundo-de-sofia/o-mundo-de-sofia-versao-escura.pdf"
   },
   {
     "id": 150,
@@ -1532,6 +1553,266 @@
       "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-corpo-fala/o-corpo-fala-versao-escura.pdf"
     },
     "analise_detalhada": "O Corpo Fala é uma obra fundamental para aprofundamento do pensamento crítico, liderança e ciência comportamental.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 181,
+    "livro": "O Poder da Autorresponsabilidade",
+    "autor": "Paulo Vieira",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "O Poder da Autorresponsabilidade, de Paulo Vieira. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/o-poder-da-autorresponsabilidade/o-poder-da-autorresponsabilidade-versao-escura.pdf"
+    },
+    "analise_detalhada": "O Poder da Autorresponsabilidade é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 182,
+    "livro": "Organize Suas Emoções",
+    "autor": "J. Alasdair Groves",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Organize Suas Emoções, de J. Alasdair Groves. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/organize-suas-emocoes/organize-suas-emocoes-versao-escura.pdf"
+    },
+    "analise_detalhada": "Organize Suas Emoções é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 183,
+    "livro": "Os 5 Desafios das Equipes",
+    "autor": "Patrick Lencioni",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Os 5 Desafios das Equipes, de Patrick Lencioni. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-5-desafios-das-equipes/os-5-desafios-das-equipes-versao-escura.pdf"
+    },
+    "analise_detalhada": "Os 5 Desafios das Equipes é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 184,
+    "livro": "Os 7 Hábitos das Pessoas Altamente Eficazes",
+    "autor": "Stephen R. Covey",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Os 7 Hábitos das Pessoas Altamente Eficazes, de Stephen R. Covey. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/os-7-habitos-das-pessoas-altamente-eficazes/os-7-habitos-das-pessoas-altamente-eficazes-versao-escura.pdf"
+    },
+    "analise_detalhada": "Os 7 Hábitos das Pessoas Altamente Eficazes é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 185,
+    "livro": "Radical Candor",
+    "autor": "Kim Scott",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Radical Candor, de Kim Scott. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/radical-candor/radical-candor-versao-escura.pdf"
+    },
+    "analise_detalhada": "Radical Candor é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 186,
+    "livro": "Resiliência",
+    "autor": "Christina Berndt",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Resiliência, de Christina Berndt. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/resiliencia/resiliencia-versao-escura.pdf"
+    },
+    "analise_detalhada": "Resiliência é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 187,
+    "livro": "Responsabilidade Extrema",
+    "autor": "Jocko Willink e Leif Babin",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Responsabilidade Extrema, de Jocko Willink e Leif Babin. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/responsabilidade-extrema/responsabilidade-extrema-versao-escura.pdf"
+    },
+    "analise_detalhada": "Responsabilidade Extrema é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 188,
+    "livro": "Sabe Estudar",
+    "autor": "Claudio Moura Castro",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Sabe Estudar, de Claudio Moura Castro. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/sabe-estudar/sabe-estudar-versao-escura.pdf"
+    },
+    "analise_detalhada": "Sabe Estudar é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 189,
+    "livro": "Talvez Você Deva Conversar com Alguém",
+    "autor": "Lori Gottlieb",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "Talvez Você Deva Conversar com Alguém, de Lori Gottlieb. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/talvez-voce-deva-conversar-com-alguem/talvez-voce-deva-conversar-com-alguem-versao-escura.pdf"
+    },
+    "analise_detalhada": "Talvez Você Deva Conversar com Alguém é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
+    "audio_resumo_url": null,
+    "paginas": 220,
+    "minutos_leitura": 260
+  },
+  {
+    "id": 190,
+    "livro": "The Concept of Law",
+    "autor": "H. L. A. Hart",
+    "imagem": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    "sobre": "The Concept of Law, de H. L. A. Hart. Obra clássica agora disponível na íntegra com edição especial e leitura otimizada nos modos Claro e Escuro.",
+    "link": null,
+    "download": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-clara.pdf",
+    "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-escura.pdf",
+    "downloadEscura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-escura.pdf",
+    "capa_horizontal": null,
+    "ano_lancamento": null,
+    "editora": "Edição Especial",
+    "curiosidades": {
+      "versoes_pdf": {
+        "clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-clara.pdf",
+        "escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-escura.pdf"
+      },
+      "download_clara": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-clara.pdf",
+      "download_escura": "https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/the-concept-of-law/the-concept-of-law-versao-escura.pdf"
+    },
+    "analise_detalhada": "The Concept of Law é uma obra fundamental para o pensamento crítico, formação humanística e prática profissional.",
     "audio_resumo_url": null,
     "paginas": 220,
     "minutos_leitura": 260
