@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Info, LogOut, ChevronRight,
+  Info, LogOut, ChevronRight, ChevronDown,
   LifeBuoy, Lock, Gem,
   Pencil, Crown, Timer, Bird, Star,
   Sparkles, Scale, BookOpen, Gavel, BookMarked, Bookmark,
@@ -11,6 +12,7 @@ import {
   Landmark, Shield, Columns3, PocketKnife, Map, Bot, Trophy,
   BookOpenText, Layers, Radar, Newspaper, Bell, FolderOpen,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -34,11 +36,20 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
   const [appVersion, setAppVersion] = useState<string>('v1.0.0');
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium, isTrial, expiresAt } = useSubscription();
   useBodyScrollLock(open);
+
+  const toggleSection = (id: string) => {
+    haptic.selection();
+    setOpenSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   // Obter versão da build nativa (Android, iOS ou Web) sem número de build
   useEffect(() => {
@@ -264,271 +275,217 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           </div>
         </div>
 
-        {/* 1. HÓRUS */}
-        <GroupCard title="Hórus">
-          <MenuRow
-            icon={Bird}
-            iconColor="text-rose-500"
-            label="Assistente Hórus"
-            onClick={() => handleItemClick('assistente-horus')}
-          />
-          <MenuRow
-            icon={Sparkles}
-            iconColor="text-amber-400"
-            label="Me Explique (IA)"
-            onClick={() => handleItemClick('me-explique')}
-          />
-          <MenuRow
-            icon={Bot}
-            iconColor="text-cyan-400"
-            label="Chat Jurídico"
-            onClick={() => handleItemClick('chat-juridico')}
-          />
-        </GroupCard>
+        {/* Ramais por Categoria (Accordion Interativo que abre as categorias dentro) */}
+        <div className="space-y-3">
+          {[
+            {
+              id: 'horus',
+              title: 'Hórus',
+              icon: Bird,
+              iconColor: 'text-rose-500',
+              countLabel: '3 funções',
+              items: [
+                { id: 'assistente-horus', label: 'Assistente Hórus', icon: Bird, iconColor: 'text-rose-500' },
+                { id: 'me-explique', label: 'Me Explique (IA)', icon: Sparkles, iconColor: 'text-amber-400' },
+                { id: 'chat-juridico', label: 'Chat Jurídico', icon: Bot, iconColor: 'text-cyan-400' },
+              ],
+            },
+            {
+              id: 'vademecum',
+              title: 'Vade Mecum',
+              icon: Scale,
+              iconColor: 'text-amber-400',
+              countLabel: '8 categorias',
+              items: [
+                { id: 'vademecum', label: 'Vade Mecum Geral', icon: Scale, iconColor: 'text-amber-400' },
+                { id: 'constituicao', label: 'Constituição', icon: Landmark, iconColor: 'text-yellow-500' },
+                { id: 'codigos', label: 'Códigos', icon: BookOpen, iconColor: 'text-blue-400' },
+                { id: 'estatutos', label: 'Estatutos', icon: Shield, iconColor: 'text-rose-400' },
+                { id: 'jurisprudencia', label: 'Jurisprudência', icon: Gavel, iconColor: 'text-emerald-400' },
+                { id: 'leis-ordinarias', label: 'Leis Ordinárias', icon: Columns3, iconColor: 'text-orange-400' },
+                { id: 'legislacao-especial', label: 'Legislação Especial', icon: PocketKnife, iconColor: 'text-indigo-400' },
+                { id: 'legislacao-estadual', label: 'Legislação Estadual', icon: Map, iconColor: 'text-sky-400' },
+              ],
+            },
+            {
+              id: 'estudos',
+              title: 'Estudos & Prática',
+              icon: GraduationCap,
+              iconColor: 'text-sky-400',
+              countLabel: '12 funções',
+              items: [
+                { id: 'biblioteca', label: 'Biblioteca Digital', icon: Library, iconColor: 'text-emerald-400' },
+                { id: 'questoes', label: 'Questões', icon: GraduationCap, iconColor: 'text-sky-400' },
+                { id: 'simulados', label: 'Simulados', icon: Trophy, iconColor: 'text-amber-400' },
+                { id: 'flashcards', label: 'Flashcards', icon: Brain, iconColor: 'text-violet-400' },
+                { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-rose-400' },
+                { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-amber-400' },
+                { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-emerald-400' },
+                { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-pink-400' },
+                { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-yellow-400' },
+                { id: 'pilulas', label: 'Pílulas', icon: Flame, iconColor: 'text-orange-400' },
+                { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-teal-400' },
+                { id: 'aulas-interativas', label: 'Aulas Interativas', icon: Layers, iconColor: 'text-indigo-400' },
+              ],
+            },
+            {
+              id: 'ferramentas',
+              title: 'Ferramentas & Consulta',
+              icon: Wrench,
+              iconColor: 'text-zinc-400',
+              countLabel: '6 recursos',
+              items: [
+                { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookA, iconColor: 'text-cyan-400' },
+                { id: 'radares', label: 'Radares de Leis', icon: Radar, iconColor: 'text-blue-400' },
+                { id: 'noticias', label: 'Notícias Jurídicas', icon: Newspaper, iconColor: 'text-pink-400' },
+                { id: 'lembretes', label: 'Central de Lembretes', icon: Bell, iconColor: 'text-amber-400' },
+                { id: 'modo-offline', label: 'Modo Offline', icon: CloudDownload, iconColor: 'text-emerald-400' },
+                { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, iconColor: 'text-zinc-400' },
+              ],
+            },
+            {
+              id: 'conta',
+              title: 'Minha Conta',
+              icon: UserIcon,
+              iconColor: 'text-slate-300',
+              countLabel: '6 opções',
+              items: [
+                { id: 'meu-espaco', label: 'Meu Espaço', icon: FolderOpen, iconColor: 'text-purple-400' },
+                { id: 'perfil', label: 'Meu Perfil', icon: UserIcon, iconColor: 'text-slate-300' },
+                { id: 'planos', label: isPremium ? 'Minha Assinatura' : 'Minha Assinatura / Planos', icon: Gem, iconColor: 'text-amber-400', hint: isPremium ? 'Ativa' : 'Atualizar' },
+                { id: 'avaliar', label: 'Avaliar Aplicativo', icon: Star, iconColor: 'text-amber-400 fill-amber-400/20' },
+                { id: 'suporte', label: 'Suporte', icon: LifeBuoy, iconColor: 'text-pink-400' },
+                { id: 'sobre', label: 'Sobre o App', icon: Info, iconColor: 'text-blue-400', hint: appVersion },
+              ],
+            },
+            ...(isAdmin ? [{
+              id: 'admin',
+              title: 'Painel Admin',
+              icon: Lock,
+              iconColor: 'text-red-400',
+              countLabel: '3 funções',
+              items: [
+                { id: 'admin-funcoes', label: 'Funções Admin', icon: Lock, iconColor: 'text-red-400' },
+                { id: 'admin-assinantes', label: 'Painel de Assinantes', icon: CreditCard, iconColor: 'text-emerald-400' },
+                { id: 'admin-push', label: 'Notificações Push', icon: BellRing, iconColor: 'text-amber-400' },
+              ],
+            }] : []),
+          ].map((ramal) => {
+            const isOpen = Boolean(openSections[ramal.id]);
+            const CatIcon = ramal.icon;
 
-        {/* 2. VADE MECUM */}
-        <GroupCard title="Vade Mecum">
-          <MenuRow
-            icon={Scale}
-            iconColor="text-amber-400"
-            label="Vade Mecum"
-            onClick={() => handleItemClick('vademecum')}
-          />
-          <MenuRow
-            icon={Landmark}
-            iconColor="text-yellow-500"
-            label="Constituição"
-            onClick={() => handleItemClick('constituicao')}
-          />
-          <MenuRow
-            icon={BookOpen}
-            iconColor="text-blue-400"
-            label="Códigos"
-            onClick={() => handleItemClick('codigos')}
-          />
-          <MenuRow
-            icon={Shield}
-            iconColor="text-rose-400"
-            label="Estatutos"
-            onClick={() => handleItemClick('estatutos')}
-          />
-          <MenuRow
-            icon={Gavel}
-            iconColor="text-emerald-400"
-            label="Jurisprudência"
-            onClick={() => handleItemClick('jurisprudencia')}
-          />
-          <MenuRow
-            icon={Columns3}
-            iconColor="text-orange-400"
-            label="Leis Ordinárias"
-            onClick={() => handleItemClick('leis-ordinarias')}
-          />
-          <MenuRow
-            icon={PocketKnife}
-            iconColor="text-indigo-400"
-            label="Legislação Especial"
-            onClick={() => handleItemClick('legislacao-especial')}
-          />
-          <MenuRow
-            icon={Map}
-            iconColor="text-sky-400"
-            label="Legislação Estadual"
-            onClick={() => handleItemClick('legislacao-estadual')}
-          />
-        </GroupCard>
+            return (
+              <div
+                key={ramal.id}
+                className="rounded-2xl bg-secondary/60 border border-border/80 overflow-hidden transition-all duration-200 shadow-sm"
+              >
+                {/* Linha que abre/fecha o ramal */}
+                <button
+                  type="button"
+                  onClick={() => toggleSection(ramal.id)}
+                  aria-expanded={isOpen}
+                  className="w-full min-h-[58px] flex items-center justify-between gap-3 px-4 py-3 text-left transition-colors active:bg-muted/60 hover:bg-secondary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors border",
+                      isOpen
+                        ? "bg-primary/20 border-primary/40 text-primary shadow-[0_0_12px_rgba(var(--primary-rgb),0.2)]"
+                        : "bg-muted/40 border-border/60 text-muted-foreground"
+                    )}>
+                      <CatIcon className={cn("w-5 h-5", ramal.iconColor)} strokeWidth={2.2} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="font-display text-[15px] font-bold text-foreground block truncate">
+                        {ramal.title}
+                      </span>
+                      <span className="text-[11px] font-body text-muted-foreground block truncate mt-0.5">
+                        {ramal.countLabel}
+                      </span>
+                    </div>
+                  </div>
 
-        {/* 3. ESTUDOS & PRÁTICA */}
-        <GroupCard title="Estudos & Prática">
-          <MenuRow
-            icon={Library}
-            iconColor="text-emerald-400"
-            label="Biblioteca Digital"
-            onClick={() => handleItemClick('biblioteca')}
-          />
-          <MenuRow
-            icon={GraduationCap}
-            iconColor="text-sky-400"
-            label="Questões"
-            onClick={() => handleItemClick('questoes')}
-          />
-          <MenuRow
-            icon={Trophy}
-            iconColor="text-amber-400"
-            label="Simulados"
-            onClick={() => handleItemClick('simulados')}
-          />
-          <MenuRow
-            icon={Brain}
-            iconColor="text-violet-400"
-            label="Flashcards"
-            onClick={() => handleItemClick('flashcards')}
-          />
-          <MenuRow
-            icon={Video}
-            iconColor="text-rose-400"
-            label="Videoaulas"
-            onClick={() => handleItemClick('videoaulas')}
-          />
-          <MenuRow
-            icon={Headphones}
-            iconColor="text-amber-400"
-            label="Audioaulas"
-            onClick={() => handleItemClick('audioaulas')}
-          />
-          <MenuRow
-            icon={BookOpenText}
-            iconColor="text-emerald-400"
-            label="Audiobooks"
-            onClick={() => handleItemClick('audiobooks')}
-          />
-          <MenuRow
-            icon={Compass}
-            iconColor="text-pink-400"
-            label="Mapas Mentais"
-            onClick={() => handleItemClick('mapas-mentais')}
-          />
-          <MenuRow
-            icon={NotebookPen}
-            iconColor="text-yellow-400"
-            label="Lei Seca"
-            onClick={() => handleItemClick('lei-seca')}
-          />
-          <MenuRow
-            icon={Flame}
-            iconColor="text-orange-400"
-            label="Pílulas"
-            onClick={() => handleItemClick('pilulas')}
-          />
-          <MenuRow
-            icon={FileText}
-            iconColor="text-teal-400"
-            label="Resumos Jurídicos"
-            onClick={() => handleItemClick('resumos-juridicos')}
-          />
-          <MenuRow
-            icon={Layers}
-            iconColor="text-indigo-400"
-            label="Aulas Interativas"
-            onClick={() => handleItemClick('aulas-interativas')}
-          />
-        </GroupCard>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={cn(
+                      "text-[10.5px] font-body font-semibold px-2 py-0.5 rounded-full border transition-colors",
+                      isOpen
+                        ? "bg-primary/15 border-primary/30 text-primary"
+                        : "bg-muted/30 border-border/50 text-muted-foreground/70"
+                    )}>
+                      {ramal.items.length}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "w-5 h-5 text-muted-foreground/60 transition-transform duration-300",
+                        isOpen && "rotate-180 text-primary"
+                      )}
+                      strokeWidth={2.4}
+                    />
+                  </div>
+                </button>
 
-        {/* 4. FERRAMENTAS & CONSULTA */}
-        <GroupCard title="Ferramentas & Consulta">
-          <MenuRow
-            icon={BookA}
-            iconColor="text-cyan-400"
-            label="Dicionário Jurídico"
-            onClick={() => handleItemClick('dicionario')}
-          />
-          <MenuRow
-            icon={Radar}
-            iconColor="text-blue-400"
-            label="Radares de Leis"
-            onClick={() => handleItemClick('radares')}
-          />
-          <MenuRow
-            icon={Newspaper}
-            iconColor="text-pink-400"
-            label="Notícias Jurídicas"
-            onClick={() => handleItemClick('noticias')}
-          />
-          <MenuRow
-            icon={Bell}
-            iconColor="text-amber-400"
-            label="Central de Lembretes"
-            onClick={() => handleItemClick('lembretes')}
-          />
-          <MenuRow
-            icon={CloudDownload}
-            iconColor="text-emerald-400"
-            label="Modo Offline"
-            onClick={() => handleItemClick('modo-offline')}
-          />
-          <MenuRow
-            icon={Wrench}
-            iconColor="text-zinc-400"
-            label="Todas as Ferramentas"
-            onClick={() => handleItemClick('ferramentas')}
-          />
-        </GroupCard>
+                {/* Subitens do Ramal */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key={`ramal-${ramal.id}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden border-t border-border/60 bg-black/30"
+                    >
+                      <div className="py-1 px-1.5 divide-y divide-border/30">
+                        {ramal.items.map((item) => {
+                          const ItemIcon = item.icon;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => handleItemClick(item.id)}
+                              className="w-full min-h-[46px] flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left transition-colors hover:bg-white/5 active:bg-white/10 group"
+                            >
+                              <div className="flex items-center gap-3 min-w-0 flex-1 pl-1">
+                                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center shrink-0 group-hover:border-primary/30 transition-colors">
+                                  <ItemIcon
+                                    className={cn("w-4 h-4 shrink-0", item.iconColor || "text-primary")}
+                                    strokeWidth={2.2}
+                                  />
+                                </div>
+                                <span className="font-body text-[14px] font-medium text-foreground/90 truncate group-hover:text-foreground">
+                                  {item.label}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {item.hint && (
+                                  <span className="text-[10px] font-mono font-semibold text-zinc-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                                    {item.hint}
+                                  </span>
+                                )}
+                                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" strokeWidth={2.2} />
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
 
-        {/* 5. MINHA CONTA */}
-        <GroupCard title="Minha Conta">
-          <MenuRow
-            icon={FolderOpen}
-            iconColor="text-purple-400"
-            label="Meu Espaço"
-            onClick={() => handleItemClick('meu-espaco')}
-          />
-          <MenuRow
-            icon={UserIcon}
-            iconColor="text-slate-300"
-            label="Meu Perfil"
-            onClick={() => handleItemClick('perfil')}
-          />
-          <MenuRow
-            icon={Gem}
-            iconColor="text-amber-400"
-            label={isPremium ? "Minha Assinatura" : "Minha Assinatura / Planos"}
-            hint={isPremium ? "Ativa" : "Atualizar"}
-            onClick={() => handleItemClick('planos')}
-          />
-          <MenuRow
-            icon={Star}
-            iconColor="text-amber-400 fill-amber-400/20"
-            label="Avaliar Aplicativo"
-            onClick={() => handleItemClick('avaliar')}
-          />
-          <MenuRow
-            icon={LifeBuoy}
-            iconColor="text-pink-400"
-            label="Suporte"
-            onClick={() => handleItemClick('suporte')}
-          />
-          <MenuRow
-            icon={Info}
-            iconColor="text-blue-400"
-            label="Sobre o App"
-            hint={appVersion}
-            onClick={() => handleItemClick('sobre')}
-          />
-        </GroupCard>
-
-        {/* 6. ADMIN (Apenas se Administrador) */}
-        {isAdmin && (
-          <GroupCard title="Admin">
+        {/* Card de Sessão: Sair */}
+        <div className="pt-1">
+          <div className="rounded-2xl bg-secondary/60 border border-border overflow-hidden">
             <MenuRow
-              icon={Lock}
-              iconColor="text-red-400"
-              label="Funções Admin"
-              onClick={() => handleItemClick('admin-funcoes')}
+              icon={LogOut}
+              label="Sair"
+              danger
+              onClick={() => handleItemClick('sair')}
             />
-            <MenuRow
-              icon={CreditCard}
-              iconColor="text-emerald-400"
-              label="Painel de Assinantes"
-              onClick={() => handleItemClick('admin-assinantes')}
-            />
-            <MenuRow
-              icon={BellRing}
-              iconColor="text-amber-400"
-              label="Notificações Push"
-              onClick={() => handleItemClick('admin-push')}
-            />
-          </GroupCard>
-        )}
-
-        {/* 7. SESSÃO */}
-        <GroupCard title="Sessão">
-          <MenuRow
-            icon={LogOut}
-            label="Sair"
-            danger
-            onClick={() => handleItemClick('sair')}
-          />
-        </GroupCard>
+          </div>
+        </div>
 
         <div className="text-center pt-4 pb-2 space-y-1">
           <p className="text-xs font-mono font-medium text-muted-foreground/80">
