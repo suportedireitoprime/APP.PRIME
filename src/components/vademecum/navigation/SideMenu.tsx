@@ -658,22 +658,18 @@ function TrialStrip({
     const update = () => {
       const diff = new Date(expiresAt).getTime() - Date.now();
       if (diff <= 0) {
-        setTimeLeft('Período de teste encerrado');
+        setTimeLeft('Teste encerrado');
         return;
       }
       const totalHours = Math.floor(diff / (1000 * 60 * 60));
       const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
       if (totalHours > 24) {
-        setTimeLeft(`${totalHours} horas restantes de teste`);
+        setTimeLeft(`${totalHours}h restantes`);
       } else if (totalHours > 0) {
-        setTimeLeft(
-          `${totalHours} hora${totalHours > 1 ? 's' : ''} e ${mins} minuto${mins !== 1 ? 's' : ''} restantes`
-        );
+        setTimeLeft(`${totalHours}h ${mins}m restantes`);
       } else {
-        setTimeLeft(
-          `${mins} minuto${mins !== 1 ? 's' : ''} restante${mins !== 1 ? 's' : ''} de teste`
-        );
+        setTimeLeft(`${mins}m restantes`);
       }
     };
     update();
@@ -682,15 +678,15 @@ function TrialStrip({
   }, [expiresAt]);
 
   return (
-    <div className="mt-3 pt-2.5 border-t border-amber-500/25 flex items-center justify-between gap-2 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent -mx-4 -mb-4 px-4 py-2.5 rounded-b-3xl">
-      <div className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-amber-300 drop-shadow-sm">
-        <Timer className="w-3.5 h-3.5 text-amber-400 shrink-0" strokeWidth={2.4} />
-        <span>{timeLeft}</span>
+    <div className="mt-3 pt-2.5 border-t border-amber-400/40 flex items-center justify-between gap-2.5 bg-gradient-to-r from-amber-500/25 via-amber-400/15 to-amber-500/25 shadow-[inset_0_1px_0_rgba(251,191,36,0.3)] -mx-4 -mb-4 px-4 py-2.5 rounded-b-3xl">
+      <div className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-amber-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] whitespace-nowrap min-w-0">
+        <Timer className="w-3.5 h-3.5 text-amber-400 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.7)]" strokeWidth={2.4} />
+        <span className="truncate">{timeLeft}</span>
       </div>
       <button
         type="button"
         onClick={onAssinar}
-        className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/60 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 text-[11px] font-black uppercase tracking-wider text-amber-300 shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
+        className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/70 bg-gradient-to-r from-amber-500/40 via-amber-400/25 to-amber-500/40 text-[10.5px] font-black uppercase tracking-wider text-amber-200 shadow-md shadow-amber-500/25 active:scale-95 transition-all cursor-pointer shrink-0"
       >
         {/* Faixa de reflexo luminoso dinâmico (Shine reflection sweep) */}
         <span
@@ -701,8 +697,8 @@ function TrialStrip({
               'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.85) 50%, transparent 100%)',
           }}
         />
-        <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/25 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" strokeWidth={2.4} />
-        <span className="relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Assinar plano →</span>
+        <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/30 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.7)]" strokeWidth={2.4} />
+        <span className="relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] whitespace-nowrap">Assinar plano →</span>
       </button>
     </div>
   );
