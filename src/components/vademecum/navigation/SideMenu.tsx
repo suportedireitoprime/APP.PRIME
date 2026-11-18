@@ -242,8 +242,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom))] pt-3 space-y-4">
         {/* Profile card */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary/80 to-secondary/40 border border-border p-4">
-          <div className="flex items-start justify-between gap-3">
-            {/* Lado Esquerdo: Avatar + Identificação */}
+          <div className="flex items-center justify-between gap-3">
+            {/* Lado Esquerdo: Avatar + Identificação Completa (Sem abreviar o nome) */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={() => { navigate('/perfil'); onClose(); }}
@@ -269,7 +269,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               </button>
 
               <div className="min-w-0 flex-1">
-                <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">
+                <h2 className="font-display text-base font-bold text-foreground leading-snug">
                   {displayName}
                 </h2>
                 <p className="text-xs text-muted-foreground font-body truncate mt-0.5">
@@ -278,13 +278,10 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               </div>
             </div>
 
-            {/* Lado Direito: Tag Premium elegante posicionada um pouco mais para cima com animação de reflexo */}
-            <div className="shrink-0 -mt-1 flex items-center">
-              {isTrial ? (
-                <TrialBadge expiresAt={expiresAt} />
-              ) : isPremium ? (
+            {/* Lado Direito: Tag Premium (se for assinante pago definitivo) */}
+            {!isTrial && isPremium && (
+              <div className="shrink-0 -mt-1 flex items-center">
                 <div className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 text-[10.5px] font-body font-black uppercase tracking-wider text-amber-300 shadow-md shadow-amber-500/15">
-                  {/* Faixa de reflexo luminoso dinâmico (Shine reflection sweep) */}
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-y-0 -left-full w-full -skew-x-12 animate-[planos-shine_2.8s_ease-in-out_infinite]"
@@ -296,23 +293,36 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   <Crown className="relative w-3.5 h-3.5 text-amber-400 fill-amber-400/20 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" strokeWidth={2.4} />
                   <span className="relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Premium</span>
                 </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground">
-                    Free
-                  </span>
-                  <button
-                    onMouseEnter={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
-                    onPointerDown={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
-                    onClick={() => { navigate('/assinatura'); onClose(); }}
-                    className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform shadow-sm"
-                  >
-                    Atualizar
-                  </button>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
+
+            {!isTrial && !isPremium && (
+              <div className="shrink-0 -mt-1 flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground">
+                  Free
+                </span>
+                <button
+                  onMouseEnter={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+                  onPointerDown={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+                  onClick={() => { navigate('/assinatura'); onClose(); }}
+                  className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform shadow-sm"
+                >
+                  Atualizar
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Faixa Minimalista de Teste: 100% da largura, sem espremer ou abreviar o nome */}
+          {isTrial && (
+            <TrialStrip
+              expiresAt={expiresAt}
+              onAssinar={() => {
+                navigate('/assinatura');
+                onClose();
+              }}
+            />
+          )}
         </div>
 
         {/* Funções por Categoria (Design Clássico com Ramais Expansíveis) */}
@@ -594,7 +604,13 @@ function RamalRow({
   );
 }
 
-function TrialBadge({ expiresAt }: { expiresAt: string | null }) {
+function TrialStrip({
+  expiresAt,
+  onAssinar,
+}: {
+  expiresAt: string | null;
+  onAssinar: () => void;
+}) {
   const [timeLeft, setTimeLeft] = useState('');
 
   useEffect(() => {
@@ -602,15 +618,22 @@ function TrialBadge({ expiresAt }: { expiresAt: string | null }) {
     const update = () => {
       const diff = new Date(expiresAt).getTime() - Date.now();
       if (diff <= 0) {
-        setTimeLeft('EXPIRADO');
+        setTimeLeft('Período de teste encerrado');
         return;
       }
       const totalHours = Math.floor(diff / (1000 * 60 * 60));
       const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
       if (totalHours > 24) {
-        setTimeLeft(`TESTE: ${totalHours} HORAS RESTANTES`);
+        setTimeLeft(`${totalHours} horas restantes de teste`);
+      } else if (totalHours > 0) {
+        setTimeLeft(
+          `${totalHours} hora${totalHours > 1 ? 's' : ''} e ${mins} minuto${mins !== 1 ? 's' : ''} restantes`
+        );
       } else {
-        setTimeLeft(`TESTE: ${totalHours}H E ${mins}M RESTANTES`);
+        setTimeLeft(
+          `${mins} minuto${mins !== 1 ? 's' : ''} restante${mins !== 1 ? 's' : ''} de teste`
+        );
       }
     };
     update();
@@ -619,9 +642,19 @@ function TrialBadge({ expiresAt }: { expiresAt: string | null }) {
   }, [expiresAt]);
 
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-sky-500/40 bg-sky-500/10 text-[10px] font-body font-bold tracking-wider text-sky-400 shadow-sm shadow-sky-500/10 whitespace-nowrap">
-      <Timer className="w-3 h-3 text-sky-400" strokeWidth={2.4} /> {timeLeft}
-    </span>
+    <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between gap-2">
+      <div className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-sky-400">
+        <Timer className="w-3.5 h-3.5 text-sky-400 shrink-0" strokeWidth={2.2} />
+        <span>{timeLeft}</span>
+      </div>
+      <button
+        type="button"
+        onClick={onAssinar}
+        className="text-[11.5px] font-bold text-amber-400 hover:text-amber-300 active:scale-95 transition-all cursor-pointer shrink-0"
+      >
+        Assinar plano →
+      </button>
+    </div>
   );
 }
 
