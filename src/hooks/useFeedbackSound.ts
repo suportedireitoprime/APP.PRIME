@@ -115,3 +115,42 @@ export const playTransitionSound = (): void => {
     setTimeout(() => ctx.close(), 280);
   } catch {}
 };
+
+// Som refinado de conquista / desbloqueio VIP (arpejo harmônico cristalino em acorde maior)
+export const playAchievementSound = (): void => {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+
+    const notes = [
+      { freq: 523.25, time: 0.00, dur: 0.4 }, // C5
+      { freq: 659.25, time: 0.08, dur: 0.45 }, // E5
+      { freq: 783.99, time: 0.16, dur: 0.55 }, // G5
+      { freq: 1046.50, time: 0.24, dur: 0.85 }, // C6 (brilho cristalino no ápice)
+    ];
+
+    notes.forEach(({ freq, time, dur }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
+
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + time);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + time + dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + time);
+      osc.stop(ctx.currentTime + time + dur + 0.05);
+    });
+
+    setTimeout(() => {
+      void ctx.close().catch(() => {});
+    }, 1200);
+  } catch {}
+};
+

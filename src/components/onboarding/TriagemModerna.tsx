@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, parcelamento } from '@/lib/precos';
 import { Crown, Zap, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { playAchievementSound } from '@/hooks/useFeedbackSound';
 export type CadastroResult = {
   persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
   personaLabel: string | null;
@@ -138,16 +139,24 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   }, []);
 
   const handleIniciarDegustacao = React.useCallback(() => {
-    try { haptic.success(); } catch {}
+    try { haptic.impact('medium'); } catch {}
     try { localStorage.setItem('direitoprime:trial_started', new Date().toISOString()); } catch {}
     setIsUnlockingTrial(true);
+
+    // Efeito sonoro de conquista + feedback tátil sincronizados com a revelação da coroa dourada
+    const soundTimer = setTimeout(() => {
+      try {
+        playAchievementSound();
+        haptic.success();
+      } catch {}
+    }, 180);
 
     // Confetti de celebração em cascata
     try {
       confetti({
-        particleCount: 70,
-        spread: 70,
-        origin: { y: 0.55 },
+        particleCount: 75,
+        spread: 75,
+        origin: { y: 0.52 },
         colors: ['#F59E0B', '#FBBF24', '#FFFFFF', '#E11D48'],
       });
     } catch {}
@@ -175,6 +184,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
     }, 2200);
 
     return () => {
+      clearTimeout(soundTimer);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
