@@ -866,14 +866,15 @@ DIRETRIZES FUNDAMENTAIS DE ESCRITA E PEDAGOGIA:
               </div>
             )}
 
-            {/* Botão flutuante sutil: Ir para baixo */}
+            {/* Botão flutuante: Ir para baixo (Apenas seta circular acima da barra de diálogo) */}
             <AnimatePresence>
               {showScrollBottom && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.85, y: 8 }}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.85, y: 8 }}
-                  className="absolute bottom-[92px] right-4 sm:right-8 z-30 pointer-events-auto"
+                  exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="absolute bottom-[calc(7.2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] sm:bottom-[115px] right-4 sm:right-6 z-40 pointer-events-auto"
                 >
                   <button
                     type="button"
@@ -881,11 +882,11 @@ DIRETRIZES FUNDAMENTAIS DE ESCRITA E PEDAGOGIA:
                       haptic.light();
                       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/95 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-white/15 shadow-xl backdrop-blur-md text-xs font-semibold active:scale-95 transition-all shadow-black/60"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-[#1c0810]/95 hover:bg-[#2c0d19] text-rose-300 hover:text-white border border-rose-500/40 shadow-[0_8px_20px_rgba(0,0,0,0.65)] backdrop-blur-md active:scale-90 transition-all"
                     title="Rolar para o final"
+                    aria-label="Rolar para o final"
                   >
-                    <ArrowDown className="w-3.5 h-3.5 text-rose-500 animate-bounce" />
-                    <span className="text-[11px] font-mono">Ir para baixo</span>
+                    <ArrowDown className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-rose-400" strokeWidth={2.5} />
                   </button>
                 </motion.div>
               )}

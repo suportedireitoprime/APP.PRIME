@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Globe, History as HistoryIcon, Sparkles } from 'lucide-react';
+import { ArrowLeft, Globe, History as HistoryIcon, Scale } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AssistenteMobileHeaderProps {
@@ -42,7 +42,7 @@ export const AssistenteMobileHeader: React.FC<AssistenteMobileHeaderProps> = ({
       {/* Título Central & Toggle da Internet */}
       <div className="flex flex-col items-center z-10">
         <div className="flex items-center gap-1.5">
-          <Sparkles className="w-4 h-4 text-rose-400" />
+          <Scale className="w-4 h-4 text-rose-400" strokeWidth={2.2} />
           <span className="font-serif font-bold text-[16px] sm:text-[17px] text-rose-100 tracking-wide">
             Tutor Jurídico
           </span>
