@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { ArrowLeft, Search, BookOpen } from 'lucide-react';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AudioActionShortcuts } from '@/components/audio/AudioActionShortcuts';
 import { haptic } from '@/lib/nativeHaptics';
@@ -46,25 +46,8 @@ export const BlogHero: React.FC<BlogHeroProps> = memo(function BlogHero({
     requestAnimationFrame(() => resetGlobalScroll());
   };
 
-  const isFilosofia = categoriaAtual === 'filosofia';
-  const isConstitucional = categoriaAtual === 'constitucional';
-  const isPenal = categoriaAtual === 'penal';
-
-  const heroTitulo1 = isFilosofia
-    ? 'Filosofia &'
-    : isConstitucional
-      ? 'Constitucional &'
-      : isPenal
-        ? 'Penal &'
-        : 'Artigos &';
-
-  const heroTitulo2 = isFilosofia
-    ? 'Teoria'
-    : isConstitucional
-      ? 'Garantias'
-      : isPenal
-        ? 'Dogmática'
-        : 'Doutrina';
+  const heroTitulo1 = 'Artigos';
+  const heroTitulo2 = 'Explicativos';
 
   return (
     <div className="relative mb-6">
@@ -73,13 +56,13 @@ export const BlogHero: React.FC<BlogHeroProps> = memo(function BlogHero({
         className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/70 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[315px] xs:min-h-[330px] sm:min-h-[355px]"
         style={{
           transform: 'translateZ(0)',
-          backgroundColor: '#040d16',
+          backgroundColor: '#050505',
         }}
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
         <div
           className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-          style={{ backgroundColor: '#040d16' }}
+          style={{ backgroundColor: '#050505' }}
           aria-hidden="true"
         />
 
@@ -97,9 +80,9 @@ export const BlogHero: React.FC<BlogHeroProps> = memo(function BlogHero({
         {/* Onda 3D Hiper-Realista em Cetim Azul Celeste / Céu Claro */}
         <BlogHeroWave />
 
-        {/* Cabeçalho Superior Transparente (Botão de Voltar e Busca) */}
+        {/* Cabeçalho Superior Transparente (Botão de Voltar) */}
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-          <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
+          <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center">
             <button
               onClick={() => {
                 haptic.selection();
@@ -110,20 +93,6 @@ export const BlogHero: React.FC<BlogHeroProps> = memo(function BlogHero({
             >
               <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
             </button>
-
-            {onBuscar && (
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onBuscar();
-                }}
-                aria-label="Pesquisar artigos do blog"
-                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
-              >
-                <Search className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.2} />
-              </button>
-            )}
           </div>
         </header>
 

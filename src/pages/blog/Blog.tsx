@@ -323,14 +323,17 @@ const Blog = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-[#070b12] text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-      {/* Fundo ShapeGrid Padrão Oficial com Matiz Azul Claro Celeste */}
+    <div className="theme-vademecum min-h-dvh bg-zinc-950 text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      {/* Fundo ShapeGrid Padrão Oficial do Início e Listas */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid
           speed={0.5}
-          squareSize={42}
+          squareSize={40}
           direction="diagonal"
-          borderColor="rgba(56, 189, 248, 0.05)"
+          borderColor="rgba(255, 255, 255, 0.08)"
+          hoverFillColor="rgba(255, 255, 255, 0.12)"
+          shape="square"
+          hoverTrailAmount={5}
         />
       </div>
 
@@ -339,7 +342,6 @@ const Blog = () => {
         totalArtigos={allPosts.length}
         totalFavoritos={favoriteIds.length}
         totalRecentes={recentIds.length}
-        onBuscar={handleFocusSearch}
         onVoltar={() => navigate('/')}
         onRecentes={() => {
           haptic.selection();
@@ -362,29 +364,29 @@ const Blog = () => {
 
       {/* ── Conteúdo Principal em Layout Responsivo (Mobile, Tablet, Desktop) ── */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Barra de Pesquisa com Estilo Azul Celeste */}
+        {/* Barra de Pesquisa com Ícone Azul Claro em Destaque */}
         <div className="relative mb-5 max-w-2xl">
-          <Search className="w-4 h-4 text-sky-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-5 h-5 text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.7)] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10" strokeWidth={2.4} />
           <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar teses, doutrina, autores ou temas..."
-            className="w-full rounded-2xl bg-[#0d1522]/90 border border-sky-500/20 pl-11 pr-10 py-3.5 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all font-sans shadow-lg shadow-black/40 backdrop-blur-md"
+            className="w-full rounded-2xl bg-zinc-900/90 border border-white/10 pl-12 pr-10 py-3.5 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all font-sans shadow-lg shadow-black/40 backdrop-blur-md"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-white cursor-pointer"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-white cursor-pointer z-10"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Menu de Alternância (Pílulas Horizontais com Tom Azul Claro) */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6">
+        {/* Menu de Alternância (Pílulas Horizontais com Scroll Infinito até a Borda Direita) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
@@ -394,16 +396,18 @@ const Blog = () => {
                   haptic.selection();
                   setActiveCategory(cat.id);
                 }}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer shrink-0 ${
                   isActive
                     ? "bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30 border border-sky-400/40"
-                    : "bg-[#0c1320]/80 text-sky-100/70 hover:text-white border border-sky-500/15 hover:bg-[#121c2e]"
+                    : "bg-zinc-900/80 text-zinc-300 hover:text-white border border-white/10 hover:bg-zinc-800/80 hover:border-white/20"
                 }`}
               >
                 {cat.label}
               </button>
             );
           })}
+          {/* Espaçador final para scroll infinito sem cortar o último item */}
+          <div className="w-4 shrink-0" aria-hidden="true" />
         </div>
 
         {/* ── Cabeçalho da Seção: TÍTULO EM UMA LINHA GARANTIDA ── */}
@@ -434,7 +438,7 @@ const Blog = () => {
         {/* ── Lista de Artigos Responsiva (1 col Mobile, 2 cols Tablet, 3 cols Desktop) ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
           {filteredPosts.length === 0 ? (
-            <div className="col-span-full py-16 text-center text-zinc-400 text-sm font-serif italic bg-[#0b121e]/40 rounded-3xl border border-white/5 p-8">
+            <div className="col-span-full py-16 text-center text-zinc-400 text-sm font-serif italic bg-zinc-900/40 rounded-3xl border border-white/5 p-8">
               <BookOpen className="w-10 h-10 text-sky-400/40 mx-auto mb-3" />
               Nenhum artigo encontrado nesta categoria.
             </div>
@@ -451,7 +455,7 @@ const Blog = () => {
                   onTouchStart={() => {
                     if (post.imagem_url) prefetchImage(blogHero(post.imagem_url));
                   }}
-                  className="group relative flex items-start gap-4 p-4 rounded-3xl bg-[#0a111c]/70 hover:bg-[#0f1a2a]/90 border border-sky-500/15 hover:border-sky-400/40 transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-lg shadow-black/30 backdrop-blur-md h-full flex-col justify-between"
+                  className="group relative flex items-start gap-4 p-4 rounded-3xl bg-zinc-900/80 hover:bg-zinc-900/95 border border-white/10 hover:border-sky-400/30 transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-lg shadow-black/30 backdrop-blur-md h-full flex-col justify-between"
                 >
                   <div className="flex items-start gap-3.5 sm:gap-4 w-full">
                     {/* Capa em Proporção de Livro / Audiobook (3:4) com cantos curvados */}
