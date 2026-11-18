@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, parcelamento } from '@/lib/precos';
 import { Crown, Zap, ShieldCheck } from 'lucide-react';
+import confetti from 'canvas-confetti';
 export type CadastroResult = {
   persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
   personaLabel: string | null;
@@ -116,6 +117,8 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const navigate = useNavigate();
   const [planoSelecionado, setPlanoSelecionado] = useState<'anual' | 'vitalicio' | 'mensal'>('anual');
+  const [isUnlockingTrial, setIsUnlockingTrial] = useState(false);
+  const [unlockStep, setUnlockStep] = useState(0);
 
   const concluirComDados = React.useCallback(() => {
     haptic.success();
@@ -133,6 +136,50 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       whatsapp: null,
     });
   }, []);
+
+  const handleIniciarDegustacao = React.useCallback(() => {
+    try { haptic.success(); } catch {}
+    try { localStorage.setItem('direitoprime:trial_started', new Date().toISOString()); } catch {}
+    setIsUnlockingTrial(true);
+
+    // Confetti de celebração em cascata
+    try {
+      confetti({
+        particleCount: 70,
+        spread: 70,
+        origin: { y: 0.55 },
+        colors: ['#F59E0B', '#FBBF24', '#FFFFFF', '#E11D48'],
+      });
+    } catch {}
+
+    const t1 = setTimeout(() => {
+      try { haptic.impact('light'); } catch {}
+      setUnlockStep(1);
+    }, 600);
+
+    const t2 = setTimeout(() => {
+      try { haptic.impact('medium'); } catch {}
+      setUnlockStep(2);
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 85,
+          origin: { y: 0.5 },
+          colors: ['#F59E0B', '#FBBF24', '#FFFFFF'],
+        });
+      } catch {}
+    }, 1300);
+
+    const t3 = setTimeout(() => {
+      concluirComDados();
+    }, 2200);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [concluirComDados]);
   const [introIndex, setIntroIndex] = useState(0);
   const [nome, setNome] = useState(initialName || '');
   const [faixa, setFaixa] = useState('');
@@ -260,7 +307,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
         </header>
       )}
 
-      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] max-w-xl mx-auto w-full flex flex-col justify-center">
+      <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] max-w-xl mx-auto w-full flex flex-col justify-start sm:justify-center">
         <AnimatePresence mode="wait">
           
           {/* PASSO 1: INTRO (Carrossel Persuasivo) */}
@@ -519,18 +566,17 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="space-y-5 pb-28 pt-2"
+              className="space-y-4 pb-20 pt-2 sm:pt-4 w-full my-auto"
             >
-              <div className="text-center space-y-1.5 px-2">
-                <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-[10px] font-sans font-bold tracking-[0.2em] uppercase text-amber-300">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  ACESSO LIBERADO
+              <div className="text-center space-y-2 px-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/35 text-[10px] sm:text-[11px] font-sans font-bold tracking-widest uppercase text-amber-300 shadow-sm">
+                  <span>ACESSO VIP • 3 DIAS GRÁTIS</span>
                 </div>
                 <h3 className="font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight">
                   Parabéns, {nome.trim() || 'Doutor(a)'}!
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-sm mx-auto">
-                  Escolha como prefere acessar o acervo completo da plataforma.
+                  Seu teste gratuito foi preparado. Escolha como prefere acessar o acervo completo da plataforma.
                 </p>
               </div>
 
@@ -646,10 +692,9 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
               <div className="pt-2 space-y-2.5 max-w-md mx-auto">
                 <button
                   type="button"
-                  onClick={concluirComDados}
-                  className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_8px_30px_rgba(245,158,11,0.35)] cursor-pointer"
+                  onClick={handleIniciarDegustacao}
+                  className="relative overflow-hidden w-full h-14 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-[0_6px_25px_rgba(245,158,11,0.25)] cursor-pointer"
                 >
-                  <Sparkles className="w-5 h-5 text-slate-950 fill-slate-950" />
                   <span>INICIAR 3 DIAS GRÁTIS</span>
                   <ArrowRight className="w-5 h-5 stroke-[2.5]" />
                 </button>
@@ -669,6 +714,131 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
           )}
         </AnimatePresence>
       </main>
+
+      {/* OVERLAY DE ANIMAÇÃO DE DESBLOQUEIO VIP */}
+      <AnimatePresence>
+        {isUnlockingTrial && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[10000] bg-black/92 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center select-none"
+          >
+            {/* Halo de luz dourada pulsante */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.65, 0.35] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute w-72 h-72 rounded-full bg-amber-500/20 blur-3xl pointer-events-none"
+            />
+
+            <div className="relative z-10 max-w-sm w-full flex flex-col items-center space-y-5">
+              {/* Emblema central dourado com animação de desbloqueio */}
+              <div className="relative">
+                <motion.div
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-[2px] shadow-[0_0_50px_rgba(245,158,11,0.5)] flex items-center justify-center"
+                >
+                  <div className="w-full h-full bg-[#120F09] rounded-[22px] flex items-center justify-center relative overflow-hidden">
+                    <motion.div
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
+                    >
+                      <Crown className="w-12 h-12 text-amber-400 stroke-[2.2] drop-shadow-[0_2px_12px_rgba(245,158,11,0.6)]" />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Títulos e mensagem persuasiva de liberação */}
+              <div className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-[11px] font-sans font-bold tracking-widest uppercase text-amber-300"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>ACESSO VIP LIBERADO</span>
+                </motion.div>
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight"
+                >
+                  3 Dias Grátis Ativados!
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                  className="text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-xs mx-auto"
+                >
+                  {unlockStep === 0 && 'Desbloqueando acervo completo e Vade Mecum...'}
+                  {unlockStep === 1 && 'Habilitando Inteligência Artificial e Audioaulas...'}
+                  {unlockStep >= 2 && 'Tudo pronto! Entrando no Direito Prime...'}
+                </motion.p>
+              </div>
+
+              {/* 3 Pills de Recursos Desbloqueados */}
+              <div className="w-full space-y-2 pt-1">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-200"
+                >
+                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </div>
+                  <span className="font-medium text-left">Vade Mecum completo e Leis em Áudio</span>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-200"
+                >
+                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </div>
+                  <span className="font-medium text-left">Tutor Jurídico IA e Horus 24 horas</span>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-neutral-200"
+                >
+                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </div>
+                  <span className="font-medium text-left">Simulados, Questões e Flashcards</span>
+                </motion.div>
+              </div>
+
+              {/* Barra de Progresso Dourada Suave */}
+              <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden mt-2">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300"
+                  initial={{ width: '15%' }}
+                  animate={{ width: unlockStep === 0 ? '45%' : unlockStep === 1 ? '85%' : '100%' }}
+                  transition={{ duration: 0.6, ease: 'easeInOut' }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {step < 4 && (
