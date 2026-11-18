@@ -116,13 +116,21 @@ export default function PilulasHome() {
               {(codigosExibidos.length > 0 ? codigosExibidos : CODIGOS_ITEMS).map((item, index) => {
                 const isFavorito = favoritosIds.has(item.id || '');
                 return (
-                  <motion.button
+                  <motion.div
                     key={item.text}
+                    role="button"
+                    tabIndex={0}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(index * 0.04, 0.25) }}
                     onClick={() => handleItemClick(item)}
-                    className="group flex items-stretch p-3 rounded-2xl bg-[#141416]/90 border border-white/10 hover:border-amber-400/40 active:scale-[0.98] transition-all text-left relative overflow-hidden backdrop-blur-md shadow-lg shadow-black/40 hover:shadow-amber-500/10 cursor-pointer"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleItemClick(item);
+                      }
+                    }}
+                    className="group flex items-stretch p-3 rounded-2xl bg-[#141416]/90 border border-white/10 hover:border-amber-400/40 active:scale-[0.98] transition-all text-left relative overflow-hidden backdrop-blur-md shadow-lg shadow-black/40 hover:shadow-amber-500/10 cursor-pointer select-none"
                   >
                     {/* Imagem vertical 2:3 */}
                     <div className="w-[72px] sm:w-[80px] h-[106px] sm:h-[116px] rounded-xl overflow-hidden shrink-0 shadow-md relative border border-white/10">
@@ -192,7 +200,7 @@ export default function PilulasHome() {
                         </div>
                       </div>
                     </div>
-                  </motion.button>
+                  </motion.div>
                 );
               })}
             </div>
