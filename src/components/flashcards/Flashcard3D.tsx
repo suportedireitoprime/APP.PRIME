@@ -729,8 +729,7 @@ const Flashcard3D = memo(function Flashcard3D({
                   </div>
 
                   <div
-                    className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4"
-                    onClick={(e) => e.stopPropagation()}
+                    className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4 cursor-pointer"
                   >
                     <div className={`prose prose-invert max-w-prose text-center flex-1 flex flex-col justify-center ${
                       atual.resposta.length < 40 ? 'text-2xl sm:text-3xl prose-p:text-2xl sm:prose-p:text-3xl' :
@@ -740,6 +739,12 @@ const Flashcard3D = memo(function Flashcard3D({
                     } text-zinc-100 font-medium prose-strong:text-emerald-400 prose-ul:text-left prose-ul:mx-auto prose-li:my-1 prose-headings:mb-2`}>
                       <PremiumMarkdown remarkPlugins={[remarkGfm]}>{atual.resposta}</PremiumMarkdown>
                     </div>
+                  </div>
+
+                  {/* Dica de toque no verso para retornar à pergunta */}
+                  <div className="shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-medium tracking-wide text-zinc-400/70 pb-1 pointer-events-none">
+                    <RotateCcw className="h-3 w-3 text-zinc-400/60" />
+                    <span>Toque no card para voltar à pergunta</span>
                   </div>
                   
                   {hasAprofundar && (
@@ -1208,13 +1213,12 @@ const Flashcard3D = memo(function Flashcard3D({
             className="pt-2 pb-[calc(6.5rem+var(--sai-bottom))] grid grid-cols-2 gap-3"
           >
             <Button
-              variant="outline"
-              className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 bg-zinc-900/90 border border-rose-500/30 text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/50 active:scale-[0.98] transition-all shadow-lg shadow-rose-950/20 cursor-pointer"
+              className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white shadow-lg shadow-rose-950/40 active:scale-[0.98] transition-all border border-rose-400/30 cursor-pointer"
               onClick={() => handleResponder('revisar')}
             >
-              <RotateCcw className="h-5 w-5 text-rose-400" />
+              <RotateCcw className="h-5 w-5 text-white" />
               <span>Revisar</span>
-              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">1</span>
+              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white/20 text-white">1</span>
             </Button>
             <Button
               className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-950/40 active:scale-[0.98] transition-all border border-emerald-400/30 cursor-pointer"
