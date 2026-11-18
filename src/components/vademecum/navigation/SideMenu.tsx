@@ -38,12 +38,6 @@ interface RamalSubItem {
   hint?: string;
 }
 
-const RAMAL_HORUS: RamalSubItem[] = [
-  { id: 'assistente-horus', label: 'Assistente Hórus', icon: Bird, iconColor: 'text-rose-500', hint: 'IA' },
-  { id: 'me-explique', label: 'Me Explique (IA)', icon: Sparkles, iconColor: 'text-amber-400', hint: 'Tutor' },
-  { id: 'chat-juridico', label: 'Chat Jurídico', icon: Bot, iconColor: 'text-cyan-400' },
-];
-
 const RAMAL_VADEMECUM: RamalSubItem[] = [
   { id: 'vademecum', label: 'Vade Mecum Geral', icon: Scale, iconColor: 'text-amber-400' },
   { id: 'constituicao', label: 'Constituição Federal (CF/88)', icon: Landmark, iconColor: 'text-sky-400' },
@@ -176,7 +170,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     }
 
     const directRoutes: Record<string, string> = {
-      // 1. Hórus
+      // 1. IA & Chat
+      'horus': '/assistente-horus',
       'assistente-horus': '/assistente-horus',
       'me-explique': '/me-explique',
       'chat-juridico': '/chat-juridico',
@@ -327,14 +322,23 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
         {/* Funções por Categoria (Design Clássico com Ramais Expansíveis) */}
         <GroupCard title="Funções">
-          <RamalRow
+          <MenuRow
             icon={Bird}
             iconColor="text-rose-500"
             label="Hórus"
-            isOpen={Boolean(openSections['horus'])}
-            onToggle={() => toggleSection('horus')}
-            items={RAMAL_HORUS}
-            onItemClick={handleItemClick}
+            onClick={() => handleItemClick('assistente-horus')}
+          />
+          <MenuRow
+            icon={Sparkles}
+            iconColor="text-amber-400"
+            label="Me Explique"
+            onClick={() => handleItemClick('me-explique')}
+          />
+          <MenuRow
+            icon={Bot}
+            iconColor="text-cyan-400"
+            label="Chat Jurídico"
+            onClick={() => handleItemClick('chat-juridico')}
           />
           <RamalRow
             icon={Scale}
