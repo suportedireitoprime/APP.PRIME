@@ -316,8 +316,8 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     setWebSearch((w) => !w);
   };
 
-  const sendMessage = async () => {
-    const text = input.trim();
+  const sendMessage = async (overrideText?: string) => {
+    const text = (overrideText !== undefined ? overrideText : input).trim();
     if ((!text && !attachment) || loading) return;
 
     if (!chatLimit.canUse) {
@@ -361,25 +361,31 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
       const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/functions/v1/assistente-juridica`;
 
-      const SYSTEM_INSTRUCTIONS_JURIDICO = `Você é o Tutor Jurídico de Elite do Direito Prime.
-DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
-1. TÍTULOS DESTACADOS: Estruture sempre a resposta com títulos claros de seções em Markdown (PROIBIDO usar emojis nos títulos; use apenas texto claro em caixa alta):
+      const SYSTEM_INSTRUCTIONS_JURIDICO = `Você é o Tutor Jurídico de Elite do Direito Prime, professor especialista em Direito Constitucional, Penal, Civil, Processual, Administrativo e Tributário, focado em alta retenção, Exame da OAB e Concursos Públicos.
+
+DIRETRIZES FUNDAMENTAIS DE ESCRITA E PEDAGOGIA:
+1. SEM PREÂMBULOS: NUNCA inicie com cumprimentos ou enrolações ("Com certeza!", "Olá!", "Vou te explicar..."). Comece IMEDIATAMENTE com o primeiro título.
+2. TÍTULOS DE SEÇÕES OBRIGATÓRIOS (Sem emojis nos títulos; use caixa alta exata):
    - ## CONCEITO ESSENCIAL
-   - ### O QUE DIZ A LEI (cite o texto literal da norma entre aspas ou bloco e indique expressamente a lei, ex: "Artigo 18, inciso I, do Código Penal", "Art. 5º da Constituição Federal")
-   - ### EM PORTUGUÊS CLARO (explicação didática, dinâmica e sem juridiquês inútil)
-   - ### EXEMPLO PRÁTICO (CASO CONCRETO EM CAMADAS): (SEMPRE apresente um exemplo prático real, dividido em 4 camadas estruturadas:
-     1. [FATO CONCRETO]: A situação fática da vida real com os agentes envolvidos.
-     2. [CONDUTA & ELEMENTO SUBJETIVO]: Análise da vontade e consciência (dolo direto, dolo eventual ou culpa consciente/inconsciente).
-     3. [ENQUADRAMENTO LEGAL]: Artigos da lei violados e subsunção formal e material da conduta.
-     4. [DESFECHO & SOLUÇÃO]: Consequência jurídica, responsabilidade civil/penal ou condenação/absolvição).
-   - ### QUADRO COMPARATIVO (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos, requisitos ou teorias, monte uma tabela Markdown com colunas: Requisito | Regra | Exceção/Aplicação)
-   - ### FLUXOGRAMA PASSO A PASSO (SEMPRE esquematize a sequência lógica ou rito processual entre colchetes com setas: [Passo 1] -> [Passo 2] -> [Passo 3 (Decisão)])
-   - ### PEGADINHA DE PROVA & ATENÇÃO (detalhes cruciais cobrados em provas da OAB e concursos)
-2. TABELAS: Monte tabelas Markdown completas (| Item | Regra | Exceção |) sempre que organizar dados.
-3. FLUXOGRAMAS: Use blocos com colchetes e setas: [Fato Ocorrido] -> [Existe Lei Anterior?] -> [Aplicação da Pena].
-4. DISPOSITIVOS LEGAIS CITADOS: Indique sempre o nome do código e o número do artigo de forma clara (ex: "Art. 18, I, do Código Penal", "Art. 5º, XXXIX, da CF/88") para que o sistema alimente as fontes automáticas no rodapé.
-5. SEM EMOJIS: Não utilize emojis infantis nos títulos nem nas listas; o sistema renderiza ícones SVG oficiais para cada seção.
-6. FOCO EM RETENÇÃO E TIPOGRAFIA: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
+     (Definição clara, técnica e concisa do instituto ou artigo em 2 a 3 períodos objetivos)
+   - ### O QUE DIZ A LEI
+     (Texto literal do dispositivo legal aplicável entre aspas ou bloco de citação >, indicando expressamente a norma, ex: "Artigo 67 do Código Penal", "Art. 5º, LVII, da CF/88")
+   - ### EM PORTUGUÊS CLARO
+     (Explicação didática, simples, com analogias do cotidiano, sem juridiquês inútil)
+   - ### EXEMPLO PRÁTICO (CASO CONCRETO EM CAMADAS)
+     (Apresente SEMPRE um caso concreto real dividido em 4 camadas estruturadas:
+      [FATO CONCRETO]: A situação fática da vida real com os agentes envolvidos.
+      [CONDUTA & ELEMENTO SUBJETIVO]: Análise da vontade e consciência (dolo direto, dolo eventual ou culpa consciente/inconsciente).
+      [ENQUADRAMENTO LEGAL]: Artigos da lei violados e subsunção formal e material da conduta.
+      [DESFECHO & SOLUÇÃO]: Consequência jurídica, responsabilidade civil/penal ou condenação/absolvição).
+   - ### QUADRO COMPARATIVO
+     (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos ou requisitos, organize uma tabela Markdown com colunas: Requisito | Regra Geral | Exceção/Aplicação)
+   - ### FLUXOGRAMA PASSO A PASSO
+     (Esquematize a sequência lógica ou rito processual com colchetes e setas: [Fato] -> [Análise] -> [Decisão])
+   - ### PEGADINHA DE PROVA & ATENÇÃO
+     (Detalhes cruciais cobrados pela FGV na OAB e em bancas de concursos, súmulas vinculantes do STF e STJ).
+3. TERMOS EM NEGRITO: Destaque artigos, teses e conceitos-chave com **negrito** para leitura dinâmica rápida.
+4. PREVENÇÃO DE ALUCINAÇÃO: Cite apenas leis e dispositivos reais da legislação brasileira e súmulas do STF/STJ. Se não houver previsão expressa, afirme isso com segurança.`;
 
       const payloadMessages = [
         { role: 'system', content: SYSTEM_INSTRUCTIONS_JURIDICO },
@@ -724,26 +730,26 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
           transition={{ duration: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className={
             isDesktop
-              ? 'fixed inset-0 z-[60] bg-[#07080b] flex flex-row'
-              : 'fixed inset-0 z-[60] bg-[#07080b] flex flex-col'
+              ? 'fixed inset-0 z-[60] bg-[#080306] flex flex-row'
+              : 'fixed inset-0 z-[60] bg-[#080306] flex flex-col'
           }
         >
-          {/* Fundo com Aspecto de Profundo, Elegante e Imersivo com ShapeGrid Oficial */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#07080b]">
+          {/* Fundo com Aspecto de Profundo, Elegante e Imersivo no tom Vermelho/Vinho */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#080306]">
             <div className="absolute inset-0 opacity-40 mix-blend-screen">
               <ShapeGrid
                 speed={0.4}
                 squareSize={42}
                 direction="diagonal"
-                borderColor="rgba(255, 255, 255, 0.04)"
-                hoverFillColor="rgba(255, 255, 255, 0.08)"
+                borderColor="rgba(225, 29, 72, 0.08)"
+                hoverFillColor="rgba(225, 29, 72, 0.16)"
                 shape="square"
                 hoverTrailAmount={4}
               />
             </div>
-            <div className="absolute top-[-25%] left-[-15%] w-[130%] h-[60%] bg-[radial-gradient(ellipse_at_top,rgba(190,140,75,0.15),transparent_65%)] blur-[95px] mix-blend-screen" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[120%] h-[55%] bg-[radial-gradient(ellipse_at_bottom,rgba(140,30,45,0.14),transparent_70%)] blur-[100px] mix-blend-screen" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,transparent_25%,rgba(4,5,7,0.88)_100%)]" />
+            <div className="absolute top-[-25%] left-[-15%] w-[130%] h-[60%] bg-[radial-gradient(ellipse_at_top,rgba(225,29,72,0.22),transparent_70%)] blur-[95px] mix-blend-screen" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[120%] h-[55%] bg-[radial-gradient(ellipse_at_bottom,rgba(159,18,57,0.18),transparent_75%)] blur-[100px] mix-blend-screen" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_85%_at_50%_35%,transparent_20%,rgba(6,2,4,0.92)_100%)]" />
           </div>
 
           {/* Desktop sidebar */}
@@ -800,6 +806,7 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
                         onExportPdf={exportPdf}
                         onGenerateArtifact={generateFromMsg}
                         onOpenShare={openShare}
+                        onSendFollowUp={(prompt) => void sendMessage(prompt)}
                       />
                     ))}
 
