@@ -90,7 +90,7 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
   const audioMatch = html.match(/function\s+audioSrc\s*\(\s*i\s*\)\s*\{\s*return\s*["']([^"']+)["']/);
   if (audioMatch) {
     audioBaseUrl = audioMatch[1];
-    if (audioBaseUrl.startsWith('assets/') && baseFolder) {
+    if ((audioBaseUrl.startsWith('assets/') || audioBaseUrl.startsWith('audio/')) && baseFolder) {
       audioBaseUrl = `${baseFolder}/${audioBaseUrl}`;
     }
   }
@@ -176,11 +176,28 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
       }
     }
 
+    let narr = (s.narr || '').trim();
+    if (!narr && s.intro) narr = s.intro.trim();
+    if (!narr && corpo) {
+      narr = corpo.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    if (!narr && s.frente && s.verso) {
+      narr = `${s.frente}. Resposta: ${s.verso}`;
+    }
+    if (!narr && s.questao) {
+      const opts = (s.opcoes || []).map((o, i) => `Opção ${i + 1}: ${o}`).join('. ');
+      narr = `${s.questao}. ${opts}`;
+    }
+    if (!narr && s.titulo) {
+      narr = s.titulo.trim();
+    }
+
     return {
       ...s,
       tipo,
       kicker,
       corpo,
+      narr,
       imgUrl: resolvedImg
     };
   });
@@ -348,11 +365,28 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
           }
         }
 
+        let narr = (s.narr || '').trim();
+        if (!narr && s.intro) narr = s.intro.trim();
+        if (!narr && corpo) {
+          narr = corpo.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        if (!narr && s.frente && s.verso) {
+          narr = `${s.frente}. Resposta: ${s.verso}`;
+        }
+        if (!narr && s.questao) {
+          const opts = (s.opcoes || []).map((o, i) => `Opção ${i + 1}: ${o}`).join('. ');
+          narr = `${s.questao}. ${opts}`;
+        }
+        if (!narr && s.titulo) {
+          narr = s.titulo.trim();
+        }
+
         return {
           ...s,
           tipo,
           kicker,
           corpo,
+          narr,
           imgUrl: img
         };
       });
@@ -464,13 +498,29 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
               }
             }
 
+            let narr = (e.narr || e.narracao || '').trim();
+            if (!narr && e.intro) narr = e.intro.trim();
+            if (!narr && corpo) {
+              narr = corpo.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            }
+            if (!narr && e.frente && e.verso) {
+              narr = `${e.frente}. Resposta: ${e.verso}`;
+            }
+            if (!narr && e.questao) {
+              const opts = (e.opcoes || []).map((o: string, i: number) => `Opção ${i + 1}: ${o}`).join('. ');
+              narr = `${e.questao}. ${opts}`;
+            }
+            if (!narr && e.titulo) {
+              narr = e.titulo.trim();
+            }
+
             return {
               ...e,
               tipo,
               titulo: e.titulo || '',
               kicker,
               corpo,
-              narr: e.narr || e.narracao || '',
+              narr,
               imgUrl: img,
               correta: e.certa !== undefined ? e.certa : e.correta
             };

@@ -73,6 +73,65 @@ function highlightFraseInHtml(html: string, frase: string): string {
   return html;
 }
 
+// Seletor resiliente da melhor voz nativa em Português do Brasil
+let cachedBrazilianVoice: SpeechSynthesisVoice | null = null;
+
+function resolveBestBrazilianVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  if (cachedBrazilianVoice) return cachedBrazilianVoice;
+
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return null;
+
+  // 1. Procurar vozes nativas pt-BR de alta fidelidade
+  const ptBr = voices.filter(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
+  if (ptBr.length > 0) {
+    const neural = ptBr.find(v => 
+      /google|natural|neural|maria|luciana|francisca|felipe|antonio|online/i.test(v.name)
+    );
+    cachedBrazilianVoice = neural || ptBr[0];
+    return cachedBrazilianVoice;
+  }
+
+  // 2. Fallback para qualquer voz em português
+  const anyPt = voices.find(v => v.lang.toLowerCase().startsWith('pt'));
+  if (anyPt) {
+    cachedBrazilianVoice = anyPt;
+    return cachedBrazilianVoice;
+  }
+
+  return null;
+}
+
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    cachedBrazilianVoice = null;
+    resolveBestBrazilianVoice();
+  };
+}
+
+function getSlideNarracaoText(slide?: SlideItem): string {
+  if (!slide) return '';
+  if (slide.narr && slide.narr.trim().length > 0) return slide.narr.trim();
+  if (slide.intro && slide.intro.trim().length > 0) return slide.intro.trim();
+  if (slide.texto && slide.texto.trim().length > 0) return slide.texto.trim();
+  if (slide.corpo && slide.corpo.trim().length > 0) {
+    const clean = slide.corpo.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (clean.length > 0) return clean;
+  }
+  if (slide.frente && slide.verso) {
+    return `${slide.frente}. Resposta: ${slide.verso}`;
+  }
+  if (slide.questao) {
+    const opts = (slide.opcoes || []).map((o, i) => `Opção ${i + 1}: ${o}`).join('. ');
+    return `${slide.questao}. ${opts}`;
+  }
+  if (slide.titulo && slide.titulo.trim().length > 0) {
+    return slide.titulo.trim();
+  }
+  return '';
+}
+
 export function PlayerAulaNativo({
   aula,
   disciplinaNome,
@@ -91,6 +150,9 @@ export function PlayerAulaNativo({
   const [duracao, setDuracao] = useState(0);
   const [velocidade, setVelocidade] = useState<number>(1);
   const [karaIdx, setKaraIdx] = useState(-1);
+  const [candidateIdx, setCandidateIdx] = useState(0);
+  const [usandoTts, setUsandoTts] = useState(false);
+  const ttsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [drawerAberto, setDrawerAberto] = useState(false);
   const [modalGrifoAberto, setModalGrifoAberto] = useState(false);
   const [grifoAulaAtivo, setGrifoAulaAtivo] = useState(true);
@@ -226,29 +288,49 @@ export function PlayerAulaNativo({
     Boolean(slideAtual?.frases && slideAtual.frases.length > 0)
   );
 
-  // URL do áudio da etapa atual (se houver gravação no R2)
-  const currentAudioSrc = useMemo(() => {
-    if (slideAtual?.audioUrl && slideAtual.audioUrl.startsWith('http')) {
-      return slideAtual.audioUrl;
-    }
+  // Lista de URLs candidatas de áudio da etapa atual (multi-path R2: assets/audio/ e audio/)
+  const candidateAudioUrls = useMemo(() => {
+    const list: string[] = [];
+    const numStr = String(idx + 1).padStart(2, '0');
     const baseFolder = (aulaData?.urlJsonR2 || aula.urlJsonR2 || aulaData?.urlHtmlR2 || aula.urlHtmlR2 || '')
       .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
+    // 1. URL explícita no slide
+    if (slideAtual?.audioUrl && slideAtual.audioUrl.startsWith('http')) {
+      list.push(slideAtual.audioUrl);
+    }
+
+    // 2. Audio relativo configurado no slide
     if (slideAtual?.audio && baseFolder) {
-      if (slideAtual.audio.startsWith('http')) return slideAtual.audio;
-      return `${baseFolder}/${slideAtual.audio.replace(/^\//, '')}`;
+      if (slideAtual.audio.startsWith('http')) list.push(slideAtual.audio);
+      else list.push(`${baseFolder}/${slideAtual.audio.replace(/^\//, '')}`);
     }
 
-    let baseUrl = aulaData?.audioBaseUrl;
-    if (baseUrl) {
-      if (!baseUrl.startsWith('http') && baseFolder) {
-        baseUrl = `${baseFolder}/${baseUrl.replace(/^\//, '')}`;
+    // 3. AudioBaseUrl declarada na aula
+    if (aulaData?.audioBaseUrl) {
+      let b = aulaData.audioBaseUrl;
+      if (!b.startsWith('http') && baseFolder) {
+        b = `${baseFolder}/${b.replace(/^\//, '')}`;
       }
-      return `${baseUrl}${String(idx + 1).padStart(2, '0')}.mp3`;
+      list.push(`${b}${numStr}.mp3`);
     }
 
-    return baseFolder ? `${baseFolder}/assets/audio/s${String(idx + 1).padStart(2, '0')}.mp3` : null;
+    // 4. Convenções do Cloudflare R2
+    if (baseFolder) {
+      list.push(`${baseFolder}/assets/audio/s${numStr}.mp3`);
+      list.push(`${baseFolder}/audio/s${numStr}.mp3`);
+      list.push(`${baseFolder}/assets/audio/s${idx + 1}.mp3`);
+      list.push(`${baseFolder}/audio/s${idx + 1}.mp3`);
+    }
+
+    return Array.from(new Set(list));
   }, [slideAtual?.audioUrl, slideAtual?.audio, aulaData?.audioBaseUrl, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aula.urlJsonR2, aula.urlHtmlR2, idx]);
+
+  // URL do áudio MP3 ativo (nulo caso esteja em modo TTS nativo)
+  const currentAudioSrc = useMemo(() => {
+    if (usandoTts || candidateAudioUrls.length === 0) return null;
+    return candidateAudioUrls[candidateIdx] || null;
+  }, [usandoTts, candidateAudioUrls, candidateIdx]);
 
   // URL da imagem cinematográfica da etapa atual
   const imagemUrl = useMemo(() => {
@@ -395,6 +477,113 @@ export function PlayerAulaNativo({
     return false;
   }, [slideAtual?.titulo, isQuestao, isFlashcard]);
 
+  // Limpar timer de karaokê durante síntese de voz nativa
+  const limparKaraokeTtsTimer = () => {
+    if (ttsIntervalRef.current) {
+      clearInterval(ttsIntervalRef.current);
+      ttsIntervalRef.current = null;
+    }
+  };
+
+  // Sincronizar grifo/karaokê visual mesmo quando a narração utiliza a voz nativa brasileira
+  const iniciarKaraokeTtsTimer = (duracaoEstimadaSeg: number) => {
+    limparKaraokeTtsTimer();
+    if (!faixasKaraoke || faixasKaraoke.length === 0) return;
+    const startTime = Date.now();
+    ttsIntervalRef.current = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const pos = Math.min(1, elapsed / duracaoEstimadaSeg);
+      const foundIdx = faixasKaraoke.findIndex(r => pos >= r.start && pos < r.end);
+      if (foundIdx !== -1) {
+        setKaraIdx(foundIdx);
+      } else if (pos >= 1) {
+        setKaraIdx(faixasKaraoke.length - 1);
+      }
+    }, 100);
+  };
+
+  // Narração resiliente via Síntese de Voz Nativa em Português do Brasil (100% de cobertura)
+  const speakSlideNarracao = (isAutoAdvance = false) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+      setTocando(false);
+      return;
+    }
+
+    limparKaraokeTtsTimer();
+    window.speechSynthesis.cancel();
+
+    const text = getSlideNarracaoText(slideAtual);
+    if (!text) {
+      setTocando(false);
+      return;
+    }
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'pt-BR';
+    const voice = resolveBestBrazilianVoice();
+    if (voice) {
+      utter.voice = voice;
+    }
+    utter.rate = 1.05 * velocidade;
+
+    const estimatedSeconds = Math.max(2, (text.length / 15) / (1.05 * velocidade));
+    setDuracao(estimatedSeconds);
+
+    utter.onstart = () => {
+      setTocando(true);
+      iniciarKaraokeTtsTimer(estimatedSeconds);
+    };
+
+    utter.onend = () => {
+      limparKaraokeTtsTimer();
+      setTocando(false);
+      if (!isInterativo && idx < total - 1) {
+        setIdx(prev => prev + 1);
+      }
+    };
+
+    utter.onerror = (err) => {
+      limparKaraokeTtsTimer();
+      console.warn('Síntese de voz nativa encerrada ou cancelada:', err);
+      setTocando(false);
+    };
+
+    window.speechSynthesis.speak(utter);
+  };
+
+  // Tratamento resiliente de erro de áudio (404 / rede): tenta o próximo path ou ativa TTS
+  const handleAudioError = (e?: any) => {
+    if (candidateIdx + 1 < candidateAudioUrls.length) {
+      console.log(`Tentando próximo candidato de áudio (#${candidateIdx + 1}): ${candidateAudioUrls[candidateIdx + 1]}`);
+      setCandidateIdx(prev => prev + 1);
+    } else {
+      // Todos os arquivos MP3 candidatos no R2 foram testados e falharam ou não existem nessa aula
+      console.log('Todos os MP3 candidatos falharam. Ativando voz nativa em português brasileiro (TTS).');
+      setUsandoTts(true);
+      if (tocando) {
+        speakSlideNarracao(false);
+      }
+    }
+  };
+
+  // Quando o índice de candidatos avança para testar caminhos alternativos do R2
+  useEffect(() => {
+    if (candidateIdx > 0 && candidateAudioUrls[candidateIdx] && audioRef.current && !usandoTts) {
+      const nextSrc = candidateAudioUrls[candidateIdx];
+      audioRef.current.src = nextSrc;
+      audioRef.current.load();
+      audioRef.current.playbackRate = velocidade;
+      if (tocando) {
+        audioRef.current.play()
+          .then(() => setTocando(true))
+          .catch((err) => {
+            console.log(`Candidato #${candidateIdx} (${nextSrc}) falhou, avançando:`, err);
+            handleAudioError(err);
+          });
+      }
+    }
+  }, [candidateIdx]);
+
   // Resetar estados ao mudar de etapa e iniciar autoplay contínuo
   useEffect(() => {
     setDuracao(0);
@@ -406,6 +595,9 @@ export function PlayerAulaNativo({
     setPontoAtivo(0);
     setParSelecionadoL(null);
     setParesConectados({});
+    setCandidateIdx(0);
+    setUsandoTts(false);
+    limparKaraokeTtsTimer();
 
     // SEMPRE rolar para o topo absoluto do conteúdo ao passar a página
     if (mainRef.current) {
@@ -421,10 +613,11 @@ export function PlayerAulaNativo({
 
     const wasPlaying = tocando || (audioRef.current ? !audioRef.current.paused : false);
 
-    // Se temos áudio MP3 gravado no R2
-    if (currentAudioSrc && audioRef.current) {
-      if (audioRef.current.src !== currentAudioSrc) {
-        audioRef.current.src = currentAudioSrc;
+    // Se temos arquivos candidatos de áudio MP3 no R2
+    if (candidateAudioUrls.length > 0 && audioRef.current) {
+      const targetSrc = candidateAudioUrls[0];
+      if (audioRef.current.src !== targetSrc) {
+        audioRef.current.src = targetSrc;
         audioRef.current.load();
       }
       audioRef.current.playbackRate = velocidade;
@@ -436,16 +629,19 @@ export function PlayerAulaNativo({
           playPromise
             .then(() => setTocando(true))
             .catch((err) => {
-              // Bloqueio de autoplay do navegador: pausar normalmente sem voz sintética
-              console.log('Autoplay bloqueado pelo navegador, aguardando clique do usuário:', err);
-              setTocando(false);
+              console.log('Play inicial no slide falhou, tentando fallback:', err);
+              handleAudioError(err);
             });
         }
       }
+    } else if (wasPlaying) {
+      // Sem MP3 mas estava tocando: continua tocando com voz nativa!
+      setUsandoTts(true);
+      speakSlideNarracao(true);
     } else {
       setTocando(false);
     }
-  }, [idx, currentAudioSrc, total, isInterativo, velocidade]);
+  }, [idx, candidateAudioUrls, total, isInterativo, velocidade]);
 
   // Sincronização em Nuvem (Supabase) e Persistência Local (IndexedDB)
   useEffect(() => {
@@ -517,6 +713,9 @@ export function PlayerAulaNativo({
     if (audioRef.current) {
       audioRef.current.playbackRate = novaVel;
     }
+    if (usandoTts && tocando) {
+      speakSlideNarracao(false);
+    }
   };
 
   // Alternar estado do Grifo da Narração (Ligar direto ou abrir modal com 2 opções de desativação)
@@ -577,42 +776,42 @@ export function PlayerAulaNativo({
 
   const toggleAudio = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    if (currentAudioSrc && audioRef.current) {
-      if (tocando) {
+    haptic.light();
+
+    if (tocando) {
+      if (audioRef.current) {
         audioRef.current.pause();
-        setTocando(false);
-      } else {
-        if (audioRef.current.src !== currentAudioSrc) {
-          audioRef.current.src = currentAudioSrc;
-          audioRef.current.load();
-        }
-        audioRef.current.playbackRate = velocidade;
-        audioRef.current.play()
-          .then(() => setTocando(true))
-          .catch((err) => {
-            console.warn('Erro ao reproduzir narração em áudio:', err);
-            setTocando(false);
-          });
       }
-    } else if (slideAtual?.narr && window.speechSynthesis) {
-      if (tocando) {
+      if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
-        setTocando(false);
-      } else {
-        const utter = new SpeechSynthesisUtterance(slideAtual.narr);
-        utter.lang = 'pt-BR';
-        utter.rate = 1.05 * velocidade;
-        utter.onstart = () => setTocando(true);
-        utter.onend = () => {
-          setTocando(false);
-          if (!isInterativo && idx < total - 1) setIdx(prev => prev + 1);
-        };
-        utter.onerror = () => setTocando(false);
-        window.speechSynthesis.speak(utter);
       }
+      limparKaraokeTtsTimer();
+      setTocando(false);
+      return;
+    }
+
+    // Se estiver em modo TTS ou sem candidatos MP3 no R2, fala direto com a voz nativa brasileira
+    if (usandoTts || candidateAudioUrls.length === 0) {
+      setUsandoTts(true);
+      speakSlideNarracao(false);
+      return;
+    }
+
+    if (audioRef.current && currentAudioSrc) {
+      if (audioRef.current.src !== currentAudioSrc) {
+        audioRef.current.src = currentAudioSrc;
+        audioRef.current.load();
+      }
+      audioRef.current.playbackRate = velocidade;
+      audioRef.current.play()
+        .then(() => setTocando(true))
+        .catch((err) => {
+          console.warn('Erro ao reproduzir narração em áudio MP3, tentando fallback:', err);
+          handleAudioError(err);
+        });
+    } else {
+      setUsandoTts(true);
+      speakSlideNarracao(false);
     }
   };
 
@@ -1637,7 +1836,7 @@ export function PlayerAulaNativo({
         onDurationChange={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleAudioEnded}
-        onError={() => setTocando(false)}
+        onError={handleAudioError}
         preload="auto"
       />
 
@@ -2041,7 +2240,8 @@ export function PlayerAulaNativo({
                           if (window.speechSynthesis) {
                             window.speechSynthesis.cancel();
                           }
-                          if (audioRef.current && duracao > 0 && faixasKaraoke[fi]) {
+                          limparKaraokeTtsTimer();
+                          if (audioRef.current && duracao > 0 && faixasKaraoke[fi] && !usandoTts) {
                             audioRef.current.currentTime = faixasKaraoke[fi].start * duracao;
                             if (!tocando) {
                               audioRef.current.playbackRate = velocidade;
@@ -2049,7 +2249,7 @@ export function PlayerAulaNativo({
                                 .then(() => setTocando(true))
                                 .catch((err) => {
                                   console.warn('Erro ao tocar áudio no clique do karaokê:', err);
-                                  setTocando(false);
+                                  handleAudioError(err);
                                 });
                             }
                           }
