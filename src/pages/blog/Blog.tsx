@@ -323,18 +323,10 @@ const Blog = () => {
   };
 
   return (
-    <div className="theme-vademecum min-h-dvh bg-zinc-950 text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-      {/* Fundo ShapeGrid Padrão Oficial do Início e Listas */}
+    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      {/* Fundo Oficial com Tonalidade Idêntica ao Início do App */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.08)"
-          hoverFillColor="rgba(255, 255, 255, 0.12)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
+        <ShapeGrid />
       </div>
 
       {/* ── Painel de Topo Idêntico ao de Áudio Aulas com Capa de Roma Antiga & Céu Azul Claro ── */}
@@ -373,7 +365,7 @@ const Blog = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar teses, doutrina, autores ou temas..."
-            className="w-full rounded-2xl bg-zinc-900/90 border border-white/10 pl-12 pr-10 py-3.5 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all font-sans shadow-lg shadow-black/40 backdrop-blur-md"
+            className="w-full rounded-2xl bg-[#141416]/95 border border-white/10 pl-12 pr-10 py-3.5 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all font-sans shadow-lg shadow-black/40 backdrop-blur-md"
           />
           {searchQuery && (
             <button
@@ -399,7 +391,7 @@ const Blog = () => {
                 className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer shrink-0 ${
                   isActive
                     ? "bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-500/30 border border-sky-400/40"
-                    : "bg-zinc-900/80 text-zinc-300 hover:text-white border border-white/10 hover:bg-zinc-800/80 hover:border-white/20"
+                    : "bg-[#141416] text-zinc-300 hover:text-white border border-white/10 hover:bg-[#1A1A1E]"
                 }`}
               >
                 {cat.label}
@@ -438,7 +430,7 @@ const Blog = () => {
         {/* ── Lista de Artigos Responsiva (1 col Mobile, 2 cols Tablet, 3 cols Desktop) ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
           {filteredPosts.length === 0 ? (
-            <div className="col-span-full py-16 text-center text-zinc-400 text-sm font-serif italic bg-zinc-900/40 rounded-3xl border border-white/5 p-8">
+            <div className="col-span-full py-16 text-center text-zinc-400 text-sm font-serif italic bg-[#141416]/40 rounded-3xl border border-white/5 p-8">
               <BookOpen className="w-10 h-10 text-sky-400/40 mx-auto mb-3" />
               Nenhum artigo encontrado nesta categoria.
             </div>
@@ -455,7 +447,7 @@ const Blog = () => {
                   onTouchStart={() => {
                     if (post.imagem_url) prefetchImage(blogHero(post.imagem_url));
                   }}
-                  className="group relative flex items-start gap-4 p-4 rounded-3xl bg-zinc-900/80 hover:bg-zinc-900/95 border border-white/10 hover:border-sky-400/30 transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-lg shadow-black/30 backdrop-blur-md h-full flex-col justify-between"
+                  className="group relative flex items-start gap-4 p-4 rounded-3xl bg-[#141416]/95 hover:bg-[#1A1A1E] border border-white/10 hover:border-sky-400/30 transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-lg shadow-black/30 backdrop-blur-md h-full flex-col justify-between"
                 >
                   <div className="flex items-start gap-3.5 sm:gap-4 w-full">
                     {/* Capa em Proporção de Livro / Audiobook (3:4) com cantos curvados */}
