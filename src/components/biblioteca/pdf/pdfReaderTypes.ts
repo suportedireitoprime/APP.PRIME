@@ -14,9 +14,9 @@ export interface Match {
 export const BOOKMARK_KEY = (url: string) => `pdf-reader:bookmark:${url}`;
 export const PAGE_KEY = (url: string) => `pdf-reader:page:${url}`;
 
-export const MIN_ZOOM = 1;
+export const MIN_ZOOM = 0.85;
 export const MAX_ZOOM = 4;
-export const DEFAULT_ZOOM = 1.1;
+export const DEFAULT_ZOOM = 1.0;
 
 /**
  * Normaliza URLs de compartilhamento comuns (Drive/Dropbox) para o

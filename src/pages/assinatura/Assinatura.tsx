@@ -53,7 +53,8 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<PlanOption>('anual');
+  const statePlan = (location.state as { selectedPlan?: PlanOption } | null)?.selectedPlan;
+  const [tab, setTab] = useState<PlanOption>(statePlan || 'anual');
 
   
   const [timeLeft, setTimeLeft] = useState(() => {

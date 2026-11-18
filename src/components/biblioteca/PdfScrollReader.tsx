@@ -217,24 +217,25 @@ const PdfScrollReader = ({
       const targetWidth = isMobile ? rawWidth : maxAllowedWidth;
       const viewport = page.getViewport({ scale: 1 });
       
-      // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
-      // Garante resolução mínima de impressão (300 DPI) mesmo em telas mobile de alta densidade
-      const dpr = Math.max(window.devicePixelRatio || 2, 2.5);
-      const baseScale = targetWidth / viewport.width;
-      const calculatedScale = baseScale * dpr;
-      const minUltraHdScale = 2.8;
-      const renderScale = Math.max(calculatedScale, minUltraHdScale);
-      const finalVp = page.getViewport({ scale: renderScale });
+      // Mapeamento nativo 1:1 com os subpixels físicos da tela (Retina/OLED)
+      // Elimina o downsampling de 2.8x que desfocava letras pequenas no mobile
+      const rawDpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+      const dpr = Math.min(Math.max(rawDpr, 2), 3);
 
       const displayWidth = Math.round(targetWidth);
-      const displayHeight = Math.round(viewport.height * baseScale);
+      const displayHeight = Math.round((displayWidth / viewport.width) * viewport.height);
+
+      const canvasWidth = Math.round(displayWidth * dpr);
+      const canvasHeight = Math.round(displayHeight * dpr);
+
+      const renderScale = canvasWidth / viewport.width;
+      const finalVp = page.getViewport({ scale: renderScale });
 
       const canvas = document.createElement('canvas');
-      canvas.width = Math.floor(finalVp.width);
-      canvas.height = Math.floor(finalVp.height);
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
       canvas.style.width = `${displayWidth}px`;
-      canvas.style.maxWidth = '100%';
-      canvas.style.height = 'auto';
+      canvas.style.height = `${displayHeight}px`;
       canvas.style.aspectRatio = `${viewport.width} / ${viewport.height}`;
       canvas.style.display = 'block';
       canvas.style.margin = '0 auto';

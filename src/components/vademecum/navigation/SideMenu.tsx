@@ -9,7 +9,7 @@ import {
   BookMarked, Bookmark, Columns3, Library, CheckSquare,
   Trophy, Brain, Video, Headphones, BookOpenText, Compass,
   NotebookPen, Flame, FileText, GraduationCap, BookA,
-  Radar, Newspaper, Bell, CloudDownload, Wrench,
+  Radar, Newspaper, Bell, CloudDownload, Target,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
@@ -57,26 +57,20 @@ const RAMAL_VADEMECUM: RamalSubItem[] = [
 
 const RAMAL_ESTUDOS: RamalSubItem[] = [
   { id: 'biblioteca', label: 'Biblioteca Digital', icon: Library, iconColor: 'text-emerald-400' },
+  { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-emerald-300' },
+  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-blue-400' },
+  { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-indigo-400' },
+  { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-rose-400' },
+  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, iconColor: 'text-rose-400' },
+  { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-sky-400' },
+  { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-teal-400' },
+  { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-amber-500' },
+];
+
+const RAMAL_PRATICA: RamalSubItem[] = [
   { id: 'questoes', label: 'Questões OAB & Concursos', icon: CheckSquare, iconColor: 'text-cyan-400' },
   { id: 'simulados', label: 'Simulados', icon: Trophy, iconColor: 'text-amber-400' },
   { id: 'flashcards', label: 'Flashcards', icon: Brain, iconColor: 'text-purple-400' },
-  { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-rose-400' },
-  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-blue-400' },
-  { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-indigo-400' },
-  { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-teal-400' },
-  { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-amber-500' },
-  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, iconColor: 'text-rose-400' },
-  { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-sky-400' },
-  { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-emerald-300' },
-];
-
-const RAMAL_FERRAMENTAS: RamalSubItem[] = [
-  { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookA, iconColor: 'text-cyan-400' },
-  { id: 'radares', label: 'Radar STF / STJ', icon: Radar, iconColor: 'text-indigo-400' },
-  { id: 'noticias', label: 'Notícias Jurídicas', icon: Newspaper, iconColor: 'text-blue-400' },
-  { id: 'lembretes', label: 'Lembretes & Prazos', icon: Bell, iconColor: 'text-amber-400' },
-  { id: 'modo-offline', label: 'Modo Offline', icon: CloudDownload, iconColor: 'text-emerald-400' },
-  { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, iconColor: 'text-zinc-400' },
 ];
 
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
@@ -327,7 +321,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             icon={Bird}
             iconColor="text-rose-500"
             label="Hórus"
-            hint="3 funções"
             isOpen={Boolean(openSections['horus'])}
             onToggle={() => toggleSection('horus')}
             items={RAMAL_HORUS}
@@ -337,7 +330,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             icon={Scale}
             iconColor="text-amber-400"
             label="Vade Mecum"
-            hint="8 categorias"
             isOpen={Boolean(openSections['vademecum'])}
             onToggle={() => toggleSection('vademecum')}
             items={RAMAL_VADEMECUM}
@@ -346,21 +338,19 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           <RamalRow
             icon={GraduationCap}
             iconColor="text-emerald-400"
-            label="Estudos & Prática"
-            hint="12 funções"
+            label="Estudos"
             isOpen={Boolean(openSections['estudos'])}
             onToggle={() => toggleSection('estudos')}
             items={RAMAL_ESTUDOS}
             onItemClick={handleItemClick}
           />
           <RamalRow
-            icon={Wrench}
+            icon={Target}
             iconColor="text-cyan-400"
-            label="Ferramentas & Consulta"
-            hint="6 recursos"
-            isOpen={Boolean(openSections['ferramentas'])}
-            onToggle={() => toggleSection('ferramentas')}
-            items={RAMAL_FERRAMENTAS}
+            label="Praticar"
+            isOpen={Boolean(openSections['praticar'])}
+            onToggle={() => toggleSection('praticar')}
+            items={RAMAL_PRATICA}
             onItemClick={handleItemClick}
           />
         </GroupCard>

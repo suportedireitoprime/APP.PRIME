@@ -305,12 +305,49 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
       </div>
 
       {step < 4 && (
-        <header className="relative z-20 w-full max-w-xl mx-auto px-4 pt-[calc(0.75rem+var(--sai-top,0px))] pb-3 flex flex-col gap-2.5">
+        <header className="relative z-20 w-full max-w-xl mx-auto px-4 pt-[calc(0.75rem+var(--sai-top,0px))] pb-2 flex flex-col gap-2">
+          <div className="flex items-center justify-between min-h-[38px]">
+            {/* Botão Voltar (padrão acessível e ergonômico) */}
+            {((step === 1 && introIndex > 0) || step === 2 || step === 3) ? (
+              <button
+                type="button"
+                onClick={step === 1 ? prevIntro : prevStep}
+                aria-label="Voltar para tela anterior"
+                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-all active:scale-95 cursor-pointer"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[2.4]" />
+              </button>
+            ) : (
+              <div className="w-10 h-10" />
+            )}
+
+            {/* Contador de telas / progresso textual */}
+            <span className="text-[11px] font-sans font-bold tracking-widest text-neutral-400 uppercase">
+              {step === 1 ? `${introIndex + 1} de ${INTRO_SCREENS.length}` : `Etapa ${step - 1} de 2`}
+            </span>
+
+            {/* Ação rápida: Pular Introdução */}
+            {step === 1 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setStep(2);
+                }}
+                className="text-[11px] font-bold text-neutral-400 hover:text-white uppercase tracking-wider px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                Pular
+              </button>
+            ) : (
+              <div className="w-10 h-10" />
+            )}
+          </div>
+
           <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden relative">
             <motion.div
               className="h-full bg-gradient-to-r from-red-600 via-primary to-rose-500 rounded-full shadow-[0_0_12px_rgba(224,31,71,0.6)]"
               initial={false}
-              animate={{ width: step === 1 ? `${((introIndex + 1) / 8) * 100}%` : `${(step / 3) * 100}%` }}
+              animate={{ width: step === 1 ? `${((introIndex + 1) / INTRO_SCREENS.length) * 100}%` : `${(step / 3) * 100}%` }}
               transition={{ duration: 0.35, ease: 'easeInOut' }}
             />
           </div>
@@ -423,6 +460,15 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                       type="text"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && canContinue) {
+                          e.preventDefault();
+                          nextStep();
+                        }
+                      }}
+                      autoComplete="name"
+                      autoCapitalize="words"
+                      enterKeyHint="done"
                       placeholder="Ex: João Silva"
                       className="w-full bg-neutral-900/80 border border-white/10 text-white placeholder-white/30 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-medium"
                     />
@@ -439,7 +485,7 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                             haptic.selection();
                             setFaixa(f);
                           }}
-                          className={`py-3 px-3 rounded-xl text-[13px] font-bold transition-all active:scale-[0.98] ${
+                          className={`py-3 px-3 min-h-[48px] flex items-center justify-center rounded-xl text-[13px] font-bold transition-all active:scale-[0.98] ${
                             faixa === f
                               ? 'bg-primary text-white border border-primary/40 shadow-[0_0_15px_rgba(224,31,71,0.3)]'
                               : 'bg-neutral-900/80 border border-white/10 text-neutral-400 hover:border-white/20 hover:text-white'
@@ -713,9 +759,9 @@ export default function TriagemModerna({ initialName = '', onComplete, previewMo
                   type="button"
                   onClick={() => {
                     concluirComDados();
-                    navigate('/assinatura');
+                    navigate('/assinatura', { state: { selectedPlan: planoSelecionado } });
                   }}
-                  className="w-full h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/90 font-bold text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/90 font-bold text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer min-h-[48px]"
                 >
                   <span>Ver Detalhes dos Planos</span>
                 </button>

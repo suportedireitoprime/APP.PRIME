@@ -465,7 +465,7 @@ const PdfPaginatedReader = ({
                             el.scrollTop = 0;
                           }
                         }}
-                        className={`w-full h-full overflow-y-auto overscroll-y-contain flex flex-col items-center justify-start select-none ${
+                        className={`w-full h-full overflow-x-auto overflow-y-auto overscroll-contain flex flex-col items-center justify-start select-none ${
                           isDarkPdf ? 'bg-[#0e0e11]' : 'bg-[#141417]'
                         }`}
                         style={{
@@ -632,23 +632,22 @@ const PdfPage = ({
         const displayHeight = Math.round(displayWidth / pageAspect);
         setPageSize({ width: displayWidth, height: displayHeight });
 
-        const baseScale = displayWidth / unscaledViewport.width;
+        // Mapeamento nativo 1:1 com os subpixels físicos da tela (Retina/OLED)
+        // Evita qualquer reamostragem/downsampling agressivo na GPU que causava desfoque nas fontes
+        const rawDpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+        const dpr = Math.min(Math.max(rawDpr, 2), 3);
 
-        // Multiplicador Ultra HD / Retina de nitidez absoluta para fontes e vetores
-        // Garante resolução mínima de impressão (300 DPI) idêntica ao Desktop em qualquer dispositivo
-        const dpr = Math.max(window.devicePixelRatio || 2, 2.5);
-        const calculatedScale = baseScale * dpr;
-        const minUltraHdScale = 2.8 * (zoom || 1.0);
-        const finalScale = Math.max(calculatedScale, minUltraHdScale);
+        const canvasWidth = Math.round(displayWidth * dpr);
+        const canvasHeight = Math.round(displayHeight * dpr);
 
+        const finalScale = canvasWidth / unscaledViewport.width;
         const finalVp = page.getViewport({ scale: finalScale });
 
         const canvas = canvasRef.current;
-        canvas.width = Math.floor(finalVp.width);
-        canvas.height = Math.floor(finalVp.height);
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
 
         canvas.style.width = `${displayWidth}px`;
-        canvas.style.maxWidth = '100%';
         canvas.style.height = `${displayHeight}px`;
         canvas.style.aspectRatio = `${unscaledViewport.width} / ${unscaledViewport.height}`;
         canvas.style.display = 'block';
