@@ -150,7 +150,7 @@ const HomeHeaderHero = ({
         <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[145px] sm:min-h-[160px]">
           <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
             <HomeBrandBanner />
-            <div className="relative z-10 w-[150px] xs:w-[165px] sm:w-[185px] shrink-0 pt-0.5 sm:pt-1 pr-1 sm:pr-2 empty:hidden">
+            <div className="relative z-10 w-[145px] xs:w-[160px] sm:w-[180px] shrink-0 pt-[58px] xs:pt-[64px] sm:pt-[68px] pr-1 sm:pr-2 empty:hidden">
               <HomeTrialCard />
             </div>
           </div>
