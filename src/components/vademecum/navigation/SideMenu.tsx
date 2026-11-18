@@ -6,6 +6,7 @@ import {
   LifeBuoy, Lock, Gem,
   Pencil, Crown, Timer, Bird, Star,
   Sparkles, Bot, Scale, Landmark, BookOpen, Shield, Gavel,
+  Speech, MessageCircle,
   BookMarked, Bookmark, Columns3, Library, CheckSquare,
   Trophy, Brain, Video, Headphones, BookOpenText, Compass,
   NotebookPen, Flame, FileText, GraduationCap, BookA,
@@ -328,13 +329,13 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             onClick={() => handleItemClick('assistente-horus')}
           />
           <MenuRow
-            icon={Sparkles}
-            iconColor="text-amber-400"
+            icon={Speech}
+            iconColor="text-orange-400"
             label="Me Explique"
             onClick={() => handleItemClick('me-explique')}
           />
           <MenuRow
-            icon={Bot}
+            icon={MessageCircle}
             iconColor="text-cyan-400"
             label="Chat Jurídico"
             onClick={() => handleItemClick('chat-juridico')}

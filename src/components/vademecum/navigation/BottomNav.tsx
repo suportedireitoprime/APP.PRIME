@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, Speech, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
@@ -358,7 +358,7 @@ const BottomNav = () => {
             }`}
             aria-label="Me Explique"
           >
-            <Bot className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <Speech className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
           </button>
         </div>
