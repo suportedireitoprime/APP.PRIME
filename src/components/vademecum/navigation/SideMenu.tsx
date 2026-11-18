@@ -40,31 +40,39 @@ interface RamalSubItem {
 }
 
 const RAMAL_VADEMECUM: RamalSubItem[] = [
-  { id: 'vademecum', label: 'Vade Mecum Geral', icon: Scale, iconColor: 'text-amber-400' },
-  { id: 'constituicao', label: 'Constituição Federal (CF/88)', icon: Landmark, iconColor: 'text-sky-400' },
-  { id: 'codigos', label: 'Códigos & Legislação', icon: BookOpen, iconColor: 'text-blue-400' },
-  { id: 'estatutos', label: 'Estatutos', icon: Shield, iconColor: 'text-indigo-400' },
-  { id: 'jurisprudencia', label: 'Súmulas & Jurisprudência', icon: Gavel, iconColor: 'text-purple-400' },
-  { id: 'leis-ordinarias', label: 'Leis Ordinárias', icon: BookMarked, iconColor: 'text-emerald-400' },
-  { id: 'legislacao-especial', label: 'Legislação Especial', icon: Bookmark, iconColor: 'text-teal-400' },
-  { id: 'legislacao-estadual', label: 'Legislação Estadual', icon: Columns3, iconColor: 'text-amber-300' },
+  { id: 'vademecum', label: 'Vade Mecum Geral', icon: Scale, iconColor: 'text-orange-400' },
+  { id: 'constituicao', label: 'Constituição Federal (CF/88)', icon: Landmark, iconColor: 'text-orange-400' },
+  { id: 'codigos', label: 'Códigos & Legislação', icon: BookOpen, iconColor: 'text-orange-400' },
+  { id: 'estatutos', label: 'Estatutos', icon: Shield, iconColor: 'text-orange-400' },
+  { id: 'jurisprudencia', label: 'Súmulas & Jurisprudência', icon: Gavel, iconColor: 'text-orange-400' },
+  { id: 'leis-ordinarias', label: 'Leis Ordinárias', icon: BookMarked, iconColor: 'text-orange-400' },
+  { id: 'legislacao-especial', label: 'Legislação Especial', icon: Bookmark, iconColor: 'text-orange-400' },
+  { id: 'legislacao-estadual', label: 'Legislação Estadual', icon: Columns3, iconColor: 'text-orange-400' },
+];
+
+const RAMAL_BIBLIOTECA: RamalSubItem[] = [
+  { id: 'biblioteca-todas', label: 'Todas as Obras', icon: BookOpen, iconColor: 'text-orange-400' },
+  { id: 'biblioteca-em-alta', label: 'Obras em Alta', icon: Flame, iconColor: 'text-orange-400' },
+  { id: 'biblioteca-classicos', label: 'Clássicos do Direito', icon: Scale, iconColor: 'text-orange-400' },
+  { id: 'biblioteca-meus-livros', label: 'Meus Livros', icon: Bookmark, iconColor: 'text-orange-400' },
+  { id: 'biblioteca-offline', label: 'Livros Offline', icon: CloudDownload, iconColor: 'text-orange-400' },
 ];
 
 const RAMAL_ESTUDOS: RamalSubItem[] = [
-  { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-emerald-300' },
-  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-blue-400' },
-  { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-indigo-400' },
-  { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-rose-400' },
-  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, iconColor: 'text-rose-400' },
-  { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-sky-400' },
-  { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-teal-400' },
-  { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-amber-500' },
+  { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-orange-400' },
+  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-orange-400' },
+  { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-orange-400' },
+  { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-orange-400' },
+  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, iconColor: 'text-orange-400' },
+  { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-orange-400' },
+  { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-orange-400' },
+  { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-orange-400' },
 ];
 
 const RAMAL_PRATICA: RamalSubItem[] = [
-  { id: 'questoes', label: 'Questões OAB & Concursos', icon: CheckSquare, iconColor: 'text-cyan-400' },
-  { id: 'simulados', label: 'Simulados', icon: Trophy, iconColor: 'text-amber-400' },
-  { id: 'flashcards', label: 'Flashcards', icon: Brain, iconColor: 'text-purple-400' },
+  { id: 'questoes', label: 'Questões OAB & Concursos', icon: CheckSquare, iconColor: 'text-orange-400' },
+  { id: 'simulados', label: 'Simulados', icon: Trophy, iconColor: 'text-orange-400' },
+  { id: 'flashcards', label: 'Flashcards', icon: Brain, iconColor: 'text-orange-400' },
 ];
 
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
@@ -186,8 +194,15 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'legislacao-especial': '/vade-mecum/especiais',
       'legislacao-estadual': '/legislacao-estadual',
 
-      // 3. Estudos & Prática
+      // 3. Biblioteca
       'biblioteca': '/bibliotecas',
+      'biblioteca-todas': '/bibliotecas',
+      'biblioteca-em-alta': '/bibliotecas/em-alta',
+      'biblioteca-classicos': '/bibliotecas/classicos',
+      'biblioteca-meus-livros': '/pessoal/livros',
+      'biblioteca-offline': '/modo-offline/livros',
+
+      // 4. Estudos & Prática
       'questoes': '/questoes',
       'simulados': '/simulados',
       'flashcards': '/flashcards',
@@ -324,7 +339,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         <GroupCard title="Assistentes">
           <MenuRow
             icon={Bird}
-            iconColor="text-rose-500"
+            iconColor="text-orange-400"
             label="Hórus"
             onClick={() => handleItemClick('assistente-horus')}
           />
@@ -336,23 +351,30 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
           <MenuRow
             icon={MessageCircle}
-            iconColor="text-cyan-400"
+            iconColor="text-orange-400"
             label="Chat Jurídico"
             onClick={() => handleItemClick('chat-juridico')}
           />
         </GroupCard>
 
-        {/* Categoria 2: Funções por Categoria (Biblioteca separada + Vade Mecum, Estudos e Praticar) */}
-        <GroupCard title="Funções">
-          <MenuRow
+        {/* Categoria 2: Biblioteca (Categoria exclusiva com menu suspenso / ramal) */}
+        <GroupCard title="Biblioteca">
+          <RamalRow
             icon={Library}
-            iconColor="text-emerald-400"
+            iconColor="text-orange-400"
             label="Biblioteca"
-            onClick={() => handleItemClick('biblioteca')}
+            isOpen={Boolean(openSections['biblioteca'])}
+            onToggle={() => toggleSection('biblioteca')}
+            items={RAMAL_BIBLIOTECA}
+            onItemClick={handleItemClick}
           />
+        </GroupCard>
+
+        {/* Categoria 3: Funções (Vade Mecum, Estudos e Praticar) */}
+        <GroupCard title="Funções">
           <RamalRow
             icon={Scale}
-            iconColor="text-amber-400"
+            iconColor="text-orange-400"
             label="Vade Mecum"
             isOpen={Boolean(openSections['vademecum'])}
             onToggle={() => toggleSection('vademecum')}
@@ -361,7 +383,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
           <RamalRow
             icon={GraduationCap}
-            iconColor="text-emerald-400"
+            iconColor="text-orange-400"
             label="Estudos"
             isOpen={Boolean(openSections['estudos'])}
             onToggle={() => toggleSection('estudos')}
@@ -370,7 +392,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
           <RamalRow
             icon={Target}
-            iconColor="text-cyan-400"
+            iconColor="text-orange-400"
             label="Praticar"
             isOpen={Boolean(openSections['praticar'])}
             onToggle={() => toggleSection('praticar')}
@@ -383,22 +405,25 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         <GroupCard title="Conta & Suporte">
           <MenuRow
             icon={Gem}
+            iconColor="text-orange-400"
             label={isPremium ? "Minha assinatura" : "Minha assinatura / Planos"}
             onClick={() => handleItemClick('planos')}
           />
           <MenuRow
             icon={Star}
-            iconColor="text-amber-400 fill-amber-400/20"
+            iconColor="text-yellow-400 fill-yellow-400/25"
             label="Avaliar aplicativo"
             onClick={() => handleItemClick('avaliar')}
           />
           <MenuRow
             icon={LifeBuoy}
+            iconColor="text-orange-400"
             label="Suporte"
             onClick={() => handleItemClick('suporte')}
           />
           <MenuRow
             icon={Info}
+            iconColor="text-orange-400"
             label="Sobre o App"
             hint={appVersion}
             onClick={() => handleItemClick('sobre')}
@@ -410,6 +435,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           <GroupCard title="Admin">
             <MenuRow
               icon={Lock}
+              iconColor="text-orange-400"
               label="Funções Admin"
               onClick={() => handleItemClick('admin-funcoes')}
             />
@@ -495,12 +521,12 @@ function MenuRow({
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <Icon
-          className={`w-5 h-5 shrink-0 ${
+          className={`w-5 h-5 shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)] drop-shadow-[0_0_6px_rgba(251,146,60,0.25)] ${
             danger
               ? 'text-red-400'
-              : iconColor || 'text-primary'
+              : iconColor || 'text-orange-400'
           }`}
-          strokeWidth={2.2}
+          strokeWidth={1.5}
           aria-hidden="true"
         />
         <span className="font-body text-[15px] font-medium flex-1 truncate">{label}</span>
@@ -512,7 +538,7 @@ function MenuRow({
           </span>
         )}
         {!danger && (
-          <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={2.4} aria-hidden="true" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={1.8} aria-hidden="true" />
         )}
       </div>
     </button>
@@ -549,8 +575,8 @@ function RamalRow({
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <Icon
-            className={`w-5 h-5 shrink-0 ${iconColor || 'text-primary'}`}
-            strokeWidth={2.2}
+            className={`w-5 h-5 shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)] drop-shadow-[0_0_6px_rgba(251,146,60,0.25)] ${iconColor || 'text-orange-400'}`}
+            strokeWidth={1.5}
             aria-hidden="true"
           />
           <span className="font-body text-[15px] font-medium text-foreground/90 flex-1 truncate">{label}</span>
@@ -563,9 +589,9 @@ function RamalRow({
           )}
           <ChevronDown
             className={`w-4 h-4 text-muted-foreground/50 shrink-0 transition-transform duration-200 ${
-              isOpen ? 'rotate-180 text-primary' : ''
+              isOpen ? 'rotate-180 text-orange-400' : ''
             }`}
-            strokeWidth={2.4}
+            strokeWidth={1.8}
             aria-hidden="true"
           />
         </div>
@@ -592,8 +618,8 @@ function RamalRow({
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <SubIcon
-                      className={`w-4 h-4 shrink-0 transition-colors ${sub.iconColor || 'text-primary'}`}
-                      strokeWidth={2.2}
+                      className={`w-4 h-4 shrink-0 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] drop-shadow-[0_0_5px_rgba(251,146,60,0.2)] ${sub.iconColor || 'text-orange-400'}`}
+                      strokeWidth={1.5}
                       aria-hidden="true"
                     />
                     <span className="font-body text-[14px] text-foreground/85 group-hover:text-foreground flex-1 truncate">
@@ -606,7 +632,7 @@ function RamalRow({
                         {sub.hint}
                       </span>
                     )}
-                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" strokeWidth={2.2} />
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.8} />
                   </div>
                 </button>
               );
