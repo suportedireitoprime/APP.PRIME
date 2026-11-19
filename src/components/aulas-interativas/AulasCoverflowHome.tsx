@@ -18,7 +18,7 @@ import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
 import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
-import AulasHeroWave from './AulasHeroWave';
+import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
 import AulasCardRubyBackground from './AulasCardRubyBackground';
 import capaTribunalImg from '@/assets/capa-aulas-tribunal.jpg';
 
@@ -202,54 +202,66 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         
         {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/90 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px] mb-4 bg-[#0a0104]"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] sm:min-h-[340px] mb-4"
+          style={{
+            transform: 'translateZ(0)',
+            backgroundColor: '#050505',
+          }}
         >
-          {/* Imagem de Capa do Tribunal Límpida e Brilhante (Sem escurecimento excessivo) */}
-          <div className="absolute inset-0 z-0 select-none pointer-events-none">
-            <img
-              src={capaTribunalImg}
-              alt="Tribunal sob o Céu Rubro"
-              className="w-full h-full object-cover object-[center_30%]"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-            {/* Gradientes transparentes leves apenas na margem para leitura perfeita do título */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
-            <div className="absolute inset-y-0 left-0 w-[60%] sm:w-[45%] bg-gradient-to-r from-black/70 via-black/25 to-transparent" />
-          </div>
+          {/* Blindagem de overscroll superior contra vazamento do fundo */}
+          <div
+            className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+            style={{ backgroundColor: '#050505' }}
+            aria-hidden="true"
+          />
 
-          {/* Onda Fluida Rubra de Cetim e Cristas de Luz */}
-          <AulasHeroWave />
+          {/* Imagem de Capa do Tribunal Límpida e Brilhante */}
+          <img
+            src={capaTribunalImg}
+            alt="Tribunal sob o Céu Rubro"
+            aria-hidden="true"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover object-[center_30%] md:object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
+          />
+          {/* Gradientes transparentes leves para leitura e contraste */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-[60%] sm:w-[45%] bg-gradient-to-r from-black/70 via-black/25 to-transparent pointer-events-none" />
 
-          {/* Cabeçalho Superior Transparente (Voltar + Busca) */}
-          <header className="relative z-20 px-3 xs:px-4 sm:px-6 pt-2 pb-1 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={handleVoltar}
-              className="grid w-11 h-11 xs:w-12 xs:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 cursor-pointer shadow-md"
-              aria-label="Voltar para o início"
-            >
-              <ArrowLeft className="w-5.5 h-5.5 xs:w-6 xs:h-6" strokeWidth={2.4} />
-            </button>
+          {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
+          <HeroAnimatedWave />
 
-            {/* Botão de Busca */}
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.selection(); } catch {}
-                setBuscaAberta(!buscaAberta);
-              }}
-              className="grid w-11 h-11 xs:w-12 xs:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 cursor-pointer shadow-md"
-              aria-label="Buscar matérias ou módulos"
-            >
-              <Search className="w-5 h-5" strokeWidth={2.4} />
-            </button>
+          {/* Cabeçalho Superior Transparente (Voltar + Busca - Alinhado com o Início) */}
+          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+            <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={handleVoltar}
+                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-md"
+                aria-label="Voltar para o início"
+              >
+                <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+              </button>
+
+              {/* Botão de Busca */}
+              <button
+                type="button"
+                onClick={() => {
+                  try { haptic.selection(); } catch {}
+                  setBuscaAberta(!buscaAberta);
+                }}
+                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-md"
+                aria-label="Buscar matérias ou módulos"
+              >
+                <Search className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+              </button>
+            </div>
           </header>
 
           {/* Campo Expansível de Pesquisa */}
           {(buscaAberta || buscaTermo) && (
-            <div className="relative z-30 w-full max-w-md sm:max-w-xl mx-auto px-4 mt-1 mb-2 animate-in fade-in duration-200">
+            <div className="relative z-30 w-full max-w-md sm:max-w-xl mx-auto px-4 pt-16 sm:pt-20 pb-1 animate-in fade-in duration-200">
               <div className="relative w-full">
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                   <Search className="w-4 h-4 stroke-[2.2]" />
@@ -259,7 +271,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   value={buscaTermo}
                   onChange={(e) => setBuscaTermo(e.target.value)}
                   placeholder="Buscar área ou matéria (ex: Penal, Civil)..."
-                  className="w-full h-10 pl-10 pr-10 rounded-xl text-xs xs:text-sm text-white placeholder:text-zinc-500 bg-black/80 backdrop-blur-md border border-white/15 focus:border-rose-500/50 focus:outline-none shadow-inner"
+                  className="w-full h-10 pl-10 pr-10 rounded-xl text-xs xs:text-sm text-white placeholder:text-zinc-500 bg-black/80 backdrop-blur-md border border-white/15 focus:border-primary/50 focus:outline-none shadow-inner"
                   autoFocus
                 />
                 {buscaTermo && (
@@ -275,31 +287,37 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </div>
           )}
 
-          {/* Conteúdo de Marca: Aulas (branco) + em Trilha (rubi reluzente) */}
-          <div className="relative z-10 px-4 sm:px-6 pt-3 sm:pt-4 flex-1 flex flex-col justify-start">
-            <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
-              <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
-                Aulas
-              </span>
-              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-rose-400 block drop-shadow-[0_2px_14px_rgba(225,29,72,0.65)] -mt-0.5">
-                em Trilha
-              </span>
-            </h1>
+          {/* Conteúdo de Marca: Aulas (branco) + em Trilha (Carmesim Primário #E61942) - Proporções e Alturas 100% idênticas ao Início */}
+          <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[145px] sm:min-h-[160px]">
+            {/* Espaçador calibrado para o botão de voltar padrão ouro */}
+            <div className="h-[52px] sm:h-[56px] mb-1 shrink-0 w-full" aria-hidden="true" />
+            <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
+              <div className="flex flex-col items-start text-left z-10 relative ml-1 xs:ml-2 sm:ml-4 max-w-[280px] sm:max-w-[340px]">
+                <h1 className="tracking-tight leading-[1.04] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+                  <span className="font-serif text-[22px] xs:text-[24px] sm:text-[27px] md:text-[30px] font-medium text-white block">
+                    Aulas
+                  </span>
+                  <span className="font-serif italic text-[24px] xs:text-[26px] sm:text-[29px] md:text-[32px] font-semibold text-primary block drop-shadow-[0_2px_14px_rgba(230,25,66,0.65)] mt-0 xs:mt-0.5">
+                    em Trilha
+                  </span>
+                </h1>
 
-            {/* Traço vertical e slogan */}
-            <div className="mt-2 flex items-start text-left gap-2 max-w-[280px]">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-rose-400 via-red-500 to-rose-900 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(225,29,72,0.6)]" />
-              <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
-                Cronograma de alta precisão.
-                <br />
-                {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} aulas • 106 módulos oficiais.
-              </p>
+                {/* Traço vertical carmesim e slogan oficial */}
+                <div className="mt-1.5 xs:mt-2 sm:mt-2.5 flex items-start text-left gap-1.5">
+                  <div className="w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-gradient-to-b from-primary to-[#701526] rounded-full shrink-0 mt-0.5 shadow-[0_0_8px_rgba(230,25,66,0.55)]" />
+                  <p className="font-serif italic text-white/90 text-[10.5px] xs:text-[11px] sm:text-[12px] leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+                    Cronograma de alta precisão.
+                    <br />
+                    {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} aulas • 106 módulos oficiais.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* 4 Atalhos Rápidos Integrados no Rodapé do Painel (Fundo Padrão das Funções) */}
-          <div className="relative z-10 px-3 sm:px-5 pb-3 pt-2">
-            <div className="flex items-center justify-between gap-1.5 bg-black/60 backdrop-blur-md border border-white/12 rounded-2xl sm:rounded-3xl p-1.5 shadow-2xl">
+          {/* ── 4 Botões de Ação Rápida no Rodapé do Painel (Acabamento e proporção idênticos ao Início do App) ── */}
+          <div className="relative z-10 px-3 sm:px-5 pt-2.5 pb-4 sm:pb-5">
+            <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
               {/* Recentes */}
               <button
                 type="button"
@@ -307,18 +325,21 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setRecentesModalOpen(true);
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px]"
+                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
                 aria-label="Aulas Recentes"
               >
-                <div className="relative inline-flex items-center justify-center">
-                  <History className="w-5 h-5 text-rose-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
+                <div className="relative flex items-center justify-center">
                   {totalEmAndamento > 0 && (
-                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-rose-500 text-white">
+                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] sm:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                       {totalEmAndamento}
                     </span>
                   )}
+                  <History
+                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    strokeWidth={2.1}
+                  />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-300 group-hover:text-white truncate">
+                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
                   Recentes
                 </span>
               </button>
@@ -330,13 +351,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setAbaAtiva('favoritos');
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px]"
+                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
                 aria-label="Aulas Favoritas"
               >
-                <div className="relative inline-flex items-center justify-center">
-                  <Bookmark className="w-5 h-5 text-rose-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
+                <div className="relative flex items-center justify-center">
+                  <Bookmark
+                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    strokeWidth={2.1}
+                  />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-300 group-hover:text-white truncate">
+                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
                   Favoritos
                 </span>
               </button>
@@ -348,13 +372,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setEmAltaModalOpen(true);
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px]"
+                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
                 aria-label="Aulas Em Alta"
               >
-                <div className="relative inline-flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-rose-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
+                <div className="relative flex items-center justify-center">
+                  <Flame
+                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    strokeWidth={2.1}
+                  />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-300 group-hover:text-white truncate">
+                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
                   Em Alta
                 </span>
               </button>
@@ -366,18 +393,21 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setAbaAtiva('estatisticas');
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px]"
+                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
                 aria-label="Desempenho e Estatísticas"
               >
-                <div className="relative inline-flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-rose-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
+                <div className="relative flex items-center justify-center">
                   {porcentagemGeral > 0 && (
-                    <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-rose-500 text-white">
+                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] sm:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                       {porcentagemGeral}%
                     </span>
                   )}
+                  <BarChart3
+                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    strokeWidth={2.1}
+                  />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-300 group-hover:text-white truncate">
+                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
                   Desempenho
                 </span>
               </button>
