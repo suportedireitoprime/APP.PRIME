@@ -425,18 +425,17 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   const [visibleLimit, setVisibleLimit] = useState<number>(30);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
-  // Estado do carrossel do meio (sempre inicia centralizado no meio do bloco infinito)
-  const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(() =>
-    Math.floor(CARROSSEL_SET_SIZE / 2)
-  );
+  // Estado do carrossel do meio (sempre inicia pelos Clássicos)
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(0);
   const carouselScrollerRef = useRef<HTMLDivElement>(null);
+  const menuAlternanciaRef = useRef<HTMLDivElement>(null);
   const recenterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Ao entrar na biblioteca, centraliza o carrossel no item do meio do set central
+  // Ao entrar na biblioteca, centraliza o carrossel sempre começando pelos Clássicos
   useEffect(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const startIndex = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + Math.floor(CARROSSEL_SET_SIZE / 2);
+    const startIndex = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE; // Índice 0 do set central: Clássicos
     const timer = setTimeout(() => {
       const child = el.children[startIndex] as HTMLElement;
       if (child) {
@@ -446,6 +445,17 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     }, 60);
     return () => clearTimeout(timer);
   }, []);
+
+  // Mantém a pílula do Menu de Alternância visível ao alternar o item ativo
+  useEffect(() => {
+    const menuEl = menuAlternanciaRef.current;
+    if (!menuEl) return;
+    const activeBtn = menuEl.querySelector(`[data-idx="${activeCarouselIndex}"]`) as HTMLElement;
+    if (activeBtn) {
+      const targetLeft = activeBtn.offsetLeft - (menuEl.clientWidth - activeBtn.clientWidth) / 2;
+      menuEl.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    }
+  }, [activeCarouselIndex]);
 
   const colecoesVisiveis = useVisibleColecoes();
 
@@ -683,7 +693,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         {/* ======================================================== */}
         {/* CARROSSEL DO MEIO: ACERVOS ESPECIAIS (Persuasivo e Enxuto) */}
         {/* ======================================================== */}
-        <section className="space-y-4">
+        <section className="space-y-3.5">
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
@@ -693,11 +703,60 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             </div>
           </div>
 
+          {/* Menu de Alternância de Acervos Especiais (Inicia sempre pelos Clássicos) */}
+          <div
+            ref={menuAlternanciaRef}
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5 pb-1 select-none"
+          >
+            {DEMAIS_CATEGORIAS_CARROSSEL.map((cat, idx) => {
+              const isAtivo = idx === activeCarouselIndex;
+              const CatIcon = cat.Icon;
+              const countVal = counts[cat.id] || cat.defaultCount;
+
+              return (
+                <button
+                  key={`menu-alternancia-${cat.id}`}
+                  type="button"
+                  data-idx={idx}
+                  onClick={() => {
+                    haptic.selection();
+                    scrollCarouselToIndex(idx);
+                  }}
+                  className={cn(
+                    "relative shrink-0 flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 select-none cursor-pointer border min-h-[38px] active:scale-95",
+                    isAtivo
+                      ? "bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white border-purple-400 shadow-lg shadow-purple-900/40 ring-1 ring-purple-400/50 scale-[1.03]"
+                      : "bg-[#14121a]/90 text-zinc-400 hover:text-white hover:bg-white/10 border-white/10"
+                  )}
+                >
+                  <CatIcon
+                    className={cn(
+                      "w-3.5 h-3.5 shrink-0 transition-colors",
+                      isAtivo ? "text-purple-200" : "text-zinc-500"
+                    )}
+                    strokeWidth={isAtivo ? 2.4 : 2}
+                  />
+                  <span className="whitespace-nowrap font-sans">{cat.label}</span>
+                  <span
+                    className={cn(
+                      "text-[9px] px-1.5 py-0.5 rounded-full font-mono font-bold tracking-tight transition-colors",
+                      isAtivo
+                        ? "bg-black/40 text-purple-200 border border-purple-400/30"
+                        : "bg-white/5 text-zinc-500"
+                    )}
+                  >
+                    {countVal}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Carrossel Horizontal Snap com Zoom & Destaque Central (Padrão Leis Em Alta) */}
           <div
             ref={carouselScrollerRef}
             onScroll={handleCarouselScroll}
-            className="-mx-4 sm:-mx-6 md:-mx-8 px-[calc(50vw-68px)] sm:px-[calc(50vw-75px)] flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pt-3 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none items-center"
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-[calc(50vw-68px)] sm:px-[calc(50vw-75px)] flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none items-center"
           >
             {INFINITE_CATEGORIAS_CARROSSEL.map((cat, idx) => {
               const realIdx = idx % CARROSSEL_SET_SIZE;
@@ -712,7 +771,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   key={cat.uniqueKey}
                   onClick={() => {
                     haptic.selection();
-                    navigate(`/bibliotecas/${cat.id}`);
+                    if (!isActive) {
+                      scrollCarouselToIndex(realIdx);
+                    } else {
+                      navigate(`/bibliotecas/${cat.id}`);
+                    }
                   }}
                   className={`snap-center shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-300 ease-out active:scale-95 ${
                     isActive
