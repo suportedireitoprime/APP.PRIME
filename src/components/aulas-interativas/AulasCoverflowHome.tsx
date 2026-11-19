@@ -7,7 +7,6 @@ import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { AulaItem, AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
-import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { 
   TRILHAS_CRONOLOGICAS, 
   TRILHAS_MODULOS_OFICIAIS,
@@ -195,48 +194,29 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
   return (
     <>
-      {/* ── FUNDO GRÉCIA ANTIGA COM FILÓSOFOS (RESTABELECIDO CONFORME PEDIDO DO USUÁRIO) ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
-        <img
-          src={greciaFilosofosFundo}
-          alt="Grécia Antiga e Filósofos"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.92] contrast-[1.08]"
-        />
-        {/* Vinheta atmosférica suave preservando os detalhes dos templos e filósofos */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/85 pointer-events-none" />
-      </div>
-
       {/* ── CONTAINER PRINCIPAL COM ROLAGEM VERTICAL FLUIDA E ELEMENTOS RESPONSIVOS ── */}
       <div className="relative z-10 w-full min-h-screen flex flex-col pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overflow-x-hidden">
         
-        {/* ── 1. CABEÇALHO SUPERIOR (VOLTAR + TÍTULO COM BADGE + BUSCA) ── */}
-        <header className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 mb-2 z-20 shrink-0">
+        {/* ── 1. CABEÇALHO SUPERIOR MINIMALISTA (VOLTAR + TÍTULO COM METADADOS + BUSCA) ── */}
+        <header className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 mb-2.5 z-20 shrink-0">
           <div className="w-full flex items-center justify-between gap-2 mb-1 xs:mb-1.5">
             {/* Botão Voltar Circular Padrão Premium */}
             <button
               type="button"
               onClick={handleVoltar}
-              className="w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg shrink-0"
+              className="w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 text-white active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
               aria-label="Voltar"
             >
               <ArrowLeft className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-white stroke-[2.4]" />
             </button>
 
-            {/* Título Imperial Centralizado */}
+            {/* Título Centralizado Limpo */}
             <div className="text-center px-1 flex-1 min-w-0">
-              <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] xs:text-[10px] sm:text-xs font-mono font-black text-amber-300 bg-amber-500/15 border border-amber-500/40 shadow-inner tracking-wider">
-                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} AULAS
-                </span>
-              </div>
-              <h1 className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] truncate">
+              <h1 className="text-lg xs:text-xl sm:text-2xl font-black uppercase tracking-tight text-white truncate">
                 Aulas em Trilha
               </h1>
-              <p className="text-[10px] xs:text-[11px] sm:text-xs font-serif italic text-zinc-300/85 mt-0.5 truncate">
-                106 Módulos Oficiais • 22 Matérias Estruturadas
+              <p className="text-[11px] sm:text-xs text-zinc-400 font-medium mt-0.5 truncate">
+                {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} aulas em áudio • 106 módulos • 22 matérias
               </p>
             </div>
 
@@ -248,10 +228,10 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 setBuscaAberta(!buscaAberta);
               }}
               className={cn(
-                "w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
+                "w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-sm cursor-pointer shrink-0",
                 buscaAberta || buscaTermo
-                  ? "bg-teal-600/30 border-teal-400/60 text-[#2dd4bf]"
-                  : "bg-black/60 text-white/90 border-white/20 hover:bg-black/80"
+                  ? "bg-red-500/20 border-red-500/40 text-red-400"
+                  : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
               )}
               aria-label="Pesquisar"
             >
@@ -263,7 +243,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           {(buscaAberta || buscaTermo) && (
             <div className="w-full max-w-md sm:max-w-xl mx-auto px-1 mt-1 mb-2 animate-in fade-in duration-200">
               <div className="relative w-full">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400/90 pointer-events-none">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
                   <Search className="w-4 h-4 stroke-[2.2]" />
                 </div>
                 <input
@@ -271,7 +251,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   value={buscaTermo}
                   onChange={(e) => setBuscaTermo(e.target.value)}
                   placeholder="Buscar área ou matéria (ex: Penal, Civil)..."
-                  className="w-full h-10 xs:h-11 pl-10 pr-10 rounded-full text-xs xs:text-sm text-white placeholder:text-zinc-400 bg-black/80 backdrop-blur-md border border-white/20 focus:border-amber-400/60 focus:outline-none shadow-inner"
+                  className="w-full h-10 xs:h-11 pl-10 pr-10 rounded-xl text-xs xs:text-sm text-white placeholder:text-zinc-500 bg-zinc-900/90 backdrop-blur-md border border-white/10 focus:border-red-500/50 focus:outline-none shadow-inner"
                   autoFocus
                 />
                 {buscaTermo && (
@@ -288,9 +268,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           )}
         </header>
 
-        {/* ── 2. PAINEL FLUTUANTE DE FUNÇÕES (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO) ── */}
+        {/* ── 2. PAINEL MINIMALISTA DE FUNÇÕES (RECENTES, FAVORITOS, EM ALTA, DESEMPENHO) ── */}
         <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-3 z-20 shrink-0">
-          <div className="rounded-[32px] sm:rounded-[36px] bg-black/75 border border-white/15 backdrop-blur-xl shadow-2xl p-1.5 xs:p-2 sm:p-2.5 flex items-center justify-between gap-1 xs:gap-1.5">
+          <div className="rounded-2xl bg-zinc-900/60 border border-white/10 backdrop-blur-md p-1.5 grid grid-cols-4 gap-1 shadow-md">
             {/* Recentes */}
             <button
               type="button"
@@ -298,36 +278,36 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 try { haptic.selection(); } catch {}
                 setRecentesModalOpen(true);
               }}
-              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              className="group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px] sm:min-h-[52px]"
               aria-label="Aulas Recentes"
             >
               <div className="relative inline-flex items-center justify-center">
-                <History className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                <History className="w-5 h-5 text-red-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
                 {totalEmAndamento > 0 && (
-                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
+                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30">
                     {totalEmAndamento}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+              <span className="text-[10.5px] sm:text-[11px] font-medium text-zinc-400 group-hover:text-white truncate">
                 Recentes
               </span>
             </button>
 
-            {/* Favoritos (Ícone Bookmark, conforme diretriz do usuário) */}
+            {/* Favoritos */}
             <button
               type="button"
               onClick={() => {
                 try { haptic.selection(); } catch {}
                 setAbaAtiva('favoritos');
               }}
-              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              className="group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px] sm:min-h-[52px]"
               aria-label="Aulas Favoritas"
             >
               <div className="relative inline-flex items-center justify-center">
-                <Bookmark className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                <Bookmark className="w-5 h-5 text-red-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
               </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+              <span className="text-[10.5px] sm:text-[11px] font-medium text-zinc-400 group-hover:text-white truncate">
                 Favoritos
               </span>
             </button>
@@ -339,13 +319,13 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 try { haptic.selection(); } catch {}
                 setEmAltaModalOpen(true);
               }}
-              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              className="group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px] sm:min-h-[52px]"
               aria-label="Aulas Em Alta"
             >
               <div className="relative inline-flex items-center justify-center">
-                <Flame className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                <Flame className="w-5 h-5 text-red-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
               </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+              <span className="text-[10.5px] sm:text-[11px] font-medium text-zinc-400 group-hover:text-white truncate">
                 Em Alta
               </span>
             </button>
@@ -357,18 +337,18 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 try { haptic.selection(); } catch {}
                 setAbaAtiva('estatisticas');
               }}
-              className="flex-1 min-w-0 group relative flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center cursor-pointer min-h-[54px] sm:min-h-[58px]"
+              className="group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all active:scale-95 gap-1 text-center cursor-pointer min-h-[48px] sm:min-h-[52px]"
               aria-label="Desempenho e Estatísticas"
             >
               <div className="relative inline-flex items-center justify-center">
-                <BarChart3 className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] text-[#2dd4bf] group-hover:scale-110 transition-transform" strokeWidth={2} />
+                <BarChart3 className="w-5 h-5 text-red-400 group-hover:scale-105 transition-transform" strokeWidth={1.8} />
                 {porcentagemGeral > 0 && (
-                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-[#0d9488] text-white">
+                  <span className="absolute -top-1 -right-2 px-1 rounded-full text-[8.5px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30">
                     {porcentagemGeral}%
                   </span>
                 )}
               </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 group-hover:text-white truncate">
+              <span className="text-[10.5px] sm:text-[11px] font-medium text-zinc-400 group-hover:text-white truncate">
                 Desempenho
               </span>
             </button>
@@ -408,32 +388,31 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         {/* Banner de Destaque do Módulo Ativo Selecionado */}
         {faseAtiva && (
           <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-4 z-20 shrink-0 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="rounded-2xl bg-zinc-900/90 border border-teal-500/40 p-3 flex items-center justify-between gap-3 shadow-xl backdrop-blur-md">
+            <div className="rounded-2xl bg-zinc-900/80 border border-white/10 p-3 flex items-center justify-between gap-3 shadow-lg backdrop-blur-md">
               <div className="flex items-center gap-2.5 min-w-0">
                 {faseAtiva.capaUrl ? (
                   <img
                     src={faseAtiva.capaUrl}
                     alt={faseAtiva.nome}
-                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-white/20 shadow"
+                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-white/10 shadow"
                   />
                 ) : (
                   <div 
-                    className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center text-white font-mono font-bold text-xs shadow"
-                    style={{ background: faseAtiva.gradientBg }}
+                    className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center text-white font-mono font-bold text-xs shadow bg-zinc-800"
                   >
                     #{faseAtiva.faseNumero}
                   </div>
                 )}
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[9.5px] font-mono font-black text-[#2dd4bf] uppercase tracking-wider">
+                    <span className="text-[9.5px] font-mono font-bold text-red-400 uppercase tracking-wider">
                       Módulo {faseAtiva.faseNumero} Ativo
                     </span>
                     <span className="text-[10px] text-zinc-400 font-mono">
                       • {faseAtiva.totalAulas || 30} aulas
                     </span>
                   </div>
-                  <h4 className="text-xs sm:text-sm font-serif font-bold text-white truncate">
+                  <h4 className="text-xs sm:text-sm font-sans font-bold text-white truncate">
                     {faseAtiva.nome}
                   </h4>
                 </div>
@@ -446,7 +425,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                     setModuloInicialAbertoId(faseAtiva.id);
                     setTrilhasListaModalOpen(true);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold text-[11px] flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow"
+                  className="px-2.5 py-1.5 rounded-lg bg-red-500 hover:bg-red-400 text-white font-bold text-[11px] flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow"
                 >
                   <span>Ver Aulas</span>
                   <ChevronRight className="w-3 h-3" />
@@ -456,18 +435,18 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
         )}
 
-        {/* ── 5. CARROSSEL DAS ÁREAS EM COVERFLOW COM CAPAS (RESTABELECIDO A PEDIDO DO USUÁRIO) ── */}
+        {/* ── 5. CARROSSEL DAS ÁREAS EM COVERFLOW MINIMALISTA ── */}
         <section className="w-full max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-6 mb-6 flex flex-col items-center z-20">
           {/* Cabeçalho da Seção de Áreas */}
           <div className="w-full flex items-center justify-between gap-2 mb-2 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-white text-[15px] sm:text-[16.5px] font-bold flex items-center gap-2 uppercase tracking-widest">
-                <span className="w-[3px] sm:w-[3.5px] h-4.5 sm:h-5 rounded-full bg-gradient-to-b from-[#5eead4] via-[#0d9488] to-[#042f2e] shadow-[0_0_8px_rgba(45,212,191,0.6)] shrink-0" />
+              <h2 className="font-display text-white text-[14px] sm:text-[15px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                <span className="w-1 h-3.5 sm:h-4 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
                 <span>
                   {faseAtiva ? `Áreas • Módulo ${faseAtiva.faseNumero}` : 'Áreas do Direito'}
                 </span>
               </h2>
-              <p className="font-sans text-zinc-400 text-[11px] sm:text-[11.5px] leading-snug ml-3.5 truncate">
+              <p className="font-sans text-zinc-400 text-[11px] sm:text-xs leading-snug ml-3 truncate">
                 {faseAtiva 
                   ? `${disciplinasExibidas.length} matérias selecionadas neste módulo`
                   : 'Navegue no carrossel e escolha a matéria para acessar'}
@@ -481,16 +460,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setFaseSelecionadaId(null);
                 }}
-                className="text-[10px] sm:text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-full bg-teal-500/20 text-[#2dd4bf] hover:bg-teal-500/30 border border-teal-500/30 transition-all cursor-pointer"
+                className="text-[10px] sm:text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-all cursor-pointer"
               >
                 Todas ({disciplinasFiltradas.length})
               </button>
             )}
           </div>
 
-          {/* Área do Carrossel Coverflow com Balança Sutil de Fundo */}
+          {/* Área do Carrossel Coverflow */}
           {totalDisciplinas === 0 ? (
-            <div className="py-10 text-center w-full max-w-md rounded-2xl bg-black/60 border border-white/10 p-6 my-4">
+            <div className="py-10 text-center w-full max-w-md rounded-2xl bg-zinc-900/60 border border-white/10 p-6 my-4">
               <p className="text-zinc-400 text-sm">Nenhuma disciplina encontrada para "{buscaTermo}".</p>
               <button
                 type="button"
@@ -498,30 +477,13 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   setBuscaTermo('');
                   setFaseSelecionadaId(null);
                 }}
-                className="mt-3 px-4 py-1.5 rounded-full bg-teal-600/30 text-[#2dd4bf] border border-teal-500/40 text-xs font-semibold hover:bg-teal-600/40 transition-colors cursor-pointer"
+                className="mt-3 px-4 py-1.5 rounded-full bg-white/10 text-zinc-200 border border-white/10 text-xs font-semibold hover:bg-white/20 transition-colors cursor-pointer"
               >
                 Limpar Filtros
               </button>
             </div>
           ) : (
             <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-1 select-none overflow-hidden">
-              {/* Balança da Justiça sutil em marca d'água */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[48%] pointer-events-none z-0 select-none opacity-20 transform rotate-[-2deg]">
-                <svg width="280" height="280" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] drop-shadow-[0_12px_40px_rgba(251,191,36,0.2)]">
-                  <rect x="248" y="70" width="16" height="350" rx="5" fill="#f59e0b"/>
-                  <rect x="170" y="405" width="172" height="22" rx="11" fill="#d97706"/>
-                  <rect x="200" y="392" width="112" height="18" rx="5" fill="#f59e0b"/>
-                  <circle cx="256" cy="72" r="20" fill="#fbbf24"/>
-                  <rect x="70" y="64" width="372" height="14" rx="7" fill="#fbbf24"/>
-                  <line x1="105" y1="78" x2="105" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
-                  <line x1="407" y1="78" x2="407" y2="200" stroke="#f59e0b" strokeWidth="4.5" strokeDasharray="9 4.5"/>
-                  <ellipse cx="105" cy="208" rx="65" ry="16" fill="#fbbf24"/>
-                  <path d="M40 208 Q50 245 105 250 Q160 245 170 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
-                  <ellipse cx="407" cy="208" rx="65" ry="16" fill="#fbbf24"/>
-                  <path d="M342 208 Q352 245 407 250 Q462 245 472 208" fill="none" stroke="#d97706" strokeWidth="3.5"/>
-                </svg>
-              </div>
-
               {/* Scroller Horizontal de Capas */}
               <div
                 ref={carouselScrollerRef}
@@ -644,7 +606,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   className={cn(
                     "transition-all duration-300 rounded-full cursor-pointer",
                     isDotActive 
-                      ? "w-5 xs:w-6 h-1.5 xs:h-2 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.55)]" 
+                      ? "w-5 xs:w-6 h-1.5 xs:h-2 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" 
                       : "w-1.5 xs:w-2 h-1.5 xs:h-2 bg-white/20 hover:bg-white/40"
                   )}
                   aria-label={`Ir para área ${dotIdx + 1}`}

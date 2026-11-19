@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { AlertCircle, Lock, Play, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { assetUrl } from '@/lib/assetUrl';
@@ -262,17 +262,17 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
-      {/* ── Fundo Imersivo Oficial com Imagem Nobre e Vinheta (Substitui os quadrados por arte clássica) ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
-        <img
-          src={greciaFilosofosFundo}
-          alt="Grécia Antiga e Filósofos"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.88] contrast-[1.08]"
+      {/* ── Fundo Animado Oficial ShapeGrid do App ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0D0D0D]">
+        <ShapeGrid 
+          speed={0.25} 
+          squareSize={42} 
+          direction="diagonal" 
+          borderColor="rgba(255, 255, 255, 0.035)" 
+          hoverFillColor="rgba(255, 255, 255, 0.06)" 
+          shape="square" 
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 pointer-events-none" />
       </div>
 
       {/* Glow Atmosférico Temático da Disciplina */}

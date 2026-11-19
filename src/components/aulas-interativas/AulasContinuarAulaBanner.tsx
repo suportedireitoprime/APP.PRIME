@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Flame } from 'lucide-react';
+import { ArrowRight, BookOpen, Flame, Play } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
@@ -37,79 +37,74 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
 
     return (
       <div className="w-full select-none">
-        {/* Título fora do botão com a mesma tipografia e cor */}
-        <div className="flex items-center gap-1.5 mb-1.5 px-1">
-          <Flame className="w-3.5 h-3.5 text-[#2dd4bf] fill-[#2dd4bf] drop-shadow-[0_0_6px_rgba(45,212,191,0.5)] shrink-0" />
-          <h2 className="text-[10.5px] sm:text-[11px] font-mono font-black uppercase tracking-widest text-[#2dd4bf] drop-shadow-[0_0_8px_rgba(45,212,191,0.4)]">
-            CONTINUAR DE ONDE PAROU
-          </h2>
+        {/* Cabeçalho Minimalista da Seção */}
+        <div className="flex items-center justify-between gap-2 mb-2 px-1">
+          <div className="flex items-center gap-1.5">
+            <Flame className="w-3.5 h-3.5 text-red-400 fill-red-400/20 shrink-0" />
+            <span className="text-[10.5px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
+              Continuar de onde parou
+            </span>
+          </div>
+          <span className="text-[10px] sm:text-[10.5px] font-mono text-zinc-500">
+            Etapa {prog.etapaAtual} de {prog.totalEtapas}
+          </span>
         </div>
 
-        {/* Card com o MESMO fundo do painel de funções (bg-black/75 border border-white/15 backdrop-blur-xl shadow-2xl) */}
-        <div className="relative group">
-          <motion.button
-            type="button"
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={handleClick}
-            className="w-full flex items-stretch rounded-[26px] sm:rounded-[30px] bg-black/75 border border-white/15 backdrop-blur-xl shadow-2xl text-left active:scale-[0.98] transition-all overflow-hidden relative cursor-pointer min-h-[82px] sm:min-h-[88px]"
-          >
-            {/* Capa da Disciplina à esquerda — alinhada à borda arredondada */}
-            <div className="w-[72px] sm:w-[82px] shrink-0 self-stretch relative overflow-hidden bg-black flex flex-col justify-end border-r border-white/10 rounded-l-[25px] sm:rounded-l-[29px]">
-              {capaUrl ? (
-                <img
-                  src={capaUrl}
-                  alt={aula.titulo}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="eager"
-                  decoding="async"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#042f2e] to-[#0f766e] flex items-center justify-center">
-                  <BookOpen className="w-8 h-8 text-[#2dd4bf]" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
-              <span className="relative z-10 w-full bg-[#0d9488] text-[8px] sm:text-[8.5px] font-black uppercase text-center text-white py-0.5 tracking-wider font-mono">
-                AULA
-              </span>
-            </div>
-
-            {/* Conteúdo Central Minimalista e SEM ABREVIAÇÃO */}
-            <div className="flex-1 min-w-0 z-10 py-3 pl-3 pr-2 sm:py-3.5 sm:pl-3.5 sm:pr-3 flex flex-col justify-center">
-              {/* Título Completo sem abreviação */}
-              <h3 className="font-serif italic text-[14.5px] sm:text-[16px] font-bold text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
-                {aula.titulo}
-              </h3>
-
-              {/* Subtítulo Minimalista */}
-              <p className="text-[11px] sm:text-[11.5px] font-sans text-teal-200/90 mt-1 flex items-center gap-1.5 flex-wrap">
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#2dd4bf] shrink-0" />
-                <span className="font-semibold text-white/90">{discNome}</span>
-                <span className="text-white/40">•</span>
-                <span>Etapa {prog.etapaAtual} de {prog.totalEtapas}</span>
-                <span className="text-white/40">•</span>
-                <span className="font-mono text-[#5eead4] font-bold">{percent}%</span>
-              </p>
-
-              {/* Barra de Progresso Fina e Minimalista */}
-              <div className="w-full mt-2 bg-white/10 rounded-full h-1 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-[#0d9488] via-[#14b8a6] to-[#2dd4bf] rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(45,212,191,0.6)]"
-                  style={{ width: `${percent}%` }}
-                />
+        {/* Card Minimalista e Responsivo */}
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={handleClick}
+          className="w-full flex items-center rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-white/10 hover:border-white/20 backdrop-blur-md shadow-lg p-2.5 xs:p-3 sm:p-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group gap-3 xs:gap-3.5"
+        >
+          {/* Capa Compacta 1:1 com cantos arredondados limpos */}
+          <div className="w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 relative bg-zinc-950 border border-white/10">
+            {capaUrl ? (
+              <img
+                src={capaUrl}
+                alt={aula.titulo}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="eager"
+                decoding="async"
+              />
+            ) : (
+              <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-zinc-400" />
               </div>
+            )}
+            <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+          </div>
+
+          {/* Informações da Aula */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-sans font-bold text-[13.5px] xs:text-[14.5px] sm:text-base text-white tracking-tight line-clamp-1 group-hover:text-red-300 transition-colors">
+              {aula.titulo}
+            </h3>
+
+            <div className="flex items-center gap-1.5 xs:gap-2 mt-0.5 text-[11px] sm:text-xs text-zinc-400 truncate">
+              <span className="font-semibold text-red-400">{discNome}</span>
+              <span className="text-zinc-600">•</span>
+              <span className="font-mono text-zinc-300">{percent}% concluído</span>
             </div>
 
-            {/* Seta indicativa à direita */}
-            <div className="shrink-0 flex items-center justify-center pr-3.5 sm:pr-4.5">
-              <div className="w-8 h-8 rounded-full bg-white/10 border border-white/15 text-[#2dd4bf] group-hover:bg-[#0d9488] group-hover:text-black group-hover:scale-105 transition-all flex items-center justify-center shadow">
-                <ArrowRight className="w-4 h-4" />
-              </div>
+            {/* Barra de Progresso Fina e Elegante */}
+            <div className="w-full mt-2 bg-white/10 rounded-full h-1 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full transition-all duration-300"
+                style={{ width: `${percent}%` }}
+              />
             </div>
-          </motion.button>
-        </div>
+          </div>
+
+          {/* Botão de Ação Circular Limpo */}
+          <div className="shrink-0 pl-1">
+            <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-white/5 group-hover:bg-red-500 group-hover:text-black border border-white/10 text-white transition-all flex items-center justify-center shadow-sm">
+              <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+            </div>
+          </div>
+        </motion.button>
       </div>
     );
   }
