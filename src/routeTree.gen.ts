@@ -158,6 +158,7 @@ import { Route as VideoaulasCatalogoAreaRouteImport } from './routes/videoaulas.
 import { Route as JurisprudenciaProntasTribunalSlugRouteImport } from './routes/jurisprudencia.prontas.$tribunal.$slug'
 import { Route as LegislacaoEstadualUfLeiSlugRouteImport } from './routes/legislacao-estadual.$uf.lei.$slug'
 import { Route as LegislacaoTipoLeiSlugArtigoNumeroRouteImport } from './routes/legislacao.$tipo.$leiSlug.$artigoNumero'
+import { Route as VideoaulasCatalogoAreaVideoIdRouteImport } from './routes/videoaulas.$catalogo.$area.$videoId'
 import { Route as VideoaulasLeiSecaLeiLeiIdRouteImport } from './routes/videoaulas.lei-seca.lei.$leiId'
 import { Route as LeiSecaSlugParteLicaoIdRouteImport } from './routes/lei-seca.$slug.$parte.licao.$id'
 import { Route as PilulasMateriaSlugPlayerTopicIdRouteImport } from './routes/pilulas.materia.$slug.player.$topicId'
@@ -926,6 +927,12 @@ const LegislacaoTipoLeiSlugArtigoNumeroRoute =
     path: '/$artigoNumero',
     getParentRoute: () => LegislacaoTipoLeiSlugRoute,
   } as any)
+const VideoaulasCatalogoAreaVideoIdRoute =
+  VideoaulasCatalogoAreaVideoIdRouteImport.update({
+    id: '/$videoId',
+    path: '/$videoId',
+    getParentRoute: () => VideoaulasCatalogoAreaRoute,
+  } as any)
 const VideoaulasLeiSecaLeiLeiIdRoute =
   VideoaulasLeiSecaLeiLeiIdRouteImport.update({
     id: '/lei/$leiId',
@@ -1090,10 +1097,11 @@ export interface FileRoutesByFullPath {
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
-  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
+  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
+  '/videoaulas/$catalogo/$area/$videoId': typeof VideoaulasCatalogoAreaVideoIdRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
   '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
@@ -1244,10 +1252,11 @@ export interface FileRoutesByTo {
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
-  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
+  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
+  '/videoaulas/$catalogo/$area/$videoId': typeof VideoaulasCatalogoAreaVideoIdRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
   '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
@@ -1399,10 +1408,11 @@ export interface FileRoutesById {
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
   '/resumos-juridicos/$area/$tema': typeof ResumosJuridicosAreaTemaRoute
-  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRoute
+  '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
+  '/videoaulas/$catalogo/$area/$videoId': typeof VideoaulasCatalogoAreaVideoIdRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
   '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
@@ -1559,6 +1569,7 @@ export interface FileRouteTypes {
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
+    | '/videoaulas/$catalogo/$area/$videoId'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
     | '/pilulas/materia/$slug/player/$topicId'
@@ -1713,6 +1724,7 @@ export interface FileRouteTypes {
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
+    | '/videoaulas/$catalogo/$area/$videoId'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
     | '/pilulas/materia/$slug/player/$topicId'
@@ -1867,6 +1879,7 @@ export interface FileRouteTypes {
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
+    | '/videoaulas/$catalogo/$area/$videoId'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
     | '/pilulas/materia/$slug/player/$topicId'
@@ -2987,6 +3000,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegislacaoTipoLeiSlugArtigoNumeroRouteImport
       parentRoute: typeof LegislacaoTipoLeiSlugRoute
     }
+    '/videoaulas/$catalogo/$area/$videoId': {
+      id: '/videoaulas/$catalogo/$area/$videoId'
+      path: '/$videoId'
+      fullPath: '/videoaulas/$catalogo/$area/$videoId'
+      preLoaderRoute: typeof VideoaulasCatalogoAreaVideoIdRouteImport
+      parentRoute: typeof VideoaulasCatalogoAreaRoute
+    }
     '/videoaulas/lei-seca/lei/$leiId': {
       id: '/videoaulas/lei-seca/lei/$leiId'
       path: '/lei/$leiId'
@@ -3398,12 +3418,26 @@ const VadeMecumRouteWithChildren = VadeMecumRoute._addFileChildren(
   VadeMecumRouteChildren,
 )
 
+interface VideoaulasCatalogoAreaRouteChildren {
+  VideoaulasCatalogoAreaVideoIdRoute: typeof VideoaulasCatalogoAreaVideoIdRoute
+}
+
+const VideoaulasCatalogoAreaRouteChildren: VideoaulasCatalogoAreaRouteChildren =
+  {
+    VideoaulasCatalogoAreaVideoIdRoute: VideoaulasCatalogoAreaVideoIdRoute,
+  }
+
+const VideoaulasCatalogoAreaRouteWithChildren =
+  VideoaulasCatalogoAreaRoute._addFileChildren(
+    VideoaulasCatalogoAreaRouteChildren,
+  )
+
 interface VideoaulasCatalogoRouteChildren {
-  VideoaulasCatalogoAreaRoute: typeof VideoaulasCatalogoAreaRoute
+  VideoaulasCatalogoAreaRoute: typeof VideoaulasCatalogoAreaRouteWithChildren
 }
 
 const VideoaulasCatalogoRouteChildren: VideoaulasCatalogoRouteChildren = {
-  VideoaulasCatalogoAreaRoute: VideoaulasCatalogoAreaRoute,
+  VideoaulasCatalogoAreaRoute: VideoaulasCatalogoAreaRouteWithChildren,
 }
 
 const VideoaulasCatalogoRouteWithChildren =

@@ -11,6 +11,7 @@ import {
 import { preaquecerYoutubeApi } from '@/hooks/useYoutubePlayer';
 import { toast } from 'sonner';
 import { Aula } from '@/types/videoaula';
+import { findVideoaulaByVideoId, VIDEOAULAS_INICIANTES, VIDEOAULAS_AREAS } from '@/data/videoaulas/videoaulasDriveData';
 
 interface UseVideoaulaViewProps {
   catalogoId: string | undefined;
@@ -24,10 +25,37 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
 
   const cachedBundle = catalogo && videoId ? getCachedVideoaulaBundle(catalogo.tabela, videoId) : undefined;
   
+  const driveItem = findVideoaulaByVideoId(videoId);
+  const driveAula: Aula | null = driveItem ? {
+    id: driveItem.id,
+    video_id: driveItem.video_id,
+    titulo: driveItem.titulo,
+    area: driveItem.categoria === 'iniciantes' ? 'Fundamentos do Direito' : 'Áreas do Direito',
+    descricao: `Aula completa: ${driveItem.titulo} (${driveItem.canal})`,
+    sobre_aula: `Canal: ${driveItem.canal} | Duração: ${driveItem.duracao}. Inclui resumos, mapa mental, flashcards e questões comentadas.`,
+    duracao_segundos: driveItem.duracao_seg,
+    thumb: driveItem.thumb,
+    thumbnail: driveItem.thumb,
+  } : null;
+
   const [aula, setAula] = useState<Aula | null>(() =>
-    cachedBundle?.aula ?? (catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null),
+    cachedBundle?.aula ?? driveAula ?? (catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null),
   );
-  const [aulasDaArea, setAulasDaArea] = useState<Aula[]>([]);
+  const [aulasDaArea, setAulasDaArea] = useState<Aula[]>(() => {
+    if (driveItem) {
+      const srcList = driveItem.categoria === 'iniciantes' ? VIDEOAULAS_INICIANTES : VIDEOAULAS_AREAS;
+      return srcList.map((item) => ({
+        id: item.id,
+        video_id: item.video_id,
+        titulo: item.titulo,
+        area: driveItem.categoria === 'iniciantes' ? 'Fundamentos do Direito' : 'Áreas do Direito',
+        duracao_segundos: item.duracao_seg,
+        thumb: item.thumb,
+        thumbnail: item.thumb,
+      })) as Aula[];
+    }
+    return [];
+  });
   const [favorito, setFavorito] = useState(() => cachedBundle?.favorito ?? false);
   const [concluida, setConcluida] = useState(() => cachedBundle?.progresso?.concluida ?? false);
   const [carregado, setCarregado] = useState(() => !!cachedBundle?.aula);
@@ -85,13 +113,9 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
             : Promise.resolve({ data: null, error: null }),
         ]);
 
-        if (aulaRes.error) throw aulaRes.error;
-        if (progRes.error) throw progRes.error;
-        if (favRes.error) throw favRes.error;
-
         if (!alive) return;
         
-        const aulaData = aulaRes.data as Aula | null;
+        const aulaData = (aulaRes?.data as Aula | null) || driveAula;
         if (aulaData) {
           setAula(aulaData);
           setCachedVideoaulaBundle(catalogo.tabela, videoId, {
@@ -127,17 +151,31 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
         }
         
         const areaRes = await qArea.limit(60);
-        if (areaRes.error) throw areaRes.error;
         
-        if (alive && areaRes.data) {
-          const listaArea = areaRes.data as Aula[];
-          setAulasDaArea(listaArea);
-          // Pré-carrega metadados e capas das próximas aulas da trilha
-          prefetchProximasAulas(listaArea, videoId, catalogo, userId, 3);
+        if (alive) {
+          if (areaRes?.data && areaRes.data.length > 0) {
+            const listaArea = areaRes.data as Aula[];
+            setAulasDaArea(listaArea);
+            prefetchProximasAulas(listaArea, videoId, catalogo, userId, 3);
+          } else if (driveItem) {
+            const srcList = driveItem.categoria === 'iniciantes' ? VIDEOAULAS_INICIANTES : VIDEOAULAS_AREAS;
+            const driveList = srcList.map((item) => ({
+              id: item.id,
+              video_id: item.video_id,
+              titulo: item.titulo,
+              area: driveItem.categoria === 'iniciantes' ? 'Fundamentos do Direito' : 'Áreas do Direito',
+              duracao_segundos: item.duracao_seg,
+              thumb: item.thumb,
+              thumbnail: item.thumb,
+            })) as Aula[];
+            setAulasDaArea(driveList);
+          }
         }
       } catch (error) {
-        console.error("Erro ao carregar dados da aula:", error);
-        toast.error(`Erro ao carregar aula: ${(error as any)?.message || (error as any)?.details || 'Falha na conexão'}. Tente novamente.`);
+        if (!driveItem) {
+          console.error("Erro ao carregar dados da aula:", error);
+          toast.error(`Erro ao carregar aula: ${(error as any)?.message || (error as any)?.details || 'Falha na conexão'}. Tente novamente.`);
+        }
       }
     };
 

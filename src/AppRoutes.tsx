@@ -178,6 +178,7 @@ const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
 const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
+const VideoaulaView = lazy(routePrefetch.videoaulaView);
 
 const JurisprudenciaArtigo = lazyWithRetry(() => import("./pages/jurisprudencia/JurisprudenciaArtigo.tsx"));
 const Jurisprudencia = lazy(() => import("./pages/jurisprudencia/Jurisprudencia.tsx"));
@@ -892,6 +893,8 @@ function AnimatedRoutes() {
           <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area" element={<ProtectedRoute><PageTransition instant><VideoaulasArea /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo/:area/:videoId" element={<ProtectedRoute><PageTransition instant><VideoaulaView /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo/aula/:videoId" element={<ProtectedRoute><PageTransition instant><VideoaulaView /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/:slugLei/:numeroArtigo" element={<ProtectedRoute><PageTransition><JurisprudenciaArtigo /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/prontas/:tribunal" element={<ProtectedRoute><PageTransition><PesquisasProntasLista /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/prontas/:tribunal/:slug" element={<ProtectedRoute><PageTransition><PesquisasProntasTema /></PageTransition></ProtectedRoute>} />

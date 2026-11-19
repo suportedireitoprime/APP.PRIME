@@ -10,6 +10,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getAprenderCacheEntry, setAprenderCache } from '@/services/offlineDb';
 import { CATALOGOS, getCatalogo, slugify, type CatalogoId } from '@/lib/videoaulasCatalogos';
+import { VIDEOAULAS_INICIANTES, VIDEOAULAS_AREAS } from '@/data/videoaulas/videoaulasDriveData';
 
 export type AulaCache = {
   id: string | number;
@@ -54,6 +55,20 @@ const TTL_CONCURSOS = 24 * 60 * 60 * 1000;
 
 const memAulas = new Map<CatalogoId, AulaCache[]>();
 const memAulasAt = new Map<CatalogoId, number>();
+
+// Inicialização imediata das 50 aulas para iniciantes (0ms delay)
+const iniciantesSeed: AulaCache[] = VIDEOAULAS_INICIANTES.map((item) => ({
+  id: item.id,
+  video_id: item.video_id,
+  titulo: item.titulo,
+  area: 'Fundamentos do Direito',
+  ordem: item.numero,
+  duracao_segundos: item.duracao_seg,
+  thumbnail: item.thumb,
+  thumb: item.thumb,
+}));
+memAulas.set('iniciante', iniciantesSeed);
+memAulasAt.set('iniciante', Date.now());
 const inflight = new Map<string, Promise<any>>();
 
 let memProgresso: ProgressoRow[] | null = null;
@@ -108,6 +123,24 @@ function notificar() {
 async function fetchCatalogo(id: CatalogoId): Promise<AulaCache[]> {
   const c = getCatalogo(id);
   if (!c) return [];
+  if (id === 'iniciante') {
+    try {
+      const cols = `id, video_id, titulo, ordem, duracao_segundos, ${c.thumbCol}${c.temAreas ? ', area' : ''}`;
+      const { data } = await supabase
+        .from(c.tabela as any)
+        .select(cols)
+        .order('ordem', { ascending: true, nullsFirst: false })
+        .limit(3000);
+      const rows = ((data as unknown as AulaCache[]) ?? []).filter((a) => a?.video_id);
+      if (rows.length > 0) {
+        const map = new Map<string, AulaCache>();
+        iniciantesSeed.forEach((item) => map.set(item.video_id, item));
+        rows.forEach((item) => map.set(item.video_id, item));
+        return Array.from(map.values());
+      }
+    } catch {}
+    return iniciantesSeed;
+  }
   const cols = `id, video_id, titulo, ordem, duracao_segundos, ${c.thumbCol}${
     c.temAreas ? ', area' : ''
   }`;

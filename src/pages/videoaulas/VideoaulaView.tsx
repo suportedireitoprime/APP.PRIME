@@ -19,6 +19,8 @@ import { VideoaulaPanoramaIA } from '@/components/videoaulas/view/VideoaulaPanor
 import { VideoaulaControlesAcao } from '@/components/videoaulas/view/VideoaulaControlesAcao';
 import { VideoaulaPlayerHeader } from '@/components/videoaulas/view/VideoaulaPlayerHeader';
 import { VideoaulaResumeDialog } from '@/components/videoaulas/view/VideoaulaResumeDialog';
+import { VideoaulaMateriaisCompletos } from '@/components/videoaulas/view/VideoaulaMateriaisCompletos';
+import { findVideoaulaByVideoId } from '@/data/videoaulas/videoaulasDriveData';
 
 const VideoaulaView = () => {
   const { catalogo: catalogoId, area: areaSlug, videoId } = useParams();
@@ -28,6 +30,7 @@ const VideoaulaView = () => {
   const { tocarVideo, tempo, duracao, setTocandoState, seek } = useVideoaulasPlayer();
   
   const state = useVideoaulaView({ catalogoId, videoId, userId, setTocandoState });
+  const driveItem = useMemo(() => findVideoaulaByVideoId(videoId), [videoId]);
   
   const [showAnotacoes, setShowAnotacoes] = useState(false);
   const [podeResumir, setPodeResumir] = useState(false);
@@ -208,6 +211,26 @@ const VideoaulaView = () => {
               area={state.aula?.area ?? state.catalogo?.titulo ?? 'Estudos Jurídicos'}
               videoId={videoId}
             />
+
+            {/* Materiais Oficiais do Drive / R2 (PDFs, Mapa Mental, Legendas, Transcrição) */}
+            {driveItem && (
+              <div className="px-2 sm:px-3 lg:px-0 pt-2">
+                <VideoaulaMateriaisCompletos item={driveItem} />
+              </div>
+            )}
+
+            {/* Panorama em Dispositivos Mobile */}
+            <div className="lg:hidden px-2 sm:px-3 pt-3 space-y-2">
+              <h2 className="text-sm font-bold text-foreground pb-2 border-b border-border/60">
+                Panorama da Aula
+              </h2>
+              <VideoaulaPanoramaIA 
+                resumo={resumo.data?.resumo}
+                sobreAula={state.aula?.sobre_aula}
+                descricao={state.aula?.descricao}
+                isLoading={resumo.isLoading}
+              />
+            </div>
           </div>
 
           {/* Recursos da Aula e Panorama (abaixo do vídeo) */}

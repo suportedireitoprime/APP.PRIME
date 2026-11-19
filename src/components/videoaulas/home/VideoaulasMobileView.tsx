@@ -4,7 +4,7 @@ import { Search, X, Loader2, ChevronRight } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
 import { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
-import { VideoaulasEmAltaCarousel } from './VideoaulasEmAltaCarousel';
+import { VideoaulasIniciantesCarousel } from './VideoaulasIniciantesCarousel';
 import { VideoaulasAreaChips } from './VideoaulasAreaChips';
 import { VideoaulasAreaCard, type VideoaulaAreaItem } from './VideoaulasAreaCard';
 import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
@@ -148,12 +148,9 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           {/* Card Dinâmico "Continuar Assistindo" Sem Abreviar */}
           <VideoaulasContinuarCard />
 
-          {/* Seção "EM ALTA" (Carrossel Horizontal Fluido com Capas de Aulas Interativas) */}
+          {/* Seção "PARA INICIANTES" (Carrossel Horizontal Fluido com as 50 Aulas Completas) */}
           {heroTab === 'todos' && activeChipTab === 'Todos' && !q && (
-            <VideoaulasEmAltaCarousel
-              areas={areasItens}
-              onSelectArea={handleAreaClick}
-            />
+            <VideoaulasIniciantesCarousel />
           )}
 
           {/* Seção Catálogo de Videoaulas */}
