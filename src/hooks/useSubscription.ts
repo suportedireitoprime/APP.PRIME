@@ -514,11 +514,10 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     })();
 
     // Realtime: escuta reativa estrita em profiles (tabela mestre com PK id) para revalidar assinatura
-    // Canal com sufixo randômico único por instância do hook para impedir colisões concorrentes
-    // Envolvido em try/catch para que falhas de Realtime NUNCA travem o login ou quebrem o app
+    // Canal determinístico por usuário para evitar duplicação e flood no Supabase
     let channel: any = null;
     try {
-      const channelId = `sub-profiles-${user.id}-${Math.random().toString(36).slice(2, 8)}`;
+      const channelId = `sub-profiles-${user.id}`;
       channel = supabase
         .channel(channelId)
         .on(
@@ -529,6 +528,10 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         .subscribe((status) => {
           if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             console.debug('[useSubscription] Realtime fallback para polling:', status);
+            if (channel) {
+              try { void supabase.removeChannel(channel); } catch {}
+              channel = null;
+            }
           }
         });
     } catch (realtimeErr) {

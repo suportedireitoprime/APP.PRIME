@@ -90,13 +90,13 @@ export function useUnreadNotifCount() {
     fetchCount();
     const interval = setInterval(fetchCount, 45_000);
 
-    // Ouvinte em tempo real via Supabase Realtime com tratamento seguro de concorrência
+    // Ouvinte em tempo real via Supabase Realtime com tratamento seguro e sem flood de reconexão
     let channel: any = null;
     if (user?.id) {
       try {
-        const uniqueTopic = `user_notifications_badge_${user.id}_${Math.random().toString(36).slice(2, 8)}`;
+        const topic = `user_notifications_badge_${user.id}`;
         channel = supabase
-          .channel(uniqueTopic)
+          .channel(topic)
           .on(
             'postgres_changes',
             {
@@ -109,7 +109,15 @@ export function useUnreadNotifCount() {
               fetchCount();
             }
           )
-          .subscribe();
+          .subscribe((status) => {
+            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+              console.warn('[NotificationsSheet] Realtime offline/rejeitado, fallback para polling:', status);
+              if (channel) {
+                try { supabase.removeChannel(channel); } catch {}
+                channel = null;
+              }
+            }
+          });
       } catch (err) {
         console.warn('[NotificationsSheet] Falha segura ao conectar realtime:', err);
       }
