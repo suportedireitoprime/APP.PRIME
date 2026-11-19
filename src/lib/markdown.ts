@@ -28,11 +28,11 @@ export function normalizarMarkdown(md: string): string {
   // Normaliza 3+ asteriscos de abertura seguidos de 2+ de fechamento: ***word** → **word**
   text = text.replace(/\*{3,}([^*\n]+?)\*{2,}/g, '**$1**');
 
-  // Corrige negrito desbalanceado: **word* → **word** (abertura precisa ser válida)
-  text = text.replace(/(^|[^\w*])\*\*([^*\n]+?)\*(?!\*)/g, '$1**$2**');
+  // Corrige negrito desbalanceado: **word* → **word** (conteúdo não pode ser só espaço e abertura precisa ser válida)
+  text = text.replace(/(^|[^\w*\s])\*\*([^\s*\n](?:[^*\n]*?[^\s*\n])?)\*(?!\*)/g, '$1**$2**');
 
-  // Corrige itálico desbalanceado: *word** → *word*
-  text = text.replace(/(^|[^\w*])\*([^*\n]+?)\*\*(?!\*)/g, '$1*$2*');
+  // Corrige itálico desbalanceado: *word** → *word* (conteúdo não pode ser só espaço para não colidir com marcadores de lista)
+  text = text.replace(/(^|[^\w*\s])\*([^\s*\n](?:[^*\n]*?[^\s*\n])?)\*\*(?!\*)/g, '$1*$2*');
 
 
   // Garante que listas com negrito mantenham o espaço: * **word** → * **word**

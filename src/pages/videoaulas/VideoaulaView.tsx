@@ -14,6 +14,9 @@ import {
   Heart,
   Send,
   Sparkles,
+  Download,
+  Brain,
+  ArrowRight,
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
@@ -242,10 +245,10 @@ const VideoaulaView = () => {
   }
 
   // Lista de abas para o Menu de Alternância (Resumo é o 1º e padrão)
-  const abasDisponiveis: Array<{ id: AbaVideoaula; label: string; icon: any; count?: number | string }> = [
+  const abasDisponiveis: Array<{ id: AbaVideoaula; label: string; icon: any; count?: number | string; destaque?: boolean }> = [
     { id: 'resumo', label: 'Resumo da Aula', icon: BookOpenText },
+    { id: 'questoes', label: 'Questões', icon: ListChecks, count: driveQuestoes.length || undefined, destaque: true },
     { id: 'materiais', label: 'Materiais & PDFs', icon: FileText, count: driveItem ? 4 : undefined },
-    { id: 'questoes', label: 'Questões', icon: ListChecks, count: driveQuestoes.length || undefined },
     { id: 'flashcards', label: 'Flashcards', icon: Layers, count: driveCards.length || undefined },
     { id: 'transcricao', label: 'Transcrição', icon: Subtitles },
     { id: 'anotacoes', label: 'Minhas Anotações', icon: PenTool },
@@ -389,6 +392,8 @@ const VideoaulaView = () => {
                       'flex items-center gap-2 min-h-[44px] px-4 rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shrink-0 active:scale-95 cursor-pointer select-none',
                       isActive
                         ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 border border-red-400/40'
+                        : aba.destaque
+                        ? 'bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/40 text-rose-300 hover:text-white shadow-sm shadow-rose-950/40'
                         : 'bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white',
                     )}
                   >
@@ -517,26 +522,20 @@ const VideoaulaView = () => {
                     )}
                   </div>
 
-                  {/* Acesso Rápido aos PDFs Oficiais no próprio Resumo */}
-                  {driveItem && (driveItem.resumoCompletoUrl || driveItem.resumoCornellUrl) && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {/* Materiais Oficiais Minimalistas e Centralizados */}
+                  {driveItem && (driveItem.resumoCompletoUrl || driveItem.resumoCornellUrl || driveItem.mapaMentalUrl) && (
+                    <div className="flex flex-wrap items-center justify-center gap-2 py-0.5">
                       {driveItem.resumoCompletoUrl && (
                         <a
                           href={driveItem.resumoCompletoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => haptic.selection()}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-emerald-500/30 hover:border-emerald-500/60 transition-all group active:scale-[0.98] shadow-sm"
+                          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 text-xs font-semibold transition-all active:scale-95 shadow-sm"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 group-hover:scale-105 transition-transform">
-                            <FileText className="w-4.5 h-4.5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs sm:text-[13px] font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
-                              Baixar Resumo em PDF
-                            </p>
-                            <p className="text-[11px] text-zinc-400 truncate">Documento completo e diagramado</p>
-                          </div>
+                          <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Resumo em PDF</span>
+                          <Download className="w-3 h-3 text-emerald-400/70 ml-0.5" />
                         </a>
                       )}
                       {driveItem.resumoCornellUrl && (
@@ -545,29 +544,75 @@ const VideoaulaView = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => haptic.selection()}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-amber-500/30 hover:border-amber-500/60 transition-all group active:scale-[0.98] shadow-sm"
+                          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:text-amber-200 text-xs font-semibold transition-all active:scale-95 shadow-sm"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform">
-                            <BookOpenText className="w-4.5 h-4.5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs sm:text-[13px] font-bold text-white group-hover:text-amber-400 transition-colors truncate">
-                              Resumo Método Cornell
-                            </p>
-                            <p className="text-[11px] text-zinc-400 truncate">Palavras-chave e síntese visual</p>
-                          </div>
+                          <BookOpenText className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Método Cornell</span>
+                          <Download className="w-3 h-3 text-amber-400/70 ml-0.5" />
+                        </a>
+                      )}
+                      {driveItem.mapaMentalUrl && (
+                        <a
+                          href={driveItem.mapaMentalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => haptic.selection()}
+                          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 text-xs font-semibold transition-all active:scale-95 shadow-sm"
+                        >
+                          <Brain className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>Mapa Mental</span>
+                          <Download className="w-3 h-3 text-cyan-400/70 ml-0.5" />
                         </a>
                       )}
                     </div>
                   )}
 
-                  <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 sm:p-5 backdrop-blur-md">
+                  <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 sm:p-5 backdrop-blur-md space-y-5">
                     <VideoaulaPanoramaIA
                       resumo={resumo.data?.resumo}
                       sobreAula={state.aula?.sobre_aula}
                       descricao={state.aula?.descricao}
                       isLoading={resumo.isLoading}
                     />
+
+                    {/* BOTÃO CHAMATIVO PARA QUESTÕES */}
+                    <div className="pt-2 border-t border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.impact();
+                          setActiveTab('questoes');
+                        }}
+                        className="w-full relative group overflow-hidden rounded-2xl p-[1.5px] transition-all duration-300 active:scale-[0.98] shadow-lg shadow-rose-950/60 cursor-pointer text-left"
+                      >
+                        {/* Borda gradiente brilhante */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-rose-500 to-amber-500 animate-gradient-x" />
+
+                        <div className="relative flex items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-3.5 rounded-[14.5px] bg-gradient-to-r from-[#140608] via-zinc-900 to-[#140608] group-hover:from-[#1e070b] group-hover:to-[#1e070b] transition-all">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white shadow-md shadow-red-950/80 group-hover:scale-105 transition-transform shrink-0">
+                              <ListChecks className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-[13px] sm:text-[14px] font-black uppercase tracking-wider text-white truncate">
+                                  Praticar Questões da Aula
+                                </span>
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-sm shadow-rose-950/60 whitespace-nowrap">
+                                  {driveQuestoes.length > 0 ? `${driveQuestoes.length} Questões` : 'Disponíveis'}
+                                </span>
+                              </div>
+                              <p className="text-[11px] sm:text-xs text-zinc-400 truncate">
+                                Teste seus conhecimentos e domine os pontos cruciais desta aula
+                              </p>
+                            </div>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:translate-x-1 transition-transform shrink-0">
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}

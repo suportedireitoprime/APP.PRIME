@@ -20,49 +20,69 @@ export const VideoaulaPanoramaIA = React.memo(function VideoaulaPanoramaIA({
   const content = resumo || sobreAula || descricao || '';
 
   return (
-    <section className="px-3 lg:px-0">
+    <section className="px-1 sm:px-2">
       {content && (
-        <div className="space-y-2 mb-4">
-          <div className="text-[15px] leading-relaxed text-foreground/90 space-y-3 font-body">
+        <div className="space-y-3">
+          <div className="text-[14.5px] sm:text-[15.5px] leading-relaxed text-zinc-200 space-y-3.5 font-sans">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({ children }) => (
-                  <h2 className="text-[17px] font-semibold text-foreground mt-4 first:mt-0">
+                  <h2
+                    style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                    className="text-[17px] sm:text-[19px] font-bold text-white mt-4 first:mt-0 tracking-tight"
+                  >
                     {children}
                   </h2>
                 ),
                 h2: ({ children }) => (
-                  <h3 className="text-[16px] font-semibold text-primary mt-4 first:mt-0">
+                  <h3
+                    style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                    className="text-[16px] sm:text-[17px] font-bold text-cyan-400 mt-4 first:mt-0 tracking-tight"
+                  >
                     {children}
                   </h3>
                 ),
                 h3: ({ children }) => (
-                  <h4 className="text-[15px] font-semibold text-foreground mt-3">{children}</h4>
+                  <h4
+                    style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                    className="text-[15px] sm:text-[16.5px] font-bold text-white mt-3.5 first:mt-0 tracking-tight"
+                  >
+                    {children}
+                  </h4>
                 ),
-                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                h4: ({ children }) => (
+                  <h5
+                    style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                    className="text-[12.5px] sm:text-[13.5px] font-bold text-zinc-300 mt-4 uppercase tracking-wider flex items-center gap-2"
+                  >
+                    <span className="w-1.5 h-3.5 rounded-full bg-cyan-400 shrink-0" />
+                    <span>{children}</span>
+                  </h5>
+                ),
+                p: ({ children }) => <p className="mb-2.5 last:mb-0 text-zinc-300 leading-relaxed">{children}</p>,
                 ul: ({ children }) => (
-                  <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>
+                  <ul className="list-disc pl-5 space-y-2 mb-3 text-zinc-300 marker:text-cyan-400">{children}</ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>
+                  <ol className="list-decimal pl-5 space-y-2 mb-3 text-zinc-300 marker:text-cyan-400">{children}</ol>
                 ),
-                li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                li: ({ children }) => <li className="leading-relaxed pl-1">{children}</li>,
                 strong: ({ children }) => (
-                  <strong className="font-semibold text-foreground">{children}</strong>
+                  <strong className="font-bold text-white">{children}</strong>
                 ),
-                em: ({ children }) => <em className="italic text-foreground/80">{children}</em>,
+                em: ({ children }) => <em className="italic text-zinc-400">{children}</em>,
                 blockquote: ({ children }) => (
-                  <blockquote className="border-l-2 border-primary/50 pl-3 italic text-foreground/80">
+                  <blockquote className="border-l-2 border-cyan-400/60 pl-3.5 py-1 my-2 italic text-zinc-300 bg-cyan-950/20 rounded-r-lg">
                     {children}
                   </blockquote>
                 ),
                 code: ({ children }) => (
-                  <code className="rounded bg-muted px-1 py-0.5 text-[12px]">{children}</code>
+                  <code className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[12.5px] text-zinc-200 border border-white/10">{children}</code>
                 ),
-                hr: () => <hr className="border-border my-3" />,
+                hr: () => <hr className="border-white/10 my-4" />,
                 a: ({ children, href }) => (
-                  <a href={href} target="_blank" rel="noreferrer" className="text-primary underline">
+                  <a href={href} target="_blank" rel="noreferrer" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
                     {children}
                   </a>
                 ),
@@ -75,8 +95,9 @@ export const VideoaulaPanoramaIA = React.memo(function VideoaulaPanoramaIA({
       )}
 
       {isLoading && !content && (
-        <div className="py-4 flex items-center gap-2 text-muted-foreground text-xs">
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
+        <div className="py-6 flex items-center justify-center gap-2.5 text-zinc-400 text-xs font-medium">
+          <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+          <span>Carregando síntese didática...</span>
         </div>
       )}
     </section>

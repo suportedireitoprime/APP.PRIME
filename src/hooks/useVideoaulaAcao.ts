@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { findVideoaulaByVideoId } from "@/data/videoaulas/videoaulasDriveData";
+import { formatarTituloEditorial } from "@/lib/videoaulasCatalogos";
 
 export type VideoaulaTabela =
   | "videoaulas_areas_direito"
@@ -140,15 +141,16 @@ export function useVideoaulaResumo(
     queryFn: async () => {
       const driveItem = findVideoaulaByVideoId(input?.videoId);
       if (driveItem) {
+        const tituloFormatado = formatarTituloEditorial(driveItem.titulo);
         const topicos = driveItem.flashcards?.length
-          ? driveItem.flashcards.slice(0, 5).map(f => `* **${f.frente}**: ${f.verso}`).join('\n')
+          ? driveItem.flashcards.slice(0, 6).map(f => `* **${f.frente}**: ${f.verso}`).join('\n')
           : '';
         const intro = driveItem.transcricao?.length
           ? driveItem.transcricao.slice(0, 850).trim() + '...'
           : 'Conteúdo da aula gravado e disponível nos materiais complementares.';
 
         const md = [
-          `### ${driveItem.titulo}`,
+          `### ${tituloFormatado}`,
           `*Professor / Canal*: **${driveItem.canal}** · *Duração*: **${driveItem.duracao}**`,
           topicos ? `\n#### Pontos e Conceitos Fundamentais:\n${topicos}` : '',
           `\n#### Síntese Inicial da Matéria:\n${intro}`,
