@@ -19,8 +19,9 @@ interface VideoaulasAreaCardProps {
 }
 
 export const VideoaulasAreaCard: React.FC<VideoaulasAreaCardProps> = ({ area, onClick }) => {
-  const displayArea = simplificarNomeArea(area.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
-  const tema = getDisciplinaVisualTheme(area.slug || area.area);
+  if (!area) return null;
+  const displayArea = simplificarNomeArea(area.area || '').replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
+  const tema = getDisciplinaVisualTheme(area.slug || area.area || '');
   const coverUrl = tema.fundoAssetUrl;
 
   return (

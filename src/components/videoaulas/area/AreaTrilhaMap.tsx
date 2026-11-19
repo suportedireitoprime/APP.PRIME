@@ -155,9 +155,9 @@ export const AreaTrilhaMap = ({ areaSlug, catalogoId, aulas }: AreaTrilhaMapProp
                               <PlayCircle className={`w-3 h-3 ${concluido ? 'text-primary' : 'text-foreground/70 group-hover:text-primary'}`} />
                             </div>
                             <p className={`text-[11px] font-semibold line-clamp-3 leading-tight ${concluido ? 'text-muted-foreground' : 'text-foreground group-hover:text-primary transition-colors'}`}>
-                              {limparTitulo(aula.titulo)
-                                .replace(new RegExp(`^${aula.area} - `, 'i'), '')
-                                .replace(new RegExp(`^${aula.area} `, 'i'), '')}
+                              {limparTitulo(aula?.titulo || '')
+                                .replace(new RegExp(`^${aula?.area || ''} - `, 'i'), '')
+                                .replace(new RegExp(`^${aula?.area || ''} `, 'i'), '')}
                             </p>
                           </div>
                         </button>

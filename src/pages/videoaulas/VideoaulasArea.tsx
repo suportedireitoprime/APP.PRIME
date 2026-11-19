@@ -99,7 +99,7 @@ const VideoaulasArea = () => {
   }, [catalogo, areaSlug]);
 
   const nomeArea = useMemo(
-    () => aulas[0]?.area || (catalogo?.temAreas ? 'Área' : catalogo?.titulo) || 'Aulas',
+    () => (aulas && aulas[0]?.area) || (catalogo?.temAreas ? 'Área' : catalogo?.titulo) || 'Aulas',
     [aulas, catalogo],
   );
 

@@ -110,8 +110,8 @@ const HomeHeaderHero = ({
           className={heroConfig.className}
         />
 
-        {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Direita */}
-        <FloatingOrbitingBrains />
+        {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
+        <FloatingOrbitingBrains position="left" />
 
         {/* Onda Vermelha Fluida e Animada em Movimento (substitui o painel diagonal rígido) */}
         <HeroAnimatedWave />

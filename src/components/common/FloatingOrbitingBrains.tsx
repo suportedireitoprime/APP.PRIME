@@ -6,6 +6,7 @@ import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.webp';
 
 interface FloatingOrbitingBrainsProps {
   className?: string;
+  position?: 'left' | 'right';
 }
 
 const BRAIN_VARIANTS = [
@@ -15,10 +16,16 @@ const BRAIN_VARIANTS = [
 ];
 
 export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
-  className = "absolute right-[-10px] sm:right-6 top-[28%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[3]",
+  className,
+  position = 'right',
 }) => {
+  const defaultClass =
+    position === 'left'
+      ? "absolute left-[-15px] sm:left-4 top-[26%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[3]"
+      : "absolute right-[-10px] sm:right-6 top-[28%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[3]";
+
   return (
-    <div className={className} aria-hidden="true">
+    <div className={className || defaultClass} aria-hidden="true">
       {BRAIN_VARIANTS.map((brain, i) => {
         const delay = i * 4.6;
         return (

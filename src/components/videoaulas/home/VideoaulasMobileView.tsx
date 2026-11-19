@@ -56,14 +56,14 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   };
 
   const areasItens: VideoaulaAreaItem[] = useMemo(() => {
-    return state.areasDireito.map((a) => {
+    return (state.areasDireito || []).filter((a): a is typeof a & { area: string } => Boolean(a && a.area)).map((a) => {
       const display = simplificarNomeArea(a.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
       return {
         area: a.area,
-        slug: a.slug,
-        total: a.total,
-        concluidas: a.concluidas,
-        pct: a.pct,
+        slug: a.slug || '',
+        total: a.total || 0,
+        concluidas: a.concluidas || 0,
+        pct: a.pct || 0,
         displayArea: display || a.area,
       };
     });
@@ -75,29 +75,29 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
     // Filtros do Hero (4 Funções)
     if (heroTab === 'favoritos') {
-      list = list.filter((a) => favoritosSet.has(a.area) || favoritosSet.has(a.slug));
+      list = list.filter((a) => a?.area && (favoritosSet.has(a.area) || favoritosSet.has(a.slug)));
     } else if (heroTab === 'emalta') {
       // Prioridade das matérias mais acessadas
-      list = [...list].sort((a, b) => b.total - a.total);
+      list = [...list].sort((a, b) => (b?.total || 0) - (a?.total || 0));
     } else if (heroTab === 'recentes') {
       // Itens em andamento ou iniciados
-      list = list.filter((a) => a.pct > 0);
+      list = list.filter((a) => (a?.pct || 0) > 0);
       if (list.length === 0) list = areasItens.slice(0, 5);
     } else if (heroTab === 'playlist') {
       // Matérias fundamentais para trilha contínua
-      list = list.filter((a) => a.total > 20);
+      list = list.filter((a) => (a?.total || 0) > 20);
     }
 
     // Filtros de chips
     if (activeChipTab === 'Em Andamento') {
-      list = list.filter((a) => a.pct > 0);
+      list = list.filter((a) => (a?.pct || 0) > 0);
     } else if (activeChipTab !== 'Todos') {
       const tabLower = activeChipTab.toLowerCase();
       list = list.filter(
         (a) =>
-          a.area.toLowerCase() === tabLower ||
-          a.slug.toLowerCase() === tabLower ||
-          (a.displayArea && a.displayArea.toLowerCase() === tabLower)
+          (a?.area && a.area.toLowerCase() === tabLower) ||
+          (a?.slug && a.slug.toLowerCase() === tabLower) ||
+          (a?.displayArea && a.displayArea.toLowerCase() === tabLower)
       );
     }
 
@@ -105,7 +105,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
     if (q.trim()) {
       const termos = normalizeTexto(q).split(/\s+/).filter(Boolean);
       list = list.filter((a) => {
-        const areaNorm = normalizeTexto(a.area);
+        const areaNorm = normalizeTexto(a?.area || '');
         return termos.every((t) => areaNorm.includes(t));
       });
     }

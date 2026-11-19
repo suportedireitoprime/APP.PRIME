@@ -1,9 +1,10 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Sparkles, BookOpen, Brain, Layers, HelpCircle, ChevronRight } from 'lucide-react';
+import { Play, BookOpen, Brain, Layers, HelpCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { VIDEOAULAS_INICIANTES, type VideoaulaDriveItem } from '@/data/videoaulas/videoaulasDriveData';
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
+import { getCachedProgresso, loadProgresso, subscribeVideoaulas } from '@/lib/videoaulasStore';
 
 interface VideoaulasIniciantesCarouselProps {
   onSelectAula?: (item: VideoaulaDriveItem) => void;
@@ -13,6 +14,60 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
   function VideoaulasIniciantesCarousel({ onSelectAula }) {
     const navigate = useNavigate();
     const { tocarVideo } = useVideoaulasPlayer();
+
+    // Sincronização do progresso real do usuário (Supabase + Cache)
+    const [progresso, setProgresso] = useState<Record<string, { percentual: number; concluida: boolean }>>(() => {
+      const map: Record<string, { percentual: number; concluida: boolean }> = {};
+      const rows = getCachedProgresso() ?? [];
+      rows.forEach((r) => {
+        if (r?.video_id) {
+          map[r.video_id] = {
+            percentual: Math.min(100, Math.round(Number(r.percentual) || 0)),
+            concluida: !!r.concluida,
+          };
+        }
+      });
+      return map;
+    });
+
+    useEffect(() => {
+      let alive = true;
+      void loadProgresso().then((rows) => {
+        if (!alive || !rows) return;
+        const map: Record<string, { percentual: number; concluida: boolean }> = {};
+        rows.forEach((r) => {
+          if (r?.video_id) {
+            map[r.video_id] = {
+              percentual: Math.min(100, Math.round(Number(r.percentual) || 0)),
+              concluida: !!r.concluida,
+            };
+          }
+        });
+        setProgresso(map);
+      });
+
+      const off = subscribeVideoaulas(() => {
+        if (!alive) return;
+        const rows = getCachedProgresso() ?? [];
+        const map: Record<string, { percentual: number; concluida: boolean }> = {};
+        rows.forEach((r) => {
+          if (r?.video_id) {
+            map[r.video_id] = {
+              percentual: Math.min(100, Math.round(Number(r.percentual) || 0)),
+              concluida: !!r.concluida,
+            };
+          }
+        });
+        setProgresso(map);
+      });
+
+      return () => {
+        alive = false;
+        off();
+      };
+    }, []);
+
+    const totalConcluidas = Object.values(progresso).filter((p) => p.concluida || p.percentual >= 90).length;
 
     const handleCardClick = (item: VideoaulaDriveItem) => {
       haptic.selection();
@@ -46,6 +101,12 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   50 AULAS
                 </span>
+                {totalConcluidas > 0 && (
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
+                    {totalConcluidas}/50
+                  </span>
+                )}
               </h3>
             </div>
             <p className="text-zinc-400 text-xs sm:text-[13px] leading-snug ml-3.5 mt-0.5">
@@ -66,10 +127,13 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
           </button>
         </div>
 
-        {/* Carrossel Horizontal Fluido */}
+        {/* Carrossel Horizontal Fluido com Indicador de Progresso */}
         <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
           {VIDEOAULAS_INICIANTES.map((item, idx) => {
             const numStr = String(item.numero).padStart(2, '0');
+            const p = progresso[item.video_id];
+            const concluida = p?.concluida || (p?.percentual ?? 0) >= 90;
+            const pct = concluida ? 100 : (p?.percentual ?? 0);
 
             return (
               <div
@@ -93,12 +157,23 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                     <span>#{numStr}</span>
                   </div>
 
-                  {/* Duração */}
-                  {item.duracao && (
-                    <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-bold text-zinc-300">
-                      {item.duracao}
-                    </div>
-                  )}
+                  {/* Badge de Progresso / Duração no Topo Direito */}
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                    {concluida ? (
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-500/95 text-[10px] font-black text-white shadow-md flex items-center gap-1 border border-emerald-400/40">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Concluída
+                      </span>
+                    ) : pct > 0 ? (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-500/95 text-[10px] font-black text-zinc-950 shadow-md border border-amber-400/40">
+                        {pct}%
+                      </span>
+                    ) : item.duracao ? (
+                      <span className="px-1.5 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-bold text-zinc-300">
+                        {item.duracao}
+                      </span>
+                    ) : null}
+                  </div>
 
                   {/* Botão Play Central Hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
@@ -122,6 +197,20 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                       <HelpCircle className="w-2.5 h-2.5" /> Questões
                     </span>
                   </div>
+
+                  {/* Barra de Progresso Visual na Base da Capa */}
+                  {pct > 0 && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${
+                          concluida
+                            ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
+                            : 'bg-gradient-to-r from-amber-500 to-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
+                        }`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Detalhes da Aula */}
@@ -129,10 +218,15 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                   <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-amber-400 transition-colors leading-snug line-clamp-2">
                     {item.titulo}
                   </p>
-                  <p className="text-[11px] text-zinc-400 font-medium leading-none flex items-center gap-1.5">
-                    <span>{item.canal}</span>
-                    <span className="text-zinc-600">•</span>
-                    <span className="text-amber-400/90 font-semibold">100% Completa</span>
+                  <p className="text-[11px] text-zinc-400 font-medium leading-none flex items-center justify-between">
+                    <span className="truncate max-w-[140px]">{item.canal}</span>
+                    {concluida ? (
+                      <span className="text-emerald-400 font-semibold text-[10.5px]">Assistida</span>
+                    ) : pct > 0 ? (
+                      <span className="text-amber-400 font-semibold text-[10.5px]">{pct}% visto</span>
+                    ) : (
+                      <span className="text-zinc-500 text-[10.5px]">Não iniciada</span>
+                    )}
                   </p>
                 </div>
               </div>

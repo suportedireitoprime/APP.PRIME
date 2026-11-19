@@ -7,7 +7,7 @@ import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
   { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       tag: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       tag: null, prefetch: 'audiobooks' as PrefetchKey },
+  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       tag: 'Novo', prefetch: 'audiobooks' as PrefetchKey },
   { label: 'Blog',        icon: ScrollText,            to: '/blog',             tag: null, prefetch: 'blog' as PrefetchKey },
   { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
 ];

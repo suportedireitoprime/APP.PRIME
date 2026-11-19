@@ -81,28 +81,30 @@ export function useVideoaulas() {
   }, []);
 
   const areasDireito = useMemo(
-    () => data.areas.filter((a) => a.catalogo === 'areas'),
-    [data.areas],
+    () => (data?.areas || []).filter((a) => a && a.catalogo === 'areas'),
+    [data?.areas],
   );
 
   const emAndamentoCount = useMemo(
-    () => areasDireito.filter((a) => a.pct > 0).length,
+    () => areasDireito.filter((a) => (a?.pct || 0) > 0).length,
     [areasDireito],
   );
 
   const lista = useMemo(() => {
     const l = [...areasDireito].sort((a, b) => {
-      const ai = a.pct > 0 ? 0 : 1;
-      const bi = b.pct > 0 ? 0 : 1;
+      const aPct = a?.pct || 0;
+      const bPct = b?.pct || 0;
+      const ai = aPct > 0 ? 0 : 1;
+      const bi = bPct > 0 ? 0 : 1;
       if (ai !== bi) return ai - bi;
-      if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
-      return a.area.localeCompare(b.area, 'pt-BR');
+      if (ai === 0 && bPct !== aPct) return bPct - aPct;
+      return (a?.area || '').localeCompare(b?.area || '', 'pt-BR');
     });
-    let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
+    let result = filtro === 'andamento' ? l.filter((a) => (a?.pct || 0) > 0) : l;
     if (buscaDebounced.trim()) {
       const termos = normalizeTexto(buscaDebounced).split(/\s+/).filter(Boolean);
       result = result.filter(a => {
-        const areaNormalizada = normalizeTexto(a.area);
+        const areaNormalizada = normalizeTexto(a?.area || '');
         return termos.every(t => areaNormalizada.includes(t));
       });
     }

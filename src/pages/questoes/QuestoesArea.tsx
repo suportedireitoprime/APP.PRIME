@@ -134,7 +134,7 @@ const QuestoesArea = () => {
 
       navigate(`/aprender/modulo/${moduloIdParam}?tab=${activeTab}`, {
         replace: true,
-        state: { modulo: found, area: data.area ? { ...data.area, slug: (data.area as any)?.slug ?? slug } : undefined, aulas: moduloAulas, tab: activeTab },
+        state: { modulo: found, area: data?.area ? { ...data.area, slug: (data.area as any)?.slug ?? slug } : undefined, aulas: moduloAulas, tab: activeTab },
       });
     }
   }, [data, moduloIdParam, activeTab, navigate, user?.id, slug]);
