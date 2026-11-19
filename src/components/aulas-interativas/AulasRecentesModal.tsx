@@ -4,6 +4,7 @@ import { ArrowLeft, History, Play, X, Clock, CheckCircle2 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { haptic } from '@/lib/nativeHaptics';
+import { AulasCardRubyBackground } from './AulasCardRubyBackground';
 
 interface AulasRecentesModalProps {
   isOpen: boolean;
@@ -86,36 +87,38 @@ export const AulasRecentesModal: React.FC<AulasRecentesModalProps> = ({
                     onClose();
                     onIniciarAula(aula);
                   }}
-                  className="group rounded-2xl border border-white/10 bg-zinc-900/70 hover:bg-zinc-900 hover:border-teal-500/40 p-3.5 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition-all shadow-md"
+                  className="group relative overflow-hidden rounded-2xl border border-red-500/35 hover:border-red-400/60 shadow-[0_8px_24px_rgba(225,29,72,0.18)] p-3.5 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition-all"
                 >
-                  <div className="flex-1 min-w-0">
+                  <AulasCardRubyBackground />
+
+                  <div className="relative z-10 flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#2dd4bf] px-1.5 py-0.2 rounded bg-teal-500/15">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-300 px-1.5 py-0.2 rounded bg-black/60 border border-red-500/30">
                         {disc?.nome?.replace('DIREITO ', '') || 'DIREITO'}
                       </span>
-                      <span className="text-[11px] text-zinc-500 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                      <span className="text-[11px] text-rose-200/70 flex items-center gap-1 font-mono">
+                        <Clock className="w-3 h-3 text-rose-400" />
                         Etapa {prog.etapaAtual} de {prog.totalEtapas}
                       </span>
                     </div>
-                    <h4 className="font-serif font-bold text-sm text-white group-hover:text-teal-300 transition-colors truncate">
+                    <h4 className="font-serif font-bold text-sm text-white group-hover:text-rose-200 transition-colors truncate">
                       {aula.titulo}
                     </h4>
                     {/* Barra de progresso */}
                     <div className="mt-2 w-full max-w-xs flex items-center gap-2">
-                      <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div className="flex-1 h-1.5 rounded-full bg-black/40 border border-white/5 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-400"
+                          className="h-full rounded-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
                           style={{ width: `${Math.max(5, prog.porcentagemTotal)}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-mono text-zinc-400 font-bold">{prog.porcentagemTotal}%</span>
+                      <span className="text-[10px] font-mono text-rose-200/80 font-bold">{prog.porcentagemTotal}%</span>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    className="w-10 h-10 rounded-full bg-teal-600 hover:bg-teal-500 text-black flex items-center justify-center shrink-0 shadow-lg shadow-teal-950/50 group-hover:scale-105 transition-transform"
+                    className="relative z-10 w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-red-950/60 group-hover:scale-105 transition-transform border border-rose-400/30"
                   >
                     <Play className="w-4 h-4 fill-current ml-0.5" />
                   </button>

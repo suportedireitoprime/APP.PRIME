@@ -19,6 +19,7 @@ import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
 import AulasHeroWave from './AulasHeroWave';
+import AulasCardRubyBackground from './AulasCardRubyBackground';
 
 /** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
 const NOMES_CAPA: Record<string, string> = {
@@ -379,49 +380,33 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
         )}
 
-        {/* ── 4. CARROSSEL DE TRILHAS (MÓDULOS CRONOLÓGICOS EM FORMATO 1:1) ── */}
-        <div className="w-full max-w-5xl lg:max-w-7xl mx-auto mb-3 z-20 shrink-0">
-          <AulasTrilhasCarousel
-            disciplinas={disciplinasFiltradas}
-            aulas={aulasCatalogo}
-            faseSelecionadaId={faseSelecionadaId}
-            onSelectFase={setFaseSelecionadaId}
-            onOpenTodasTrilhas={() => {
-              setModuloInicialAbertoId(null);
-              setTrilhasListaModalOpen(true);
-            }}
-            onOpenModuloDedicado={(modId) => {
-              setModuloInicialAbertoId(modId);
-              setTrilhasListaModalOpen(true);
-            }}
-            calcularProgressoCiclo={calcularProgressoCiclo}
-          />
-        </div>
 
-        {/* Banner de Destaque do Módulo Ativo Selecionado */}
+        {/* Banner de Destaque do Módulo Ativo Selecionado com Fundo Rubi das Funções */}
         {faseAtiva && (
           <div className="w-full max-w-md sm:max-w-xl mx-auto px-3 sm:px-4 mb-4 z-20 shrink-0 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="rounded-2xl bg-zinc-900/80 border border-white/10 p-3 flex items-center justify-between gap-3 shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-2.5 min-w-0">
+            <div className="relative overflow-hidden rounded-2xl border border-red-500/35 p-3 flex items-center justify-between gap-3 shadow-[0_8px_24px_rgba(225,29,72,0.18)]">
+              <AulasCardRubyBackground active />
+
+              <div className="relative z-10 flex items-center gap-2.5 min-w-0">
                 {faseAtiva.capaUrl ? (
                   <img
                     src={faseAtiva.capaUrl}
                     alt={faseAtiva.nome}
-                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-white/10 shadow"
+                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-red-500/30 shadow"
                   />
                 ) : (
                   <div 
-                    className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center text-white font-mono font-bold text-xs shadow bg-zinc-800"
+                    className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center text-white font-mono font-bold text-xs shadow bg-zinc-900 border border-red-500/30"
                   >
                     #{faseAtiva.faseNumero}
                   </div>
                 )}
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[9.5px] font-mono font-bold text-red-400 uppercase tracking-wider">
+                    <span className="text-[9.5px] font-mono font-bold text-rose-400 uppercase tracking-wider">
                       Módulo {faseAtiva.faseNumero} Ativo
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-mono">
+                    <span className="text-[10px] text-rose-200/70 font-mono">
                       • {faseAtiva.totalAulas || 30} aulas
                     </span>
                   </div>
@@ -431,14 +416,14 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="relative z-10 flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => {
                     setModuloInicialAbertoId(faseAtiva.id);
                     setTrilhasListaModalOpen(true);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg bg-red-500 hover:bg-red-400 text-white font-bold text-[11px] flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow"
+                  className="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-[11px] flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow-[0_0_12px_rgba(225,29,72,0.35)]"
                 >
                   <span>Ver Aulas</span>
                   <ChevronRight className="w-3 h-3" />
@@ -527,31 +512,27 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                           className={cn(
                             "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
                             isActive
-                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
-                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-gradient-to-r from-red-600 to-rose-700 text-white border border-rose-400/50 shadow-[0_2px_12px_rgba(225,29,72,0.4)]"
+                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-rose-200/70 bg-[#160206]/90 border border-red-500/25 opacity-80"
                           )}
-                          style={isActive ? {
-                            color: corTemaHighlight,
-                            borderColor: `${corTema}60`,
-                          } : undefined}
                         >
                           <span>{discAulas.length} AULAS</span>
                         </div>
                       </div>
 
-                      {/* Card da Capa em 3/4 */}
+                      {/* Card da Capa em 3/4 com Design Vermelho das Funções */}
                       <div
                         className={cn(
                           "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] sm:max-h-[42vh] md:max-h-[46vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
-                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-white/10"
+                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-rose-400/30"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
                         )}
                         style={{
-                          borderColor: isActive ? corTema : `${corTema}40`,
+                          borderColor: isActive ? '#e11d48' : 'rgba(225, 29, 72, 0.35)',
                           boxShadow: isActive
-                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 0 22px ${corTema}45, inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4)`
-                            : `0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
+                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 0 28px rgba(225, 29, 72, 0.55), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4)`
+                            : `0 12px 24px rgba(0, 0, 0, 0.8), 0 0 10px rgba(225, 29, 72, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
                         }}
                       >
                         <img
@@ -628,6 +609,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             })}
           </div>
         </section>
+
+        {/* ── 5. LISTA VERTICAL DE TRILHAS DO CONHECIMENTO (CARDS RUBI EM LISTA) ── */}
+        <div className="w-full max-w-5xl lg:max-w-7xl mx-auto mb-6 z-20 shrink-0">
+          <AulasTrilhasCarousel
+            disciplinas={disciplinasFiltradas}
+            aulas={aulasCatalogo}
+            faseSelecionadaId={faseSelecionadaId}
+            onSelectFase={setFaseSelecionadaId}
+            onOpenTodasTrilhas={() => {
+              setModuloInicialAbertoId(null);
+              setTrilhasListaModalOpen(true);
+            }}
+            onOpenModuloDedicado={(modId) => {
+              setModuloInicialAbertoId(modId);
+              setTrilhasListaModalOpen(true);
+            }}
+            calcularProgressoCiclo={calcularProgressoCiclo}
+          />
+        </div>
 
         {/* ── 6. MODAIS SECUNDÁRIOS RÁPIDOS ── */}
         <AulasRecentesModal

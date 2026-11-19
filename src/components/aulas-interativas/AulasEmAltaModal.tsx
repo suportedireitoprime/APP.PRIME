@@ -4,6 +4,7 @@ import { Flame, Play, X, Sparkles } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { haptic } from '@/lib/nativeHaptics';
+import { AulasCardRubyBackground } from './AulasCardRubyBackground';
 
 interface AulasEmAltaModalProps {
   isOpen: boolean;
@@ -65,23 +66,25 @@ export const AulasEmAltaModal: React.FC<AulasEmAltaModalProps> = ({
                   onClose();
                   onIniciarAula(aula);
                 }}
-                className="group rounded-2xl border border-white/10 bg-zinc-900/70 hover:bg-zinc-900 hover:border-amber-500/40 p-3.5 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition-all shadow-md"
+                className="group relative overflow-hidden rounded-2xl border border-red-500/35 hover:border-red-400/60 shadow-[0_8px_24px_rgba(225,29,72,0.18)] p-3.5 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition-all"
               >
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <span className="font-mono text-xs font-black text-amber-400/80 w-5 text-center">
+                <AulasCardRubyBackground />
+
+                <div className="relative z-10 flex items-center gap-3 min-w-0 flex-1">
+                  <span className="font-mono text-xs font-black text-rose-300 w-5 text-center">
                     {(i + 1).toString().padStart(2, '0')}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300 px-1.5 py-0.2 rounded bg-amber-500/15">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-300 px-1.5 py-0.2 rounded bg-black/60 border border-red-500/30">
                         {disc?.nome?.replace('DIREITO ', '') || 'DIREITO'}
                       </span>
-                      <span className="text-[10.5px] text-zinc-400 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-amber-400" />
-                        Destaque
+                      <span className="text-[10.5px] text-rose-200/70 flex items-center gap-1 font-mono">
+                        <Flame className="w-3 h-3 text-red-500" />
+                        Em Alta
                       </span>
                     </div>
-                    <h4 className="font-serif font-bold text-sm text-white group-hover:text-amber-200 transition-colors truncate">
+                    <h4 className="font-serif font-bold text-sm text-white group-hover:text-rose-200 transition-colors truncate">
                       {aula.titulo}
                     </h4>
                   </div>
@@ -89,7 +92,7 @@ export const AulasEmAltaModal: React.FC<AulasEmAltaModalProps> = ({
 
                 <button
                   type="button"
-                  className="w-10 h-10 rounded-full bg-amber-500 hover:bg-amber-400 text-black flex items-center justify-center shrink-0 shadow-lg shadow-amber-950/50 group-hover:scale-105 transition-transform"
+                  className="relative z-10 w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-red-950/60 group-hover:scale-105 transition-transform border border-rose-400/30"
                 >
                   <Play className="w-4 h-4 fill-current ml-0.5" />
                 </button>
