@@ -98,36 +98,19 @@ export default function PilulasLista() {
                 {/* Conteúdo */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between pl-4 py-1">
                   <div>
-                    {item.sigla && (
-                      <span 
-                        className="inline-flex items-center px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase tracking-wider mb-1"
-                        style={{
-                          backgroundColor: `${item.borderColor || '#EF4444'}20`,
-                          color: item.borderColor || '#EF4444',
-                          border: `1px solid ${item.borderColor || '#EF4444'}40`,
-                        }}
-                      >
-                        {item.sigla}
-                      </span>
-                    )}
-
                     <h3 className="font-sans font-bold text-[15.5px] sm:text-base text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug truncate">
                       {item.text}
                     </h3>
 
-                    {item.totalTopicos ? (
-                      <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
-                        <span className="text-amber-400 font-medium">{item.totalTopicos} aulas em áudio</span>
-                        {item.totalModulos ? (
-                          <>
-                            <span className="text-zinc-600">•</span>
-                            <span className="text-zinc-400">{item.totalModulos} matérias</span>
-                          </>
-                        ) : null}
-                      </p>
-                    ) : (
-                      <p className="text-zinc-400 text-[12px] mt-0.5 truncate font-sans">{item.fullName}</p>
-                    )}
+                    <p className="text-[12px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
+                      <span className="text-zinc-300 font-medium">{item.totalTopicos || 0} aulas em áudio</span>
+                      {item.totalModulos ? (
+                        <>
+                          <span className="text-zinc-600">•</span>
+                          <span className="text-zinc-400">{item.totalModulos} matérias</span>
+                        </>
+                      ) : null}
+                    </p>
                   </div>
                   
                   {/* Rodapé do card */}

@@ -107,10 +107,43 @@ export default function PilulasHome() {
           favoritosCount={favoritosIds.size}
         />
 
-        {/* Decks 3D Principais (Pílulas de Códigos & Clássicos do Direito) */}
-        <div className="max-w-[1400px] mx-auto px-4 space-y-8 pt-6 pb-8">
-          {/* Pílulas de Matérias (Em Lista) */}
+        {/* Decks 3D Principais & Catálogo (Clássicos do Direito ANTES de Áreas) */}
+        <div className="max-w-[1400px] mx-auto px-4 space-y-10 pt-6 pb-8">
+          
+          {/* 1. Clássicos do Direito (Vem Primeiro) */}
           <div className="space-y-4">
+            <div className="flex items-start justify-between px-1 mb-2 gap-4">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-[20px] font-black text-white uppercase tracking-widest mb-0.5">
+                  Clássicos do Direito
+                </h2>
+                <p className="text-[12.5px] text-zinc-400 truncate">
+                  As obras fundamentais do pensamento jurídico mundial.
+                </p>
+              </div>
+
+              <button
+                onClick={handleSelectClassicos}
+                className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
+              >
+                <span>Ver lista</span>
+                <ChevronRight className="w-4 h-4 stroke-[2.6]" />
+              </button>
+            </div>
+
+            <div className="-mx-4">
+              <PilulasDeck3D
+                items={classicosExibidos.length > 0 ? classicosExibidos : CLASSICOS_ITEMS}
+                onItemClick={handleSelectClassicos}
+                defaultBorderColor="#E11D48"
+              />
+            </div>
+          </div>
+
+          {/* 2. Pílulas de Matérias / Áreas (Vem depois de Clássicos) */}
+          <div className="space-y-4">
+            <AnimatedDivider text="Pílulas de Matérias" />
+
             <div className="flex items-start justify-between px-1 mb-2 gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[20px] font-black text-white uppercase tracking-widest mb-0.5">
@@ -172,27 +205,23 @@ export default function PilulasHome() {
                     {/* Conteúdo textual */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between pl-3.5 py-0.5">
                       <div>
-                        {/* Header superior do Card: Sigla da Matéria + Realocação Estratégica de Tópicos + Favorito */}
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span 
-                              className="inline-flex items-center px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase tracking-wider shrink-0"
-                              style={{
-                                backgroundColor: `${item.borderColor || '#EF4444'}20`,
-                                color: item.borderColor || '#EF4444',
-                                border: `1px solid ${item.borderColor || '#EF4444'}40`,
-                              }}
-                            >
-                              {item.sigla || 'DIREITO'}
-                            </span>
+                        {/* Topo do Card: Título com Tipografia Padrão "História do Direito Penal" e Botão Favorito */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-sans font-bold text-[15.5px] sm:text-[16.5px] text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug truncate">
+                              {item.text}
+                            </h3>
 
-                            {/* Badge Estratégico Compacto no Topo */}
-                            {totalTopicos > 0 && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9.5px] font-sans font-semibold text-zinc-300 shrink-0">
-                                <Headphones className="w-2.5 h-2.5 text-amber-400" />
-                                <span>{totalTopicos} tópicos</span>
-                              </span>
-                            )}
+                            {/* Quantidade Única de Tópicos/Aulas (sem redundância de badges) */}
+                            <p className="text-[12px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
+                              <span className="text-zinc-300 font-medium">{totalTopicos} {totalTopicos === 1 ? 'aula em áudio' : 'aulas em áudio'}</span>
+                              {item.totalModulos ? (
+                                <>
+                                  <span className="text-zinc-600">•</span>
+                                  <span className="text-zinc-400">{item.totalModulos} matérias</span>
+                                </>
+                              ) : null}
+                            </p>
                           </div>
 
                           <button
@@ -211,25 +240,9 @@ export default function PilulasHome() {
                           </button>
                         </div>
 
-                        {/* Título da Área com a Tipografia Idêntica a "História do Direito Penal" */}
-                        <h3 className="font-sans font-bold text-[15.5px] sm:text-base text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug truncate mt-1.5">
-                          {item.text}
-                        </h3>
-
-                        {/* Realocação Estratégica: Subtítulo de Aulas e Matérias Doutrinárias */}
-                        <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
-                          <span className="text-amber-400/90 font-medium">{totalTopicos} aulas em áudio</span>
-                          {item.totalModulos ? (
-                            <>
-                              <span className="text-zinc-600">•</span>
-                              <span className="text-zinc-400">{item.totalModulos} matérias</span>
-                            </>
-                          ) : null}
-                        </p>
-
-                        {/* Barra de Progresso Real ou Descrição Doutrinária */}
-                        {ouvidosCount > 0 ? (
-                          <div className="mt-2 w-full max-w-sm">
+                        {/* Barra de Progresso Real (apenas se já houver aulas ouvidas) */}
+                        {ouvidosCount > 0 && (
+                          <div className="mt-2.5 w-full max-w-sm">
                             <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-1 font-sans">
                               <span>{ouvidosCount} de {totalTopicos} ouvidas</span>
                               <span className="font-bold text-amber-400">{percent}%</span>
@@ -241,15 +254,11 @@ export default function PilulasHome() {
                               />
                             </div>
                           </div>
-                        ) : (
-                          <p className="text-zinc-400 text-[11.5px] sm:text-[12px] leading-snug line-clamp-2 mt-1 font-sans">
-                            {item.descricao}
-                          </p>
                         )}
                       </div>
 
                       {/* Rodapé da matéria */}
-                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/5">
+                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-white/5">
                         <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold uppercase tracking-wider group-hover:text-amber-300 transition-colors font-sans">
                           <Headphones className="w-3.5 h-3.5" />
                           <span>{ouvidosCount > 0 ? 'Continuar Ouvindo' : 'Ouvir Pílulas'}</span>
@@ -262,38 +271,6 @@ export default function PilulasHome() {
                   </motion.div>
                 );
               })}
-            </div>
-          </div>
-
-          {/* Clássicos do Direito */}
-          <div className="space-y-4 mb-4">
-            <AnimatedDivider text="Clássicos do Direito" />
-
-            <div className="flex items-start justify-between px-1 mb-2 gap-4">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-[20px] font-black text-white uppercase tracking-widest mb-0.5">
-                  Clássicos do Direito
-                </h2>
-                <p className="text-[12.5px] text-zinc-400 truncate">
-                  As obras fundamentais do pensamento jurídico mundial.
-                </p>
-              </div>
-
-              <button
-                onClick={handleSelectClassicos}
-                className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 text-xs font-bold whitespace-nowrap shadow-md shadow-amber-500/20 transition-all active:scale-95"
-              >
-                <span>Ver lista</span>
-                <ChevronRight className="w-4 h-4 stroke-[2.6]" />
-              </button>
-            </div>
-
-            <div className="-mx-4">
-              <PilulasDeck3D
-                items={classicosExibidos.length > 0 ? classicosExibidos : CLASSICOS_ITEMS}
-                onItemClick={handleSelectClassicos}
-                defaultBorderColor="#E11D48"
-              />
             </div>
           </div>
         </div>
