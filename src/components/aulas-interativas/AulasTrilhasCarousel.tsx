@@ -205,7 +205,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                     </>
                   ) : (
                     <div 
@@ -216,50 +216,39 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                     </div>
                   )}
 
-                  {/* Badge Superior Esquerdo: Módulo #01 */}
+                  {/* Badge Único Discreto: Módulo #01 */}
                   <div className="absolute top-2 left-2 z-10">
-                    <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-black/80 backdrop-blur-md text-zinc-200 border border-white/10 shadow-sm leading-none flex items-center justify-center">
-                      MÓDULO #{fase.faseNumero}
-                    </span>
-                  </div>
-
-                  {/* Badge Superior Direito: Total de Aulas */}
-                  <div className="absolute top-2 right-2 z-10">
-                    <span className="px-2 py-0.5 rounded-md text-[9px] font-mono font-semibold bg-black/80 backdrop-blur-md text-zinc-300 border border-white/10 shadow-sm">
-                      {fase.totalAulas || 30} aulas
+                    <span className="px-2 py-0.5 rounded-md text-[9.5px] font-mono font-bold bg-black/75 backdrop-blur-md text-zinc-200 border border-white/10 shadow-sm leading-none flex items-center justify-center">
+                      Módulo {fase.faseNumero}
                     </span>
                   </div>
 
                   {/* Indicador de Conclusão / Progresso */}
                   {metricas.pct >= 100 ? (
-                    <div className="absolute bottom-2 right-2 z-10 px-2 py-0.5 rounded-full bg-emerald-500 text-white flex items-center gap-1 shadow text-[9px] font-bold">
+                    <div className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-emerald-500 text-white flex items-center gap-1 shadow text-[9px] font-bold">
                       <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={2.4} />
-                      <span>Feito</span>
+                      <span>100%</span>
                     </div>
                   ) : metricas.pct > 0 ? (
-                    <div className="absolute bottom-2 right-2 z-10 px-2 py-0.5 rounded-full bg-red-500 text-white flex items-center gap-1 shadow text-[9px] font-mono font-bold">
+                    <div className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-red-500 text-white flex items-center gap-1 shadow text-[9px] font-mono font-bold">
                       <span>{metricas.pct}%</span>
                     </div>
                   ) : null}
                 </div>
 
-                {/* Informações Minimalistas */}
+                {/* Informações Ultra Minimalistas (Apenas Título e Qtd de Aulas) */}
                 <div className="mt-2.5 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-wider truncate block">
-                      {fase.subtitulo || fase.areas?.[0] || 'Formação Jurídica'}
-                    </span>
-
-                    <h3 className="font-sans font-bold text-white text-[13px] xs:text-[14px] leading-snug line-clamp-2 min-h-[38px] mt-0.5 group-hover:text-red-300 transition-colors">
+                    <h3 className="font-sans font-bold text-white text-[13.5px] xs:text-[14.5px] leading-snug line-clamp-2 group-hover:text-red-300 transition-colors">
                       {fase.nome}
                     </h3>
 
-                    <p className="text-[11px] text-zinc-400 mt-1 line-clamp-1 font-sans">
-                      {fase.totalAulas || 30} aulas em áudio • Cronograma oficial
+                    <p className="text-xs text-zinc-400 mt-1 line-clamp-1 font-sans">
+                      {fase.totalAulas || 30} aulas em áudio
                     </p>
                   </div>
 
-                  {/* Barra de Progresso Fina */}
+                  {/* Barra de Progresso Fina (Apenas se iniciado) */}
                   {metricas.pct > 0 && (
                     <div className="w-full mt-2 bg-white/10 rounded-full h-1 overflow-hidden">
                       <div
@@ -268,18 +257,6 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                       />
                     </div>
                   )}
-
-                  {/* Rodapé Limpo do Card */}
-                  <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between gap-2">
-                    <span className="text-[10.5px] font-mono text-zinc-400">
-                      {metricas.concluidas > 0 ? `${metricas.concluidas}/${metricas.totalAulas} feitas` : 'Iniciar Trilha'}
-                    </span>
-
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-zinc-300 group-hover:text-white transition-colors">
-                      <span>Ver Aulas</span>
-                      <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                    </span>
-                  </div>
                 </div>
               </div>
             );
