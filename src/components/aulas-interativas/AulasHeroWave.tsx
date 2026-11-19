@@ -4,33 +4,29 @@ import React, { memo } from 'react';
  * AulasHeroWave
  * Onda e listras fluidas de cetim e luz com paleta nobre Imperial Ruby & Rose Gold.
  * 100% acelerada por GPU (120fps) com estrias de reflexão de luz e cristas luminosas.
+ * Utiliza ciclo relativo (-50%) para loop contínuo e infinito em qualquer largura de tela.
  */
 export const AulasHeroWave: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5] select-none">
       {/* ── 1. Resplendor Volumétrico e Bloom Rubro Imperial ── */}
       <div 
-        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-rose-600/30 via-red-950/25 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-14 -left-10 w-[60%] h-[50%] rounded-full bg-gradient-to-tr from-rose-600/35 via-red-950/25 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'aulasRubyGlowPulse 8s ease-in-out infinite alternate' }}
       />
       <div 
-        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-red-600/25 via-rose-950/20 to-transparent blur-3xl pointer-events-none transform-gpu"
+        className="absolute -bottom-10 right-0 w-[55%] h-[55%] rounded-full bg-gradient-to-tl from-red-600/30 via-rose-950/20 to-transparent blur-3xl pointer-events-none transform-gpu"
         style={{ animation: 'aulasRubyGlowPulse 10s ease-in-out infinite alternate-reverse' }}
-      />
-
-      {/* ── 2. Gradiente Lateral de Contraste para Legibilidade Absoluta ── */}
-      <div 
-        className="absolute inset-y-0 left-0 w-[65%] sm:w-[50%] bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none z-[6]" 
       />
 
       {/* ══════════════════════════════════════════════════════════════════════════
           CAMADA 1: Fita Traseira de Veludo Vinho / Rubi Profundo com Listras
           ══════════════════════════════════════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-80">
+      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-80 z-[2]">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[142px] sm:h-[178px] pointer-events-none transform-gpu"
+          className="absolute -bottom-1 left-0 w-[200%] h-[155px] sm:h-[195px] pointer-events-none transform-gpu"
           style={{
             animation: 'aulasRubyWaveBackSlide 24s linear infinite',
             filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
@@ -71,11 +67,11 @@ export const AulasHeroWave: React.FC = () => {
       {/* ══════════════════════════════════════════════════════════════════════════
           CAMADA 2: Fita Mestra de Cetim com Listras de Seda & Crista de Luz
           ══════════════════════════════════════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform">
+      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform z-[3]">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[130px] sm:h-[162px] pointer-events-none transform-gpu"
+          className="absolute -bottom-1 left-0 w-[200%] h-[142px] sm:h-[178px] pointer-events-none transform-gpu"
           style={{
             animation: 'aulasRubyWaveMainSlide 16s linear infinite',
             filter: 'drop-shadow(0 -10px 24px rgba(225, 29, 72, 0.45)) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))',
@@ -152,11 +148,11 @@ export const AulasHeroWave: React.FC = () => {
       {/* ══════════════════════════════════════════════════════════════════════════
           CAMADA 3: Fita Frontal Esculpida com Listras Luminosas
           ══════════════════════════════════════════════════════════════════════════ */}
-      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-95">
+      <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-95 z-[4]">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[102px] sm:h-[130px] pointer-events-none transform-gpu"
+          className="absolute -bottom-1 left-0 w-[200%] h-[118px] sm:h-[148px] pointer-events-none transform-gpu"
           style={{
             animation: 'aulasRubyWaveFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
             filter: 'drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 20px rgba(225, 29, 72, 0.4))',
@@ -197,20 +193,20 @@ export const AulasHeroWave: React.FC = () => {
         </svg>
       </div>
 
-      {/* Estilos das Animações GPU */}
+      {/* Estilos das Animações GPU em Ciclo Relativo (-50%) */}
       <style>{`
         @keyframes aulasRubyWaveMainSlide {
           0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-1440px, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes aulasRubyWaveBackSlide {
           0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-1440px, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes aulasRubyWaveFrontSlide {
           0% { transform: translate3d(0, 0, 0); }
-          50% { transform: translate3d(-720px, 3px, 0); }
-          100% { transform: translate3d(-1440px, 0, 0); }
+          50% { transform: translate3d(-25%, 3px, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes aulasRubyGlowPulse {
           0% { opacity: 0.45; transform: scale(1); }

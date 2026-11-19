@@ -163,35 +163,30 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                   )}
                 </div>
 
-                {/* 3. Informações Estratégicas do Módulo: Título Amplo + Metadados + Progresso */}
+                {/* 3. Informações Estratégicas do Módulo: Título Amplo + Metadados + Barra de Progresso */}
                 <div className="relative z-10 flex-1 min-w-0 py-0.5">
                   <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
                     <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-mono font-bold uppercase tracking-wider bg-black/70 text-rose-300 border border-red-500/30 leading-none">
                       {fase.totalAulas || 30} aulas em áudio
                     </span>
-                    {fase.subtitulo && (
-                      <span className="text-[11px] font-sans text-zinc-400 truncate max-w-[130px] sm:max-w-xs">
-                        • {fase.subtitulo}
-                      </span>
-                    )}
                   </div>
 
                   <h3 className="font-sans font-bold text-white text-[14px] sm:text-[16px] leading-snug line-clamp-2 group-hover:text-rose-200 transition-colors">
                     {fase.nome}
                   </h3>
 
-                  {/* Barra de Progresso Fina se houver progresso */}
-                  {metricas.pct > 0 && (
-                    <div className="w-full max-w-xs mt-2 flex items-center gap-2">
-                      <div className="flex-1 bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/10">
-                        <div
-                          className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300"
-                          style={{ width: `${metricas.pct}%` }}
-                        />
-                      </div>
-                      <span className="text-[10px] font-mono text-rose-300 font-bold">{metricas.pct}%</span>
+                  {/* Barra de Progresso Sempre Visível */}
+                  <div className="w-full max-w-xs mt-2 flex items-center gap-2">
+                    <div className="flex-1 bg-black/70 rounded-full h-1.5 overflow-hidden border border-white/10">
+                      <div
+                        className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300"
+                        style={{ width: `${metricas.pct}%` }}
+                      />
                     </div>
-                  )}
+                    <span className="text-[10px] font-mono text-zinc-400 group-hover:text-rose-300 font-bold shrink-0">
+                      {metricas.pct}%
+                    </span>
+                  </div>
                 </div>
 
                 {/* 4. Botão de Toque Amplo (Padrão Google Touch Target min 48x48dp) */}

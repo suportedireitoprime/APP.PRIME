@@ -202,7 +202,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         
         {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/90 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[285px] xs:min-h-[305px] sm:min-h-[325px] mb-4 bg-[#0a0104]"
+          className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/90 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px] mb-4 bg-[#0a0104]"
         >
           {/* Imagem de Capa do Tribunal Límpida e Brilhante (Sem escurecimento excessivo) */}
           <div className="absolute inset-0 z-0 select-none pointer-events-none">
@@ -299,7 +299,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
           {/* 4 Atalhos Rápidos Integrados no Rodapé do Painel (Fundo Padrão das Funções) */}
           <div className="relative z-10 px-3 sm:px-5 pb-3 pt-2">
-            <div className="flex items-center justify-between gap-1.5 bg-[#141416]/90 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 shadow-2xl">
+            <div className="flex items-center justify-between gap-1.5 bg-black/60 backdrop-blur-md border border-white/12 rounded-2xl sm:rounded-3xl p-1.5 shadow-2xl">
               {/* Recentes */}
               <button
                 type="button"
