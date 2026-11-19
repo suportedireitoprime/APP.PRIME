@@ -5,6 +5,7 @@ import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { haptic } from '@/lib/nativeHaptics';
+import { AulasCardRubyBackground } from './AulasCardRubyBackground';
 
 interface AulasContinuarAulaBannerProps {
   aula: AulaItem;
@@ -50,17 +51,20 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
           </span>
         </div>
 
-        {/* Card Minimalista e Responsivo */}
+        {/* Card Minimalista e Responsivo com Fundo Rubi das Funções */}
         <motion.button
           type="button"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
           onClick={handleClick}
-          className="w-full flex items-center rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-white/10 hover:border-white/20 backdrop-blur-md shadow-lg p-2.5 xs:p-3 sm:p-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group gap-3 xs:gap-3.5"
+          className="relative overflow-hidden w-full flex items-center rounded-2xl border border-red-500/35 hover:border-red-400/60 shadow-[0_8px_24px_rgba(225,29,72,0.18)] hover:shadow-[0_12px_32px_rgba(225,29,72,0.30)] p-2.5 xs:p-3 sm:p-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group gap-3 xs:gap-3.5"
         >
+          {/* Fundo Rubi com Listras de Seda e Crista de Luz das Funções */}
+          <AulasCardRubyBackground active />
+
           {/* Capa Compacta 1:1 com cantos arredondados limpos */}
-          <div className="w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 relative bg-zinc-950 border border-white/10">
+          <div className="relative z-10 w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-red-500/30 shadow-md">
             {capaUrl ? (
               <img
                 src={capaUrl}
@@ -78,29 +82,29 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
           </div>
 
           {/* Informações da Aula */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-sans font-bold text-[13.5px] xs:text-[14.5px] sm:text-base text-white tracking-tight line-clamp-1 group-hover:text-red-300 transition-colors">
+          <div className="relative z-10 flex-1 min-w-0">
+            <h3 className="font-sans font-bold text-[13.5px] xs:text-[14.5px] sm:text-base text-white tracking-tight line-clamp-1 group-hover:text-rose-200 transition-colors">
               {aula.titulo}
             </h3>
 
-            <div className="flex items-center gap-1.5 xs:gap-2 mt-0.5 text-[11px] sm:text-xs text-zinc-400 truncate">
-              <span className="font-semibold text-red-400">{discNome}</span>
+            <div className="flex items-center gap-1.5 xs:gap-2 mt-0.5 text-[11px] sm:text-xs text-zinc-300 truncate">
+              <span className="font-semibold text-rose-400">{discNome}</span>
               <span className="text-zinc-600">•</span>
               <span className="font-mono text-zinc-300">{percent}% concluído</span>
             </div>
 
             {/* Barra de Progresso Fina e Elegante */}
-            <div className="w-full mt-2 bg-white/10 rounded-full h-1 overflow-hidden">
+            <div className="w-full mt-2 bg-black/40 rounded-full h-1 overflow-hidden border border-white/5">
               <div
-                className="h-full bg-gradient-to-r from-red-500 via-rose-500 to-amber-400 rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
                 style={{ width: `${percent}%` }}
               />
             </div>
           </div>
 
           {/* Botão de Ação Circular Limpo */}
-          <div className="shrink-0 pl-1">
-            <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-white/5 group-hover:bg-red-500 group-hover:text-black border border-white/10 text-white transition-all flex items-center justify-center shadow-sm">
+          <div className="relative z-10 shrink-0 pl-1">
+            <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-red-500/25 group-hover:bg-red-500 border border-red-500/40 text-rose-200 group-hover:text-white transition-all flex items-center justify-center shadow-[0_0_12px_rgba(225,29,72,0.25)] group-hover:shadow-[0_0_16px_rgba(225,29,72,0.6)]">
               <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
             </div>
           </div>

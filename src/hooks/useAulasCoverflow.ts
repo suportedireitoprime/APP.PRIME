@@ -7,6 +7,8 @@ interface UseAulasCoverflowOptions {
   initialIndex?: number;
   enabled?: boolean;
   onSelectCurrent?: () => void;
+  autoplay?: boolean;
+  autoplayIntervalMs?: number;
 }
 
 export function useAulasCoverflow({
@@ -14,10 +16,13 @@ export function useAulasCoverflow({
   initialIndex = 0,
   enabled = true,
   onSelectCurrent,
+  autoplay = true,
+  autoplayIntervalMs = 3800,
 }: UseAulasCoverflowOptions) {
   const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(initialIndex);
   const isDraggingRef = useRef(false);
+  const isInteractingRef = useRef(false);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastSoundIndexRef = useRef<number>(-1);
   const pageTurnAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -59,6 +64,7 @@ export function useAulasCoverflow({
   // Detecção leve de toque para diferenciar clique de arraste sem interferir no scroll nativo
   const handlePointerDown = (e: React.PointerEvent) => {
     pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    isInteractingRef.current = true;
     isDraggingRef.current = false;
   };
 
@@ -75,7 +81,8 @@ export function useAulasCoverflow({
     pointerStartRef.current = null;
     setTimeout(() => {
       isDraggingRef.current = false;
-    }, 60);
+      isInteractingRef.current = false;
+    }, 2400);
   };
 
   // Identificação do card ativo durante rolagem nativa (60-120fps liso)
@@ -141,6 +148,21 @@ export function useAulasCoverflow({
       return () => clearTimeout(timer);
     }
   }, [enabled, initialIndex, scrollCarouselToIndex]);
+
+  // Autoplay suave e contínuo (em movimento) com pausa ao interagir
+  useEffect(() => {
+    if (!enabled || !autoplay || totalItems <= 1) return;
+
+    const intervalId = window.setInterval(() => {
+      if (isDraggingRef.current || isInteractingRef.current || document.hidden) return;
+      const el = carouselScrollerRef.current;
+      if (!el || el.children.length === 0) return;
+      const nextIdx = (activeCarouselIndex + 1) % el.children.length;
+      scrollCarouselToIndex(nextIdx, 'smooth', true);
+    }, autoplayIntervalMs);
+
+    return () => window.clearInterval(intervalId);
+  }, [enabled, autoplay, autoplayIntervalMs, totalItems, activeCarouselIndex, scrollCarouselToIndex]);
 
   // Atalhos de teclado no Desktop (Setas e Enter)
   useEffect(() => {
