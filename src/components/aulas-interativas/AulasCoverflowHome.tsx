@@ -204,20 +204,23 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         <div 
           className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/90 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[285px] xs:min-h-[305px] sm:min-h-[325px] mb-4 bg-[#0a0104]"
         >
-          {/* Imagem de Capa do Tribunal */}
+          {/* Imagem de Capa do Tribunal Límpida e Brilhante (Sem escurecimento excessivo) */}
           <div className="absolute inset-0 z-0 select-none pointer-events-none">
             <img
               src={capaTribunalImg}
               alt="Tribunal sob o Céu Rubro"
-              className="w-full h-full object-cover object-[center_35%]"
+              className="w-full h-full object-cover object-[center_30%]"
               loading="eager"
               fetchPriority="high"
               decoding="async"
             />
-            {/* Gradientes sutis para contraste impecável de textos e controles */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0306] via-[#0e0306]/70 to-black/50" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
+            {/* Gradientes transparentes leves apenas na margem para leitura perfeita do título */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+            <div className="absolute inset-y-0 left-0 w-[60%] sm:w-[45%] bg-gradient-to-r from-black/70 via-black/25 to-transparent" />
           </div>
+
+          {/* Onda Fluida Rubra de Cetim e Cristas de Luz */}
+          <AulasHeroWave />
 
           {/* Cabeçalho Superior Transparente (Voltar + Busca) */}
           <header className="relative z-20 px-3 xs:px-4 sm:px-6 pt-2 pb-1 flex items-center justify-between">
@@ -294,9 +297,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </div>
           </div>
 
-          {/* 4 Atalhos Rápidos Integrados no Rodapé do Painel (Igual Pílulas) */}
+          {/* 4 Atalhos Rápidos Integrados no Rodapé do Painel (Fundo Padrão das Funções) */}
           <div className="relative z-10 px-3 sm:px-5 pb-3 pt-2">
-            <div className="flex items-center justify-between gap-1.5 bg-black/45 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 shadow-2xl">
+            <div className="flex items-center justify-between gap-1.5 bg-[#141416]/90 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 shadow-2xl">
               {/* Recentes */}
               <button
                 type="button"
