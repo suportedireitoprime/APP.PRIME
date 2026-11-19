@@ -136,3 +136,27 @@ export function limparTitulo(titulo: string): string {
       .trim() || titulo
   );
 }
+
+/**
+ * Converte títulos em ALL-CAPS para um formato editorial elegante e altamente legível.
+ */
+export function formatarTituloEditorial(titulo: string): string {
+  if (!titulo) return '';
+  const limpo = limparTitulo(titulo);
+  const letras = limpo.replace(/[^a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]/g, '');
+  if (letras.length > 5 && letras === letras.toUpperCase()) {
+    const conectivos = new Set([
+      'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'nos', 'nas',
+      'por', 'para', 'com', 'sem', 'sob', 'sobre', 'a', 'o', 'as', 'os',
+      'e', 'ou', 'que', 'se', 'um', 'uma', 'uns', 'umas'
+    ]);
+    const palavras = limpo.toLowerCase().split(' ');
+    const capitalizadas = palavras.map((p, idx) => {
+      if (!p) return p;
+      if (idx > 0 && conectivos.has(p)) return p;
+      return p.charAt(0).toUpperCase() + p.slice(1);
+    });
+    return capitalizadas.join(' ');
+  }
+  return limpo;
+}

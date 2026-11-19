@@ -17,9 +17,8 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
-import { TrilhaAula } from '@/components/videoaulas/TrilhaAula';
 import { useVideoaulaResumo, type AulaCtxInput } from '@/hooks/useVideoaulaAcao';
-import { limparTitulo, getCatalogo } from '@/lib/videoaulasCatalogos';
+import { limparTitulo, formatarTituloEditorial, getCatalogo } from '@/lib/videoaulasCatalogos';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,7 +55,7 @@ const VideoaulaView = () => {
   const state = useVideoaulaView({ catalogoId, videoId, userId, setTocandoState });
   const driveItem = useMemo(() => findVideoaulaByVideoId(videoId), [videoId]);
 
-  const [activeTab, setActiveTab] = useState<AbaVideoaula>('materiais');
+  const [activeTab, setActiveTab] = useState<AbaVideoaula>('resumo');
   const [showAnotacoes, setShowAnotacoes] = useState(false);
   const [podeResumir, setPodeResumir] = useState(false);
   const [copiado, setCopiado] = useState(false);
@@ -87,7 +86,7 @@ const VideoaulaView = () => {
   }, [videoId]);
 
   const tituloLimpo = useMemo(
-    () => (state.aula?.titulo ? limparTitulo(state.aula.titulo) : driveItem?.titulo ? limparTitulo(driveItem.titulo) : 'Aula'),
+    () => (state.aula?.titulo ? formatarTituloEditorial(state.aula.titulo) : driveItem?.titulo ? formatarTituloEditorial(driveItem.titulo) : 'Aula'),
     [state.aula?.titulo, driveItem?.titulo],
   );
 
@@ -242,12 +241,12 @@ const VideoaulaView = () => {
     );
   }
 
-  // Lista de abas para o Menu de Alternância
+  // Lista de abas para o Menu de Alternância (Resumo é o 1º e padrão)
   const abasDisponiveis: Array<{ id: AbaVideoaula; label: string; icon: any; count?: number | string }> = [
+    { id: 'resumo', label: 'Resumo da Aula', icon: BookOpenText },
     { id: 'materiais', label: 'Materiais & PDFs', icon: FileText, count: driveItem ? 4 : undefined },
     { id: 'questoes', label: 'Questões', icon: ListChecks, count: driveQuestoes.length || undefined },
     { id: 'flashcards', label: 'Flashcards', icon: Layers, count: driveCards.length || undefined },
-    { id: 'resumo', label: 'Resumo & Panorama', icon: BookOpenText },
     { id: 'transcricao', label: 'Transcrição', icon: Subtitles },
     { id: 'anotacoes', label: 'Minhas Anotações', icon: PenTool },
   ];
@@ -274,95 +273,102 @@ const VideoaulaView = () => {
         {/* Coluna Principal: Player e Menu de Alternância */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-4 sm:space-y-5">
           {/* Player & Informações do Topo */}
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             <VideoaulaPlayerHeader
               tempo={tempo}
               displayDuracao={displayDuracao}
               pctAtual={pctAtual}
               tituloLimpo={tituloLimpo}
+              areaLabel={state.aula?.area ?? catalogoEfetivo?.titulo}
+              canal={driveItem?.canal || (state.aula && 'canal' in state.aula ? (state.aula as { canal?: string }).canal : undefined)}
+              concluida={state.concluida}
             />
 
-            {/* Ações Rápidas (Visto, Favoritar, Compartilhar) */}
-            <div className="flex items-center gap-2 px-1 sm:px-2 w-full overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {/* Ações Rápidas Harmoniosas e Sem Poluição Visual */}
+            <div className="flex items-center justify-between gap-2 px-1 sm:px-0">
               <button
                 type="button"
                 onClick={marcarConcluida}
                 className={cn(
-                  'inline-flex flex-1 items-center justify-center gap-1.5 h-11 px-3.5 rounded-xl border text-xs sm:text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 shadow-sm',
+                  'inline-flex items-center justify-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-xl border text-xs sm:text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 shadow-sm',
                   state.concluida
                     ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-400'
-                    : 'border-white/10 bg-zinc-900/80 text-zinc-300 hover:border-emerald-500/40 hover:text-white',
+                    : 'border-white/10 bg-zinc-900/90 text-zinc-200 hover:border-emerald-500/40 hover:text-white',
                 )}
               >
-                <CheckCircle2 className="w-4 h-4" />
-                {state.concluida ? 'Concluída' : 'Marcar como visto'}
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>{state.concluida ? 'Concluída' : 'Marcar como visto'}</span>
               </button>
 
-              <button
-                type="button"
-                onClick={toggleFavorito}
-                className={cn(
-                  'inline-flex flex-1 items-center justify-center gap-1.5 h-11 px-3.5 rounded-xl border text-xs sm:text-[13px] font-bold transition-all whitespace-nowrap active:scale-95 shadow-sm',
-                  state.favorito
-                    ? 'border-rose-500/50 bg-rose-500/15 text-rose-400'
-                    : 'border-white/10 bg-zinc-900/80 text-zinc-300 hover:border-rose-500/40 hover:text-white',
-                )}
-              >
-                <Heart className={cn('w-4 h-4', state.favorito && 'fill-current text-rose-500')} />
-                {state.favorito ? 'Favorita' : 'Favoritar'}
-              </button>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={toggleFavorito}
+                  className={cn(
+                    'inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl border transition-all active:scale-95 shadow-sm',
+                    state.favorito
+                      ? 'border-rose-500/50 bg-rose-500/15 text-rose-400'
+                      : 'border-white/10 bg-zinc-900/90 text-zinc-300 hover:border-rose-500/40 hover:text-white',
+                  )}
+                  title={state.favorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                  aria-label="Favoritar aula"
+                >
+                  <Heart className={cn('w-4.5 h-4.5', state.favorito && 'fill-current text-rose-500')} />
+                </button>
 
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border border-white/10 bg-zinc-900/80 text-zinc-300 hover:text-white hover:border-blue-500/40 transition-all text-xs sm:text-[13px] font-bold active:scale-95 whitespace-nowrap"
-                  >
-                    <Send className="w-4 h-4" />
-                    Compartilhar
-                  </button>
-                </DrawerTrigger>
-                <DrawerContent className="bg-zinc-950 border-t border-white/10 p-5 text-white">
-                  <DrawerHeader className="p-0 pb-4">
-                    <DrawerTitle className="text-base font-bold">Compartilhar Aula</DrawerTitle>
-                    <DrawerDescription className="text-xs text-zinc-400">
-                      Envie para amigos ou colegas de estudo
-                    </DrawerDescription>
-                  </DrawerHeader>
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <button
-                      onClick={shareWhatsApp}
-                      className="h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-emerald-950/50"
-                    >
-                      <span>WhatsApp</span>
-                    </button>
-                    <button
-                      onClick={shareTelegram}
-                      className="h-12 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-sky-950/50"
-                    >
-                      <span>Telegram</span>
-                    </button>
-                  </div>
-                </DrawerContent>
-              </Drawer>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setShowAnotacoes(true);
+                  }}
+                  className="inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-white/10 bg-zinc-900/90 text-zinc-300 hover:border-white/30 hover:text-white transition-all active:scale-95 shadow-sm"
+                  title="Anotações da Aula"
+                  aria-label="Anotações"
+                >
+                  <PenTool className="w-4 h-4" />
+                </button>
 
-            {/* Trilha de Etapas da Aula */}
-            <div className="px-1 sm:px-2 py-1 space-y-1.5">
-              <p className="text-[10.5px] uppercase tracking-wider text-zinc-400 font-bold pl-0.5">
-                Etapas para Conclusão
-              </p>
-              <TrilhaAula
-                videoId={videoId}
-                concluida={state.concluida}
-                pctAtual={pctAtual}
-                onMarcarConcluida={marcarConcluida}
-              />
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-white/10 bg-zinc-900/90 text-zinc-300 hover:border-sky-500/40 hover:text-white transition-all active:scale-95 shadow-sm"
+                      title="Compartilhar Aula"
+                      aria-label="Compartilhar"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </DrawerTrigger>
+                  <DrawerContent className="bg-zinc-950 border-t border-white/10 p-5 text-white">
+                    <DrawerHeader className="p-0 pb-4">
+                      <DrawerTitle className="text-base font-bold">Compartilhar Aula</DrawerTitle>
+                      <DrawerDescription className="text-xs text-zinc-400">
+                        Envie para amigos ou colegas de estudo
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <button
+                        onClick={shareWhatsApp}
+                        className="h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-emerald-950/50"
+                      >
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={shareTelegram}
+                        className="h-12 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md shadow-sky-950/50"
+                      >
+                        <span>Telegram</span>
+                      </button>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              </div>
             </div>
           </div>
 
           {/* MENU DE ALTERNÂNCIA (SUBSTITUI O ANTIGO RODAPÉ) */}
-          <div className="sticky top-[56px] z-30 -mx-2 sm:-mx-4 lg:mx-0 px-2 sm:px-4 lg:px-0 py-2.5 bg-[#0D0D0D]/95 backdrop-blur-xl border-y border-white/10 shadow-lg">
+          <div className="sticky top-[56px] z-30 -mx-2 sm:-mx-4 lg:mx-0 px-2 sm:px-4 lg:px-0 py-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-y border-white/10 shadow-lg">
             <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {abasDisponiveis.map((aba) => {
                 const Icon = aba.icon;
@@ -489,7 +495,7 @@ const VideoaulaView = () => {
                 </motion.div>
               )}
 
-              {/* ABA 4: RESUMO & PANORAMA */}
+              {/* ABA RESUMO: PADRÃO ABAIXO DO VÍDEO */}
               {activeTab === 'resumo' && (
                 <motion.div
                   key="tab-resumo"
@@ -504,7 +510,56 @@ const VideoaulaView = () => {
                       <span className="w-1.5 h-4.5 rounded-full bg-cyan-400 shrink-0" />
                       <span>Panorama & Síntese da Aula</span>
                     </h3>
+                    {driveItem && (
+                      <span className="text-[11px] font-semibold text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-full border border-cyan-400/20">
+                        Resumo Oficial
+                      </span>
+                    )}
                   </div>
+
+                  {/* Acesso Rápido aos PDFs Oficiais no próprio Resumo */}
+                  {driveItem && (driveItem.resumoCompletoUrl || driveItem.resumoCornellUrl) && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {driveItem.resumoCompletoUrl && (
+                        <a
+                          href={driveItem.resumoCompletoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => haptic.selection()}
+                          className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-emerald-500/30 hover:border-emerald-500/60 transition-all group active:scale-[0.98] shadow-sm"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 group-hover:scale-105 transition-transform">
+                            <FileText className="w-4.5 h-4.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs sm:text-[13px] font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                              Baixar Resumo em PDF
+                            </p>
+                            <p className="text-[11px] text-zinc-400 truncate">Documento completo e diagramado</p>
+                          </div>
+                        </a>
+                      )}
+                      {driveItem.resumoCornellUrl && (
+                        <a
+                          href={driveItem.resumoCornellUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => haptic.selection()}
+                          className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-800/90 border border-amber-500/30 hover:border-amber-500/60 transition-all group active:scale-[0.98] shadow-sm"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform">
+                            <BookOpenText className="w-4.5 h-4.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs sm:text-[13px] font-bold text-white group-hover:text-amber-400 transition-colors truncate">
+                              Resumo Método Cornell
+                            </p>
+                            <p className="text-[11px] text-zinc-400 truncate">Palavras-chave e síntese visual</p>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  )}
 
                   <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 sm:p-5 backdrop-blur-md">
                     <VideoaulaPanoramaIA

@@ -140,10 +140,24 @@ export function useVideoaulaResumo(
     queryFn: async () => {
       const driveItem = findVideoaulaByVideoId(input?.videoId);
       if (driveItem) {
+        const topicos = driveItem.flashcards?.length
+          ? driveItem.flashcards.slice(0, 5).map(f => `* **${f.frente}**: ${f.verso}`).join('\n')
+          : '';
+        const intro = driveItem.transcricao?.length
+          ? driveItem.transcricao.slice(0, 850).trim() + '...'
+          : 'Conteúdo da aula gravado e disponível nos materiais complementares.';
+
+        const md = [
+          `### ${driveItem.titulo}`,
+          `*Professor / Canal*: **${driveItem.canal}** · *Duração*: **${driveItem.duracao}**`,
+          topicos ? `\n#### Pontos e Conceitos Fundamentais:\n${topicos}` : '',
+          `\n#### Síntese Inicial da Matéria:\n${intro}`,
+        ].filter(Boolean).join('\n\n');
+
         return {
           area: driveItem.categoria === "iniciantes" ? "Fundamentos do Direito" : "Áreas do Direito",
           tema: driveItem.titulo,
-          resumo: `### ${driveItem.titulo}\n\n**Canal**: ${driveItem.canal} • **Duração**: ${driveItem.duracao}\n\n${driveItem.transcricao.slice(0, 1000)}...`,
+          resumo: md,
         };
       }
       const { data, error } = await supabase.functions.invoke("videoaula-resumo", {
