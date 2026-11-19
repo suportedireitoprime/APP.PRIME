@@ -285,9 +285,9 @@ export const PILULAS_MATERIAS: PilulaMateriaMeta[] = [
     sigla: 'SÚMULAS',
     descricao: 'Enunciados sumulares vinculantes do STF, súmulas dominantes do STJ e jurisprudência pacificada',
     borderColor: '#B45309',
-    image: '/assets/covers/hero-vademecum-constituicao.webp',
+    image: '/assets/covers/cover-sumulas.webp',
     totalModulos: 1,
-    totalTopicos: 17,
+    totalTopicos: 61,
     aliases: ['sumulas', 'sumulas-vinculantes', 'jurisprudencia-sumulas'],
   },
 ];
