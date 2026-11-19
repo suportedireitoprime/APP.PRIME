@@ -1,4 +1,5 @@
 import { directImg } from '@/lib/cdnImg';
+import { PILULAS_MATERIAS } from './pilulasMateriasConfig';
 
 export interface PillGalleryItem {
   image: string;
@@ -10,51 +11,17 @@ export interface PillGalleryItem {
 }
 
 /**
- * Itens de código para galeria e lista.
+ * Itens de matérias/códigos para galeria e lista (todas as 23 matérias do Direito).
  * Compartilhado entre PilulasHome e PilulasLista.
  */
-export const CODIGOS_ITEMS: PillGalleryItem[] = [
-  {
-    id: 'penal',
-    image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', 400),
-    text: 'Direito Penal',
-    fullName: 'Direito Penal',
-    descricao: 'Áudios esquematizados, legendas sincronizadas e resumos Cornell',
-    borderColor: '#EF4444',
-  },
-  {
-    id: 'cf88',
-    image: '/pilulas/cf_portrait.webp',
-    text: 'Direito Constitucional',
-    fullName: 'Direito Constitucional',
-    descricao: 'Direitos fundamentais e organização dos poderes',
-    borderColor: '#10B981',
-  },
-  {
-    id: 'cc',
-    image: '/pilulas/cc_portrait.webp',
-    text: 'Direito Civil',
-    fullName: 'Direito Civil',
-    descricao: 'Pessoas, negócios jurídicos, obrigações e contratos',
-    borderColor: '#3B82F6',
-  },
-  {
-    id: 'cpp',
-    image: '/pilulas/cpp_portrait.webp',
-    text: 'Direito Processual Penal',
-    fullName: 'Direito Processual Penal',
-    descricao: 'Inquérito, provas, prisões cautelares e recursos',
-    borderColor: '#8B5CF6',
-  },
-  {
-    id: 'clt',
-    image: '/pilulas/clt_portrait.webp',
-    text: 'Direito do Trabalho',
-    fullName: 'Direito do Trabalho',
-    descricao: 'Jornada, verbas rescisórias e garantias do trabalhador',
-    borderColor: '#F59E0B',
-  },
-];
+export const CODIGOS_ITEMS: PillGalleryItem[] = PILULAS_MATERIAS.map(mat => ({
+  id: mat.id,
+  image: mat.image,
+  text: mat.nome,
+  fullName: `${mat.nome} • ${mat.totalTopicos} tópicos`,
+  descricao: mat.descricao,
+  borderColor: mat.borderColor,
+}));
 
 
 /**

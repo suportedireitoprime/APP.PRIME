@@ -1,0 +1,163 @@
+[
+  {
+    "id": "direito-administrativo",
+    "nome": "Direito Administrativo",
+    "slug": "direito-administrativo",
+    "totalModulos": 22,
+    "totalTopicos": 173
+  },
+  {
+    "id": "direito-ambiental",
+    "nome": "Direito Ambiental",
+    "slug": "direito-ambiental",
+    "totalModulos": 9,
+    "totalTopicos": 55
+  },
+  {
+    "id": "direito-civil",
+    "nome": "Direito Civil",
+    "slug": "direito-civil",
+    "totalModulos": 39,
+    "totalTopicos": 355
+  },
+  {
+    "id": "direito-constitucional",
+    "nome": "Direito Constitucional",
+    "slug": "direito-constitucional",
+    "totalModulos": 20,
+    "totalTopicos": 164
+  },
+  {
+    "id": "direito-desportivo",
+    "nome": "Direito Desportivo",
+    "slug": "direito-desportivo",
+    "totalModulos": 7,
+    "totalTopicos": 71
+  },
+  {
+    "id": "direito-do-trabalho",
+    "nome": "Direito do Trabalho",
+    "slug": "direito-do-trabalho",
+    "totalModulos": 23,
+    "totalTopicos": 188
+  },
+  {
+    "id": "direito-empresarial",
+    "nome": "Direito Empresarial",
+    "slug": "direito-empresarial",
+    "totalModulos": 13,
+    "totalTopicos": 116
+  },
+  {
+    "id": "direito-financeiro",
+    "nome": "Direito Financeiro",
+    "slug": "direito-financeiro",
+    "totalModulos": 14,
+    "totalTopicos": 88
+  },
+  {
+    "id": "direito-internacional-privado",
+    "nome": "Direito Internacional Privado",
+    "slug": "direito-internacional-privado",
+    "totalModulos": 6,
+    "totalTopicos": 26
+  },
+  {
+    "id": "direito-penal",
+    "nome": "Direito Penal",
+    "slug": "direito-penal",
+    "totalModulos": 42,
+    "totalTopicos": 336
+  },
+  {
+    "id": "direito-previdenciario",
+    "nome": "Direito Previdenciário",
+    "slug": "direito-previdenciario",
+    "totalModulos": 11,
+    "totalTopicos": 94
+  },
+  {
+    "id": "direito-processual-civil",
+    "nome": "Direito Processual Civil",
+    "slug": "direito-processual-civil",
+    "totalModulos": 40,
+    "totalTopicos": 314
+  },
+  {
+    "id": "direito-processual-do-trabalho",
+    "nome": "Direito Processual do Trabalho",
+    "slug": "direito-processual-do-trabalho",
+    "totalModulos": 11,
+    "totalTopicos": 75
+  },
+  {
+    "id": "direito-processual-penal",
+    "nome": "Direito Processual Penal",
+    "slug": "direito-processual-penal",
+    "totalModulos": 21,
+    "totalTopicos": 169
+  },
+  {
+    "id": "direito-tributario",
+    "nome": "Direito Tributário",
+    "slug": "direito-tributario",
+    "totalModulos": 21,
+    "totalTopicos": 166
+  },
+  {
+    "id": "direito-urbanistico",
+    "nome": "Direito Urbanístico",
+    "slug": "direito-urbanistico",
+    "totalModulos": 5,
+    "totalTopicos": 40
+  },
+  {
+    "id": "direitos-humanos",
+    "nome": "Direitos Humanos",
+    "slug": "direitos-humanos",
+    "totalModulos": 9,
+    "totalTopicos": 75
+  },
+  {
+    "id": "formacao-complementar",
+    "nome": "Formação Complementar",
+    "slug": "formacao-complementar",
+    "totalModulos": 4,
+    "totalTopicos": 41
+  },
+  {
+    "id": "lei-penal-especial",
+    "nome": "Lei Penal Especial",
+    "slug": "lei-penal-especial",
+    "totalModulos": 12,
+    "totalTopicos": 117
+  },
+  {
+    "id": "politicas-publicas",
+    "nome": "Políticas Públicas",
+    "slug": "politicas-publicas",
+    "totalModulos": 6,
+    "totalTopicos": 57
+  },
+  {
+    "id": "portugues-juridico",
+    "nome": "Português Jurídico",
+    "slug": "portugues-juridico",
+    "totalModulos": 11,
+    "totalTopicos": 69
+  },
+  {
+    "id": "sumulas",
+    "nome": "Súmulas",
+    "slug": "sumulas",
+    "totalModulos": 1,
+    "totalTopicos": 17
+  },
+  {
+    "id": "teoria-e-filosofia-do-direito",
+    "nome": "Teoria e Filosofia do Direito",
+    "slug": "teoria-e-filosofia-do-direito",
+    "totalModulos": 15,
+    "totalTopicos": 106
+  }
+]
