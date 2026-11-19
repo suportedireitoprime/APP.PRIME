@@ -70,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Remove Lovable hot-reload from capacitor.config.ts
+      - name: Remove development hot-reload from capacitor.config.ts
         run: |
           node -e "
             const fs = require('fs');

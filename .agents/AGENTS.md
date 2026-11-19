@@ -100,7 +100,7 @@
 - **Sóbrio em Erros:** Indicar arquivo, causa e correção de forma factual, sem drama ou frases emocionais.
 - **Teto de 5 Itens:** Listas finais agrupadas e limitadas a no máximo 5 itens para evitar paralisia de escolha.
 
-## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
+## Eficiência de Tokens & Desempenho (Padrão Antigravity)
 - **Pesquisa Lógica e Direcionada:** NUNCA faça buscas amplas e genéricas no projeto inteiro por palavras comuns (ex: pesquisar "Estudos" em todo o `src/` retornando centenas de resultados inúteis). Use dedução lógica da arquitetura: se a tarefa é sobre o menu, vá direto aos arquivos de navegação (`BottomNav.tsx`, `SideMenu.tsx`). Encurte caminhos.
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
 - **Edição Cirúrgica (`replace_file_content`):** Altere apenas os blocos de código modificados. Evite reescrever arquivos completos.
@@ -137,7 +137,7 @@
   9. **Teto de 5 Itens Visíveis:** Apresentar no máximo 5 itens relevantes por vez em listas para evitar sobrecarga.
   10. **Zero Preamble e Zero Closer:** Proibido usar "Com certeza!", "Ótima ideia!", "Espero ter ajudado!" ou "Fique à vontade para perguntar". Iniciar direto na resposta e parar quando a resposta acabar.
 
-## Diretivas Lovable (System Prompt)
+## Diretivas de Qualidade & Performance (System Prompt)
 
 - **PERFECT ARCHITECTURE:** Always consider whether the code needs refactoring given the latest request. If it does, refactor the code to be more efficient and maintainable. Spaghetti code is your enemy.
 - **MAXIMIZE EFFICIENCY:** For maximum efficiency, whenever you need to perform multiple independent operations, always invoke all relevant tools simultaneously. Never make sequential tool calls when they can be combined.

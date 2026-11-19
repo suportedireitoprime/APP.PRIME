@@ -1,26 +1,30 @@
-# JURIDICO APP
+# DIREITO PRIME / ESTUDOS JURÍDICOS
 
-https://github.com/suportedireitoprime/APP.PRIME.git
+Aplicativo móvel e web de estudos jurídicos, Vade Mecum, audioaulas, mapas mentais, biblioteca de clássicos e simulados.
 
-This project was built with [Lovable](https://lovable.dev).
+## Tecnologias
 
-**Live app**: https://prime-legal-companion.lovable.app
+- **Frontend:** React 19, TypeScript, Tailwind CSS, TanStack Router
+- **Backend & Banco de Dados:** Supabase (PostgreSQL, Auth, Storage, Edge Functions)
+- **Nativo Mobile:** Capacitor 8 (Jetpack Compose para Android, SwiftUI para iOS)
+- **Mídia:** Cloudflare R2 (áudios, PDFs, vídeos)
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/bd8cb2f8-351d-4e4c-8274-f821a97f6472).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Desenvolvimento Local
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+# Instalar dependências
+bun install # ou npm i
+
+# Iniciar servidor de desenvolvimento (porta 8080)
+bun run dev
+```
+
+## Build
+
+```sh
+# Verificação de tipos
+.\node_modules\.bin\tsc.CMD --noEmit
+
+# Build de produção
+.\node_modules\.bin\vite.CMD build
 ```

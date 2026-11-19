@@ -1,9 +1,9 @@
 ---
 name: token-efficiency
-description: Diretrizes de alta performance para o Antigravity: otimização de tokens, economia de contexto, respostas sintéticas e edição cirúrgica de código (padrão Lovable). Use sempre para evitar estouro de limite de tokens e acelerar a execução das tarefas.
+description: Diretrizes de alta performance para o Antigravity: otimização de tokens, economia de contexto, respostas sintéticas e edição cirúrgica de código. Use sempre para evitar estouro de limite de tokens e acelerar a execução das tarefas.
 ---
 
-# Skill de Eficiência de Tokens e Alta Performance (Estilo Lovable)
+# Skill de Eficiência de Tokens e Alta Performance (Padrão Antigravity)
 
 Esta skill estabelece o fluxo de trabalho de alta eficiência para o **Antigravity**, focado em economizar contexto, reduzir drasticamente o consumo de tokens e responder de forma rápida e precisa.
 

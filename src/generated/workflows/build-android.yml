@@ -53,7 +53,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Remove Lovable hot-reload from capacitor.config.ts
+      - name: Remove development hot-reload from capacitor.config.ts
         run: |
           node -e "
             const fs = require('fs');
@@ -2991,7 +2991,7 @@ jobs:
           root = Path('android/build.gradle')
           if root.exists():
               rs = root.read_text()
-              marker = '// LOVABLE_FORCE_COMPILE_SDK'
+              marker = '// BUILD_FORCE_COMPILE_SDK'
               if marker not in rs:
                   snippet = '\n'.join([
                       '',

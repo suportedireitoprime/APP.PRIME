@@ -1,17 +1,12 @@
 import { Capacitor } from '@capacitor/core';
 
 /**
- * Lovable CDN assets are served at `/__l5e/assets-v1/...` — a relative path
- * that resolves against the current origin. On the web this is the Lovable
- * domain and works fine. Inside the native app (Capacitor) the origin is
- * `http://localhost`, and that path doesn't exist inside the APK bundle,
- * so <img src> requests 404 and the images disappear.
- *
- * This helper prefixes those relative paths with the published Lovable host
- * when running natively, keeping everything unchanged on the web.
+ * Assets estáticos servidos no CDN de produção.
+ * No app nativo (Capacitor), o host padrão é prefixado para garantir
+ * que assets relativos continuem carregando normalmente.
  */
 const CDN_HOST =
-  (import.meta.env.VITE_LOVABLE_ASSETS_HOST as string | undefined)?.replace(/\/+$/, '') ||
+  (import.meta.env.VITE_ASSETS_HOST as string | undefined)?.replace(/\/+$/, '') ||
   'https://direitoprime.com.br';
 
 const isNative = (() => {

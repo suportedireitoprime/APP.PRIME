@@ -35,7 +35,7 @@ Quando o usuário solicitar o aperfeiçoamento de uma área ou módulo:
 
 ---
 
-### 4. 🎨 Design & Layout Premium (Padrão Lovable & Grandes Empresas)
+### 4. 🎨 Design & Layout Premium (Padrão Antigravity & Grandes Empresas)
 - **Mobile First + Desktop Expandido:**
   - **Mobile:** Interfaces limpas, áreas de toque generosas (`min-h-[44px]`), barra de ações fixas e *bottom sheets*.
   - **Desktop (Ultrawide / Widescreen):** Em telas grandes (`lg:`, `xl:`, `2xl:`), migrar de listas verticais estreitas para **Grids Multi-Colunas** (`grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`) ou **Layout de 2 Colunas (Master-Detail)** aproveitando toda a largura da tela (`max-w-7xl` ou `max-w-[1600px]`).

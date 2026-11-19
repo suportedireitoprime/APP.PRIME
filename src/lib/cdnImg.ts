@@ -178,7 +178,7 @@ export const getStoragePublicUrl = (bucket: string, path: string): string => {
 };
 
 /**
- * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
+ * Resolve caminhos relativos do CDN ou pointers de asset
  * e converte URLs do Google Drive para stream direto.
  */
 const resolve = (url: string) => {
