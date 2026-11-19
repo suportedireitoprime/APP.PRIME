@@ -24,7 +24,6 @@ import { MapasMentaisSobre } from './MapasMentaisSobre';
 import { MapasMentaisFormatModal } from './MapasMentaisFormatModal';
 import { MapasMentaisViewer } from './MapasMentaisViewer';
 import { MapasMentaisPastas } from './MapasMentaisPastas';
-import { MapasMentaisBottomNav } from './MapasMentaisBottomNav';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { FILTROS } from './mapasConstants';
@@ -58,7 +57,6 @@ export default function MapasMentaisView({
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [busca, setBusca] = useState('');
   const [buscaDetalhe, setBuscaDetalhe] = useState('');
-  const [buscaAtiva, setBuscaAtiva] = useState(false);
   const [limite, setLimite] = useState(30);
 
   // Itens selecionados na navegação
@@ -427,20 +425,72 @@ export default function MapasMentaisView({
         />
       </div>
 
-      {/* 1. Header com Capa Roxa (na visualização inicial do catálogo) */}
+      {/* 1. Header com Capa Roxa e Onda Fluida */}
       {!item && filtro !== 'pastas' && (
-        <MapasMentaisHeader
-          categoria={categoria}
-          setCategoria={setCategoria}
-          filtro={filtro}
-          setFiltro={setFiltro}
-          busca={busca}
-          setBusca={setBusca}
-          favoritosCount={favoritos.length}
-          recentesCount={recentes.length}
-          pastasCount={Object.keys(prontos).length}
-          onBack={voltar}
-        />
+        <>
+          <MapasMentaisHeader
+            categoria={categoria}
+            setCategoria={setCategoria}
+            filtro={filtro}
+            setFiltro={setFiltro}
+            favoritosCount={favoritos.length}
+            recentesCount={recentes.length}
+            pastasCount={Object.keys(prontos).length}
+            onBack={voltar}
+          />
+
+          {/* Barra de Pesquisa Fixa Logo Após o Painel + Chips de Categoria */}
+          <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-1 pb-3 space-y-2.5">
+            <div className="relative h-12 sm:h-13 w-full flex items-center shadow-lg shadow-black/40">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 shrink-0 pointer-events-none z-10" strokeWidth={2.2} />
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value.slice(0, 60))}
+                placeholder="Pesquisar matéria, código, tema de mapas mentais..."
+                className="h-full w-full rounded-2xl bg-[#141416]/95 backdrop-blur-md border border-white/10 hover:border-purple-500/30 focus:border-purple-400 pl-12 pr-12 font-sans text-xs xs:text-sm text-white placeholder:text-zinc-500 outline-none focus:ring-1 focus:ring-purple-400 transition-all shadow-inner"
+              />
+              {busca && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1.5 cursor-pointer z-10"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Chips de Categoria para Navegação Rápida */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5 pb-1">
+              {(['materias', 'codigos', 'estatutos', 'leis_especiais', 'sumulas'] as VisualCategoria[]).map((cat) => {
+                const isAtiva = categoria === cat;
+                const info = CATEGORIA_INFO[cat];
+                const label = info?.label || cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      setCategoria(cat);
+                      setBusca('');
+                      setItem(null);
+                      setTema(null);
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
+                      isAtiva
+                        ? 'bg-purple-600 text-white border-purple-400 shadow-md shadow-purple-900/40'
+                        : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
       )}
 
       {/* 2. Barra de Navegação / Trilha quando estiver em detalhes, pastas ou sobre */}
@@ -527,7 +577,7 @@ export default function MapasMentaisView({
       )}
 
       {/* 3. Área de Conteúdo Principal */}
-      <main className={`relative z-10 flex-1 ${!(item || filtro === 'pastas') ? 'pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]' : 'pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'}`}>
+      <main className="relative z-10 flex-1 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {filtro === 'pastas' ? (
           <MapasMentaisPastas
             prontos={prontos}
@@ -670,57 +720,7 @@ export default function MapasMentaisView({
         feature="mapa_mental"
       />
 
-      {/* 8. Barra de Pesquisa Flutuante (abre ao clicar em Pesquisar no BottomNav) */}
-      {buscaAtiva && (
-        <div className="fixed bottom-[calc(4.5rem+16px+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-4 right-4 z-40 animate-in slide-in-from-bottom-4 fade-in duration-200">
-          <div className="relative h-14 w-full flex items-center shadow-2xl shadow-black/80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 shrink-0 pointer-events-none" strokeWidth={2.2} />
-            <input
-              autoFocus
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value.slice(0, 60))}
-              placeholder="Pesquisar matéria, código, tema..."
-              className="h-full w-full rounded-2xl bg-[#1a1025]/95 backdrop-blur-md border border-purple-500/30 pl-12 pr-14 font-sans text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all shadow-inner"
-            />
-            {busca && (
-              <button
-                type="button"
-                onClick={() => setBusca('')}
-                className="absolute right-[52px] top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-2 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setBuscaAtiva(false)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* 9. Bottom Navigation Principal (Apenas na tela inicial dos mapas) */}
-      {!(item || filtro === 'pastas' || filtro === 'sobre') && (
-        <MapasMentaisBottomNav
-          categoria={categoria}
-          setCategoria={(cat) => {
-            setCategoria(cat);
-            setBusca('');
-            setBuscaAtiva(false);
-            setItem(null);
-            setTema(null);
-          }}
-          buscaAtiva={buscaAtiva}
-          onSearchClick={() => {
-            setBuscaAtiva(!buscaAtiva);
-            if (buscaAtiva) setBusca('');
-          }}
-        />
-      )}
     </div>
   );
 }

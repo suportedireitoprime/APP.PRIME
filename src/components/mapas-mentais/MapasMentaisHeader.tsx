@@ -1,184 +1,111 @@
 import React from 'react';
-import { ArrowLeft, Search, Mic, X, Brain } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
-import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
-import { CATEGORIAS, FILTROS, CATEGORIA_ICON, CATEGORIA_COR, type Filtro } from './mapasConstants';
-import { useDictation } from '@/hooks/useDictation';
+import { FILTROS, type Filtro } from './mapasConstants';
 import socratesThemisHeroImg from '@/assets/covers/socrates-themis-hero.webp';
-import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.webp';
-import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.webp';
-import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.webp';
-import ShapeGrid from '@/components/ui/ShapeGrid';
+import MapasMentaisHeroWave from './MapasMentaisHeroWave';
+import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
 
 interface MapasMentaisHeaderProps {
   categoria: VisualCategoria;
   setCategoria: (c: VisualCategoria) => void;
   filtro: Filtro;
   setFiltro: (f: Filtro) => void;
-  busca: string;
-  setBusca: (b: string) => void;
   favoritosCount?: number;
   recentesCount?: number;
   pastasCount?: number;
   onBack: () => void;
 }
 
-const BRAIN_VARIANTS = [
-  { img: cerebroRoxo, glow: 'rgba(168,85,247,0.75)' },
-  { img: cerebroCiano, glow: 'rgba(56,189,248,0.75)' },
-  { img: cerebroDourado, glow: 'rgba(251,191,36,0.75)' },
-];
-
 export function MapasMentaisHeader({
   categoria,
   setCategoria,
   filtro,
   setFiltro,
-  busca,
-  setBusca,
   favoritosCount = 0,
   recentesCount = 0,
   pastasCount = 0,
   onBack,
 }: MapasMentaisHeaderProps) {
-  const { state, start, stop } = useDictation((chunk) => {
-    setBusca(`${busca} ${chunk}`.trim().slice(0, 60));
-  });
-  const ouvindo = state === 'recording';
-
   return (
-    <>
-      <div
-        className="bg-hero-panel-violet relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top)] flex flex-col z-20 shrink-0"
+    <div
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 shrink-0 min-h-[300px] xs:min-h-[315px] sm:min-h-[335px] mb-3 bg-[#090214]"
       style={{
         transform: 'translateZ(0)',
-        backgroundColor: '#120524',
       }}
     >
       {/* Blindagem de overscroll superior contra vazamento do fundo */}
       <div
         className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-        style={{ backgroundColor: '#0D0D0D' }}
+        style={{ backgroundColor: '#090214' }}
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa: Sócrates e Deusa Têmis no Fundo à Direita */}
-      <img
-        src={socratesThemisHeroImg}
-        alt="Sócrates e Deusa Têmis - Mapas Mentais"
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-        className="absolute inset-0 w-full h-full object-cover object-[75%_center] sm:object-[70%_center] md:object-center z-0 pointer-events-none"
-      />
-
-      {/* 3 Cérebros Vazados (Transparentes) em Cores Diferentes Orbitando */}
-      <div className="absolute right-[-10px] sm:right-6 top-[28%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[2]">
-        {BRAIN_VARIANTS.map((brain, i) => {
-          const delay = i * 4.6; // Ciclo total de 14s dividido pelos 3 cérebros
-          return (
-            <motion.div
-              key={i}
-              className="absolute w-12 h-12 sm:w-16 sm:h-16"
-              animate={{
-                x: [
-                  100 * Math.cos(0),
-                  100 * Math.cos((2 * Math.PI) / 3),
-                  100 * Math.cos((4 * Math.PI) / 3),
-                  100 * Math.cos(2 * Math.PI),
-                ],
-                y: [
-                  42 * Math.sin(0),
-                  42 * Math.sin((2 * Math.PI) / 3),
-                  42 * Math.sin((4 * Math.PI) / 3),
-                  42 * Math.sin(2 * Math.PI),
-                ],
-                scale: [1, 0.72, 1.15, 1],
-                opacity: [0.92, 0.5, 1, 0.92],
-              }}
-              transition={{
-                duration: 14,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: -delay,
-              }}
-              style={{
-                left: '50%',
-                top: '50%',
-                marginLeft: -24,
-                marginTop: -24,
-              }}
-            >
-              <img
-                src={brain.img}
-                alt=""
-                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_var(--glow)]"
-                style={{ ['--glow' as string]: brain.glow }}
-              />
-            </motion.div>
-          );
-        })}
+      {/* Imagem de Capa Oficial: Sócrates e Deusa Têmis nos Jardins da Filosofia */}
+      <div className="absolute inset-0 z-0 select-none pointer-events-none">
+        <img
+          src={socratesThemisHeroImg}
+          alt="Sócrates e Deusa Têmis - Mapas Mentais"
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-[75%_center] sm:object-[70%_center] md:object-center"
+        />
+        {/* Gradiente sutil para garantir legibilidade de alto padrão na tipografia */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-[62%] sm:w-[48%] bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
       </div>
 
-      {/* Overlay com corte angular estilo menu Vade Mecum na cor roxa */}
-      <div
-        className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
-      >
-        <div
-          className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 48% 0, 36% 100%, 0% 100%)' }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#120524] via-[#240845] to-[#3B0764]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(192,132,252,0.35),transparent_65%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(76,29,149,0.55),transparent_70%)]" />
-          <div className="absolute inset-0 opacity-15 mix-blend-overlay">
-            <ShapeGrid />
-          </div>
+      {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Direita */}
+      <FloatingOrbitingBrains />
 
-          {/* SVGs flutuantes de Cérebro (translúcidos e em diferentes tamanhos/rotações) */}
-          <Brain className="absolute top-[5%] left-[5%] w-24 h-24 text-white opacity-[0.07] -rotate-[15deg] pointer-events-none" />
-          <Brain className="absolute top-[40%] left-[25%] w-40 h-40 text-white opacity-[0.05] rotate-[20deg] pointer-events-none" />
-          <Brain className="absolute -bottom-[10%] left-[10%] w-32 h-32 text-white opacity-[0.08] -rotate-[5deg] pointer-events-none" />
-          <Brain className="absolute top-[20%] left-[40%] w-20 h-20 text-white opacity-[0.06] rotate-[45deg] pointer-events-none" />
-        </div>
-      </div>
+      {/* Onda Hiper-Realista 3D Roxa de Cetim e Seda Imperial */}
+      <MapasMentaisHeroWave />
 
-      {/* Cabeçalho Superior Transparente com Botão Voltar Padrão */}
-      <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 sm:px-6 flex items-center justify-start">
+      {/* Cabeçalho Superior Transparente (Botão Voltar Padrão) */}
+      <header className="relative z-20 px-3 xs:px-4 sm:px-6 pt-2 pb-1 flex items-center justify-between">
         <button
           type="button"
           onClick={() => {
             haptic.light();
             onBack();
           }}
-          aria-label="Voltar"
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 flex items-center justify-center rounded-full bg-black/60 border border-purple-500/20 text-white backdrop-blur-md transition-colors hover:bg-black/80 active:opacity-70 shadow-lg cursor-pointer"
+          aria-label="Voltar para o início"
+          className="grid w-11 h-11 xs:w-12 xs:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95 cursor-pointer shadow-md"
         >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          <ArrowLeft className="w-5.5 h-5.5 xs:w-6 xs:h-6" strokeWidth={2.4} />
         </button>
       </header>
 
-      {/* Conteúdo: Logo e Título à esquerda sobre a área roxa */}
-      <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[100px] px-4 sm:px-6 max-w-[55%] sm:max-w-[48%] items-start text-left">
-        <h1 className="font-display uppercase tracking-widest text-white text-[20px] sm:text-[24px] md:text-[26px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-          Mapas Mentais
+      {/* Conteúdo de Marca: Mapas (branco) + Mentais (roxo ametista reluzente) - Padrão Oficial Início */}
+      <div className="relative z-10 px-4 sm:px-6 pt-3 sm:pt-4 flex-1 flex flex-col justify-start">
+        <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
+          <span className="font-serif text-[24px] sm:text-[28px] font-medium text-white block">
+            Mapas
+          </span>
+          <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-purple-400 block drop-shadow-[0_2px_14px_rgba(168,85,247,0.65)] -mt-0.5">
+            Mentais
+          </span>
         </h1>
-        <p className="font-serif italic text-purple-200/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1 line-clamp-2">
-          Conexões neurais, resumos esquematizados e fixação acelerada.
-        </p>
+
+        {/* Traço vertical roxo e slogan oficial */}
+        <div className="mt-2 flex items-start text-left gap-2 max-w-[280px]">
+          <div className="w-[3px] h-8 bg-gradient-to-b from-purple-400 via-fuchsia-500 to-purple-900 rounded-full shrink-0 mt-0.5 shadow-[0_0_10px_rgba(168,85,247,0.6)]" />
+          <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+            Conexões neurais e esquematizadas.
+            <br />
+            Fixação visual acelerada.
+          </p>
+        </div>
       </div>
 
-      {/* ── Elementos Integrados DENTRO da Capa (Funções e Pesquisa) ── */}
-      <div className="relative z-10 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto px-2 sm:px-4">
-        {/* 1. Funções (Favoritos, Recentes, Pastas, Sincronizados) estilo Home */}
-        <div className="flex items-center justify-between gap-1 sm:gap-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-[20px] sm:rounded-[24px] p-1.5 sm:p-2 shadow-2xl">
-          {FILTROS.map(({ id, label, Icone, color }) => {
+      {/* 4 Atalhos Rápidos com Ícones 100% Roxos flutuando sobre a Onda Roxa */}
+      <div className="relative z-10 px-3 sm:px-5 pb-3 pt-2">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 bg-black/50 backdrop-blur-md border border-white/12 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl">
+          {FILTROS.map(({ id, label, Icone }) => {
             const isAtivo = filtro === id;
-            // Simplifica labels para caberem
-            const labelCurta = label;
             return (
               <button
                 key={id}
@@ -187,18 +114,28 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(isAtivo ? 'todos' : id);
                 }}
-                className={`flex-1 group flex flex-col items-center justify-center py-2 sm:py-2.5 px-0.5 rounded-xl sm:rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden ${
-                  isAtivo ? 'bg-white/10 shadow-inner ring-1 ring-white/20' : ''
+                className={`flex-1 group flex flex-col items-center justify-center py-2 sm:py-2.5 px-0.5 rounded-xl sm:rounded-2xl hover:bg-purple-500/10 active:bg-purple-500/20 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden min-h-[48px] ${
+                  isAtivo ? 'bg-purple-600/25 shadow-inner ring-1 ring-purple-400/40' : ''
                 }`}
                 title={label}
               >
                 <Icone
-                  className={`w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110`}
-                  style={{ color: color, filter: isAtivo ? 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' : 'none' }}
-                  strokeWidth={isAtivo ? 2.5 : 2}
+                  className={`w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110 ${
+                    isAtivo ? 'text-purple-200' : 'text-purple-400 group-hover:text-purple-300'
+                  }`}
+                  style={{
+                    filter: isAtivo
+                      ? 'drop-shadow(0 0 10px rgba(168,85,247,0.85))'
+                      : 'drop-shadow(0 0 4px rgba(168,85,247,0.35))',
+                  }}
+                  strokeWidth={isAtivo ? 2.5 : 2.2}
                 />
-                <span className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold truncate max-w-full w-full ${isAtivo ? 'text-white' : 'text-zinc-300 group-hover:text-zinc-100'}`}>
-                  {labelCurta}
+                <span
+                  className={`text-[8.5px] sm:text-[9.5px] uppercase tracking-wider font-bold truncate max-w-full w-full ${
+                    isAtivo ? 'text-white' : 'text-purple-200/80 group-hover:text-purple-100'
+                  }`}
+                >
+                  {label}
                 </span>
               </button>
             );
@@ -206,6 +143,7 @@ export function MapasMentaisHeader({
         </div>
       </div>
     </div>
-  </>
   );
 }
+
+export default MapasMentaisHeader;

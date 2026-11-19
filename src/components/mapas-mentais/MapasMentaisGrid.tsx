@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Heart, Sparkles, Folder } from 'lucide-react';
+import { Bookmark, Sparkles, Folder } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
 import type { VisualRecord } from '@/lib/visuaisJuridicos/types';
@@ -104,10 +104,11 @@ export const MapasMentaisGrid = memo(function MapasMentaisGrid({
                       aria-label={isFavorito ? 'Remover dos favoritos' : 'Favoritar'}
                       className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer"
                     >
-                      <Heart
+                      <Bookmark
                         className={`w-4 h-4 transition-transform ${
-                          isFavorito ? 'fill-rose-500 text-rose-500 scale-110' : 'text-zinc-500 hover:text-zinc-300'
+                          isFavorito ? 'fill-purple-400 text-purple-400 scale-110' : 'text-zinc-500 hover:text-zinc-300'
                         }`}
+                        strokeWidth={2}
                       />
                     </button>
                   </div>

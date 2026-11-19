@@ -1,4 +1,4 @@
-import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Heart, Clock, Award, Folder, FileText, ShieldCheck } from 'lucide-react';
+import { Brain, Layers, GitBranch, Network, BookOpen, Scale, Gavel, Bookmark, Clock, Award, Folder, FileText, ShieldCheck } from 'lucide-react';
 import type { VisualCategoria, VisualTipo } from '@/lib/visuaisJuridicos/types';
 import type { ArtigoLei } from '@/data/mockData';
 import { itensDaCategoria } from '@/lib/visuaisJuridicos/catalogo';
@@ -65,10 +65,10 @@ export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'sobre' | 'sugeridos' 
 import { Sparkles, Info } from 'lucide-react';
 
 export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers; color: string }[] = [
-  { id: 'favoritos', label: 'Favoritos', Icone: Heart, color: '#34D399' },
-  { id: 'recentes', label: 'Recentes', Icone: Clock, color: '#F87171' },
-  { id: 'sugeridos', label: 'Sugeridos', Icone: Sparkles, color: '#FBBF24' },
-  { id: 'sobre', label: 'Sobre', Icone: Info, color: '#A78BFA' },
+  { id: 'favoritos', label: 'Favoritos', Icone: Bookmark, color: '#C084FC' },
+  { id: 'recentes', label: 'Recentes', Icone: Clock, color: '#A855F7' },
+  { id: 'sugeridos', label: 'Sugeridos', Icone: Sparkles, color: '#C084FC' },
+  { id: 'sobre', label: 'Sobre', Icone: Info, color: '#A855F7' },
 ];
 
 /** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { Search, X, Bookmark, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { CATEGORIA_COR, getCorParaItem } from './mapasConstants';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
@@ -153,7 +153,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                         }}
                         className="p-1 text-zinc-500 hover:text-white"
                       >
-                        <Heart className={`w-3.5 h-3.5 ${isFavorito ? 'fill-rose-500 text-rose-500' : ''}`} />
+                        <Bookmark className={`w-3.5 h-3.5 ${isFavorito ? 'fill-purple-400 text-purple-400' : ''}`} strokeWidth={2} />
                       </button>
                       <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
                     </div>
@@ -217,7 +217,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                         }}
                         className="p-2 text-zinc-500 hover:text-white"
                       >
-                        <Heart className={`w-4 h-4 ${isFavorito ? 'fill-rose-500 text-rose-500' : ''}`} />
+                        <Bookmark className={`w-4 h-4 ${isFavorito ? 'fill-purple-400 text-purple-400' : ''}`} strokeWidth={2} />
                       </button>
 
                       {pronto ? (
@@ -317,7 +317,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                           }}
                           className="p-1.5 text-zinc-500 hover:text-white"
                         >
-                          <Heart className={`w-4 h-4 ${isFavorito ? 'fill-rose-500 text-rose-500' : ''}`} />
+                          <Bookmark className={`w-4 h-4 ${isFavorito ? 'fill-purple-400 text-purple-400' : ''}`} strokeWidth={2} />
                         </button>
 
                         {pronto ? (

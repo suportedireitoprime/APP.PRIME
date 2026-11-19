@@ -10,6 +10,7 @@ import { getHomeHeroConfig } from "@/lib/vademecumHeroImage";
 import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
 import HeroAnimatedWave from "./HeroAnimatedWave";
 import HomeBrandBanner from "./HomeBrandBanner";
+import FloatingOrbitingBrains from "@/components/common/FloatingOrbitingBrains";
 import { HomeTrialCard } from "@/components/subscription/HomeTrialCard";
 import HomeActionShortcuts from "./HomeActionShortcuts";
 import { useUnreadNotifCount } from "@/components/vademecum/outros/NotificationsSheet";
@@ -108,6 +109,9 @@ const HomeHeaderHero = ({
           fetchPriority="high"
           className={heroConfig.className}
         />
+
+        {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Direita */}
+        <FloatingOrbitingBrains />
 
         {/* Onda Vermelha Fluida e Animada em Movimento (substitui o painel diagonal rígido) */}
         <HeroAnimatedWave />
