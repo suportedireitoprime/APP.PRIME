@@ -303,6 +303,7 @@ const PilulasPenalPlayer = lazy(() => import("./pages/pilulas/PilulasPenalPlayer
 const PilulasPlayer = lazy(() => import("./pages/pilulas/PilulasPlayer.tsx"));
 const PilulasMateria = lazy(() => import("./pages/pilulas/PilulasMateria.tsx"));
 const PilulasMateriaPlayer = lazy(() => import("./pages/pilulas/PilulasMateriaPlayer.tsx"));
+const PilulasSlugDispatcher = lazy(() => import("./pages/pilulas/PilulasSlugDispatcher.tsx"));
 
 const Privacidade = lazy(() => import("./pages/suporte/Privacidade.tsx"));
 const Termos = lazy(() => import("./pages/suporte/Termos.tsx"));
@@ -911,7 +912,8 @@ function AnimatedRoutes() {
           <Route path="/pilulas/materia/:slug/player/:topicId" element={<ProtectedRoute><PageTransition instant><PilulasMateriaPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/materia/:slug" element={<ProtectedRoute><PageTransition instant><PilulasMateria /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/:slug/player/:topicId" element={<ProtectedRoute><PageTransition instant><PilulasMateriaPlayer /></PageTransition></ProtectedRoute>} />
-          <Route path="/pilulas/:slug" element={<ProtectedRoute><PageTransition instant><PilulasMateria /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/:slug" element={<ProtectedRoute><PageTransition instant><PilulasSlugDispatcher /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition instant><PilulasSlugDispatcher /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca / Lições */}
           <Route path="/licoes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />

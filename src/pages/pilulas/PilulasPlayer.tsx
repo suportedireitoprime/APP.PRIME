@@ -14,11 +14,32 @@ import { PilulaExtraActions } from './components/PilulaExtraActions';
 import { motion } from 'framer-motion';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
+import { getMateriaMeta } from './data/pilulasMateriasConfig';
 
 
 export default function PilulasPlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // Se o ID for o slug ou alias de uma das 23 matérias, redireciona imediatamente para a matéria
+  const materiaMeta = id ? getMateriaMeta(id) : null;
+  useEffect(() => {
+    if (materiaMeta) {
+      if (materiaMeta.slug === 'direito-penal') {
+        navigate('/pilulas/penal', { replace: true });
+      } else {
+        navigate(`/pilulas/materia/${materiaMeta.slug}`, { replace: true });
+      }
+    }
+  }, [materiaMeta, navigate]);
+
+  if (materiaMeta) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-white/20 border-t-amber-400 animate-spin" />
+      </div>
+    );
+  }
 
   const { 
     livro: globalLivro, 
@@ -69,16 +90,26 @@ export default function PilulasPlayer() {
 
   if (!livro) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-4 text-center">
-        <AlertCircle className="w-12 h-12 text-white/20 mb-4" />
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6 text-center">
+        <AlertCircle className="w-14 h-14 text-amber-500/80 mb-4" />
         <h2 className="text-xl font-bold mb-2">Pílula não encontrada</h2>
-        <p className="text-white/50 mb-6">O conteúdo solicitado não existe ou foi removido.</p>
-        <button
-          onClick={() => navigate('/pilulas')}
-          className="px-6 py-2.5 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
-        >
-          Voltar para Acervo
-        </button>
+        <p className="text-white/60 text-sm max-w-sm mb-6">
+          O conteúdo solicitado não foi localizado ou pertence ao catálogo geral de matérias.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <button
+            onClick={() => navigate('/pilulas')}
+            className="w-full sm:w-auto px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20"
+          >
+            Ver Acervo de Matérias
+          </button>
+          <button
+            onClick={() => navigate('/pilulas/penal')}
+            className="w-full sm:w-auto px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl text-sm transition-colors"
+          >
+            Pílulas de Penal
+          </button>
+        </div>
       </div>
     );
   }

@@ -13,7 +13,7 @@ export function navigateToCodigoByItem(item: PillGalleryItem, navigate: Navigate
         navigate('/pilulas/penal');
         return true;
       }
-      navigate(`/pilulas/${metaById.slug}`);
+      navigate(`/pilulas/materia/${metaById.slug}`);
       return true;
     }
   }
@@ -25,7 +25,7 @@ export function navigateToCodigoByItem(item: PillGalleryItem, navigate: Navigate
       navigate('/pilulas/penal');
       return true;
     }
-    navigate(`/pilulas/${metaByText.slug}`);
+    navigate(`/pilulas/materia/${metaByText.slug}`);
     return true;
   }
 

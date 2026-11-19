@@ -149,6 +149,7 @@ import { Route as JurisprudenciaProntasTribunalRouteImport } from './routes/juri
 import { Route as LegislacaoTipoLeiSlugRouteImport } from './routes/legislacao.$tipo.$leiSlug'
 import { Route as LeiSecaSlugParteRouteImport } from './routes/lei-seca.$slug.$parte'
 import { Route as PilulasDeckDeckIdRouteImport } from './routes/pilulas.deck.$deckId'
+import { Route as PilulasMateriaSlugRouteImport } from './routes/pilulas.materia.$slug'
 import { Route as QuestoesAreaSlugRouteImport } from './routes/questoes.area.$slug'
 import { Route as QuestoesDesafiosConquistasRouteImport } from './routes/questoes.desafios.conquistas'
 import { Route as RadarProposicoesDateRouteImport } from './routes/radar.proposicoes.$date'
@@ -159,6 +160,7 @@ import { Route as LegislacaoEstadualUfLeiSlugRouteImport } from './routes/legisl
 import { Route as LegislacaoTipoLeiSlugArtigoNumeroRouteImport } from './routes/legislacao.$tipo.$leiSlug.$artigoNumero'
 import { Route as VideoaulasLeiSecaLeiLeiIdRouteImport } from './routes/videoaulas.lei-seca.lei.$leiId'
 import { Route as LeiSecaSlugParteLicaoIdRouteImport } from './routes/lei-seca.$slug.$parte.licao.$id'
+import { Route as PilulasMateriaSlugPlayerTopicIdRouteImport } from './routes/pilulas.materia.$slug.player.$topicId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -874,6 +876,11 @@ const PilulasDeckDeckIdRoute = PilulasDeckDeckIdRouteImport.update({
   path: '/deck/$deckId',
   getParentRoute: () => PilulasRoute,
 } as any)
+const PilulasMateriaSlugRoute = PilulasMateriaSlugRouteImport.update({
+  id: '/materia/$slug',
+  path: '/materia/$slug',
+  getParentRoute: () => PilulasRoute,
+} as any)
 const QuestoesAreaSlugRoute = QuestoesAreaSlugRouteImport.update({
   id: '/area/$slug',
   path: '/area/$slug',
@@ -930,6 +937,12 @@ const LeiSecaSlugParteLicaoIdRoute = LeiSecaSlugParteLicaoIdRouteImport.update({
   path: '/licao/$id',
   getParentRoute: () => LeiSecaSlugParteRoute,
 } as any)
+const PilulasMateriaSlugPlayerTopicIdRoute =
+  PilulasMateriaSlugPlayerTopicIdRouteImport.update({
+    id: '/player/$topicId',
+    path: '/player/$topicId',
+    getParentRoute: () => PilulasMateriaSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -1072,6 +1085,7 @@ export interface FileRoutesByFullPath {
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
   '/lei-seca/$slug/$parte': typeof LeiSecaSlugParteRouteWithChildren
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
+  '/pilulas/materia/$slug': typeof PilulasMateriaSlugRouteWithChildren
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
@@ -1082,6 +1096,7 @@ export interface FileRoutesByFullPath {
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
+  '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1224,6 +1239,7 @@ export interface FileRoutesByTo {
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
   '/lei-seca/$slug/$parte': typeof LeiSecaSlugParteRouteWithChildren
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
+  '/pilulas/materia/$slug': typeof PilulasMateriaSlugRouteWithChildren
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
@@ -1234,6 +1250,7 @@ export interface FileRoutesByTo {
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
+  '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1377,6 +1394,7 @@ export interface FileRoutesById {
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
   '/lei-seca/$slug/$parte': typeof LeiSecaSlugParteRouteWithChildren
   '/pilulas/deck/$deckId': typeof PilulasDeckDeckIdRoute
+  '/pilulas/materia/$slug': typeof PilulasMateriaSlugRouteWithChildren
   '/questoes/area/$slug': typeof QuestoesAreaSlugRoute
   '/questoes/desafios/conquistas': typeof QuestoesDesafiosConquistasRoute
   '/radar/proposicoes/$date': typeof RadarProposicoesDateRoute
@@ -1387,6 +1405,7 @@ export interface FileRoutesById {
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
   '/videoaulas/lei-seca/lei/$leiId': typeof VideoaulasLeiSecaLeiLeiIdRoute
   '/lei-seca/$slug/$parte/licao/$id': typeof LeiSecaSlugParteLicaoIdRoute
+  '/pilulas/materia/$slug/player/$topicId': typeof PilulasMateriaSlugPlayerTopicIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1531,6 +1550,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug'
     | '/lei-seca/$slug/$parte'
     | '/pilulas/deck/$deckId'
+    | '/pilulas/materia/$slug'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
@@ -1541,6 +1561,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
+    | '/pilulas/materia/$slug/player/$topicId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1683,6 +1704,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug'
     | '/lei-seca/$slug/$parte'
     | '/pilulas/deck/$deckId'
+    | '/pilulas/materia/$slug'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
@@ -1693,6 +1715,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
+    | '/pilulas/materia/$slug/player/$topicId'
   id:
     | '__root__'
     | '/'
@@ -1835,6 +1858,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug'
     | '/lei-seca/$slug/$parte'
     | '/pilulas/deck/$deckId'
+    | '/pilulas/materia/$slug'
     | '/questoes/area/$slug'
     | '/questoes/desafios/conquistas'
     | '/radar/proposicoes/$date'
@@ -1845,6 +1869,7 @@ export interface FileRouteTypes {
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
     | '/videoaulas/lei-seca/lei/$leiId'
     | '/lei-seca/$slug/$parte/licao/$id'
+    | '/pilulas/materia/$slug/player/$topicId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2899,6 +2924,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PilulasDeckDeckIdRouteImport
       parentRoute: typeof PilulasRoute
     }
+    '/pilulas/materia/$slug': {
+      id: '/pilulas/materia/$slug'
+      path: '/materia/$slug'
+      fullPath: '/pilulas/materia/$slug'
+      preLoaderRoute: typeof PilulasMateriaSlugRouteImport
+      parentRoute: typeof PilulasRoute
+    }
     '/questoes/area/$slug': {
       id: '/questoes/area/$slug'
       path: '/area/$slug'
@@ -2968,6 +3000,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/lei-seca/$slug/$parte/licao/$id'
       preLoaderRoute: typeof LeiSecaSlugParteLicaoIdRouteImport
       parentRoute: typeof LeiSecaSlugParteRoute
+    }
+    '/pilulas/materia/$slug/player/$topicId': {
+      id: '/pilulas/materia/$slug/player/$topicId'
+      path: '/player/$topicId'
+      fullPath: '/pilulas/materia/$slug/player/$topicId'
+      preLoaderRoute: typeof PilulasMateriaSlugPlayerTopicIdRouteImport
+      parentRoute: typeof PilulasMateriaSlugRoute
     }
   }
 }
@@ -3218,6 +3257,17 @@ const ModoOfflineRouteWithChildren = ModoOfflineRoute._addFileChildren(
   ModoOfflineRouteChildren,
 )
 
+interface PilulasMateriaSlugRouteChildren {
+  PilulasMateriaSlugPlayerTopicIdRoute: typeof PilulasMateriaSlugPlayerTopicIdRoute
+}
+
+const PilulasMateriaSlugRouteChildren: PilulasMateriaSlugRouteChildren = {
+  PilulasMateriaSlugPlayerTopicIdRoute: PilulasMateriaSlugPlayerTopicIdRoute,
+}
+
+const PilulasMateriaSlugRouteWithChildren =
+  PilulasMateriaSlugRoute._addFileChildren(PilulasMateriaSlugRouteChildren)
+
 interface PilulasRouteChildren {
   PilulasIdRoute: typeof PilulasIdRoute
   PilulasCcRoute: typeof PilulasCcRoute
@@ -3228,6 +3278,7 @@ interface PilulasRouteChildren {
   PilulasCppRoute: typeof PilulasCppRoute
   PilulasListaRoute: typeof PilulasListaRoute
   PilulasDeckDeckIdRoute: typeof PilulasDeckDeckIdRoute
+  PilulasMateriaSlugRoute: typeof PilulasMateriaSlugRouteWithChildren
 }
 
 const PilulasRouteChildren: PilulasRouteChildren = {
@@ -3240,6 +3291,7 @@ const PilulasRouteChildren: PilulasRouteChildren = {
   PilulasCppRoute: PilulasCppRoute,
   PilulasListaRoute: PilulasListaRoute,
   PilulasDeckDeckIdRoute: PilulasDeckDeckIdRoute,
+  PilulasMateriaSlugRoute: PilulasMateriaSlugRouteWithChildren,
 }
 
 const PilulasRouteWithChildren =

@@ -138,7 +138,7 @@ export default function PilulasMateria() {
       } catch {}
       return next;
     });
-    navigate(`/pilulas/${meta.slug}/player/${topico.id}`);
+    navigate(`/pilulas/materia/${meta.slug}/player/${topico.id}`);
   }, [navigate, meta.slug, storagePrefix]);
 
   // Busca e filtragem de módulos

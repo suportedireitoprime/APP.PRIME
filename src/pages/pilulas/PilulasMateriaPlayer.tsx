@@ -395,7 +395,7 @@ export default function PilulasMateriaPlayer() {
 
   const irParaTopico = useCallback((novoTopico: TopicoItem) => {
     haptic.selection();
-    navigate(`/pilulas/${meta.slug}/player/${novoTopico.id}`, { replace: true });
+    navigate(`/pilulas/materia/${meta.slug}/player/${novoTopico.id}`, { replace: true });
     setDrawerAberto(false);
   }, [navigate, meta.slug]);
 
@@ -419,7 +419,7 @@ export default function PilulasMateriaPlayer() {
       <div className="theme-vademecum min-h-dvh bg-zinc-950 flex flex-col items-center justify-center text-white px-4">
         <p className="text-base text-zinc-300 mb-4">Tópico não encontrado no catálogo.</p>
         <button
-          onClick={() => navigate(`/pilulas/${meta.slug}`)}
+          onClick={() => navigate(`/pilulas/materia/${meta.slug}`)}
           className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold"
         >
           Voltar para {meta.nome}
@@ -471,7 +471,7 @@ export default function PilulasMateriaPlayer() {
         <button
           onClick={() => {
             haptic.light();
-            navigate(`/pilulas/${meta.slug}`);
+            navigate(`/pilulas/materia/${meta.slug}`);
           }}
           aria-label="Voltar para a matéria"
           className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer shadow-md"
