@@ -144,6 +144,7 @@ export function PlayerAulaNativo({
   const [aulaData, setAulaData] = useState<AulaData | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [idx, setIdx] = useState(etapaInicial !== undefined ? etapaInicial : 0);
+  const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
 
   // Estados de Áudio e Karaokê
   const [tocando, setTocando] = useState(false);
@@ -229,6 +230,7 @@ export function PlayerAulaNativo({
     setCarregando(true);
     setIdx(etapaInicial !== undefined ? etapaInicial : 0);
     setTocando(false);
+    setImgErrors({});
 
     loadAulaData(aula).then(async (data) => {
       if (ativo) {
@@ -334,9 +336,18 @@ export function PlayerAulaNativo({
 
   // URL da imagem cinematográfica da etapa atual
   const imagemUrl = useMemo(() => {
+    // Se a imagem desta etapa falhou anteriormente ao carregar (404), não exibe
+    if (imgErrors[idx]) return null;
+
+    // 1. Imagem direta com URL absoluta
     if (slideAtual?.imgUrl && slideAtual.imgUrl.startsWith('http')) {
+      // Se for a mesma URL da capa da aula e estamos em etapa posterior (idx > 0), não repete
+      if (slideAtual.imgUrl === aula.capaUrl && idx > 0) {
+        return null;
+      }
       return slideAtual.imgUrl;
     }
+
     const baseFolder = (aulaData?.urlJsonR2 || aula.urlJsonR2 || aulaData?.urlHtmlR2 || aula.urlHtmlR2 || '')
       .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
@@ -345,21 +356,39 @@ export function PlayerAulaNativo({
         return `${baseFolder}/${slideAtual.imgUrl}`;
       }
       if (slideAtual.imgUrl.startsWith('http')) {
+        if (slideAtual.imgUrl === aula.capaUrl && idx > 0) return null;
         return slideAtual.imgUrl;
       }
     }
+
     if (slideAtual?.img && baseFolder) {
       if (slideAtual.img === 'capa') {
-        return aula.capaUrl || `${baseFolder}/assets/img/capa.webp`;
+        // A capa só deve aparecer no slide 0 (abertura da aula)
+        return idx === 0 ? (aula.capaUrl || `${baseFolder}/assets/img/capa.webp`) : null;
       }
       const cleanImg = slideAtual.img.replace(/\.(?:webp|jpg|png)$/, '');
       return `${baseFolder}/assets/img/${cleanImg}.webp`;
     }
+
     if (aulaData?.imagens && slideAtual?.img && aulaData.imagens[slideAtual.img]) {
-      return aulaData.imagens[slideAtual.img];
+      const imgFromMap = aulaData.imagens[slideAtual.img];
+      if (slideAtual.img === 'capa' && idx > 0) {
+        return null;
+      }
+      if (imgFromMap.startsWith('assets/') && baseFolder) {
+        return `${baseFolder}/${imgFromMap}`;
+      }
+      return imgFromMap;
     }
-    return aula.capaUrl;
-  }, [slideAtual?.imgUrl, slideAtual?.img, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aulaData?.imagens, aula.urlJsonR2, aula.urlHtmlR2, aula.capaUrl]);
+
+    // A capa da aula SÓ é exibida na etapa de abertura (slide 0).
+    // Nas demais etapas (idx > 0), NUNCA repetir a capa da aula como fallback genérico.
+    if (idx === 0) {
+      return aula.capaUrl || null;
+    }
+
+    return null;
+  }, [slideAtual?.imgUrl, slideAtual?.img, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aulaData?.imagens, aula.urlJsonR2, aula.urlHtmlR2, aula.capaUrl, idx, imgErrors]);
 
   // Informar progresso ao componente pai sem disparar loops de re-render
   const onProgressoRef = useRef(onProgresso);
@@ -1968,7 +1997,7 @@ export function PlayerAulaNativo({
             </div>
 
             {/* Imagem Cinematográfica com Altura Otimizada e Efeito de Zoom Suave "pra dentro" (Oculta em Questões/Flashcards para máximo espaço) */}
-            {imagemUrl && !isQuestao && !isFlashcard && !isInterativo && (
+            {imagemUrl && !isQuestao && !isFlashcard && !isInterativo && !imgErrors[idx] && (
               <div className="relative w-full aspect-[16/8] sm:aspect-[16/7.5] max-h-[190px] sm:max-h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#250d14] group">
                 <img
                   key={`${idx}-${imagemUrl}`}
@@ -1978,9 +2007,12 @@ export function PlayerAulaNativo({
                   loading="eager"
                   fetchPriority="high"
                   onError={(e) => {
-                    const fallbackSrc = aula.capaUrl || '';
-                    if (fallbackSrc && e.currentTarget.src !== fallbackSrc) {
-                      e.currentTarget.src = fallbackSrc;
+                    if (idx === 0 && aula.capaUrl && e.currentTarget.src !== aula.capaUrl) {
+                      e.currentTarget.src = aula.capaUrl;
+                    } else {
+                      // Nos demais slides (idx > 0), se a imagem da etapa falhar (404),
+                      // NUNCA repetir a capa! Oculta o container para manter a leitura limpa e sem duplicatas.
+                      setImgErrors((prev) => ({ ...prev, [idx]: true }));
                     }
                   }}
                 />

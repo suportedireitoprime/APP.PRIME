@@ -91,10 +91,10 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
         <div className="flex items-center justify-between gap-2 px-3 xs:px-4 sm:px-6 mb-2.5">
           <div className="min-w-0 flex-1">
             <h2 className="font-display text-white text-[14px] sm:text-[15px] font-bold flex items-center gap-2 uppercase tracking-wider">
-              <span className="w-1 h-3.5 sm:h-4 rounded-full bg-red-500 shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+              <span className="w-1 h-3.5 sm:h-4 rounded-full bg-red-600 shrink-0" />
               <span>Trilhas do Conhecimento</span>
             </h2>
-            <p className="font-sans text-rose-200/70 text-[11px] sm:text-xs leading-snug ml-3 truncate">
+            <p className="font-sans text-zinc-400 text-[11px] sm:text-xs leading-snug ml-3 truncate">
               106 módulos em ordem cronológica de estudo
             </p>
           </div>
@@ -107,7 +107,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                   try { haptic.selection(); } catch {}
                   onSelectFase(null);
                 }}
-                className="text-[10px] sm:text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-full bg-red-950/60 text-rose-300 hover:text-white border border-red-500/30 transition-all cursor-pointer"
+                className="text-[10px] sm:text-[10.5px] font-mono font-bold px-2.5 py-1 rounded-full bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-all cursor-pointer"
               >
                 Limpar
               </button>
@@ -120,10 +120,10 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                   try { haptic.selection(); } catch {}
                   onOpenTodasTrilhas();
                 }}
-                className="text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full bg-[#180307]/80 hover:bg-[#25050d] text-rose-200 hover:text-white border border-red-500/30 transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-sm"
+                className="text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-sm"
               >
                 <span>Ver todas (106)</span>
-                <ChevronRight className="w-3.5 h-3.5 text-rose-400" />
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
               </button>
             )}
           </div>
@@ -144,8 +144,8 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                 }}
                 className={`px-3 py-1 rounded-full text-[10.5px] sm:text-[11px] font-semibold whitespace-nowrap transition-all border shrink-0 cursor-pointer active:scale-95 ${
                   isAtivo
-                    ? 'bg-gradient-to-r from-red-600 to-rose-700 border-rose-400/50 text-white shadow-[0_0_12px_rgba(225,29,72,0.35)]'
-                    : 'bg-[#180307]/80 border-red-500/20 text-zinc-300 hover:text-white hover:bg-[#25050d]'
+                    ? 'bg-red-600 border-red-500 text-white shadow-sm'
+                    : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {ciclo.label}
@@ -154,7 +154,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
           })}
         </div>
 
-        {/* ── LISTA VERTICAL DE CARDS RUBI DAS FUNÇÕES COM ESPAÇAMENTO HARMÔNICO ── */}
+        {/* ── LISTA VERTICAL DE CARDS COM VISUAL LIMPO E SEM BRILHO NEON ── */}
         <div className="px-3 xs:px-4 sm:px-6 space-y-2.5 sm:space-y-3">
           {modulosVisiveis.map((fase) => {
             const isSelected = faseSelecionadaId === fase.id;
@@ -167,15 +167,15 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                 onClick={() => handleCardClick(fase)}
                 className={`relative overflow-hidden w-full rounded-2xl p-2.5 sm:p-3 cursor-pointer group transition-all duration-200 border flex items-center justify-between gap-3 sm:gap-4 select-none ${
                   isSelected
-                    ? 'border-red-500/60 shadow-[0_12px_32px_rgba(225,29,72,0.30)] ring-1 ring-rose-400/40'
-                    : 'border-red-500/30 hover:border-red-400/50 shadow-[0_6px_20px_rgba(225,29,72,0.15)] hover:shadow-[0_10px_28px_rgba(225,29,72,0.25)]'
+                    ? 'border-white/30 bg-zinc-900 shadow-lg shadow-black/60 ring-1 ring-white/10'
+                    : 'border-white/10 hover:border-white/20 shadow-md shadow-black/40'
                 }`}
               >
-                {/* Fundo Rubi com Listras de Seda e Crista de Luz das Funções */}
+                {/* Fundo Base Vinho com Listras Sutis (Sem Glow Neon) */}
                 <AulasCardRubyBackground active={isSelected} />
 
                 {/* Capa Thumbnail 1:1 Compacta com Cantos Arredondados */}
-                <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-red-500/25 shadow-inner">
+                <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-white/10 shadow-inner">
                   {fase.capaUrl ? (
                     <>
                       <img
@@ -197,7 +197,7 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                   )}
 
                   {/* Número do Módulo */}
-                  <span className="absolute bottom-1 left-1 px-1.5 py-0.2 rounded text-[8px] font-mono font-bold bg-black/85 text-rose-200 border border-red-500/35 shadow">
+                  <span className="absolute bottom-1 left-1 px-1.5 py-0.2 rounded text-[8px] font-mono font-bold bg-black/85 text-zinc-200 border border-white/15 shadow">
                     #{fase.faseNumero}
                   </span>
                 </div>
@@ -205,10 +205,10 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                 {/* Informações da Trilha (Título + Metadados + Progresso) */}
                 <div className="relative z-10 flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider bg-black/70 text-rose-300 border border-red-500/35 leading-none">
+                    <span className="px-2 py-0.2 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider bg-black/75 text-zinc-300 border border-white/10 leading-none">
                       Módulo {fase.faseNumero}
                     </span>
-                    <span className="text-[11px] font-mono text-rose-200/70">
+                    <span className="text-[11px] font-mono text-zinc-400">
                       • {fase.totalAulas || 30} aulas em áudio
                     </span>
                   </div>
@@ -222,18 +222,18 @@ export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.m
                     <div className="w-full max-w-xs mt-1.5 flex items-center gap-2">
                       <div className="flex-1 bg-black/40 rounded-full h-1 overflow-hidden border border-white/5">
                         <div
-                          className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
+                          className="h-full bg-gradient-to-r from-red-600 to-amber-400 rounded-full transition-all duration-300"
                           style={{ width: `${metricas.pct}%` }}
                         />
                       </div>
-                      <span className="text-[9.5px] font-mono text-rose-300 font-bold">{metricas.pct}%</span>
+                      <span className="text-[9.5px] font-mono text-zinc-300 font-bold">{metricas.pct}%</span>
                     </div>
                   )}
                 </div>
 
                 {/* Botão de Ação / Chevron na Direita */}
                 <div className="relative z-10 shrink-0 pl-1">
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-500/20 group-hover:bg-red-500 border border-red-500/35 text-rose-300 group-hover:text-white transition-all flex items-center justify-center shadow-[0_0_12px_rgba(225,29,72,0.25)] group-hover:shadow-[0_0_16px_rgba(225,29,72,0.6)]">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 group-hover:bg-red-600 border border-white/10 group-hover:border-red-500 text-zinc-300 group-hover:text-white transition-all flex items-center justify-center shadow-sm">
                     <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
                   </div>
                 </div>

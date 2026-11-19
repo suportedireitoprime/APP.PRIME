@@ -20,6 +20,7 @@ import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
 import AulasHeroWave from './AulasHeroWave';
 import AulasCardRubyBackground from './AulasCardRubyBackground';
+import capaTribunalImg from '@/assets/capa-aulas-tribunal.jpg';
 
 /** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
 const NOMES_CAPA: Record<string, string> = {
@@ -199,12 +200,24 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
       {/* ── CONTAINER PRINCIPAL COM ROLAGEM VERTICAL FLUIDA E ELEMENTOS RESPONSIVOS ── */}
       <div className="relative z-10 w-full min-h-screen flex flex-col pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-top,0px)))] overflow-x-hidden">
         
-        {/* ── PAINEL HERO SUPERIOR (ESTILO PÍLULAS COM PALETA RUBI NOBRE, LISTRAS E ATALHOS) ── */}
+        {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[285px] xs:min-h-[305px] sm:min-h-[325px] mb-4 bg-[#0e0306]"
+          className="relative overflow-hidden rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/90 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[285px] xs:min-h-[305px] sm:min-h-[325px] mb-4 bg-[#0a0104]"
         >
-          {/* Ondas e listras fluidas de seda no tom Imperial Ruby & Rose Gold */}
-          <AulasHeroWave />
+          {/* Imagem de Capa do Tribunal */}
+          <div className="absolute inset-0 z-0 select-none pointer-events-none">
+            <img
+              src={capaTribunalImg}
+              alt="Tribunal sob o Céu Rubro"
+              className="w-full h-full object-cover object-[center_35%]"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+            {/* Gradientes sutis para contraste impecável de textos e controles */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0306] via-[#0e0306]/70 to-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent" />
+          </div>
 
           {/* Cabeçalho Superior Transparente (Voltar + Busca) */}
           <header className="relative z-20 px-3 xs:px-4 sm:px-6 pt-2 pb-1 flex items-center justify-between">
@@ -512,27 +525,27 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                           className={cn(
                             "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
                             isActive
-                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-gradient-to-r from-red-600 to-rose-700 text-white border border-rose-400/50 shadow-[0_2px_12px_rgba(225,29,72,0.4)]"
-                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-rose-200/70 bg-[#160206]/90 border border-red-500/25 opacity-80"
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-red-600 text-white border border-red-500 shadow-sm"
+                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-300 bg-black/75 border border-white/10 opacity-70"
                           )}
                         >
                           <span>{discAulas.length} AULAS</span>
                         </div>
                       </div>
 
-                      {/* Card da Capa em 3/4 com Design Vermelho das Funções */}
+                      {/* Card da Capa em 3/4 com Design Limpo e sem Brilho Neon */}
                       <div
                         className={cn(
                           "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] sm:max-h-[42vh] md:max-h-[46vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
-                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-rose-400/30"
+                            ? "shadow-2xl scale-[1.04] opacity-100 ring-1 ring-white/15"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
                         )}
                         style={{
-                          borderColor: isActive ? '#e11d48' : 'rgba(225, 29, 72, 0.35)',
+                          borderColor: isActive ? '#dc2626' : 'rgba(255, 255, 255, 0.12)',
                           boxShadow: isActive
-                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 0 28px rgba(225, 29, 72, 0.55), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4)`
-                            : `0 12px 24px rgba(0, 0, 0, 0.8), 0 0 10px rgba(225, 29, 72, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
+                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.2)`
+                            : `0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1)`,
                         }}
                       >
                         <img
@@ -566,7 +579,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                               )}
                               style={{ 
                                 color: '#fff',
-                                textShadow: `0 2px 12px rgba(0,0,0,0.95), 0 0 20px ${corTema}50`,
+                                textShadow: '0 2px 12px rgba(0,0,0,0.95)',
                               }}
                             >
                               {NOMES_CAPA[disc.nome] || disc.nome}

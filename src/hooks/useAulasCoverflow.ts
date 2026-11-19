@@ -30,18 +30,7 @@ export function useAulasCoverflow({
   const scrollRafRef = useRef<number | null>(null);
 
   const playPageTurnSound = useCallback(() => {
-    try {
-      if (!pageTurnAudioRef.current) {
-        pageTurnAudioRef.current = new Audio(pageTurnSound);
-      }
-      pageTurnAudioRef.current.currentTime = 0;
-      pageTurnAudioRef.current.volume = 0.35;
-      pageTurnAudioRef.current.playbackRate = 1.15;
-      const p = pageTurnAudioRef.current.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {});
-      }
-    } catch {}
+    // Som desativado conforme solicitação do usuário
   }, []);
 
   // Centraliza um card específico do carrossel suavemente ou instantaneamente

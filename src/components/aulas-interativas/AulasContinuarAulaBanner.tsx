@@ -51,20 +51,20 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
           </span>
         </div>
 
-        {/* Card Minimalista e Responsivo com Fundo Rubi das Funções */}
+        {/* Card Minimalista e Responsivo com Fundo Rubi das Funções (Sem Brilho Neon) */}
         <motion.button
           type="button"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
           onClick={handleClick}
-          className="relative overflow-hidden w-full flex items-center rounded-2xl border border-red-500/35 hover:border-red-400/60 shadow-[0_8px_24px_rgba(225,29,72,0.18)] hover:shadow-[0_12px_32px_rgba(225,29,72,0.30)] p-2.5 xs:p-3 sm:p-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group gap-3 xs:gap-3.5"
+          className="relative overflow-hidden w-full flex items-center rounded-2xl border border-white/10 hover:border-white/20 shadow-md shadow-black/40 p-2.5 xs:p-3 sm:p-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group gap-3 xs:gap-3.5"
         >
-          {/* Fundo Rubi com Listras de Seda e Crista de Luz das Funções */}
+          {/* Fundo Rubi com Listras de Seda */}
           <AulasCardRubyBackground active />
 
           {/* Capa Compacta 1:1 com cantos arredondados limpos */}
-          <div className="relative z-10 w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-red-500/30 shadow-md">
+          <div className="relative z-10 w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-white/10 shadow-sm">
             {capaUrl ? (
               <img
                 src={capaUrl}
@@ -96,7 +96,7 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
             {/* Barra de Progresso Fina e Elegante */}
             <div className="w-full mt-2 bg-black/40 rounded-full h-1 overflow-hidden border border-white/5">
               <div
-                className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
+                className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 rounded-full transition-all duration-300"
                 style={{ width: `${percent}%` }}
               />
             </div>
@@ -104,7 +104,7 @@ export const AulasContinuarAulaBanner: React.FC<AulasContinuarAulaBannerProps> =
 
           {/* Botão de Ação Circular Limpo */}
           <div className="relative z-10 shrink-0 pl-1">
-            <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-red-500/25 group-hover:bg-red-500 border border-red-500/40 text-rose-200 group-hover:text-white transition-all flex items-center justify-center shadow-[0_0_12px_rgba(225,29,72,0.25)] group-hover:shadow-[0_0_16px_rgba(225,29,72,0.6)]">
+            <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-full bg-white/5 group-hover:bg-red-600 border border-white/10 group-hover:border-red-500 text-zinc-300 group-hover:text-white transition-all flex items-center justify-center shadow-sm">
               <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
             </div>
           </div>

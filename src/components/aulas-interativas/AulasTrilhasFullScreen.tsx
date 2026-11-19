@@ -258,8 +258,8 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
                 }}
                 className={`relative overflow-hidden rounded-2xl border transition-all duration-200 p-3.5 sm:p-4.5 flex items-center gap-3.5 sm:gap-4.5 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] select-none ${
                   isSelected
-                    ? 'border-red-500/60 shadow-[0_12px_32px_rgba(225,29,72,0.30)] ring-1 ring-rose-400/40'
-                    : 'border-red-500/30 hover:border-red-400/50 shadow-[0_8px_24px_rgba(225,29,72,0.16)] hover:shadow-[0_10px_28px_rgba(225,29,72,0.25)]'
+                    ? 'border-white/25 bg-zinc-900 shadow-lg shadow-black/60 ring-1 ring-white/10'
+                    : 'border-white/10 hover:border-white/20 shadow-md shadow-black/40'
                 }`}
               >
                 {/* Fundo Rubi com Listras de Seda e Crista de Luz das Funções */}
@@ -331,7 +331,7 @@ export const AulasTrilhasFullScreen: React.FC<AulasTrilhasFullScreenProps> = ({
 
                 {/* Ação: Chevron Minimalista */}
                 <div className="relative z-10 shrink-0 flex items-center gap-1.5 pl-1">
-                  <div className="w-9 h-9 rounded-full bg-red-500/15 group-hover:bg-red-500 border border-red-500/30 group-hover:border-red-400 flex items-center justify-center text-rose-300 group-hover:text-white transition-all shadow">
+                  <div className="w-9 h-9 rounded-full bg-white/5 group-hover:bg-red-600 border border-white/10 group-hover:border-red-500 flex items-center justify-center text-zinc-300 group-hover:text-white transition-all shadow-sm">
                     <ChevronRight className="w-4 h-4" />
                   </div>
                 </div>

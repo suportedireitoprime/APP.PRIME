@@ -27,31 +27,19 @@ export const AulasCardRubyBackground: React.FC<AulasCardRubyBackgroundProps> = m
         {/* 2. Listras de Seda Fluidas (Design do Fundo das Funções) */}
         <div 
           className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${
-            active ? 'opacity-35' : 'opacity-20 group-hover:opacity-30'
+            active ? 'opacity-25' : 'opacity-15 group-hover:opacity-20'
           }`}
           style={{
-            backgroundImage: 'repeating-linear-gradient(135deg, rgba(251,113,133,0.18) 0px, rgba(251,113,133,0.18) 1.5px, transparent 1.5px, transparent 11px)',
+            backgroundImage: 'repeating-linear-gradient(135deg, rgba(251,113,133,0.12) 0px, rgba(251,113,133,0.12) 1.5px, transparent 1.5px, transparent 11px)',
           }}
         />
 
-        {/* 3. Onda de Luz / Resplendor Volumétrico Superior Esquerdo */}
-        <div 
-          className={`absolute -top-12 -left-12 rounded-full bg-gradient-to-br from-rose-500/25 via-red-600/15 to-transparent blur-2xl transform-gpu pointer-events-none transition-all duration-300 ${
-            active ? 'w-36 h-36 opacity-90' : 'w-28 h-28 opacity-60 group-hover:opacity-85'
-          }`} 
-        />
-
-        {/* 4. Resplendor Suave Inferior Direito */}
-        <div 
-          className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-red-950/40 blur-xl transform-gpu pointer-events-none" 
-        />
-
-        {/* 5. Linha de Crista de Luz Superior Reluzente */}
+        {/* 3. Linha de Crista Superior Sutil */}
         <div 
           className={`absolute inset-x-0 top-0 h-[1px] transition-opacity duration-300 ${
             active 
-              ? 'bg-gradient-to-r from-transparent via-rose-300/50 to-transparent opacity-100' 
-              : 'bg-gradient-to-r from-transparent via-rose-400/30 to-transparent opacity-70 group-hover:opacity-100'
+              ? 'bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-80' 
+              : 'bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-40 group-hover:opacity-60'
           }`} 
         />
       </div>

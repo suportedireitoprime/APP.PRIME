@@ -75,7 +75,7 @@ export function formatNarracaoParaHtml(narracao?: string, titulo?: string): stri
     .join('\n');
 }
 
-export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string, baseFolder?: string): AulaData {
+export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string, baseFolder?: string, capaUrl?: string): AulaData {
   let imagens: Record<string, string> = {};
   const imgMatch = html.match(/var\s+IMG\s*=\s*(\{[\s\S]*?\});/);
   if (imgMatch) {
@@ -117,10 +117,19 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
   slides = slides.map((s, idx) => {
     let resolvedImg = s.imgUrl;
     if (!resolvedImg && s.img && imagens[s.img]) {
-      resolvedImg = imagens[s.img];
+      // A capa só deve ser associada ao slide de abertura (idx === 0) para evitar repetição nas etapas
+      if (s.img === 'capa' && idx > 0) {
+        resolvedImg = undefined;
+      } else {
+        resolvedImg = imagens[s.img];
+      }
     }
     if (resolvedImg && resolvedImg.startsWith('assets/') && baseFolder) {
       resolvedImg = `${baseFolder}/${resolvedImg}`;
+    }
+    // No slide de abertura (idx === 0), se não tiver imagem definida, usa a capa da aula
+    if (!resolvedImg && idx === 0 && capaUrl) {
+      resolvedImg = capaUrl;
     }
 
     let tipo = s.tipo;
@@ -230,7 +239,7 @@ export function buildFallbackAulaData(aula: AulaItem): AulaData {
       tipo: 'Conteúdo',
       kicker: 'Fundamentos Dogmáticos',
       titulo: `Origens e Conceito de ${safeTitulo}`,
-      imgUrl: safeCapa,
+      imgUrl: '',
       corpo: `<p>A disciplina e os princípios fundamentais que regem este tema demandam rigor técnico e observância às normas constitucionais e infraconstitucionais pertinentes.</p><p>Compreender os pressupostos dogmáticos é o ponto de partida para resolver qualquer controvérsia prática.</p>`,
       narr: `A disciplina e os princípios fundamentais que regem este tema demandam rigor técnico e observância às normas constitucionais e infraconstitucionais pertinentes. Compreender os pressupostos dogmáticos é o ponto de partida para resolver qualquer controvérsia prática.`
     },
@@ -238,7 +247,7 @@ export function buildFallbackAulaData(aula: AulaItem): AulaData {
       tipo: 'Conteúdo',
       kicker: 'Doutrina e Aplicação',
       titulo: 'Estrutura e Requisitos Legais',
-      imgUrl: safeCapa,
+      imgUrl: '',
       corpo: `<p>Os requisitos intrínsecos e extrínsecos do instituto devem ser analisados de forma cumulativa, vinculando a atuação do operador do Direito às balizas do ordenamento jurídico pátrio.</p>`,
       narr: `Os requisitos intrínsecos e extrínsecos do instituto devem ser analisados de forma cumulativa, vinculando a atuação do operador do Direito às balizas do ordenamento jurídico pátrio.`
     },
@@ -261,7 +270,7 @@ export function buildFallbackAulaData(aula: AulaItem): AulaData {
       tipo: 'Encerramento',
       kicker: 'Síntese Final',
       titulo: 'Parabéns! Aula Concluída',
-      imgUrl: safeCapa,
+      imgUrl: '',
       corpo: `<p>Você concluiu com sucesso a primeira fase desta aula interativa sobre <b>${safeTitulo}</b>. Agora, avance para a revisão ativa com Flashcards e pratique com questões objetivas.</p>`,
       narr: `Parabéns! Você concluiu a etapa teórica sobre ${safeTitulo}. Agora pratique com as questões e revise com os flashcards.`
     }
@@ -322,7 +331,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
         let img = s.imgUrl || '';
         if (!img && s.img && baseFolder) {
           if (s.img === 'capa') {
-            img = aula.capaUrl || `${baseFolder}/assets/img/capa.webp`;
+            img = idx === 0 ? (aula.capaUrl || `${baseFolder}/assets/img/capa.webp`) : '';
           } else {
             const cleanImg = s.img.replace(/\.(?:webp|jpg|png)$/, '');
             img = `${baseFolder}/assets/img/${cleanImg}.webp`;
@@ -409,7 +418,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
       const res = await fetch(aula.urlHtmlR2);
       if (res.ok) {
         const html = await res.text();
-        const data = parseAulaHtml(html, aula.id, aula.disciplinaId, baseFolder);
+        const data = parseAulaHtml(html, aula.id, aula.disciplinaId, baseFolder, aula.capaUrl);
         if (data.slides && data.slides.length > 5 && data.slides.some(s => s.corpo && s.corpo.length > 20)) {
           data.urlJsonR2 = aula.urlJsonR2;
           data.urlHtmlR2 = aula.urlHtmlR2;
@@ -434,7 +443,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
             let img = e.imgUrl || e.imagem || '';
             if (!img && e.img) {
               if (e.img === 'capa') {
-                img = aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '');
+                img = idx === 0 ? (aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '')) : '';
               } else if (baseFolder) {
                 const cleanImg = e.img.replace(/\.(?:webp|jpg|png)$/, '');
                 img = `${baseFolder}/assets/img/${cleanImg}.webp`;
