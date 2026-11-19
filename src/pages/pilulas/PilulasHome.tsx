@@ -15,6 +15,21 @@ import { PrimeImage } from '@/components/ui/PrimeImage';
 
 const STORAGE_KEY = 'pilulas_audio_favoritos_v1';
 
+function getMateriaProgresso(slug?: string, id?: string): number {
+  if (!slug && !id) return 0;
+  try {
+    const key = (slug === 'direito-penal' || id === 'cp' || id === 'direito-penal') 
+      ? 'pilulas_penal_concluidos' 
+      : `pilulas_${slug || id}_concluidos`;
+    const saved = localStorage.getItem(key);
+    if (!saved) return 0;
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export default function PilulasHome() {
   const navigate = useNavigate();
   const [heroTab, setHeroTab] = useState<PilulasHeroTab>('todos');
@@ -115,6 +130,10 @@ export default function PilulasHome() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(codigosExibidos.length > 0 ? codigosExibidos : CODIGOS_ITEMS).map((item, index) => {
                 const isFavorito = favoritosIds.has(item.id || '');
+                const ouvidosCount = getMateriaProgresso(item.slug, item.id);
+                const totalTopicos = item.totalTopicos || 0;
+                const percent = totalTopicos > 0 ? Math.min(100, Math.round((ouvidosCount / totalTopicos) * 100)) : 0;
+
                 return (
                   <motion.div
                     key={item.text}
@@ -133,7 +152,7 @@ export default function PilulasHome() {
                     className="group flex items-stretch p-3 rounded-2xl bg-[#141416]/90 border border-white/10 hover:border-amber-400/40 active:scale-[0.98] transition-all text-left relative overflow-hidden backdrop-blur-md shadow-lg shadow-black/40 hover:shadow-amber-500/10 cursor-pointer select-none"
                   >
                     {/* Imagem vertical 2:3 */}
-                    <div className="w-[72px] sm:w-[80px] h-[106px] sm:h-[116px] rounded-xl overflow-hidden shrink-0 shadow-md relative border border-white/10">
+                    <div className="w-[74px] sm:w-[84px] h-[110px] sm:h-[120px] rounded-xl overflow-hidden shrink-0 shadow-md relative border border-white/10 bg-zinc-900">
                       <PrimeImage 
                         src={item.image} 
                         alt={item.fullName} 
@@ -153,17 +172,28 @@ export default function PilulasHome() {
                     {/* Conteúdo textual */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between pl-3.5 py-0.5">
                       <div>
+                        {/* Header superior do Card: Sigla da Matéria + Realocação Estratégica de Tópicos + Favorito */}
                         <div className="flex items-center justify-between gap-2">
-                          <span 
-                            className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-black uppercase tracking-wider"
-                            style={{
-                              backgroundColor: `${item.borderColor || '#EF4444'}20`,
-                              color: item.borderColor || '#EF4444',
-                              border: `1px solid ${item.borderColor || '#EF4444'}40`,
-                            }}
-                          >
-                            {item.text}
-                          </span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span 
+                              className="inline-flex items-center px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase tracking-wider shrink-0"
+                              style={{
+                                backgroundColor: `${item.borderColor || '#EF4444'}20`,
+                                color: item.borderColor || '#EF4444',
+                                border: `1px solid ${item.borderColor || '#EF4444'}40`,
+                              }}
+                            >
+                              {item.sigla || 'DIREITO'}
+                            </span>
+
+                            {/* Badge Estratégico Compacto no Topo */}
+                            {totalTopicos > 0 && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9.5px] font-sans font-semibold text-zinc-300 shrink-0">
+                                <Headphones className="w-2.5 h-2.5 text-amber-400" />
+                                <span>{totalTopicos} tópicos</span>
+                              </span>
+                            )}
+                          </div>
 
                           <button
                             type="button"
@@ -173,7 +203,7 @@ export default function PilulasHome() {
                               if (item.id) toggleFavorito(item.id);
                             }}
                             aria-label={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                            className="p-1 -mr-1 text-white/40 hover:text-amber-400 transition-colors"
+                            className="p-1 -mr-1 text-white/40 hover:text-amber-400 transition-colors shrink-0"
                           >
                             <Bookmark
                               className={`w-4 h-4 ${isFavorito ? 'text-amber-400 fill-amber-400' : ''}`}
@@ -181,19 +211,48 @@ export default function PilulasHome() {
                           </button>
                         </div>
 
-                        <h3 className="text-white font-black text-[16px] sm:text-[17px] tracking-wide truncate mt-1">
-                          {item.fullName}
+                        {/* Título da Área com a Tipografia Idêntica a "História do Direito Penal" */}
+                        <h3 className="font-sans font-bold text-[15.5px] sm:text-base text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug truncate mt-1.5">
+                          {item.text}
                         </h3>
-                        <p className="text-zinc-400 text-[12px] sm:text-[12.5px] leading-snug line-clamp-2 mt-0.5">
-                          {item.descricao}
+
+                        {/* Realocação Estratégica: Subtítulo de Aulas e Matérias Doutrinárias */}
+                        <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
+                          <span className="text-amber-400/90 font-medium">{totalTopicos} aulas em áudio</span>
+                          {item.totalModulos ? (
+                            <>
+                              <span className="text-zinc-600">•</span>
+                              <span className="text-zinc-400">{item.totalModulos} matérias</span>
+                            </>
+                          ) : null}
                         </p>
+
+                        {/* Barra de Progresso Real ou Descrição Doutrinária */}
+                        {ouvidosCount > 0 ? (
+                          <div className="mt-2 w-full max-w-sm">
+                            <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-1 font-sans">
+                              <span>{ouvidosCount} de {totalTopicos} ouvidas</span>
+                              <span className="font-bold text-amber-400">{percent}%</span>
+                            </div>
+                            <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                              <div 
+                                className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300"
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-zinc-400 text-[11.5px] sm:text-[12px] leading-snug line-clamp-2 mt-1 font-sans">
+                            {item.descricao}
+                          </p>
+                        )}
                       </div>
 
                       {/* Rodapé da matéria */}
                       <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/5">
-                        <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold uppercase tracking-wider group-hover:text-amber-300 transition-colors">
+                        <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold uppercase tracking-wider group-hover:text-amber-300 transition-colors font-sans">
                           <Headphones className="w-3.5 h-3.5" />
-                          <span>Ouvir Pílulas</span>
+                          <span>{ouvidosCount > 0 ? 'Continuar Ouvindo' : 'Ouvir Pílulas'}</span>
                         </div>
                         <div className="w-6 h-6 rounded-full bg-white/5 group-hover:bg-amber-400/20 flex items-center justify-center transition-colors">
                           <ChevronRight className="w-3.5 h-3.5 text-white/50 group-hover:text-amber-300 transition-colors stroke-[2.4]" />

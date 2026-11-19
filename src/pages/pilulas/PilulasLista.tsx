@@ -98,17 +98,45 @@ export default function PilulasLista() {
                 {/* Conteúdo */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between pl-4 py-1">
                   <div>
-                    <h3 className="text-white font-black text-[17px] uppercase tracking-wider truncate">{item.text}</h3>
-                    <p className="text-zinc-400 text-[13px] mt-0.5 truncate">{item.fullName}</p>
+                    {item.sigla && (
+                      <span 
+                        className="inline-flex items-center px-2 py-0.5 rounded-md text-[9.5px] font-mono font-black uppercase tracking-wider mb-1"
+                        style={{
+                          backgroundColor: `${item.borderColor || '#EF4444'}20`,
+                          color: item.borderColor || '#EF4444',
+                          border: `1px solid ${item.borderColor || '#EF4444'}40`,
+                        }}
+                      >
+                        {item.sigla}
+                      </span>
+                    )}
+
+                    <h3 className="font-sans font-bold text-[15.5px] sm:text-base text-zinc-100 group-hover:text-amber-300 transition-colors tracking-normal leading-snug truncate">
+                      {item.text}
+                    </h3>
+
+                    {item.totalTopicos ? (
+                      <p className="text-[11.5px] text-zinc-400 mt-0.5 font-sans flex items-center gap-1.5 truncate">
+                        <span className="text-amber-400 font-medium">{item.totalTopicos} aulas em áudio</span>
+                        {item.totalModulos ? (
+                          <>
+                            <span className="text-zinc-600">•</span>
+                            <span className="text-zinc-400">{item.totalModulos} matérias</span>
+                          </>
+                        ) : null}
+                      </p>
+                    ) : (
+                      <p className="text-zinc-400 text-[12px] mt-0.5 truncate font-sans">{item.fullName}</p>
+                    )}
                   </div>
                   
                   {/* Rodapé do card */}
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/25 transition-colors">
-                      <Headphones className="w-3.5 h-3.5 text-primary ml-0.5" />
+                  <div className="flex items-center gap-2 mt-3 pt-1 border-t border-white/5">
+                    <div className="w-6 h-6 rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400/25 transition-colors">
+                      <Headphones className="w-3.5 h-3.5 text-amber-400 ml-0.5" />
                     </div>
-                    <span className="text-primary text-[10px] font-bold tracking-widest uppercase">
-                      Acessar
+                    <span className="text-amber-400 text-[10px] font-bold tracking-widest uppercase font-sans">
+                      Acessar Aulas
                     </span>
                   </div>
                 </div>

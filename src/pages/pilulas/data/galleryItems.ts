@@ -8,6 +8,10 @@ export interface PillGalleryItem {
   id?: string;
   descricao?: string;
   borderColor?: string;
+  totalTopicos?: number;
+  totalModulos?: number;
+  sigla?: string;
+  slug?: string;
 }
 
 /**
@@ -16,11 +20,15 @@ export interface PillGalleryItem {
  */
 export const CODIGOS_ITEMS: PillGalleryItem[] = PILULAS_MATERIAS.map(mat => ({
   id: mat.id,
+  slug: mat.slug,
   image: mat.image,
   text: mat.nome,
-  fullName: `${mat.nome} • ${mat.totalTopicos} tópicos`,
+  fullName: mat.nome,
   descricao: mat.descricao,
   borderColor: mat.borderColor,
+  totalTopicos: mat.totalTopicos,
+  totalModulos: mat.totalModulos,
+  sigla: mat.sigla,
 }));
 
 

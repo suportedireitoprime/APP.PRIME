@@ -19,7 +19,19 @@ interface SrtCue {
   text: string;
 }
 
-type PainelAba = 'legenda' | 'tabela' | 'pdf';
+type PainelAba = 'tabela' | 'legenda' | 'pdf';
+
+interface LinhaCornell {
+  pergunta: string;
+  resposta: string;
+}
+
+interface CornellParsedData {
+  rows: LinhaCornell[];
+  resumoGuardaAssim?: string;
+  perguntaRapida?: string;
+  respostaRapida?: string;
+}
 
 function parseTimeToSeconds(timeStr: string): number {
   const parts = timeStr.trim().replace(',', '.').split(':');
@@ -71,6 +83,68 @@ function getActiveCueAtTime(cur: number, cueList: SrtCue[]): { cue: SrtCue; inde
     }
   }
   return null;
+}
+
+/**
+ * Converte o roteiro TXT ou título do tópico em linhas estruturadas de Ficha Cornell (Pergunta e Resposta)
+ */
+function parseRoteiroParaCornell(txt: string, topicoTitulo: string, moduloTitulo: string): CornellParsedData {
+  if (!txt || txt.trim().length < 50) {
+    return {
+      rows: [
+        { pergunta: 'Conceito e Definição', resposta: `Fundamentos essenciais e estrutura doutrinária sobre ${topicoTitulo}.` },
+        { pergunta: 'Aplicação Prática', resposta: `Regras de incidência, requisitos e repercussão jurídica aplicáveis a ${moduloTitulo}.` },
+        { pergunta: 'Base Normativa e Jurisprudência', resposta: `Dispositivos legais correlatos, precedentes dos Tribunais Superiores e pontos de atenção em provas e prática forense.` }
+      ],
+      resumoGuardaAssim: `Para fixar: ${topicoTitulo} exige a compreensão de sua finalidade, requisitos fundamentais e consequências jurídicas diretas no ordenamento.`,
+      perguntaRapida: `Qual o ponto fulcral de ${topicoTitulo}?`,
+      respostaRapida: `A correta identificação dos requisitos legais e sua incidência no caso concreto.`
+    };
+  }
+
+  const clean = txt.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const paragrafos = clean.split(/\n{2,}/).map(p => p.trim()).filter(p => p.length > 20);
+
+  const rows: LinhaCornell[] = [];
+
+  const perguntasPadrao = [
+    'Conceito e Origem',
+    'Qual a finalidade e alcance?',
+    'Base Legal e Requisitos',
+    'Diferenciação e Pontos Críticos',
+    'Aspectos Práticos e Repercussão',
+    'Regras de Exceção'
+  ];
+
+  paragrafos.forEach((p, idx) => {
+    // Ignora parágrafo inicial se for apenas introdução de podcast ("Pílula de...")
+    if (idx === 0 && p.toLowerCase().startsWith('pílula de') && paragrafos.length > 3) {
+      return;
+    }
+
+    if (rows.length < 5) {
+      const pergunta = perguntasPadrao[rows.length] || `Ponto ${rows.length + 1}`;
+      rows.push({
+        pergunta,
+        resposta: p
+      });
+    }
+  });
+
+  const ultimoParagrafo = paragrafos[paragrafos.length - 1] || '';
+  const resumo = ultimoParagrafo.length > 30 && !rows.some(r => r.resposta === ultimoParagrafo)
+    ? ultimoParagrafo
+    : `Em resumo, ${topicoTitulo} consolida as diretrizes essenciais sobre a matéria, conectando a teoria à aplicação jurisprudencial pacificada.`;
+
+  return {
+    rows: rows.length > 0 ? rows : [
+      { pergunta: 'Conceito Central', resposta: paragrafos[0] || `Conceito fundamental de ${topicoTitulo}.` },
+      { pergunta: 'Fundamentos', resposta: paragrafos[1] || `Fundamentação e alcance no Direito.` }
+    ],
+    resumoGuardaAssim: resumo,
+    perguntaRapida: `Qual a regra geral aplicável a ${topicoTitulo}?`,
+    respostaRapida: `A incidência direta dos preceitos legais e jurisprudenciais consolidados na grade de ${moduloTitulo}.`
+  };
 }
 
 export default function PilulasMateriaPlayer() {
@@ -134,45 +208,60 @@ export default function PilulasMateriaPlayer() {
   // Audio & playback state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Subtitles
   const [cues, setCues] = useState<SrtCue[]>([]);
   const [activeCue, setActiveCue] = useState<SrtCue | null>(null);
   const [activeCueIndex, setActiveCueIndex] = useState<number>(-1);
   const [legendaAtual, setLegendaAtual] = useState<string>('');
-  const cuesContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Abas e gaveta
-  const [abaAtiva, setAbaAtiva] = useState<PainelAba>('legenda');
-  const [drawerAberto, setDrawerAberto] = useState(false);
+  // Abas do Painel: Tabela (Default), Legenda, PDF
+  const [abaPainel, setAbaPainel] = useState<PainelAba>('tabela');
+  const [pdfAberto, setPdfAberto] = useState(false);
 
-  // Roteiro TXT
+  // Roteiro TXT e Ficha Cornell Parseada
   const [roteiroTxt, setRoteiroTxt] = useState<string>('');
+
+  const cornellData: CornellParsedData = useMemo(() => {
+    return parseRoteiroParaCornell(roteiroTxt, topico?.titulo || 'Tópico de Estudo', modulo?.titulo || meta.nome);
+  }, [roteiroTxt, topico?.titulo, modulo?.titulo, meta.nome]);
+
+  const linhasTabela = useMemo(() => {
+    return cornellData.rows || [];
+  }, [cornellData]);
 
   // Persistência
   const storagePrefix = `pilulas_${meta.slug}`;
-  const [favoritos, setFavoritos] = useState<string[]>(() => {
+  const [isFavorito, setIsFavorito] = useState(false);
+
+  // Checar se é favorito
+  useEffect(() => {
+    if (!topico) return;
     try {
       const saved = localStorage.getItem(`${storagePrefix}_favoritos`);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const isFavorito = topico ? favoritos.includes(topico.id) : false;
+      const list: string[] = saved ? JSON.parse(saved) : [];
+      setIsFavorito(list.includes(topico.id));
+    } catch {}
+  }, [topico?.id, storagePrefix]);
 
   const toggleFavorito = useCallback(() => {
     if (!topico) return;
     haptic.selection();
-    setFavoritos(prev => {
-      const next = prev.includes(topico.id) ? prev.filter(id => id !== topico.id) : [...prev, topico.id];
+    setIsFavorito(prev => {
+      const next = !prev;
       try {
-        localStorage.setItem(`${storagePrefix}_favoritos`, JSON.stringify(next));
+        const saved = localStorage.getItem(`${storagePrefix}_favoritos`);
+        let list: string[] = saved ? JSON.parse(saved) : [];
+        if (next) {
+          if (!list.includes(topico.id)) list.push(topico.id);
+        } else {
+          list = list.filter(id => id !== topico.id);
+        }
+        localStorage.setItem(`${storagePrefix}_favoritos`, JSON.stringify(list));
       } catch {}
       return next;
     });
@@ -196,7 +285,7 @@ export default function PilulasMateriaPlayer() {
     } catch {}
   }, [storagePrefix]);
 
-  // Carregar e iniciar áudio e legendas
+  // Inicializar o áudio ao trocar de tópico
   useEffect(() => {
     if (!topico) return;
 
@@ -211,7 +300,7 @@ export default function PilulasMateriaPlayer() {
 
     registrarRecente(topico.id);
 
-    // Fonte de áudio: tenta R2 primeiro, com fallback automático
+    // Fonte de áudio: tenta R2 primeiro, com fallback automático para Google Drive
     const primaryAudio = topico.audioUrl;
     const fallbackAudio = topico.driveMp3Id ? `https://drive.google.com/uc?export=download&id=${topico.driveMp3Id}` : '';
     const audioSrc = primaryAudio || fallbackAudio;
@@ -235,74 +324,31 @@ export default function PilulasMateriaPlayer() {
     }
 
     // Carregar Legendas SRT
-    const primarySrt = topico.srtUrl;
-    const fallbackSrt = topico.driveSrtId ? `https://drive.google.com/uc?export=download&id=${topico.driveSrtId}` : '';
+    const srtSrc = topico.srtUrl || (topico.driveSrtId ? `https://drive.google.com/uc?export=download&id=${topico.driveSrtId}` : '');
+    if (srtSrc) {
+      fetch(srtSrc)
+        .then(r => r.ok ? r.text() : '')
+        .then(txt => {
+          if (txt) setCues(parseSRT(txt));
+        })
+        .catch(() => {});
+    }
 
-    const loadSrt = async () => {
-      try {
-        if (primarySrt) {
-          const res = await fetch(primarySrt);
-          if (res.ok) {
-            const txt = await res.text();
-            if (txt && txt.trim()) {
-              setCues(parseSRT(txt));
-              return;
-            }
+    // Carregar Roteiro TXT para Ficha Cornell
+    const txtSrc = topico.roteiroUrl || (topico.driveTxtId ? `https://drive.google.com/uc?export=download&id=${topico.driveTxtId}` : '');
+    if (txtSrc) {
+      fetch(txtSrc)
+        .then(r => r.ok ? r.text() : '')
+        .then(txt => {
+          if (txt && !txt.includes('<!doctype html>')) {
+            setRoteiroTxt(txt);
           }
-        }
-        if (fallbackSrt) {
-          const res = await fetch(fallbackSrt);
-          if (res.ok) {
-            const txt = await res.text();
-            if (txt) setCues(parseSRT(txt));
-          }
-        }
-      } catch (err) {
-        console.warn('[PilulasMateriaPlayer] Erro ao carregar SRT:', err);
-      }
-    };
-    void loadSrt();
-
-    // Carregar Roteiro TXT
-    const primaryTxt = topico.roteiroUrl;
-    const fallbackTxt = topico.driveTxtId ? `https://drive.google.com/uc?export=download&id=${topico.driveTxtId}` : '';
-    const loadTxt = async () => {
-      try {
-        if (primaryTxt) {
-          const res = await fetch(primaryTxt);
-          if (res.ok) {
-            const txt = await res.text();
-            if (txt) {
-              setRoteiroTxt(txt);
-              return;
-            }
-          }
-        }
-        if (fallbackTxt) {
-          const res = await fetch(fallbackTxt);
-          if (res.ok) {
-            const txt = await res.text();
-            if (txt) setRoteiroTxt(txt);
-          }
-        }
-      } catch {}
-    };
-    void loadTxt();
+        })
+        .catch(() => {});
+    }
   }, [topico?.id, registrarRecente, marcarComoOuvido]);
 
-  // Fallback caso o áudio R2 retorne erro
-  const handleAudioError = useCallback(() => {
-    if (!audioRef.current || !topico) return;
-    const fallbackAudio = topico.driveMp3Id ? `https://drive.google.com/uc?export=download&id=${topico.driveMp3Id}` : '';
-    if (fallbackAudio && audioRef.current.src !== fallbackAudio) {
-      console.log('[PilulasMateriaPlayer] R2 404/Erro, alternando para fallback Google Drive...');
-      audioRef.current.src = fallbackAudio;
-      audioRef.current.load();
-      audioRef.current.play().catch(() => {});
-    }
-  }, [topico]);
-
-  // 60fps/120fps sync loop de precisão cirúrgica
+  // 60fps/120fps sync loop de precisão cirúrgica sem latência de eventos
   useEffect(() => {
     if (!isPlaying) return;
     let rafId: number;
@@ -333,94 +379,101 @@ export default function PilulasMateriaPlayer() {
     return () => cancelAnimationFrame(rafId);
   }, [isPlaying, cues]);
 
-  const togglePlay = useCallback(() => {
+  // Palavras da legenda atual para animação tipo Karaoke em tempo real
+  const currentWords = useMemo(() => {
+    if (!activeCue?.text) return [];
+    return activeCue.text.split(/\s+/).filter(Boolean);
+  }, [activeCue?.text]);
+
+  const currentWordProgress = useMemo(() => {
+    if (!activeCue || currentWords.length === 0) return 0;
+    const dur = Math.max(0.25, activeCue.end - activeCue.start);
+    const elapsed = currentTime - activeCue.start;
+    return Math.max(0, Math.min(1, elapsed / dur));
+  }, [activeCue, currentTime, currentWords.length]);
+
+  const activeWordIdx = Math.min(
+    currentWords.length - 1,
+    Math.floor(currentWordProgress * currentWords.length)
+  );
+
+  // Controles de Playback
+  const togglePlay = () => {
     haptic.selection();
     if (!audioRef.current) return;
-    if (isPlaying) {
+
+    if (!audioRef.current.paused) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      setIsLoading(true);
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            setIsLoading(false);
+            if (topico) marcarComoOuvido(topico.id);
+          })
+          .catch((err) => {
+            console.warn('Erro ao reproduzir áudio:', err);
+            setIsLoading(false);
+            if (topico?.driveMp3Id && audioRef.current) {
+              audioRef.current.src = `https://drive.google.com/uc?export=download&id=${topico.driveMp3Id}`;
+              audioRef.current.load();
+              audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            }
+          });
+      }
     }
-  }, [isPlaying]);
-
-  const seekRelative = useCallback((seconds: number) => {
-    haptic.light();
-    if (!audioRef.current) return;
-    const nextTime = Math.max(0, Math.min(duration, audioRef.current.currentTime + seconds));
-    audioRef.current.currentTime = nextTime;
-    setCurrentTime(nextTime);
-  }, [duration]);
-
-  const handleRateChange = useCallback(() => {
-    haptic.selection();
-    const rates = [1, 1.25, 1.5, 2];
-    const nextIndex = (rates.indexOf(playbackRate) + 1) % rates.length;
-    const nextRate = rates[nextIndex];
-    setPlaybackRate(nextRate);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = nextRate;
-    }
-  }, [playbackRate]);
-
-  // Navegar para próximo / anterior tópico
-  const proximoTopico = useMemo(() => {
-    if (!modulo || !topico) return null;
-    const idx = modulo.topicos.findIndex(t => t.id === topico.id);
-    if (idx !== -1 && idx < modulo.topicos.length - 1) {
-      return modulo.topicos[idx + 1];
-    }
-    // Próximo módulo
-    const modIdx = modules.findIndex(m => m.id === modulo.id);
-    if (modIdx !== -1 && modIdx < modules.length - 1) {
-      return modules[modIdx + 1].topicos[0] || null;
-    }
-    return null;
-  }, [modulo, topico, modules]);
-
-  const anteriorTopico = useMemo(() => {
-    if (!modulo || !topico) return null;
-    const idx = modulo.topicos.findIndex(t => t.id === topico.id);
-    if (idx > 0) {
-      return modulo.topicos[idx - 1];
-    }
-    // Módulo anterior
-    const modIdx = modules.findIndex(m => m.id === modulo.id);
-    if (modIdx > 0) {
-      const prevMod = modules[modIdx - 1];
-      return prevMod.topicos[prevMod.topicos.length - 1] || null;
-    }
-    return null;
-  }, [modulo, topico, modules]);
-
-  const irParaTopico = useCallback((novoTopico: TopicoItem) => {
-    haptic.selection();
-    navigate(`/pilulas/materia/${meta.slug}/player/${novoTopico.id}`, { replace: true });
-    setDrawerAberto(false);
-  }, [navigate, meta.slug]);
-
-  const formatTime = (timeInSeconds: number) => {
-    const mins = Math.floor(timeInSeconds / 60);
-    const secs = Math.floor(timeInSeconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
+
+  const pular = (segundos: number) => {
+    haptic.selection();
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = Math.min(Math.max(0, audioRef.current.currentTime + segundos), duration);
+  };
+
+  const mudarVelocidade = () => {
+    haptic.selection();
+    const speeds = [1, 1.25, 1.5, 2];
+    const nextIdx = (speeds.indexOf(playbackRate) + 1) % speeds.length;
+    const nextSpeed = speeds[nextIdx];
+    setPlaybackRate(nextSpeed);
+    if (audioRef.current) audioRef.current.playbackRate = nextSpeed;
+  };
+
+  const navegarTopico = (delta: number) => {
+    if (!modulo || !topico) return;
+    const novoIdx = indiceNoModulo + delta;
+    if (novoIdx >= 0 && novoIdx < modulo.topicos.length) {
+      const novoTopico = modulo.topicos[novoIdx];
+      haptic.selection();
+      navigate(`/pilulas/materia/${meta.slug}/player/${novoTopico.id}`, { replace: true });
+    }
+  };
+
+  const pdfUrlResolvida = useMemo(() => {
+    if (!topico) return null;
+    return topico.pdfUrl || (topico.drivePdfId ? `https://drive.google.com/uc?export=download&id=${topico.drivePdfId}` : null);
+  }, [topico]);
 
   if (catalogLoading) {
     return (
       <div className="theme-vademecum min-h-dvh bg-zinc-950 flex flex-col items-center justify-center text-white">
         <Loader2 className="w-8 h-8 animate-spin text-amber-400 mb-3" />
-        <p className="text-sm text-zinc-400 font-medium">Carregando aula...</p>
+        <p className="text-sm text-zinc-400 font-medium font-sans">Carregando player...</p>
       </div>
     );
   }
 
-  if (!topico) {
+  if (!topico || !modulo) {
     return (
       <div className="theme-vademecum min-h-dvh bg-zinc-950 flex flex-col items-center justify-center text-white px-4">
-        <p className="text-base text-zinc-300 mb-4">Tópico não encontrado no catálogo.</p>
+        <p className="text-base text-zinc-300 mb-4 font-sans">Tópico não encontrado no catálogo.</p>
         <button
           onClick={() => navigate(`/pilulas/materia/${meta.slug}`)}
-          className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold"
+          className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold font-sans cursor-pointer hover:bg-white/20 transition-colors"
         >
           Voltar para {meta.nome}
         </button>
@@ -428,10 +481,8 @@ export default function PilulasMateriaPlayer() {
     );
   }
 
-  const pdfUrl = topico.pdfUrl || (topico.drivePdfId ? `https://drive.google.com/uc?export=download&id=${topico.drivePdfId}` : null);
-
   return (
-    <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-20 text-white relative flex flex-col overflow-x-hidden">
+    <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-32 text-white relative flex flex-col overflow-x-hidden">
       {/* Background Padrão Oficial ShapeGrid */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <ShapeGrid 
@@ -448,111 +499,383 @@ export default function PilulasMateriaPlayer() {
       {/* Áudio nativo invisível */}
       <audio
         ref={audioRef}
-        onError={handleAudioError}
         onLoadedMetadata={() => {
           if (audioRef.current) setDuration(audioRef.current.duration || 0);
         }}
         onEnded={() => {
           setIsPlaying(false);
           marcarComoOuvido(topico.id);
-          if (proximoTopico) {
-            irParaTopico(proximoTopico);
+          navegarTopico(1);
+        }}
+        onError={(e) => {
+          console.warn('Erro ao carregar stream:', e);
+          setIsLoading(false);
+          if (topico?.driveMp3Id && audioRef.current && !audioRef.current.src.includes('drive.google.com')) {
+            audioRef.current.src = `https://drive.google.com/uc?export=download&id=${topico.driveMp3Id}`;
+            audioRef.current.load();
+            audioRef.current.play().catch(() => {});
           }
         }}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        preload="auto"
       />
 
-      {/* ========================================================================= */}
-      {/* TOP HEADER: BOTÃO DE VOLTAR PADRÃO OURO + TÍTULO DA MATÉRIA */}
-      {/* ========================================================================= */}
-      <header className="relative z-20 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-3 flex items-center justify-between gap-3 border-b border-white/5 backdrop-blur-md bg-zinc-950/80">
+      {/* Header Superior Fixo Compacto com Voltar e Ações */}
+      <header className="relative z-20 w-full px-3 sm:px-6 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2 flex items-center justify-between gap-2.5 border-b border-white/5">
         <button
           onClick={() => {
             haptic.light();
-            navigate(`/pilulas/materia/${meta.slug}`);
+            navigate(`/pilulas/materia/${meta.slug}?modulo=${modulo.id}`);
           }}
-          aria-label="Voltar para a matéria"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer shadow-md"
+          aria-label="Voltar para Lista de Pílulas"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer touch-manipulation"
         >
           <ArrowLeft className="w-6 h-6 stroke-[2.4]" />
         </button>
 
-        <div className="flex-1 min-w-0 text-center">
-          <span 
-            className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest block font-sans"
-            style={{ color: meta.borderColor }}
-          >
-            {meta.nome} • MÓDULO {modulo?.folderIndex.toString().padStart(2, '0')}
-          </span>
-          <h1 className="text-xs sm:text-sm font-bold font-sans text-white/95 truncate">
-            {modulo?.titulo}
+        <div className="text-center px-1 min-w-0 flex-1">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-amber-400/90 truncate font-sans">
+            {modulo.folderName || meta.nome}
+          </p>
+          <h1 className="text-xs sm:text-sm font-bold text-zinc-100 truncate font-sans mt-0.5">
+            Faixa {indiceNoModulo + 1} de {modulo.topicos.length} • {topico.titulo}
           </h1>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <button
             type="button"
             onClick={toggleFavorito}
-            aria-label="Favoritar"
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-amber-400 transition-colors"
+            title={isFavorito ? 'Remover dos Favoritos' : 'Salvar nos Favoritos'}
+            className={`w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full border flex items-center justify-center transition-all active:scale-95 cursor-pointer backdrop-blur-md touch-manipulation shrink-0 ${
+              isFavorito 
+                ? 'bg-amber-400/20 border-amber-400/40 text-amber-400' 
+                : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
+            }`}
           >
-            <Bookmark className={`w-4 h-4 ${isFavorito ? 'text-amber-400 fill-amber-400' : ''}`} />
+            <Bookmark className={`w-5 h-5 ${isFavorito ? 'fill-amber-400' : ''}`} />
           </button>
+
           <button
-            type="button"
-            onClick={() => setDrawerAberto(true)}
-            aria-label="Abrir playlist de módulos"
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+            onClick={() => {
+              haptic.light();
+              navigate(`/pilulas/materia/${meta.slug}?modulo=${modulo.id}`);
+            }}
+            aria-label="Ver todas as faixas"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/5 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 cursor-pointer touch-manipulation"
           >
-            <List className="w-4 h-4" />
+            <List className="w-5 h-5" />
           </button>
         </div>
       </header>
 
-      {/* ========================================================================= */}
-      {/* CORPO PRINCIPAL DO PLAYER */}
-      {/* ========================================================================= */}
-      <main className="relative z-10 flex-1 max-w-[1200px] w-full mx-auto px-4 py-4 flex flex-col gap-4">
+      {/* Menu de Alternância - Padrão de Toque Google 48px */}
+      <div className="relative z-20 w-full px-3 sm:px-6 mt-2.5">
+        <div className="max-w-md mx-auto min-h-[48px] p-1 rounded-2xl bg-zinc-900/95 border border-white/10 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setAbaPainel('tabela');
+            }}
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
+              abaPainel === 'tabela'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Ficha (Tabela)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setAbaPainel('legenda');
+            }}
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
+              abaPainel === 'legenda'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Subtitles className="w-3.5 h-3.5" />
+            <span>Legenda</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setAbaPainel('pdf');
+            }}
+            className={`flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 px-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer touch-manipulation font-sans ${
+              abaPainel === 'pdf'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Ficha (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Conteúdo Central em Tela Toda (SEM MARGENS LATERAIS) */}
+      <main className="relative z-10 w-full flex-1 flex flex-col justify-start items-center pt-2 px-0">
         
-        {/* Card do Tópico Ativo */}
-        <div className="rounded-3xl bg-zinc-900/90 border border-white/10 p-5 shadow-2xl backdrop-blur-md">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400">
-              TÓPICO {(indiceNoModulo + 1).toString().padStart(2, '0')} DE {modulo?.topicos.length}
-            </span>
-            <span 
-              className="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-full uppercase"
-              style={{
-                backgroundColor: `${meta.borderColor}20`,
-                color: meta.borderColor,
-                border: `1px solid ${meta.borderColor}40`,
-              }}
-            >
-              {meta.sigla}
-            </span>
-          </div>
+        {/* ── ABA 1: TABELA CORNELL (PERGUNTA NA ESQUERDA E RESPOSTA AO LADO) ── */}
+        {abaPainel === 'tabela' && (
+          <div className="w-full max-w-4xl mx-auto flex flex-col px-0 select-text">
+            {/* Header da Ficha (Método Cornell no título e badges de navegação) */}
+            <div className="px-3 sm:px-6 py-3 border-b border-amber-500/20 bg-zinc-900/70 backdrop-blur-md flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center flex-wrap gap-1.5 text-[10px] sm:text-[11px] uppercase tracking-wider font-extrabold font-sans">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 shadow-sm shadow-amber-500/10">
+                    Método Cornell
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 rounded-md text-white border"
+                    style={{ backgroundColor: `${meta.borderColor}30`, borderColor: `${meta.borderColor}50` }}
+                  >
+                    Módulo {modulo.folderIndex}
+                  </span>
+                  <span className="text-zinc-400 font-medium">
+                    • Ficha #{indiceNoModulo + 1} de {modulo.topicos.length}
+                  </span>
+                </div>
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-white tracking-normal truncate mt-1.5 font-sans">
+                  {topico.titulo}
+                </h2>
+              </div>
+            </div>
 
-          <h2 className="text-base sm:text-lg font-black text-white font-sans leading-snug">
-            {topico.titulo}
-          </h2>
+            {/* TABELA CORNELL PURO: PERGUNTA NA ESQUERDA E RESPOSTA AO LADO */}
+            <div className="w-full overflow-x-hidden">
+              <table className="w-full border-collapse text-left border-y border-white/10 table-fixed">
+                <thead>
+                  <tr className="bg-amber-500/15 border-b border-amber-500/25 text-[11px] sm:text-xs font-black uppercase tracking-wider text-amber-300 font-sans">
+                    <th className="w-[36%] sm:w-[32%] py-2.5 px-3 sm:px-5 border-r border-amber-500/20">
+                      Pergunta / Pista
+                    </th>
+                    <th className="w-[64%] sm:w-[68%] py-2.5 px-3 sm:px-5">
+                      Resposta / Anotação
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {linhasTabela.length > 0 ? (
+                    linhasTabela.map((linha, idx) => (
+                      <tr 
+                        key={idx} 
+                        className={`transition-colors ${idx % 2 === 0 ? 'bg-zinc-950/70' : 'bg-zinc-900/40'} hover:bg-amber-500/[0.04]`}
+                      >
+                        {/* Coluna 1: Pergunta / Conceito (Ao lado) */}
+                        <td className="w-[36%] sm:w-[32%] py-3 sm:py-3.5 px-3 sm:px-5 align-top font-bold text-amber-300 text-xs sm:text-sm border-r border-white/10 leading-snug break-words font-sans">
+                          {linha.pergunta}
+                        </td>
 
-          {/* Legenda em Destaque ao Vivo */}
-          <div className="mt-4 p-4 rounded-2xl bg-black/40 border border-white/5 min-h-[72px] flex items-center justify-center text-center">
-            {legendaAtual ? (
-              <p className="text-sm sm:text-base font-semibold text-amber-300 leading-snug drop-shadow-sm">
-                "{legendaAtual}"
-              </p>
-            ) : (
-              <p className="text-xs text-zinc-500 italic">
-                {isPlaying ? 'Acompanhando fala...' : 'Toque no play para iniciar o áudio esquematizado'}
-              </p>
+                        {/* Coluna 2: Resposta / Explicação (Ao lado) */}
+                        <td className="w-[64%] sm:w-[68%] py-3 sm:py-3.5 px-3 sm:px-5 align-top text-zinc-200 text-xs sm:text-sm leading-relaxed break-words font-sans font-normal">
+                          {linha.resposta}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={2} className="py-8 text-center text-xs text-zinc-400 italic font-sans">
+                        Carregando tabela da Ficha Cornell...
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* BLOCO RESUMO: GUARDA ASSIM (NO FINAL DA TABELA, SEM MARGEM LATERAL NO MOBILE) */}
+            {(cornellData?.resumoGuardaAssim || cornellData?.perguntaRapida) && (
+              <div className="w-full p-3.5 sm:p-5 bg-gradient-to-r from-amber-500/15 via-zinc-900/90 to-black/80 border-b border-amber-500/30">
+                <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black uppercase tracking-wider mb-2 font-sans">
+                  <Scale className="w-4 h-4" />
+                  <span>Resumo: Guarda Assim</span>
+                </div>
+
+                {cornellData.resumoGuardaAssim && (
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-100 leading-relaxed mb-3 font-sans">
+                    {cornellData.resumoGuardaAssim}
+                  </p>
+                )}
+
+                {cornellData.perguntaRapida && (
+                  <div className="p-3 rounded-xl bg-black/45 border border-white/5 space-y-1.5">
+                    <div className="flex items-start gap-1.5 text-xs sm:text-[13px] text-amber-300 font-bold font-sans">
+                      <span className="shrink-0">⚡ Pergunta:</span>
+                      <span className="text-zinc-200 font-normal">{cornellData.perguntaRapida}</span>
+                    </div>
+                    {cornellData.respostaRapida && (
+                      <div className="flex items-start gap-1.5 text-xs sm:text-[13px] text-emerald-400 font-bold font-sans">
+                        <span className="shrink-0">👉</span>
+                        <span>{cornellData.respostaRapida}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
+        )}
 
-          {/* Barra de Progresso e Scrubbing */}
-          <div className="mt-5 space-y-1.5">
+        {/* ── ABA 2: LEGENDA (Capa Pequena e Legenda Elegante Maior) ── */}
+        {abaPainel === 'legenda' && (
+          <div className="w-full max-w-md mx-auto flex flex-col items-center gap-3 py-2 px-3">
+            {/* Capa Pequena Compacta com Título DENTRO e Degradê Inferior */}
+            <div className="relative group shrink-0">
+              <div 
+                className="absolute -inset-2.5 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity pointer-events-none transform-gpu"
+                style={{ backgroundColor: `${meta.borderColor}30` }}
+              />
+
+              <div 
+                className="relative w-40 sm:w-44 aspect-[3/3.8] rounded-2xl overflow-hidden border-2 shadow-2xl shadow-black/90 bg-zinc-900 flex flex-col justify-end"
+                style={{ borderColor: `${meta.borderColor}80` }}
+              >
+                <img 
+                  src={meta.image} 
+                  alt={`Capa ${meta.nome}`} 
+                  className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-500 group-hover:scale-105"
+                />
+
+                <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[8.5px] font-bold text-amber-300">
+                  Pílula {indiceNoModulo + 1}
+                </div>
+
+                {/* Degradê Inferior e Título DENTRO da Capa */}
+                <div className="relative z-10 w-full p-2.5 pt-6 bg-gradient-to-t from-black/95 via-black/75 to-transparent text-left">
+                  <span 
+                    className="inline-block px-1 py-0.2 rounded border text-[8.5px] font-bold uppercase tracking-wider mb-0.5"
+                    style={{ 
+                      backgroundColor: `${meta.borderColor}30`, 
+                      borderColor: `${meta.borderColor}50`,
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    Módulo {modulo.folderIndex}
+                  </span>
+                  <h2 className="text-[13px] sm:text-sm font-bold text-zinc-100 leading-tight tracking-tight line-clamp-2 drop-shadow-md">
+                    {topico.titulo}
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+            {/* Legenda Animada, Elegante e Certeira no Time */}
+            <div className="w-full min-h-[125px] sm:min-h-[145px] px-5 py-4 rounded-2xl bg-gradient-to-b from-zinc-900/95 via-zinc-900/90 to-black/95 border border-amber-500/30 backdrop-blur-xl flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+              {/* Equalizador e Status de Sincronia */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-end gap-1 h-3.5">
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-3.5 animate-pulse' : 'h-1.5 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-2 animate-pulse delay-75' : 'h-1 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-3 animate-pulse delay-150' : 'h-2 opacity-40'}`} />
+                  <span className={`w-1 rounded-full bg-amber-400 transition-all ${isPlaying ? 'h-2.5 animate-pulse delay-100' : 'h-1.5 opacity-40'}`} />
+                </div>
+                <span className="text-[10px] font-extrabold tracking-wider uppercase text-amber-400/90 font-sans">
+                  {isPlaying ? 'Áudio Sincronizado ao Vivo' : 'Legenda Sincronizada'}
+                </span>
+              </div>
+
+              {/* Texto com Animação e Efeito Karaoke */}
+              <AnimatePresence mode="wait">
+                {activeCue && currentWords.length > 0 ? (
+                  <motion.div
+                    key={activeCueIndex}
+                    initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="w-full flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 select-text"
+                  >
+                    {currentWords.map((word, wIdx) => {
+                      const isSpoken = wIdx <= activeWordIdx;
+                      const isCurrent = wIdx === activeWordIdx && isPlaying;
+                      return (
+                        <span
+                          key={wIdx}
+                          className={`transition-all duration-150 text-base sm:text-lg leading-relaxed ${
+                            isCurrent
+                              ? 'text-amber-300 font-extrabold scale-105 drop-shadow-[0_0_14px_rgba(251,191,36,0.7)]'
+                              : isSpoken
+                              ? 'text-amber-200/95 font-semibold'
+                              : 'text-zinc-400 font-normal opacity-70'
+                          }`}
+                        >
+                          {word}
+                        </span>
+                      );
+                    })}
+                  </motion.div>
+                ) : (
+                  <motion.p
+                    key="empty"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-zinc-400 text-xs sm:text-sm font-normal italic font-sans"
+                  >
+                    {isPlaying ? 'Acompanhe a legenda sincronizada ao áudio...' : 'Toque no Play para ouvir e acompanhar a legenda...'}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              {/* Barra de Progresso Fina da Frase no Rodapé do Card */}
+              {activeCue && isPlaying && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-100 ease-linear shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                    style={{ width: `${Math.round(currentWordProgress * 100)}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── ABA 3: FICHA EM PDF ORIGINAL (EM TELA TODA) ── */}
+        {abaPainel === 'pdf' && (
+          <div className="w-full max-w-xl mx-auto py-4 px-3">
+            <div className="rounded-2xl bg-zinc-900/95 border border-white/10 p-5 backdrop-blur-xl shadow-2xl flex flex-col items-center text-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400">
+                <BookOpen className="w-6 h-6" />
+              </div>
+
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-white font-sans">
+                  Ficha Cornell Original em PDF
+                </h3>
+                <p className="text-[11.5px] text-zinc-400 mt-1 max-w-xs font-sans">
+                  Leitor paginado oficial em formato livro com controles de zoom e tela cheia.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setPdfAberto(true);
+                }}
+                className="flex items-center justify-center gap-2 h-10 px-5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-zinc-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer font-sans"
+              >
+                <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Abrir Ficha Cornell em Tela Cheia</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* ── PLAYER DE ÁUDIO 100% FIXO NO RODAPÉ COM CONTROLES COMPLETOS (PADRÃO GOOGLE 48PX / APPLE HIG) ── */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 backdrop-blur-2xl border-t border-white/10 px-3 sm:px-6 pt-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl">
+        <div className="max-w-xl mx-auto w-full">
+          {/* Barra de Progresso com Scrubbing */}
+          <div className="space-y-1">
             <input
               type="range"
               min={0}
@@ -562,286 +885,116 @@ export default function PilulasMateriaPlayer() {
                 const val = parseFloat(e.target.value);
                 setCurrentTime(val);
                 if (audioRef.current) audioRef.current.currentTime = val;
+                if (cues.length > 0) {
+                  const match = getActiveCueAtTime(val, cues);
+                  if (match) {
+                    setActiveCue(match.cue);
+                    setActiveCueIndex(match.index);
+                    setLegendaAtual(match.cue.text);
+                  }
+                }
               }}
-              className="w-full h-1.5 rounded-lg appearance-none bg-white/10 accent-amber-400 cursor-pointer"
+              className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-400 touch-manipulation"
             />
-            <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
+            <div className="flex justify-between text-[11px] font-mono text-zinc-400 px-0.5 leading-none">
+              <span>{Math.floor(currentTime / 60)}:{(Math.floor(currentTime % 60)).toString().padStart(2, '0')}</span>
+              <span>{Math.floor(duration / 60)}:{(Math.floor(duration % 60)).toString().padStart(2, '0')}</span>
             </div>
           </div>
 
-          {/* Controles de Reprodução */}
-          <div className="mt-3 flex items-center justify-between gap-3 pt-2">
+          {/* Botões do Player Fixo - Touch Target Google Material 3 (min 48x48) */}
+          <div className="flex items-center justify-between gap-1 sm:gap-2 mt-1.5 px-0.5">
+            {/* Velocidade */}
             <button
               type="button"
-              onClick={handleRateChange}
-              className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-xs font-mono font-bold text-amber-400 hover:bg-white/10 transition-colors"
+              onClick={mudarVelocidade}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer touch-manipulation shrink-0 font-sans"
+              title="Velocidade de reprodução"
             >
               {playbackRate}x
             </button>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => seekRelative(-10)}
-                aria-label="Voltar 10 segundos"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center text-zinc-300 transition-all"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+            {/* Anterior */}
+            <button
+              type="button"
+              disabled={indiceNoModulo === 0}
+              onClick={() => navegarTopico(-1)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Faixa anterior"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
-                className="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black flex items-center justify-center shadow-lg shadow-amber-500/25 active:scale-95 transition-all cursor-pointer"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-black" />
-                ) : isPlaying ? (
-                  <Pause className="w-6 h-6 fill-black" />
-                ) : (
-                  <Play className="w-6 h-6 fill-black ml-0.5" />
-                )}
-              </button>
+            {/* Retroceder 15s */}
+            <button
+              type="button"
+              onClick={() => pular(-15)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Voltar 15s"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
 
-              <button
-                type="button"
-                onClick={() => seekRelative(10)}
-                aria-label="Avançar 10 segundos"
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center text-zinc-300 transition-all"
-              >
-                <RotateCw className="w-4 h-4" />
-              </button>
-            </div>
+            {/* Play / Pause Principal */}
+            <button
+              type="button"
+              onClick={togglePlay}
+              disabled={isLoading}
+              className="w-14 h-14 sm:w-15 sm:h-15 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-black flex items-center justify-center shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-80 touch-manipulation shrink-0"
+              title={isPlaying ? 'Pausar áudio' : 'Tocar áudio'}
+            >
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-zinc-950" />
+              ) : isPlaying ? (
+                <Pause className="w-6 h-6 fill-current" />
+              ) : (
+                <Play className="w-6 h-6 fill-current ml-0.5" />
+              )}
+            </button>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                disabled={!anteriorTopico}
-                onClick={() => anteriorTopico && irParaTopico(anteriorTopico)}
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  anteriorTopico ? 'bg-white/5 text-zinc-300 hover:bg-white/10' : 'opacity-30 cursor-not-allowed'
-                }`}
-                aria-label="Aula anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                disabled={!proximoTopico}
-                onClick={() => proximoTopico && irParaTopico(proximoTopico)}
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                  proximoTopico ? 'bg-white/5 text-zinc-300 hover:bg-white/10' : 'opacity-30 cursor-not-allowed'
-                }`}
-                aria-label="Próxima aula"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            {/* Avançar 15s */}
+            <button
+              type="button"
+              onClick={() => pular(15)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Avançar 15s"
+            >
+              <RotateCw className="w-5 h-5" />
+            </button>
+
+            {/* Próximo */}
+            <button
+              type="button"
+              disabled={modulo ? indiceNoModulo === modulo.topicos.length - 1 : true}
+              onClick={() => navegarTopico(1)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-zinc-300 hover:text-white disabled:opacity-25 disabled:pointer-events-none active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Próxima faixa"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            {/* Fechar */}
+            <button
+              type="button"
+              onClick={() => navigate(`/pilulas/materia/${meta.slug}?modulo=${modulo.id}`)}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              title="Fechar player"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
+      </footer>
 
-        {/* ========================================================================= */}
-        {/* SELETOR DE ABAS: LEGENDAS / ROTEIRO / PDF CORNELL */}
-        {/* ========================================================================= */}
-        <div className="flex items-center justify-between gap-2 p-1 rounded-2xl bg-zinc-900/80 border border-white/5">
-          <button
-            type="button"
-            onClick={() => { haptic.selection(); setAbaAtiva('legenda'); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              abaAtiva === 'legenda'
-                ? 'bg-white/10 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <Subtitles className="w-3.5 h-3.5" />
-            <span>Legendas ({cues.length})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => { haptic.selection(); setAbaAtiva('tabela'); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              abaAtiva === 'tabela'
-                ? 'bg-white/10 text-amber-400 shadow-sm'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Roteiro / Resumo</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => { haptic.selection(); setAbaAtiva('pdf'); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              abaAtiva === 'pdf'
-                ? 'bg-white/10 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Ficha Cornell (PDF)</span>
-          </button>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* PAINEL DE CONTEÚDO CONFORME ABA */}
-        {/* ========================================================================= */}
-        <div className="flex-1 min-h-[320px] rounded-3xl bg-zinc-900/80 border border-white/10 p-4 backdrop-blur-md overflow-hidden flex flex-col">
-          
-          {abaAtiva === 'legenda' && (
-            <div 
-              ref={cuesContainerRef}
-              className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[480px]"
-            >
-              {cues.map((c, i) => {
-                const isActive = i === activeCueIndex;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      if (audioRef.current) {
-                        audioRef.current.currentTime = c.start;
-                        setCurrentTime(c.start);
-                      }
-                    }}
-                    className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 ${
-                      isActive 
-                        ? 'bg-amber-400/15 border border-amber-400/40 text-amber-200 font-semibold shadow-sm' 
-                        : 'bg-white/[0.02] hover:bg-white/5 border border-white/5 text-zinc-300'
-                    }`}
-                  >
-                    <span className="text-[10px] font-mono text-zinc-500 pt-0.5 shrink-0">
-                      {formatTime(c.start)}
-                    </span>
-                    <p className="text-xs sm:text-sm leading-relaxed flex-1">
-                      {c.text}
-                    </p>
-                  </button>
-                );
-              })}
-
-              {cues.length === 0 && (
-                <div className="text-center py-12 text-zinc-500 text-xs">
-                  Legendas sincronizadas indisponíveis para este áudio.
-                </div>
-              )}
-            </div>
-          )}
-
-          {abaAtiva === 'tabela' && (
-            <div className="flex-1 overflow-y-auto pr-1 max-h-[480px]">
-              {roteiroTxt ? (
-                <div className="p-4 rounded-2xl bg-black/40 border border-white/5 font-sans text-xs sm:text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
-                  {roteiroTxt}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-zinc-500 text-xs">
-                  Roteiro de estudo não disponível para este tópico.
-                </div>
-              )}
-            </div>
-          )}
-
-          {abaAtiva === 'pdf' && (
-            <div className="flex-1 min-h-[400px] flex flex-col">
-              {pdfUrl ? (
-                <div className="flex-1 rounded-2xl overflow-hidden border border-white/5 bg-zinc-950">
-                  <PdfPaginatedReader
-                    url={pdfUrl}
-                    titulo={`Ficha Cornell • ${topico.titulo}`}
-                    capaUrl={meta.image}
-                    onClose={() => setAbaAtiva('legenda')}
-                  />
-                </div>
-              ) : (
-                <div className="text-center py-12 text-zinc-500 text-xs">
-                  PDF da Ficha Cornell indisponível para este tópico.
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* ========================================================================= */}
-      {/* DRAWER LATERAL DE MÓDULOS E TÓPICOS */}
-      {/* ========================================================================= */}
-      <AnimatePresence>
-        {drawerAberto && (
-          <div className="fixed inset-0 z-50 flex">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setDrawerAberto(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            />
-
-            {/* Painel Lateral */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative ml-auto w-full max-w-[380px] h-full bg-zinc-900 border-l border-white/10 p-5 flex flex-col z-10 shadow-2xl"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <div className="min-w-0 flex-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block font-sans">
-                    PLAYLIST DA MATÉRIA
-                  </span>
-                  <h3 className="text-sm font-bold text-white truncate">
-                    {meta.nome}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setDrawerAberto(false)}
-                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Lista dos tópicos do módulo ativo */}
-              <div className="flex-1 overflow-y-auto mt-4 space-y-2 pr-1">
-                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                  MÓDULO ATUAL: {modulo?.titulo}
-                </span>
-
-                {modulo?.topicos.map((t, idx) => {
-                  const isCurrent = t.id === topico.id;
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => irParaTopico(t)}
-                      className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between gap-3 ${
-                        isCurrent
-                          ? 'bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold'
-                          : 'bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <span className="text-[10px] font-mono text-zinc-500">
-                          {(idx + 1).toString().padStart(2, '0')}
-                        </span>
-                        <span className="text-xs truncate">{t.titulo}</span>
-                      </div>
-                      {isCurrent && <Volume2 className="w-4 h-4 text-amber-400 shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Leitor Oficial de PDF Paginated (Igual ao Livro no Próprio App) */}
+      {pdfAberto && pdfUrlResolvida && (
+        <PdfPaginatedReader
+          url={pdfUrlResolvida}
+          titulo={`Ficha Cornell: ${topico.titulo}`}
+          capaUrl={meta.image}
+          onClose={() => setPdfAberto(false)}
+        />
+      )}
     </div>
   );
 }
