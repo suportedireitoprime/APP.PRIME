@@ -25,11 +25,6 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { toastNative } from '@/lib/nativeToast';
 import logoInicioApp from '@/assets/logo-coruja.webp';
-import themisOficialImg from '@/assets/icon-foreground.png';
-import corujaPrimeImg from '@/assets/logo-coruja.png';
-import marcaPrimeImg from '@/assets/logo-direitoprime-v2.webp';
-import themisMasterImg from '@/assets/themis-master-icon.jpg';
-import themisMarbleImg from '@/assets/bundled/themis-marble-cutout.webp';
 
 interface PresetCor {
   id: string;
@@ -42,8 +37,9 @@ interface PresetCor {
 }
 
 const PRESETS_CORES: PresetCor[] = [
-  // ── OFICIAL / VACATIO VINHO ──
-  { id: 'vinho-oficial', nome: 'Vinho Vacatio (Oficial)', cat: 'oficial', tipo: 'linear', cor1: '#1f0101', cor2: '#8C1220', angulo: 135 },
+  // ── OFICIAL / VERMELHO CARMESIM ──
+  { id: 'carmesim-oficial', nome: 'Vermelho Carmesim (Oficial)', cat: 'oficial', tipo: 'linear', cor1: '#F20723', cor2: '#C91823', angulo: 0 },
+  { id: 'vinho-oficial', nome: 'Vinho Vacatio', cat: 'oficial', tipo: 'linear', cor1: '#1f0101', cor2: '#8C1220', angulo: 135 },
   { id: 'bordeaux-nobre', nome: 'Bordeaux & Carmim', cat: 'oficial', tipo: 'linear', cor1: '#2E0208', cor2: '#7F1D1D', angulo: 145 },
   { id: 'rubi-profundo', nome: 'Rubi Prime', cat: 'oficial', tipo: 'linear', cor1: '#3B050B', cor2: '#B91C1C', angulo: 120 },
   { id: 'vinho-noite', nome: 'Vinho Noturno Onyx', cat: 'oficial', tipo: 'linear', cor1: '#120103', cor2: '#4A0510', angulo: 160 },
@@ -79,40 +75,10 @@ interface LogoOption {
 
 const LOGOS_DISPONIVEIS: LogoOption[] = [
   { 
-    id: 'themis-inicio', 
-    nome: 'Têmis Vazada (Início do App)', 
+    id: 'themis-vazada', 
+    nome: 'Têmis Vazada Oficial', 
     src: logoInicioApp, 
-    descricao: 'Busto oficial vazado transparente da tela inicial do app' 
-  },
-  { 
-    id: 'themis-marble', 
-    nome: 'Têmis Mármore Clássica', 
-    src: themisMarbleImg, 
-    descricao: 'Busto clássico em mármore da deusa da justiça' 
-  },
-  { 
-    id: 'themis-oficial', 
-    nome: 'Têmis com Balança e Círculo', 
-    src: themisOficialImg, 
-    descricao: 'Arte completa com balança e círculo' 
-  },
-  { 
-    id: 'coruja-prime', 
-    nome: 'Coruja Prime (Saber)', 
-    src: corujaPrimeImg, 
-    descricao: 'Emblema dourado de sabedoria jurídica e pedagogia' 
-  },
-  { 
-    id: 'marca-prime', 
-    nome: 'Logo Direito Prime', 
-    src: marcaPrimeImg, 
-    descricao: 'Tipografia institucional e escudo oficial' 
-  },
-  { 
-    id: 'themis-master', 
-    nome: 'Têmis Master Completa', 
-    src: themisMasterImg, 
-    descricao: 'Arte completa original de Têmis' 
+    descricao: 'Busto oficial vazado transparente da Deusa Têmis' 
   },
 ];
 
@@ -159,22 +125,22 @@ interface IconesLogoStudioProps {
 }
 
 export function IconesLogoStudio({ onVoltar }: IconesLogoStudioProps) {
-  // ── ESTADO DO FUNDO ──
+  // ── ESTADO DO FUNDO (Oficial Selecionado: Vermelho Carmesim #F20723 -> #C91823 a 0°) ──
   const [tipoFundo, setTipoFundo] = useState<'linear' | 'radial' | 'solido'>('linear');
-  const [cor1, setCor1] = useState('#1f0101');
-  const [cor2, setCor2] = useState('#8C1220');
-  const [angulo, setAngulo] = useState(135);
-  const [presetAtivoId, setPresetAtivoId] = useState<string>('vinho-oficial');
+  const [cor1, setCor1] = useState('#F20723');
+  const [cor2, setCor2] = useState('#C91823');
+  const [angulo, setAngulo] = useState(0);
+  const [presetAtivoId, setPresetAtivoId] = useState<string>('carmesim-oficial');
   const [filtroCat, setFiltroCat] = useState<'todos' | 'oficial' | 'luxo' | 'dark' | 'juridico' | 'radial'>('todos');
 
-  // ── ESTADO DO LOGO ──
-  const [logoSelecionadoId, setLogoSelecionadoId] = useState<string>('themis-inicio');
+  // ── ESTADO DO LOGO (Oficial: Têmis Vazada) ──
+  const [logoSelecionadoId, setLogoSelecionadoId] = useState<string>('themis-vazada');
   const [modoCorLogo, setModoCorLogo] = useState<'original' | 'colorido'>('original');
   const [corLogo, setCorLogo] = useState<string>('#D4AF37');
   const [customLogoUrl, setCustomLogoUrl] = useState<string | null>(null);
   const [logoScale, setLogoScale] = useState<number>(82); // 50% - 100%
   const [logoOffsetY, setLogoOffsetY] = useState<number>(0); // -25% a +25%
-  const [sombraLogo, setSombraLogo] = useState<SombraLogo>('deep');
+  const [sombraLogo, setSombraLogo] = useState<SombraLogo>('soft');
   const [tonalidadeLogo, setTonalidadeLogo] = useState<TonalidadeLogo>('original');
 
   // ── ESTADO DO FORMATO & ACABAMENTO ──
@@ -1069,8 +1035,8 @@ background: ${getBackgroundCss()};
                 />
               </div>
 
-              {/* Grid de Logos Disponíveis */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {/* Logotipo Oficial Único */}
+              <div className="flex items-center gap-3">
                 {LOGOS_DISPONIVEIS.map((logo) => {
                   const isSelected = logoSelecionadoId === logo.id && !customLogoUrl;
                   return (
@@ -1082,18 +1048,28 @@ background: ${getBackgroundCss()};
                         setLogoSelecionadoId(logo.id);
                         setCustomLogoUrl(null);
                       }}
-                      className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border text-center transition-all cursor-pointer active:scale-95 ${
+                      className={`flex-1 flex items-center gap-3 p-3 rounded-2xl border text-left transition-all cursor-pointer active:scale-95 ${
                         isSelected 
-                          ? 'bg-zinc-800 border-amber-400 shadow-md shadow-amber-500/15' 
+                          ? 'bg-zinc-800/90 border-amber-400 shadow-md shadow-amber-500/15' 
                           : 'bg-zinc-950/60 border-zinc-800 hover:border-zinc-700'
                       }`}
                     >
-                      <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center p-1">
+                      <div className="w-14 h-14 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center p-1 shrink-0">
                         <img src={logo.src} alt={logo.nome} className="max-w-full max-h-full object-contain" />
                       </div>
-                      <span className={`text-[11px] font-bold line-clamp-1 ${isSelected ? 'text-amber-300' : 'text-zinc-300'}`}>
-                        {logo.nome}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-bold ${isSelected ? 'text-amber-300' : 'text-zinc-300'}`}>
+                            {logo.nome}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            OFICIAL EXCLUSIVO
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">
+                          {logo.descricao}
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
