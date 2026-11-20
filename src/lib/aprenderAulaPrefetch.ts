@@ -17,11 +17,17 @@ const inflight = new Map<string, Promise<AulaBundle>>();
 
 const keyFor = (aulaId: string) => `aula:${aulaId}`;
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const isUUID = (val: unknown): val is string => typeof val === 'string' && UUID_REGEX.test(val);
+
 export function getCachedAprenderAula(aulaId: string): AulaBundle | undefined {
   return memCache.get(aulaId);
 }
 
 async function fetchFromNetwork(aulaId: string): Promise<AulaBundle> {
+  if (!isUUID(aulaId)) {
+    return { aula: null, blocos: [] };
+  }
   const [{ data: a }, { data: bs }] = await Promise.all([
     supabase.from('aprender_aulas')
       .select('id, titulo, objetivo, duracao_est_min, previa, modulo_id, ordem')
@@ -66,6 +72,7 @@ async function fetchFromNetwork(aulaId: string): Promise<AulaBundle> {
 }
 
 function revalidate(aulaId: string) {
+  if (!isUUID(aulaId)) return;
   const key = keyFor(aulaId);
   if (inflight.has(aulaId)) return;
   const p = (async () => {
@@ -82,7 +89,7 @@ function revalidate(aulaId: string) {
 }
 
 export function prefetchAprenderAula(aulaId: string): Promise<AulaBundle> {
-  if (!aulaId) return Promise.resolve({ aula: null, blocos: [] });
+  if (!aulaId || !isUUID(aulaId)) return Promise.resolve({ aula: null, blocos: [] });
 
   const mem = memCache.get(aulaId);
   if (mem) { revalidate(aulaId); return Promise.resolve(mem); }

@@ -12,6 +12,9 @@ import { loadAulaData, formatNarracaoParaHtml } from '@/utils/aulaDataLoader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { getLocalAulaProgress, saveLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
+import { salvarProgressoSupabase } from '@/services/aulasSyncService';
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 import {
   EtapaCompletar,
   EtapaVerdadeiroFalso,
@@ -678,24 +681,36 @@ export function PlayerAulaNativo({
     const isConcluida = idx === total - 1;
     saveLocalAulaProgress(aula.id, idx, total, isConcluida);
 
-    void (async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('aprender_progresso_aula').upsert({
-            user_id: user.id,
-            aula_id: aula.id,
-            blocos_concluidos: idx + 1,
-            total_perguntas: total,
-            tempo_ms: 0,
-            concluida_em: isConcluida ? new Date().toISOString() : null,
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'user_id,aula_id' });
+    // 1. Sincroniza na tabela oficial de trilhas (onde aula_id aceita string/slug como "penal-27-01")
+    void salvarProgressoSupabase({
+      aula,
+      etapaAtual: idx + 1,
+      aulaTerminada: isConcluida,
+      flashcardsRevisados: false,
+      questoesPraticadas: false,
+    }).catch(() => {});
+
+    // 2. Se for um UUID legado, atualiza também a tabela legada aprender_progresso_aula
+    if (UUID_REGEX.test(aula.id)) {
+      void (async () => {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase.from('aprender_progresso_aula').upsert({
+              user_id: user.id,
+              aula_id: aula.id,
+              blocos_concluidos: idx + 1,
+              total_perguntas: total,
+              tempo_ms: 0,
+              concluida_em: isConcluida ? new Date().toISOString() : null,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id,aula_id' });
+          }
+        } catch {
+          // Silencioso se offline
         }
-      } catch (err) {
-        // Silencioso se offline
-      }
-    })();
+      })();
+    }
   }, [idx, total, aula.id, aulaData]);
 
   // Preload da próxima etapa (Imagem + Áudio) para Latência 0ms

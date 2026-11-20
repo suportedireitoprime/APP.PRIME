@@ -99,31 +99,34 @@ export async function fetchAprenderAreaFromNetwork(
     // });
 
     if (uid && publicadas.length) {
-      const ids = publicadas.map((x) => x.id);
-      const [progRes, blocoRes] = await Promise.all([
-        supabase
-          .from('aprender_progresso_aula')
-          .select('aula_id, concluida_em, blocos_concluidos')
-          .eq('user_id', uid)
-          .in('aula_id', ids)
-          .limit(3000),
-        supabase.from('aprender_blocos').select('aula_id').in('aula_id', ids).limit(25000),
-      ]);
-      const totals: Record<string, number> = {};
-      (blocoRes.data ?? []).forEach((b: any) => {
-        totals[b.aula_id] = (totals[b.aula_id] || 0) + 1;
-      });
-      (progRes.data ?? []).forEach((p: any) => {
-        const isConcluida = !!p.concluida_em;
-        const total = totals[p.aula_id] || 1;
-        const pctCalculado = isConcluida
-          ? 100
-          : Math.min(100, Math.max(0, Math.round(((p.blocos_concluidos || 0) / total) * 100)));
-        progresso[p.aula_id] = {
-          concluida: isConcluida,
-          pct: pctCalculado,
-        };
-      });
+      const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const ids = publicadas.map((x) => x.id).filter(id => typeof id === 'string' && UUID_REGEX.test(id));
+      if (ids.length > 0) {
+        const [progRes, blocoRes] = await Promise.all([
+          supabase
+            .from('aprender_progresso_aula')
+            .select('aula_id, concluida_em, blocos_concluidos')
+            .eq('user_id', uid)
+            .in('aula_id', ids)
+            .limit(3000),
+          supabase.from('aprender_blocos').select('aula_id').in('aula_id', ids).limit(25000),
+        ]);
+        const totals: Record<string, number> = {};
+        (blocoRes.data ?? []).forEach((b: any) => {
+          totals[b.aula_id] = (totals[b.aula_id] || 0) + 1;
+        });
+        (progRes.data ?? []).forEach((p: any) => {
+          const isConcluida = !!p.concluida_em;
+          const total = totals[p.aula_id] || 1;
+          const pctCalculado = isConcluida
+            ? 100
+            : Math.min(100, Math.max(0, Math.round(((p.blocos_concluidos || 0) / total) * 100)));
+          progresso[p.aula_id] = {
+            concluida: isConcluida,
+            pct: pctCalculado,
+          };
+        });
+      }
     }
   }
 
@@ -390,16 +393,19 @@ export async function fetchAprenderModuloFromNetwork(
   const concluidasSet = new Set<string>();
 
   if (uid && rawAulas.length > 0) {
-    const aulaIds = rawAulas.map((a) => a.id);
-    const { data: progData } = await supabase
-      .from('aprender_progresso_aula')
-      .select('aula_id, concluida_em')
-      .eq('user_id', uid)
-      .in('aula_id', aulaIds);
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const aulaIds = rawAulas.map((a) => a.id).filter(id => typeof id === 'string' && UUID_REGEX.test(id));
+    if (aulaIds.length > 0) {
+      const { data: progData } = await supabase
+        .from('aprender_progresso_aula')
+        .select('aula_id, concluida_em')
+        .eq('user_id', uid)
+        .in('aula_id', aulaIds);
 
-    ((progData as any[]) ?? []).forEach((p) => {
-      if (p.concluida_em) concluidasSet.add(p.aula_id);
-    });
+      ((progData as any[]) ?? []).forEach((p) => {
+        if (p.concluida_em) concluidasSet.add(p.aula_id);
+      });
+    }
   }
 
   const aulas = rawAulas.map((a) => ({
