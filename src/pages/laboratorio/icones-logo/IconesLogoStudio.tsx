@@ -24,6 +24,7 @@ import {
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { toastNative } from '@/lib/nativeToast';
+import logoInicioApp from '@/assets/logo-coruja.webp';
 import themisOficialImg from '@/assets/icon-foreground.png';
 import corujaPrimeImg from '@/assets/logo-coruja.png';
 import marcaPrimeImg from '@/assets/logo-direitoprime-v2.webp';
@@ -78,22 +79,28 @@ interface LogoOption {
 
 const LOGOS_DISPONIVEIS: LogoOption[] = [
   { 
-    id: 'themis-oficial', 
-    nome: 'Têmis Oficial (Ícone App)', 
-    src: themisOficialImg, 
-    descricao: 'Busto e balança da justiça com corte transparente oficial' 
-  },
-  { 
-    id: 'coruja-prime', 
-    nome: 'Coruja Prime (Saber)', 
-    src: corujaPrimeImg, 
-    descricao: 'Emblema dourado de sabedoria jurídica e pedagogia' 
+    id: 'themis-inicio', 
+    nome: 'Têmis Vazada (Início do App)', 
+    src: logoInicioApp, 
+    descricao: 'Busto oficial vazado transparente da tela inicial do app' 
   },
   { 
     id: 'themis-marble', 
     nome: 'Têmis Mármore Clássica', 
     src: themisMarbleImg, 
     descricao: 'Busto clássico em mármore da deusa da justiça' 
+  },
+  { 
+    id: 'themis-oficial', 
+    nome: 'Têmis com Balança e Círculo', 
+    src: themisOficialImg, 
+    descricao: 'Arte completa com balança e círculo' 
+  },
+  { 
+    id: 'coruja-prime', 
+    nome: 'Coruja Prime (Saber)', 
+    src: corujaPrimeImg, 
+    descricao: 'Emblema dourado de sabedoria jurídica e pedagogia' 
   },
   { 
     id: 'marca-prime', 
@@ -107,6 +114,24 @@ const LOGOS_DISPONIVEIS: LogoOption[] = [
     src: themisMasterImg, 
     descricao: 'Arte completa original de Têmis' 
   },
+];
+
+interface PresetCorLogo {
+  id: string;
+  nome: string;
+  hex: string;
+}
+
+const PRESETS_CORES_LOGO: PresetCorLogo[] = [
+  { id: 'dourado-nobre', nome: 'Dourado Nobre', hex: '#D4AF37' },
+  { id: 'ouro-imperial', nome: 'Ouro Imperial', hex: '#F59E0B' },
+  { id: 'branco-puro', nome: 'Branco Puro', hex: '#FFFFFF' },
+  { id: 'prata-titanium', nome: 'Prata Titanium', hex: '#E2E8F0' },
+  { id: 'vinho-carmesim', nome: 'Vinho Carmesim', hex: '#E61942' },
+  { id: 'preto-onyx', nome: 'Preto Onyx', hex: '#000000' },
+  { id: 'verde-esmeralda', nome: 'Esmeralda', hex: '#10B981' },
+  { id: 'azul-royal', nome: 'Azul Royal', hex: '#3B82F6' },
+  { id: 'ambar-topazio', nome: 'Âmbar Topázio', hex: '#FBBF24' },
 ];
 
 type FormatoIcone = 'ios' | 'circle' | 'squircle' | 'square';
@@ -143,7 +168,9 @@ export function IconesLogoStudio({ onVoltar }: IconesLogoStudioProps) {
   const [filtroCat, setFiltroCat] = useState<'todos' | 'oficial' | 'luxo' | 'dark' | 'juridico' | 'radial'>('todos');
 
   // ── ESTADO DO LOGO ──
-  const [logoSelecionadoId, setLogoSelecionadoId] = useState<string>('themis-oficial');
+  const [logoSelecionadoId, setLogoSelecionadoId] = useState<string>('themis-inicio');
+  const [modoCorLogo, setModoCorLogo] = useState<'original' | 'colorido'>('original');
+  const [corLogo, setCorLogo] = useState<string>('#D4AF37');
   const [customLogoUrl, setCustomLogoUrl] = useState<string | null>(null);
   const [logoScale, setLogoScale] = useState<number>(82); // 50% - 100%
   const [logoOffsetY, setLogoOffsetY] = useState<number>(0); // -25% a +25%
@@ -164,7 +191,7 @@ export function IconesLogoStudio({ onVoltar }: IconesLogoStudioProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Logo ativo atual
-  const activeLogoSrc = customLogoUrl || LOGOS_DISPONIVEIS.find(l => l.id === logoSelecionadoId)?.src || themisOficialImg;
+  const activeLogoSrc = customLogoUrl || LOGOS_DISPONIVEIS.find(l => l.id === logoSelecionadoId)?.src || logoInicioApp;
 
   // ── APLICAR PRESET ──
   const aplicarPreset = (p: PresetCor) => {
@@ -395,7 +422,24 @@ background: ${getBackgroundCss()};
       const x = (size - logoW) / 2;
       const y = (size - logoH) / 2 + (size * (logoOffsetY / 100));
 
-      ctx.drawImage(img, x, y, logoW, logoH);
+      if (modoCorLogo === 'colorido') {
+        // Pinta o logo vazado na cor personalizada via composite offscreen
+        const tintCanvas = document.createElement('canvas');
+        tintCanvas.width = logoW;
+        tintCanvas.height = logoH;
+        const tCtx = tintCanvas.getContext('2d');
+        if (tCtx) {
+          tCtx.drawImage(img, 0, 0, logoW, logoH);
+          tCtx.globalCompositeOperation = 'source-in';
+          tCtx.fillStyle = corLogo;
+          tCtx.fillRect(0, 0, logoW, logoH);
+          ctx.drawImage(tintCanvas, x, y);
+        } else {
+          ctx.drawImage(img, x, y, logoW, logoH);
+        }
+      } else {
+        ctx.drawImage(img, x, y, logoW, logoH);
+      }
 
       // Borda sutil no topo do canvas se ativada
       if (borda === 'gold') {
@@ -463,21 +507,42 @@ background: ${getBackgroundCss()};
           }}
         />
 
-        {/* Imagem do Logotipo Central */}
-        <img 
-          src={activeLogoSrc} 
-          alt="Logotipo"
-          className="relative z-10 object-contain transition-transform duration-200 pointer-events-none"
-          style={{
-            width: `${logoScale}%`,
-            height: `${logoScale}%`,
-            transform: `translateY(${logoOffsetY}%)`,
-            filter: getLogoFilterCss(),
-          }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = themisOficialImg;
-          }}
-        />
+        {/* Imagem do Logotipo Central (Vazado com Cor Dinâmica ou Original) */}
+        {modoCorLogo === 'colorido' ? (
+          <div
+            className="relative z-10 transition-transform duration-200 pointer-events-none"
+            style={{
+              width: `${logoScale}%`,
+              height: `${logoScale}%`,
+              transform: `translateY(${logoOffsetY}%)`,
+              backgroundColor: corLogo,
+              WebkitMaskImage: `url(${activeLogoSrc})`,
+              maskImage: `url(${activeLogoSrc})`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+              filter: getLogoFilterCss(),
+            }}
+          />
+        ) : (
+          <img 
+            src={activeLogoSrc} 
+            alt="Logotipo"
+            className="relative z-10 object-contain transition-transform duration-200 pointer-events-none"
+            style={{
+              width: `${logoScale}%`,
+              height: `${logoScale}%`,
+              transform: `translateY(${logoOffsetY}%)`,
+              filter: getLogoFilterCss(),
+            }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = logoInicioApp;
+            }}
+          />
+        )}
       </div>
     );
   };
@@ -1141,6 +1206,89 @@ background: ${getBackgroundCss()};
                     ))}
                   </div>
                 </div>
+              </div>
+
+              {/* ── MUDANÇA DE COR DO LOGOTIPO (VAZADO DINÂMICO) ── */}
+              <div className="pt-3 border-t border-zinc-800/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <Palette className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Cor do Logotipo Vazado:</span>
+                  </span>
+
+                  {/* Toggle Original vs Colorido */}
+                  <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-white/5">
+                    <button
+                      type="button"
+                      onClick={() => { try { haptic.selection(); } catch {} setModoCorLogo('original'); }}
+                      className={`px-2.5 py-1 rounded-lg text-[10.5px] font-mono font-bold transition-all cursor-pointer ${
+                        modoCorLogo === 'original' 
+                          ? 'bg-amber-500 text-black shadow' 
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Original
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { try { haptic.selection(); } catch {} setModoCorLogo('colorido'); }}
+                      className={`px-2.5 py-1 rounded-lg text-[10.5px] font-mono font-bold transition-all cursor-pointer ${
+                        modoCorLogo === 'colorido' 
+                          ? 'bg-amber-500 text-black shadow' 
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Mudar Cor
+                    </button>
+                  </div>
+                </div>
+
+                {modoCorLogo === 'colorido' && (
+                  <div className="space-y-2.5 p-3 rounded-2xl bg-zinc-950 border border-amber-500/20">
+                    <span className="text-[10px] font-mono text-zinc-400 block">
+                      Escolha a cor do logotipo vazado:
+                    </span>
+
+                    {/* Presets de Cor do Logo */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {PRESETS_CORES_LOGO.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => { try { haptic.selection(); } catch {} setCorLogo(c.hex); }}
+                          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10.5px] font-mono transition-all cursor-pointer active:scale-95 ${
+                            corLogo.toLowerCase() === c.hex.toLowerCase()
+                              ? 'bg-zinc-800 border-amber-400 text-white font-bold'
+                              : 'bg-zinc-900 border-white/5 text-zinc-300 hover:border-zinc-700'
+                          }`}
+                        >
+                          <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style={{ background: c.hex }} />
+                          <span>{c.nome}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Seletor Customizado de Cor */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <input 
+                        type="color" 
+                        value={corLogo} 
+                        onChange={(e) => setCorLogo(e.target.value)}
+                        className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0" 
+                      />
+                      <input 
+                        type="text" 
+                        value={corLogo} 
+                        onChange={(e) => setCorLogo(e.target.value)}
+                        placeholder="#D4AF37"
+                        className="bg-zinc-900 px-2.5 py-1 rounded-lg border border-white/10 font-mono text-xs font-bold text-amber-300 w-28 uppercase focus:outline-none" 
+                      />
+                      <span className="text-[10px] font-mono text-zinc-500">
+                        Qualquer cor RGB
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>

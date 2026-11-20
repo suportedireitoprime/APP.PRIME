@@ -23,6 +23,7 @@ import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
 import appLogo from '@/assets/logo-direitoprime-v2.webp';
+import logoInicioApp from '@/assets/logo-coruja.webp';
 import themisOficialImg from '@/assets/icon-foreground.png';
 
 // Code Splitting do Player Nativo
@@ -248,7 +249,7 @@ export default function AdminLaboratorioAulas() {
                 {/* Miniatura do Ícone com Fundo Oficial */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-gradient-to-br from-[#1f0101] to-[#8C1220] shadow-md flex items-center justify-center p-2">
                   <img 
-                    src={themisOficialImg} 
+                    src={logoInicioApp} 
                     alt="Ícone App"
                     className="w-full h-full object-contain filter drop-shadow(0 4px 8px rgba(0,0,0,0.85))"
                     onError={(e) => {
