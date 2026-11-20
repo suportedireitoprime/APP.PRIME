@@ -157,6 +157,13 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
     if (!isInteractive && !corpo.trim() && (s.narr || s.intro)) {
       corpo = formatNarracaoParaHtml(s.narr || s.intro || '', s.titulo);
     }
+    // Resolver caminhos relativos de imagens embutidas no corpo HTML e blindar contra caixas quebradas
+    if (corpo && baseFolder) {
+      corpo = corpo.replace(
+        /src=\\?["'](?:assets\/img|img)\/([^\\"']+)["']/g,
+        `src="${baseFolder}/assets/img/$1" onerror="const v=this.closest('.vazada, .box');if(v){v.style.display='none';}else{this.style.display='none';}"`
+      );
+    }
 
     let kicker = s.kicker || '';
     if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {

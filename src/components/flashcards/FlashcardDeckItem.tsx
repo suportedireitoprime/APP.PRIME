@@ -169,7 +169,7 @@ export const FlashcardDeckItem = memo(({
           {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA (ALTURA UNIFORME E SOMBRA ELEVADA) ── */}
           <div
             className={cn(
-              "flex-1 min-w-0 px-4 sm:px-5 py-3 sm:py-3.5 h-[80px] xs:h-[84px] sm:h-[88px] min-h-[80px] xs:min-h-[84px] sm:min-h-[88px] max-h-[80px] xs:max-h-[84px] sm:max-h-[88px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
+              "flex-1 min-w-0 px-3.5 sm:px-5 py-2.5 sm:py-3.5 h-[80px] xs:h-[84px] sm:h-[88px] min-h-[80px] xs:min-h-[84px] sm:min-h-[88px] max-h-[80px] xs:max-h-[84px] sm:max-h-[88px] rounded-2xl border transition-all duration-300 flex items-center justify-between gap-2.5 overflow-hidden",
               isCompleted && "border-[#10b981]/60",
               item.isLocked && "opacity-90"
             )}
@@ -193,72 +193,92 @@ export const FlashcardDeckItem = memo(({
               }
             }
           >
-            {/* Título do Tema */}
-            <div className="flex items-center gap-1.5">
-              <span
-                className={cn(
-                  "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[16px] leading-tight break-words line-clamp-2",
-                  isCompleted
-                    ? "text-[#a7f3d0]"
-                    : item.isLocked
-                    ? "text-[#e7e5e4]"
-                    : ""
+            {/* Bloco de Textos */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              {/* Título do Tema */}
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={cn(
+                    "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[16px] leading-tight break-words line-clamp-2",
+                    isCompleted
+                      ? "text-[#a7f3d0]"
+                      : item.isLocked
+                      ? "text-[#e7e5e4]"
+                      : ""
+                  )}
+                  style={
+                    isActive ? {
+                      color: activeTheme.textActive,
+                      filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.7))'
+                    } : !isCompleted && !item.isLocked ? {
+                      color: activeTheme.highlight
+                    } : undefined
+                  }
+                >
+                  {tituloLimpo}
+                </span>
+              </div>
+
+              {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
+              <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold mt-1">
+                <span
+                  className="flex items-center gap-1"
+                  style={
+                    isCompleted ? { color: '#34d399' } :
+                    isActive ? { color: activeTheme.textActive, opacity: 0.85 } :
+                    item.isLocked ? { color: '#a8a29e' } :
+                    { color: activeTheme.highlight, opacity: 0.8 }
+                  }
+                >
+                  {item.subtituloCustom ? (
+                    item.subtituloCustom
+                  ) : item.temasCount !== undefined ? (
+                    <>
+                      <span>{item.temasCount} temas</span>
+                      <span 
+                        className="font-bold text-[11px]"
+                        style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}
+                      >
+                        →
+                      </span>
+                      <span>{item.displayTotal} cards</span>
+                    </>
+                  ) : (
+                    `${item.displayTotal} cards`
+                  )}
+                </span>
+                {item.displayPct > 0 && (
+                  <>
+                    <span style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}>•</span>
+                    <span
+                      className="font-mono font-bold"
+                      style={{
+                        color: isCompleted ? '#34d399' : isActive ? activeTheme.textActive : activeTheme.accent
+                      }}
+                    >
+                      {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
+                    </span>
+                  </>
                 )}
-                style={
-                  isActive ? {
-                    color: activeTheme.textActive,
-                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.7))'
-                  } : !isCompleted && !item.isLocked ? {
-                    color: activeTheme.highlight
-                  } : undefined
-                }
-              >
-                {tituloLimpo}
-              </span>
+              </div>
             </div>
 
-            {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold mt-1">
-              <span
-                className="flex items-center gap-1"
-                style={
-                  isCompleted ? { color: '#34d399' } :
-                  isActive ? { color: activeTheme.textActive, opacity: 0.85 } :
-                  item.isLocked ? { color: '#a8a29e' } :
-                  { color: activeTheme.highlight, opacity: 0.8 }
-                }
-              >
-                {item.subtituloCustom ? (
-                  item.subtituloCustom
-                ) : item.temasCount !== undefined ? (
-                  <>
-                    <span>{item.temasCount} temas</span>
-                    <span 
-                      className="font-bold text-[11px]"
-                      style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}
-                    >
-                      →
-                    </span>
-                    <span>{item.displayTotal} cards</span>
-                  </>
-                ) : (
-                  `${item.displayTotal} cards`
-                )}
-              </span>
-              {item.displayPct > 0 && (
-                <>
-                  <span style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}>•</span>
-                  <span
-                    className="font-mono font-bold"
-                    style={{
-                      color: isCompleted ? '#34d399' : isActive ? activeTheme.textActive : activeTheme.accent
-                    }}
-                  >
-                    {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
-                  </span>
-                </>
-              )}
-            </div>
+            {/* Miniatura da Capa Oficial da Matéria (à direita do card) */}
+            {item.capaUrl && (
+              <div className="relative shrink-0 w-11 h-14 sm:w-13 sm:h-16 rounded-xl overflow-hidden border border-white/15 shadow-md bg-zinc-950 select-none pointer-events-none">
+                <img
+                  src={item.capaUrl}
+                  alt={tituloLimpo}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center transform-gpu"
+                  onError={(e) => {
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) parent.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

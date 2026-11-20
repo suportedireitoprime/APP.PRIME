@@ -298,6 +298,7 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
                 displayPct: pctMat,
                 subtituloCustom: `${totalAulasMat} ${totalAulasMat === 1 ? 'aula' : 'aulas'}${pctMat > 0 ? ` • ${pctMat}% concluído` : ''}`,
                 isLocked,
+                capaUrl: mat.capaUrl || aulasDaMat[0]?.capaUrl,
                 onClick: () => {
                   try { haptic.selection(); } catch {}
                   onSelecionarMateria(mat.id);
