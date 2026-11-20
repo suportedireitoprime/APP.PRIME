@@ -37,7 +37,65 @@ function createIco(pngBuffer) {
 }
 
 async function main() {
-  console.log('Generating App Icons from new Lady Justice / Themis artwork...');
+  console.log('Generating App Icons from new Lady Justice / Themis artwork across ALL platforms...');
+
+  // 0. RESOURCES & ASSETS (Source of truth for GitHub Actions Android & iOS builds)
+  console.log('0. Updating resources/ and assets/ folders...');
+  if (!fs.existsSync('resources')) fs.mkdirSync('resources', { recursive: true });
+  if (!fs.existsSync('assets')) fs.mkdirSync('assets', { recursive: true });
+  if (!fs.existsSync('build-assets')) fs.mkdirSync('build-assets', { recursive: true });
+
+  fs.copyFileSync(srcPath, 'resources/themis-master-icon.jpg');
+
+  // Master icon (1024x1024)
+  await sharp(srcPath).resize(1024, 1024).png().toFile('resources/icon.png');
+  fs.copyFileSync('resources/icon.png', 'assets/icon.png');
+  fs.copyFileSync('resources/icon.png', 'build-assets/ios-app-icon.png');
+
+  // Background for adaptive icon: solid matching dark tone #1f0101
+  await sharp({
+    create: {
+      width: 1024,
+      height: 1024,
+      channels: 4,
+      background: { r: 31, g: 1, b: 1, alpha: 1 }
+    }
+  }).png().toFile('resources/icon-background.png');
+  fs.copyFileSync('resources/icon-background.png', 'assets/icon-background.png');
+
+  // Foreground for adaptive icon: Themis artwork centered at 72% so circular masks never crop details
+  const fgInnerSize = Math.round(1024 * 0.72);
+  const fgInnerBuffer = await sharp(srcPath).resize(fgInnerSize, fgInnerSize).toBuffer();
+  await sharp({
+    create: {
+      width: 1024,
+      height: 1024,
+      channels: 4,
+      background: { r: 31, g: 1, b: 1, alpha: 1 }
+    }
+  })
+    .composite([{ input: fgInnerBuffer, gravity: 'center' }])
+    .png()
+    .toFile('resources/icon-foreground.png');
+  fs.copyFileSync('resources/icon-foreground.png', 'assets/icon-foreground.png');
+
+  // Splash screens (2732x2732 with centered artwork)
+  const splashInner = await sharp(srcPath).resize(800, 800).toBuffer();
+  await sharp({
+    create: {
+      width: 2732,
+      height: 2732,
+      channels: 4,
+      background: { r: 31, g: 1, b: 1, alpha: 1 }
+    }
+  })
+    .composite([{ input: splashInner, gravity: 'center' }])
+    .png()
+    .toFile('resources/splash.png');
+  fs.copyFileSync('resources/splash.png', 'resources/splash-dark.png');
+  fs.copyFileSync('resources/splash.png', 'assets/splash.png');
+  fs.copyFileSync('resources/splash.png', 'assets/splash-dark.png');
+  fs.copyFileSync('resources/splash.png', 'build-assets/ios-splash.png');
 
   // 1. PUBLIC (Web & PWA)
   console.log('1. Generating Public PWA icons...');
@@ -55,6 +113,10 @@ async function main() {
   // Favicon.ico
   const fav32Png = await sharp(srcPath).resize(32, 32).png().toBuffer();
   fs.writeFileSync('public/favicon.ico', createIco(fav32Png));
+
+  // Ensure public/manifest.json matches public/site.webmanifest
+  const webmanifestContent = fs.readFileSync('public/site.webmanifest', 'utf8');
+  fs.writeFileSync('public/manifest.json', webmanifestContent);
 
   // 2. iOS AppIcon
   const iosIconPath = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png';
@@ -125,7 +187,7 @@ async function main() {
     }
   }
 
-  // Also update .output/public icons if .output/public exists so Vite dev/preview reflects it immediately
+  // 4. Also update .output/public icons if .output/public exists so Vite dev/preview reflects it immediately
   const outputPublic = '.output/public';
   if (fs.existsSync(outputPublic)) {
     console.log('4. Syncing to .output/public for instant preview...');
@@ -141,6 +203,8 @@ async function main() {
       'app-icon.webp',
       'logo-prime.webp',
       'logo-coruja.png',
+      'site.webmanifest',
+      'manifest.json',
     ];
     for (const f of filesToSync) {
       const srcF = path.join('public', f);
@@ -151,7 +215,7 @@ async function main() {
     }
   }
 
-  console.log('✅ ALL APP ICONS GENERATED SUCCESSFULLY!');
+  console.log('✅ ALL APP ICONS GENERATED AND SYNCED TO ALL TARGETS (resources, assets, build-assets, android, ios, public)!');
 }
 
 main().catch(err => {

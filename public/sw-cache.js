@@ -1,7 +1,7 @@
 // Estudos Jurídicos service worker — estratégias inspiradas em Workbox (sem dependência),
 // mantém compat com o registro atual em src/main.tsx. Não interfere no
 // firebase-messaging-sw.js nem no push-sw.js.
-const VERSION = 'v8';
+const VERSION = 'v9';
 const IMG_CACHE = `vacatio-img-${VERSION}`;
 const ASSET_CACHE = `vacatio-assets-${VERSION}`;
 const RUNTIME_CACHE = `vacatio-runtime-${VERSION}`;

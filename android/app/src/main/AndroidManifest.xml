@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Suporte total a todos os formatos de tela: Smartphones, Phablets, Tablets (7" a 14"+) e Foldables -->
     <supports-screens
         android:smallScreens="true"
@@ -8,7 +7,8 @@
         android:largeScreens="true"
         android:xlargeScreens="true"
         android:anyDensity="true"
-        android:resizeable="true" />
+        android:resizeable="true"
+    />
 
     <application
         android:allowBackup="true"
@@ -21,7 +21,6 @@
         android:theme="@style/AppTheme"
         android:enableOnBackInvokedCallback="true"
         android:windowSoftInputMode="adjustResize">
-
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
@@ -31,13 +30,11 @@
             android:exported="true"
             android:enableOnBackInvokedCallback="true"
             android:windowSoftInputMode="adjustResize">
-
             <!-- GOOGLE PLAY CONSOLE: Edge-to-Edge garantido para todos os usuários -->
             <!-- android:windowOptOutEdgeToEdgeEnforcement="false" sinaliza ao sistema
                  que o app suporta exibição ponta a ponta (edge-to-edge) corretamente,
                  evitando borda branca em Android 15+. -->
             <!-- Referência: https://developer.android.com/develop/ui/views/layout/edge-to-edge -->
-
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,7 +51,6 @@
                 <data android:scheme="https" android:host="www.vacatio.com.br" />
                 <data android:scheme="http" android:host="www.vacatio.com.br" />
             </intent-filter>
-
         </activity>
 
         <activity
@@ -62,92 +58,101 @@
             android:label="Artigo"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".AuthNativeActivity"
             android:label="Autenticação"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".LandingNativeActivity"
             android:label="Direito Prime"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".FlashcardsNativeActivity"
             android:label="Flashcards"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".QuestoesNativeActivity"
             android:label="Questões"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".BibliotecaNativeActivity"
             android:label="Biblioteca"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".ResumosActivity"
             android:label="Resumos Jurídicos"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".VideoaulasNativeActivity"
             android:label="Videoaulas"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".Radar360Activity"
             android:label="Radar 360"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <activity
             android:name=".PdfViewerActivity"
             android:label="Leitor de PDF"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
-
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+        />
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
 
         <!-- Push Notifications Default Icon (Fix para Quadrado Branco) -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/notification_icon" />
-            
+            android:resource="@drawable/notification_icon"
+        />
+
         <!-- Fix MLKit Document Scanner restricting orientations (Android 16 Requirement) -->
-        <activity 
-            android:name="com.google.mlkit.vision.documentscanner.internal.GmsDocumentScanningDelegateActivity" 
-            tools:node="merge" 
-            tools:remove="android:screenOrientation" />
+        <activity
+            android:name="com.google.mlkit.vision.documentscanner.internal.GmsDocumentScanningDelegateActivity"
+            tools:node="merge"
+            tools:remove="android:screenOrientation"
+        />
     </application>
 
     <!-- Permissions -->
@@ -177,7 +182,7 @@
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
     <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
     <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />
-    
+
     <!-- Remove explicit media permissions requested by third-party plugins (Google Play Policy API 33+) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
