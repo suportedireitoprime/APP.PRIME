@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu, Camera } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu, Camera, Speech } from 'lucide-react';
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
@@ -52,7 +52,7 @@ const CONTEUDO_ITEMS = [
 ];
 
 const FERRAMENTAS_ITEMS = [
-  { id: 'me-explique', label: 'Me Explique (IA)', icon: Camera, route: '/me-explique', color: '#E11D48' },
+  { id: 'me-explique', label: 'Me Explique (IA)', icon: Speech, route: '/me-explique', color: '#E11D48' },
   { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Gavel, route: '/ferramentas', color: '#DC2626' },
   { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },

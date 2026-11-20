@@ -344,7 +344,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             onClick={() => handleItemClick('assistente-horus')}
           />
           <MenuRow
-            icon={Sparkles}
+            icon={Speech}
             iconColor="text-red-400"
             label="Me Explique"
             onClick={() => handleItemClick('me-explique')}
