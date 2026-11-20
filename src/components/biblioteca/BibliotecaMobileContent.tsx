@@ -18,6 +18,7 @@ import {
   GraduationCap,
   Award,
   Scale,
+  Headphones,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -145,18 +146,6 @@ const DEMAIS_CATEGORIAS_CARROSSEL: CategoriaMeioConfig[] = [
     Icon: Award,
   },
 ];
-
-// Configuração do Carrossel Infinito Circular (Loop infinito Contínuo)
-const CARROSSEL_REPEAT = 9;
-const CARROSSEL_SET_SIZE = DEMAIS_CATEGORIAS_CARROSSEL.length;
-const CARROSSEL_MID_SET = Math.floor(CARROSSEL_REPEAT / 2); // 4
-
-const INFINITE_CATEGORIAS_CARROSSEL = Array.from({ length: CARROSSEL_REPEAT }, (_, setIdx) =>
-  DEMAIS_CATEGORIAS_CARROSSEL.map((cat) => ({
-    ...cat,
-    uniqueKey: `cat-meio-set${setIdx}-${cat.id}`,
-  }))
-).flat();
 
 // Configuração das Abas 3D das Grandes Matérias de Direito (Lista de Baixo)
 interface MateriaTabConfig {
@@ -425,26 +414,10 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   const [visibleLimit, setVisibleLimit] = useState<number>(30);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
-  // Estado do carrossel do meio (sempre inicia pelos Clássicos)
+  // Categoria de Acervos Especiais ativa (inicia sempre por Clássicos)
   const [activeCarouselIndex, setActiveCarouselIndex] = useState<number>(0);
-  const carouselScrollerRef = useRef<HTMLDivElement>(null);
+  const livrosScrollerRef = useRef<HTMLDivElement>(null);
   const menuAlternanciaRef = useRef<HTMLDivElement>(null);
-  const recenterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Ao entrar na biblioteca, centraliza o carrossel sempre começando pelos Clássicos
-  useEffect(() => {
-    const el = carouselScrollerRef.current;
-    if (!el) return;
-    const startIndex = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE; // Índice 0 do set central: Clássicos
-    const timer = setTimeout(() => {
-      const child = el.children[startIndex] as HTMLElement;
-      if (child) {
-        const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-        el.scrollTo({ left: target, behavior: 'instant' as ScrollBehavior });
-      }
-    }, 60);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Mantém a pílula do Menu de Alternância visível ao alternar o item ativo
   useEffect(() => {
@@ -606,67 +579,21 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     toast.success(now ? 'Livro salvo na sua estante!' : 'Livro removido dos salvos');
   }, []);
 
-  // Manipuladores de rolagem e dots do carrossel do meio (Loop infinito contínuo e suave)
-  const handleCarouselScroll = useCallback(() => {
-    const el = carouselScrollerRef.current;
-    if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < el.children.length; i++) {
-      const child = el.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = i;
-      }
-    }
-    const realIdx = best % CARROSSEL_SET_SIZE;
-    setActiveCarouselIndex(realIdx);
+  // Categoria de Acervo Especial ativa e seus livros
+  const activeAcervo = useMemo(() => {
+    return DEMAIS_CATEGORIAS_CARROSSEL[activeCarouselIndex] || DEMAIS_CATEGORIAS_CARROSSEL[0];
+  }, [activeCarouselIndex]);
 
-    // Re-centralização suave e invisível para manter o loop verdadeiramente infinito
-    if (recenterTimerRef.current) clearTimeout(recenterTimerRef.current);
-    recenterTimerRef.current = setTimeout(() => {
-      const currentSet = Math.floor(best / CARROSSEL_SET_SIZE);
-      if (currentSet < 2 || currentSet > CARROSSEL_REPEAT - 3) {
-        const targetIdx = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + realIdx;
-        const targetChild = el.children[targetIdx] as HTMLElement;
-        const currentChild = el.children[best] as HTMLElement;
-        if (targetChild && currentChild) {
-          const shift = targetChild.offsetLeft - currentChild.offsetLeft;
-          el.scrollLeft += shift;
-        }
-      }
-    }, 120);
-  }, []);
+  const livrosDoAcervo = useMemo(() => {
+    return booksByColecao[activeAcervo.id] || [];
+  }, [booksByColecao, activeAcervo.id]);
 
-  const scrollCarouselToIndex = useCallback((targetRealIndex: number) => {
-    const el = carouselScrollerRef.current;
-    if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let closestIdx = CARROSSEL_MID_SET * CARROSSEL_SET_SIZE + targetRealIndex;
-    let closestDist = Infinity;
-    for (let set = 1; set < CARROSSEL_REPEAT - 1; set++) {
-      const idx = set * CARROSSEL_SET_SIZE + targetRealIndex;
-      const child = el.children[idx] as HTMLElement;
-      if (child) {
-        const mid = child.offsetLeft + child.clientWidth / 2;
-        const dist = Math.abs(mid - center);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closestIdx = idx;
-        }
-      }
+  const handleSelectAcervo = useCallback((idx: number) => {
+    haptic.selection();
+    setActiveCarouselIndex(idx);
+    if (livrosScrollerRef.current) {
+      livrosScrollerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
     }
-    const child = el.children[closestIdx] as HTMLElement;
-    if (!child) return;
-    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-    el.scrollTo({
-      left: target,
-      behavior: 'smooth',
-    });
-    setActiveCarouselIndex(targetRealIndex);
   }, []);
 
   return (
@@ -701,29 +628,39 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                 <span className="truncate">ACERVOS ESPECIAIS</span>
               </h3>
             </div>
+
+            {/* Ação para ver o acervo completo da categoria selecionada */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                navigate(`/bibliotecas/${activeAcervo.id}`);
+              }}
+              className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-[11px] sm:text-xs font-semibold text-purple-200 hover:text-white hover:bg-purple-500/25 transition-all active:scale-95 cursor-pointer touch-manipulation shrink-0"
+            >
+              <span>Ver acervo ({livrosDoAcervo.length || activeAcervo.defaultCount})</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
           </div>
 
           {/* Menu de Alternância de Acervos Especiais (Inicia sempre pelos Clássicos) */}
           <div
             ref={menuAlternanciaRef}
-            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5 pb-1 select-none"
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5 pb-1 select-none touch-pan-x"
           >
             {DEMAIS_CATEGORIAS_CARROSSEL.map((cat, idx) => {
               const isAtivo = idx === activeCarouselIndex;
               const CatIcon = cat.Icon;
-              const countVal = counts[cat.id] || cat.defaultCount;
+              const countVal = booksByColecao[cat.id]?.length || counts[cat.id] || cat.defaultCount;
 
               return (
                 <button
                   key={`menu-alternancia-${cat.id}`}
                   type="button"
                   data-idx={idx}
-                  onClick={() => {
-                    haptic.selection();
-                    scrollCarouselToIndex(idx);
-                  }}
+                  onClick={() => handleSelectAcervo(idx)}
                   className={cn(
-                    "relative shrink-0 flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 select-none cursor-pointer border min-h-[38px] active:scale-95",
+                    "relative shrink-0 flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 select-none cursor-pointer border min-h-[38px] active:scale-95 touch-manipulation",
                     isAtivo
                       ? "bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white border-purple-400 shadow-lg shadow-purple-900/40 ring-1 ring-purple-400/50 scale-[1.03]"
                       : "bg-[#14121a]/90 text-zinc-400 hover:text-white hover:bg-white/10 border-white/10"
@@ -752,137 +689,108 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             })}
           </div>
 
-          {/* Carrossel Horizontal Snap com Zoom & Destaque Central (Padrão Leis Em Alta) */}
+          {/* Carrossel de Livros da Categoria Selecionada (Clássicos, Fora da Toga, etc.) */}
+          {/* Suporta rolagem horizontal e toque vertical em toda a tela (inclusive nas capas) */}
           <div
-            ref={carouselScrollerRef}
-            onScroll={handleCarouselScroll}
-            className="-mx-4 sm:-mx-6 md:-mx-8 px-[calc(50vw-68px)] sm:px-[calc(50vw-75px)] flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none items-center"
+            ref={livrosScrollerRef}
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-y pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
-            {INFINITE_CATEGORIAS_CARROSSEL.map((cat, idx) => {
-              const realIdx = idx % CARROSSEL_SET_SIZE;
-              const isActive = realIdx === activeCarouselIndex;
-              const colecao = findColecao(cat.id);
-              const coverUrl = colecao?.cover || bibliotecaCoverImg;
-              const countVal = counts[cat.id] || cat.defaultCount;
-              const CatIcon = cat.Icon;
+            {livrosDoAcervo.length > 0 ? (
+              livrosDoAcervo.slice(0, 30).map((livro, bookIdx) => {
+                const coverUrl = livro.capa ? directImg(livro.capa, 320) : bibliotecaCoverImg;
+                const hasAudio = Boolean(livro.audioResumoUrl);
 
-              return (
-                <div
-                  key={cat.uniqueKey}
-                  onClick={() => {
-                    haptic.selection();
-                    if (!isActive) {
-                      scrollCarouselToIndex(realIdx);
-                    } else {
-                      navigate(`/bibliotecas/${cat.id}`);
-                    }
-                  }}
-                  className={`snap-center shrink-0 w-[136px] sm:w-[150px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-300 ease-out active:scale-95 ${
-                    isActive
-                      ? 'scale-[1.08] sm:scale-[1.10] opacity-100 z-10'
-                      : 'scale-[0.92] sm:scale-[0.93] opacity-65 hover:opacity-90 z-0'
-                  }`}
-                >
+                return (
                   <div
-                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 transition-all duration-300 ${
-                      isActive
-                        ? 'shadow-[0_16px_36px_-6px_rgba(0,0,0,0.95)] ring-1.5 ring-white/30'
-                        : 'shadow-[0_6px_16px_-4px_rgba(0,0,0,0.7)] ring-0'
-                    }`}
-                    style={{
-                      boxShadow: isActive
-                        ? '0 20px 42px -6px rgba(0, 0, 0, 0.98), 0 8px 18px -2px rgba(0, 0, 0, 0.92)'
-                        : '0 6px 16px -4px rgba(0, 0, 0, 0.75)',
+                    key={`acervo-${activeAcervo.id}-${livro.id}-${bookIdx}`}
+                    onClick={() => {
+                      haptic.selection();
+                      onAbrirLivro(livro);
                     }}
+                    className="snap-start shrink-0 w-[138px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-200 active:scale-95 touch-pan-y select-none"
                   >
-                    <img
-                      src={coverUrl}
-                      alt={cat.title}
-                      loading={idx < 5 ? 'eager' : 'lazy'}
-                      decoding="async"
-                      className={`w-full h-full object-cover transition-transform duration-500 ${
-                        isActive ? 'scale-105' : 'scale-100 group-hover:scale-105'
-                      }`}
-                    />
+                    <div className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden bg-zinc-950 shadow-[0_12px_28px_-6px_rgba(0,0,0,0.85)] ring-1 ring-white/10 group-hover:ring-purple-400/60 group-hover:shadow-[0_16px_36px_-6px_rgba(168,85,247,0.35)] transition-all duration-300 flex flex-col justify-end">
+                      <img
+                        src={coverUrl}
+                        alt={livro.titulo}
+                        loading={bookIdx < 6 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        onError={(e) => {
+                          e.currentTarget.src = bibliotecaCoverImg;
+                        }}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+                      />
 
-                    {/* Gradiente de profundidade para legibilidade e visual cinematográfico */}
-                    <div
-                      className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${
-                        isActive
-                          ? 'bg-gradient-to-t from-black/95 via-black/25 to-black/35'
-                          : 'bg-gradient-to-t from-black/95 via-black/45 to-black/55'
-                      }`}
-                    />
+                      {/* Gradiente de Profundidade */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent pointer-events-none" />
 
-                    {/* Ícone da Categoria no Topo à Esquerda com Pill Translúcida */}
-                    <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-                      <div
-                        className={`w-7 h-7 rounded-xl flex items-center justify-center shadow-lg transition-all ${
-                          isActive
-                            ? 'bg-black/75 border border-white/25 scale-105'
-                            : 'bg-black/60 border border-white/10'
-                        }`}
-                      >
-                        <CatIcon className="w-3.5 h-3.5 text-white drop-shadow-sm" strokeWidth={2.2} />
+                      {/* Badge no Topo à Esquerda */}
+                      <div className="absolute top-2 left-2 z-10 pointer-events-none">
+                        {hasAudio ? (
+                          <div className="px-1.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-purple-400/40 text-[9px] font-bold text-purple-300 flex items-center gap-1 shadow-sm">
+                            <Headphones className="w-2.5 h-2.5" />
+                            <span>Áudio</span>
+                          </div>
+                        ) : (
+                          <div className="px-1.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[8.5px] font-bold text-white/80 shadow-sm">
+                            {activeAcervo.label}
+                          </div>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Seta no Topo à Direita para Ação Direta */}
-                    <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
-                      <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-all ${
-                          isActive
-                            ? 'bg-black/80 border border-white/30 text-white'
-                            : 'bg-black/60 border border-white/15 text-white/80'
-                        }`}
-                      >
-                        <ArrowUpRight
-                          className={`w-3.5 h-3.5 transition-transform ${
-                            isActive ? 'translate-x-0.5 -translate-y-0.5 text-white' : ''
-                          }`}
-                          strokeWidth={2.4}
-                        />
+                      {/* Botão de Ação no Topo à Direita */}
+                      <div className="absolute top-2 right-2 z-10 pointer-events-none">
+                        <div className="w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center group-hover:bg-purple-600/80 group-hover:scale-110 transition-all shadow-md">
+                          <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.4} />
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Rodapé do Card com Selo e Título com Tipografia Moderna e Refinada */}
-                    <div className="absolute inset-x-0 bottom-0 p-2.5 z-10 flex flex-col justify-end pointer-events-none">
-                      <span
-                        className="self-start text-[9px] font-sans font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-black/80 border border-white/10 mb-1"
-                        style={{ color: cat.corSecundaria }}
-                      >
-                        {countVal} {countVal === 1 ? 'OBRA' : 'OBRAS'}
-                      </span>
-                      <h4 className="font-sans font-extrabold text-[12px] sm:text-[13px] text-white uppercase tracking-wider leading-snug line-clamp-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
-                        {cat.label}
-                      </h4>
+                      {/* Rodapé com Título e Autor dentro da Capa */}
+                      <div className="relative z-10 p-2.5 pt-6 bg-gradient-to-t from-black/95 via-black/75 to-transparent text-left pointer-events-none">
+                        <h4 className="font-sans font-bold text-[12px] sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                          {livro.titulo}
+                        </h4>
+                        {livro.autor && (
+                          <p className="text-[10px] text-zinc-300/80 truncate mt-0.5 font-normal">
+                            {livro.autor}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Indicador de Bolinhas Minimalista (Idêntico a Audiobooks) */}
-          <div className="flex items-center justify-center gap-1.5 pt-1">
-            {DEMAIS_CATEGORIAS_CARROSSEL.map((cat, i) => {
-              const isActive = i === activeCarouselIndex;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    scrollCarouselToIndex(i);
-                  }}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    isActive
-                      ? "w-5 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
-                      : "w-1.5 bg-white/20 hover:bg-white/40"
-                  }`}
-                  aria-label={`Ver categoria ${cat.label}`}
+                );
+              })
+            ) : (
+              /* Esqueletos enquanto carrega a coleção */
+              Array.from({ length: 5 }).map((_, sIdx) => (
+                <div
+                  key={`skel-book-${sIdx}`}
+                  className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl bg-zinc-900/60 border border-white/5 animate-pulse"
                 />
-              );
-            })}
+              ))
+            )}
+
+            {/* Card Final: Ver Acervo Completo */}
+            {livrosDoAcervo.length > 0 && (
+              <div
+                onClick={() => {
+                  haptic.selection();
+                  navigate(`/bibliotecas/${activeAcervo.id}`);
+                }}
+                className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl border-2 border-dashed border-purple-500/40 bg-[#14121a]/90 hover:bg-purple-950/40 flex flex-col items-center justify-center text-center p-3 cursor-pointer group active:scale-95 transition-all touch-pan-y select-none"
+              >
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform mb-2 shadow-md">
+                  <ArrowUpRight className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-bold text-white group-hover:text-purple-200">
+                  Ver todas as {livrosDoAcervo.length} obras
+                </span>
+                <span className="text-[10px] text-zinc-400 mt-0.5">
+                  de {activeAcervo.label}
+                </span>
+              </div>
+            )}
           </div>
         </section>
 
@@ -1069,8 +977,6 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                         stiffness: 300,
                         damping: 24,
                       }}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.985 }}
                       onClick={() => {
                         haptic.selection();
                         onAbrirLivro(livro);
@@ -1079,7 +985,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       style={{
                         background: 'linear-gradient(135deg, #4A1D96 0%, #31136A 55%, #1A083B 100%)',
                       }}
-                      className="group relative flex items-stretch rounded-2xl overflow-hidden transition-all duration-300 border border-purple-500/25 hover:border-purple-400/50 shadow-[0_6px_20px_rgba(0,0,0,0.65)] hover:shadow-[0_8px_28px_rgba(124,58,237,0.35)] cursor-pointer select-none text-left w-full h-[142px] sm:h-[150px] transform-gpu will-change-transform"
+                      className="group relative flex items-stretch rounded-2xl overflow-hidden transition-all duration-300 border border-purple-500/25 hover:border-purple-400/50 shadow-[0_6px_20px_rgba(0,0,0,0.65)] hover:shadow-[0_8px_28px_rgba(124,58,237,0.35)] cursor-pointer select-none text-left w-full h-[142px] sm:h-[150px] transform-gpu will-change-transform active:scale-[0.985] touch-pan-y"
                     >
                       {/* SVGs jurídicos decorativos ao fundo (idêntico ao Carrossel de Clássicos) */}
                       <svg
