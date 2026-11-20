@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, Calendar, LogIn, Shield } from 'lucide-react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,11 +11,17 @@ import { AtuacaoCard } from '@/components/perfil/AtuacaoCard';
 import { InfoRow } from '@/components/perfil/InfoRow';
 import { ExcluirContaButton } from '@/components/perfil/ExcluirContaButton';
 
-const planoLabel = (plano: string | null, source: 'play' | 'apple' | 'asaas' | null) => {
+const planoLabel = (plano: string | null, source: 'play' | 'apple' | 'asaas' | null, expiresAt?: string | null) => {
   if (!plano) return { titulo: 'Gratuito', desc: 'Acesso limitado — 3 usos/mês em recursos premium.', tag: 'FREE' };
   const p = plano.toLowerCase();
   const via = source === 'play' ? 'Google Play' : source === 'asaas' ? 'Asaas' : 'App Store';
-  if (p.includes('vitalicio')) return { titulo: 'Premium Vitalício', desc: 'Acesso permanente — plano migrado do app anterior.', tag: 'VITALÍCIO' };
+
+  // Se expira em mais de 50 anos (ex: ano 2126) ou contém 'vitalicio', é Vitalício permanente
+  const isFarFuture = expiresAt ? new Date(expiresAt).getFullYear() >= 2090 : false;
+  if (p.includes('vitalicio') || isFarFuture) {
+    return { titulo: 'Premium Vitalício', desc: `Acesso permanente liberado via ${via}.`, tag: 'VITALÍCIO' };
+  }
+
   if (p.includes('anual') || p.includes('year')) return { titulo: 'Premium Anual', desc: `Renovação anual via ${via}.`, tag: 'ANUAL' };
   if (p.includes('mensal') || p.includes('month')) return { titulo: 'Premium Mensal', desc: `Renovação mensal via ${via}.`, tag: 'MENSAL' };
   if (p.includes('teste')) return { titulo: 'Teste de 3 Dias', desc: 'Período gratuito para testar todos os recursos.', tag: 'TRIAL' };
@@ -63,12 +69,28 @@ const Perfil = () => {
   const emailConfirmed = !!user.email_confirmed_at;
 
   const perfilTiposSel: string[] = profile?.perfil_tipos ?? [];
-  const plano = planoLabel(sub.plano, sub.source);
-  const expira = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : null;
+  const isVitalicio = (sub.plano?.toLowerCase().includes('vitalicio') || false) || (sub.expiresAt ? new Date(sub.expiresAt).getFullYear() >= 2090 : false);
+  const plano = planoLabel(sub.plano, sub.source, sub.expiresAt);
+  const expira = isVitalicio ? null : (sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : null);
+
+  const canonicoContexto = (() => {
+    if (!profile?.perfil_contexto) return null;
+    const c = profile.perfil_contexto;
+    if (c === 'Estudando pra OAB' || c === 'oab' || c === 'Rumo à OAB' || c === 'faculdade' || c === 'Estudante de Direito') {
+      return 'Faculdade e OAB';
+    }
+    if (c === 'concurso' || c === 'Concurseiro Jurídico' || c === 'Concurseiro(a)') {
+      return 'Concurseiro';
+    }
+    if (c === 'advogado' || c === 'Advogado(a)') {
+      return 'Advogado';
+    }
+    return c;
+  })();
 
   return (
     <div className="min-h-dvh bg-background pb-24">
-      <AppHeader title="Meu Perfil" onBack={() => navigate('/')} />
+      <PageHeader title="Meu Perfil" onBack={() => navigate('/')} />
 
       <div className="px-4 lg:px-8 pt-2 pb-4 space-y-5 max-w-lg lg:max-w-6xl mx-auto lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-8">
         <div className="space-y-5">
@@ -79,7 +101,7 @@ const Perfil = () => {
             isPremium={sub.isPremium && !sub.isTrial}
             provider={provider}
             emailConfirmed={emailConfirmed}
-            contexto={profile?.perfil_contexto}
+            contexto={canonicoContexto}
             onNameChange={setDisplayName}
           />
 

@@ -111,7 +111,13 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
 
   const displayName = profile?.display_name || user?.email?.split('@')[0] || 'Visitante';
   const initial = displayName.charAt(0).toUpperCase();
-  const profissao = (profile?.perfil_tipos && profile.perfil_tipos[0]) || 'Vade Mecum Profissional';
+  const profissaoMap: Record<string, string> = {
+    faculdade: 'Faculdade e OAB',
+    oab: 'Faculdade e OAB',
+    concurso: 'Concurseiro',
+    advogado: 'Advogado',
+  };
+  const profissao = (profile?.perfil_tipos && profissaoMap[profile.perfil_tipos[0]]) || (profile?.perfil_tipos && profile.perfil_tipos[0]) || 'Vade Mecum Profissional';
 
   const renderSection = (
     title: string,
