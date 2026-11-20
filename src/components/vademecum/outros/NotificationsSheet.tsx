@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { 
-  X, Bell, CheckCheck, Scale, Newspaper, Video, BookOpen, 
-  ArrowRight, Clock, GraduationCap, Sparkles, Trash2, RefreshCw 
+  X, Scale, Newspaper, BookOpen, 
+  ArrowRight, Clock, RefreshCw, Sparkles 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { resenhaSelect } from '@/lib/resenhaBackend';
-import { useAuth } from '@/hooks/useAuth';
+import { haptic } from '@/lib/nativeHaptics';
 import brasaoRepublica from '@/assets/brasao-republica.webp';
 
 export type NotifCategory = 'leis' | 'noticias' | 'estudos' | 'lembretes' | 'sistema' | 'blog' | 'geral';
@@ -35,15 +35,7 @@ export interface CuratedItem {
   image?: string;
 }
 
-const CATEGORY_META: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-  leis:       { label: 'Legislação',      icon: Scale,         color: '#DC2626', bg: 'bg-red-500/15' },
-  noticias:   { label: 'Notícia',         icon: Newspaper,     color: '#A78BFA', bg: 'bg-violet-500/15' },
-  estudos:    { label: 'Estudo Jurídico', icon: GraduationCap, color: '#38BDF8', bg: 'bg-sky-500/15' },
-  lembretes:  { label: 'Lembrete',        icon: Clock,         color: '#FBBF24', bg: 'bg-amber-500/15' },
-  blog:       { label: 'Artigo / Blog',   icon: BookOpen,      color: '#34D399', bg: 'bg-emerald-500/15' },
-  sistema:    { label: 'Aviso do App',    icon: Sparkles,      color: '#EC4899', bg: 'bg-pink-500/15' },
-  geral:      { label: 'Notificação',     icon: Bell,          color: '#9CA3AF', bg: 'bg-zinc-500/15' },
-};
+const LAST_SEEN_KEY = 'vacatio_novidades_last_seen';
 
 function formatRelative(iso: string): { rel: string; abs: string } {
   const d = new Date(iso);
@@ -59,89 +51,6 @@ function formatRelative(iso: string): { rel: string; abs: string } {
     else rel = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   }
   return { rel, abs };
-}
-
-/** Hook oficial de contagem de notificações não lidas em tempo real */
-export function useUnreadNotifCount() {
-  const { user } = useAuth();
-  const [count, setCount] = useState(0);
-
-  const fetchCount = useCallback(async () => {
-    if (!user?.id) {
-      setCount(0);
-      return;
-    }
-    try {
-      const { count: unreadCount, error } = await supabase
-        .from('user_notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('read', false);
-
-      if (!error && typeof unreadCount === 'number') {
-        setCount(unreadCount);
-      }
-    } catch {
-      setCount(0);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    fetchCount();
-    const interval = setInterval(fetchCount, 45_000);
-
-    // Ouvinte em tempo real via Supabase Realtime com tratamento seguro e sem flood de reconexão
-    let channel: any = null;
-    if (user?.id) {
-      try {
-        const topic = `user_notifications_badge_${user.id}`;
-        channel = supabase
-          .channel(topic)
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'user_notifications',
-              filter: `user_id=eq.${user.id}`,
-            },
-            () => {
-              fetchCount();
-            }
-          )
-          .subscribe((status) => {
-            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-              console.warn('[NotificationsSheet] Realtime offline/rejeitado, fallback para polling:', status);
-              if (channel) {
-                try { supabase.removeChannel(channel); } catch {}
-                channel = null;
-              }
-            }
-          });
-      } catch (err) {
-        console.warn('[NotificationsSheet] Falha segura ao conectar realtime:', err);
-      }
-    }
-
-    const onVisible = () => document.visibilityState === 'visible' && fetchCount();
-    const onNotificationsChanged = () => fetchCount();
-
-    document.addEventListener('visibilitychange', onVisible);
-    window.addEventListener('notifications-changed', onNotificationsChanged);
-
-    return () => {
-      clearInterval(interval);
-      if (channel) {
-        try {
-          supabase.removeChannel(channel);
-        } catch {}
-      }
-      document.removeEventListener('visibilitychange', onVisible);
-      window.removeEventListener('notifications-changed', onNotificationsChanged);
-    };
-  }, [fetchCount, user?.id]);
-
-  return count;
 }
 
 async function fetchCuratedLegalFeed(): Promise<CuratedItem[]> {
@@ -176,42 +85,78 @@ async function fetchCuratedLegalFeed(): Promise<CuratedItem[]> {
 
     const items: CuratedItem[] = [];
 
-    for (const r of (diario.data as any[] | null) ?? []) {
-      const tipo = String(r.tipo_ato || '').trim();
-      const numero = String(r.numero_ato || '').trim();
-      const title = !numero ? tipo : numero.toLowerCase().startsWith(tipo.toLowerCase()) ? numero : `${tipo} nº ${numero}`;
-      items.push({
-        id: `dou_${r.id}`,
-        kind: 'diario',
-        title,
-        subtitle: r.ementa,
-        createdAt: r.created_at,
-        to: `/resenha-diaria?data=${r.data_dou || hojeLocal}`,
-      });
-    }
+    const parseDiario = (list: any[]) => {
+      for (const r of list) {
+        const tipo = String(r.tipo_ato || '').trim();
+        const numero = String(r.numero_ato || '').trim();
+        const title = !numero ? tipo : numero.toLowerCase().startsWith(tipo.toLowerCase()) ? numero : `${tipo} nº ${numero}`;
+        items.push({
+          id: `dou_${r.id}`,
+          kind: 'diario',
+          title,
+          subtitle: r.ementa,
+          createdAt: r.created_at,
+          to: `/resenha-diaria?data=${r.data_dou || hojeLocal}`,
+        });
+      }
+    };
 
-    for (const r of (noticias.data as any[] | null) ?? []) {
-      items.push({
-        id: `noticia_${r.id}`,
-        kind: 'noticia',
-        title: r.titulo,
-        subtitle: r.resumo || (r.fonte ? `Fonte: ${r.fonte}` : undefined),
-        createdAt: r.created_at,
-        to: `/noticias`,
-        image: r.imagem_url || undefined,
-      });
-    }
+    const parseNoticias = (list: any[]) => {
+      for (const r of list) {
+        items.push({
+          id: `noticia_${r.id}`,
+          kind: 'noticia',
+          title: r.titulo,
+          subtitle: r.resumo || (r.fonte ? `Fonte: ${r.fonte}` : undefined),
+          createdAt: r.created_at,
+          to: `/noticias`,
+          image: r.imagem_url || undefined,
+        });
+      }
+    };
 
-    for (const r of (blog.data as any[] | null) ?? []) {
-      items.push({
-        id: `blog_${r.id}`,
-        kind: 'blog',
-        title: r.titulo,
-        subtitle: r.resumo,
-        createdAt: r.data_publicacao || r.created_at,
-        to: `/blog?post=${encodeURIComponent(r.id)}`,
-        image: r.imagem_thumb_url || r.imagem_url || undefined,
-      });
+    const parseBlog = (list: any[]) => {
+      for (const r of list) {
+        items.push({
+          id: `blog_${r.id}`,
+          kind: 'blog',
+          title: r.titulo,
+          subtitle: r.resumo,
+          createdAt: r.data_publicacao || r.created_at,
+          to: `/blog?post=${encodeURIComponent(r.id)}`,
+          image: r.imagem_thumb_url || r.imagem_url || undefined,
+        });
+      }
+    };
+
+    parseDiario((diario.data as any[] | null) ?? []);
+    parseNoticias((noticias.data as any[] | null) ?? []);
+    parseBlog((blog.data as any[] | null) ?? []);
+
+    // Se hoje ainda não houver publicações (ex: madrugada ou fim de semana), busca as mais recentes gerais
+    if (items.length === 0) {
+      const [diarioRecente, noticiasRecentes, blogRecentes] = await Promise.all([
+        resenhaSelect<any>({
+          select: 'id,tipo_ato,numero_ato,ementa,created_at,data_dou',
+          order: 'created_at.desc',
+          limit: '10',
+        }).then((data) => ({ data })),
+        supabase
+          .from('noticias_juridicas' as any)
+          .select('id,titulo,resumo,imagem_url,created_at,fonte')
+          .order('created_at', { ascending: false })
+          .limit(10),
+        supabase
+          .from('blog_edicao_posts' as any)
+          .select('id,titulo,resumo,imagem_thumb_url,imagem_url,data_publicacao,publicado')
+          .eq('publicado', true)
+          .order('data_publicacao', { ascending: false })
+          .limit(8),
+      ]);
+
+      parseDiario((diarioRecente.data as any[] | null) ?? []);
+      parseNoticias((noticiasRecentes.data as any[] | null) ?? []);
+      parseBlog((blogRecentes.data as any[] | null) ?? []);
     }
 
     items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -221,6 +166,63 @@ async function fetchCuratedLegalFeed(): Promise<CuratedItem[]> {
   }
 }
 
+/** Hook oficial de contagem de novidades não lidas em tempo real */
+export function useUnreadNotifCount() {
+  const [count, setCount] = useState(0);
+
+  const checkUnread = useCallback(() => {
+    try {
+      const lastSeenIso = localStorage.getItem(LAST_SEEN_KEY);
+      
+      // Se já abriu nas últimas 4 horas, não incomoda com badge
+      if (lastSeenIso) {
+        const lastSeenDate = new Date(lastSeenIso);
+        const diffHours = (Date.now() - lastSeenDate.getTime()) / (1000 * 60 * 60);
+        if (diffHours < 4) {
+          setCount(0);
+          return;
+        }
+      }
+
+      fetchCuratedLegalFeed()
+        .then((items) => {
+          if (!items || items.length === 0) {
+            setCount(0);
+            return;
+          }
+          if (!lastSeenIso) {
+            setCount(Math.min(items.length, 3));
+            return;
+          }
+          const lastSeenTime = new Date(lastSeenIso).getTime();
+          const unread = items.filter((it) => new Date(it.createdAt).getTime() > lastSeenTime);
+          setCount(Math.min(unread.length, 9));
+        })
+        .catch(() => setCount(0));
+    } catch {
+      setCount(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkUnread();
+    const interval = setInterval(checkUnread, 90_000);
+    const onVisible = () => document.visibilityState === 'visible' && checkUnread();
+    const onNotificationsChanged = () => checkUnread();
+
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('notifications-changed', onNotificationsChanged);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('notifications-changed', onNotificationsChanged);
+    };
+  }, [checkUnread]);
+
+  return count;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -228,10 +230,7 @@ interface Props {
 
 export default function NotificationsSheet({ open, onClose }: Props) {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'curadoria' | 'pessoal'>('curadoria');
-
-  const [userItems, setUserItems] = useState<UserNotifItem[]>([]);
+  const [filtroTipo, setFiltroTipo] = useState<'todos' | 'diario' | 'noticia' | 'blog'>('todos');
   const [curatedItems, setCuratedItems] = useState<CuratedItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -245,6 +244,13 @@ export default function NotificationsSheet({ open, onClose }: Props) {
       if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
       setMounted(true);
       const raf = requestAnimationFrame(() => setEntered(true));
+
+      // Marca visualização para zerar o badge de novidades
+      try {
+        localStorage.setItem(LAST_SEEN_KEY, new Date().toISOString());
+        window.dispatchEvent(new Event('notifications-changed'));
+      } catch {}
+
       return () => cancelAnimationFrame(raf);
     }
     setEntered(false);
@@ -254,105 +260,44 @@ export default function NotificationsSheet({ open, onClose }: Props) {
     };
   }, [open]);
 
-  // Carrega notificações do usuário e feed curado
+  // Carrega feed de novidades curadas
   const loadNotifications = useCallback(async () => {
     if (!open) return;
     setLoading(true);
 
     try {
-      if (user?.id) {
-        const { data: dbNotifs } = await supabase
-          .from('user_notifications')
-          .select('id, user_id, title, body, url, image_url, category, read, read_at, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        if (dbNotifs) {
-          const mapped: UserNotifItem[] = dbNotifs.map((n) => ({
-            id: n.id,
-            userId: n.user_id,
-            title: n.title,
-            body: n.body,
-            url: n.url,
-            imageUrl: n.image_url,
-            category: (n.category as NotifCategory) || 'geral',
-            read: n.read,
-            readAt: n.read_at,
-            createdAt: n.created_at,
-          }));
-          setUserItems(mapped);
-        }
-      }
-
       const feed = await fetchCuratedLegalFeed();
       setCuratedItems(feed);
     } catch (e) {
-      console.warn('Erro ao carregar notificações:', e);
+      console.warn('Erro ao carregar novidades:', e);
     } finally {
       setLoading(false);
     }
-  }, [open, user?.id]);
+  }, [open]);
 
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
 
-  const unreadCount = useMemo(() => {
-    return userItems.filter((it) => !it.read).length;
-  }, [userItems]);
-
-  const markAllRead = async () => {
-    if (!user?.id) return;
-    const nowIso = new Date().toISOString();
-
-    // Atualização otimista imediata na UI
-    setUserItems((prev) => prev.map((n) => ({ ...n, read: true, readAt: nowIso })));
-
-    try {
-      await supabase
-        .from('user_notifications')
-        .update({ read: true, read_at: nowIso })
-        .eq('user_id', user.id)
-        .eq('read', false);
-      window.dispatchEvent(new Event('notifications-changed'));
-    } catch (e) {
-      console.error('Erro ao marcar todas como lidas:', e);
-    }
-  };
-
-  const handleOpenUserItem = async (item: UserNotifItem) => {
-    if (!item.read && user?.id) {
-      setUserItems((prev) =>
-        prev.map((n) => (n.id === item.id ? { ...n, read: true, readAt: new Date().toISOString() } : n))
-      );
-      void supabase
-        .from('user_notifications')
-        .update({ read: true, read_at: new Date().toISOString(), clicked: true, clicked_at: new Date().toISOString() })
-        .eq('id', item.id);
-      window.dispatchEvent(new Event('notifications-changed'));
-    }
-    onClose();
-    if (item.url) {
-      navigate(item.url);
-    }
-  };
-
-  const handleDeleteItem = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setUserItems((prev) => prev.filter((n) => n.id !== id));
-    try {
-      await supabase.from('user_notifications').delete().eq('id', id);
-      window.dispatchEvent(new Event('notifications-changed'));
-    } catch (err) {
-      console.error('Erro ao excluir notificação:', err);
-    }
-  };
-
   const handleOpenCuratedItem = (it: CuratedItem) => {
+    try { haptic.selection(); } catch {}
     onClose();
     navigate(it.to);
   };
+
+  // Contadores por tipo para os filtros
+  const contadores = useMemo(() => {
+    const diario = curatedItems.filter(i => i.kind === 'diario').length;
+    const noticia = curatedItems.filter(i => i.kind === 'noticia').length;
+    const blog = curatedItems.filter(i => i.kind === 'blog').length;
+    return { todos: curatedItems.length, diario, noticia, blog };
+  }, [curatedItems]);
+
+  // Itens filtrados
+  const itensExibidos = useMemo(() => {
+    if (filtroTipo === 'todos') return curatedItems;
+    return curatedItems.filter(i => i.kind === filtroTipo);
+  }, [curatedItems, filtroTipo]);
 
   // Oculta BottomNav no mobile enquanto o sheet estiver aberto
   useEffect(() => {
@@ -381,52 +326,39 @@ export default function NotificationsSheet({ open, onClose }: Props) {
           transition: 'transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}
       >
-        {/* HEADER */}
-        <header className="relative border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-          <style>{`
-            @keyframes bell-wiggle {
-              0%, 100% { transform: rotate(0deg); }
-              10%, 30%, 50% { transform: rotate(-10deg); }
-              20%, 40% { transform: rotate(10deg); }
-              60% { transform: rotate(0deg); }
-            }
-          `}</style>
+        {/* HEADER EXCLUSIVO: CENTRAL DE NOVIDADES */}
+        <header className="relative border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md">
           <div className="px-4 pt-4 pb-3 flex items-start gap-3">
-            <div className="relative w-11 h-11 flex items-center justify-center shrink-0 rounded-xl bg-zinc-900 border border-zinc-800">
-              <Bell 
-                className="w-5 h-5 text-red-500" 
-                style={{ 
-                  animation: unreadCount > 0 ? 'bell-wiggle 2s ease-in-out infinite' : 'none',
-                  transformOrigin: 'top center'
-                }} 
-              />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#0D0D0D] shadow-lg animate-pulse">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              )}
+            <div className="relative w-11 h-11 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-red-600/20 to-red-950/40 border border-red-500/30 shadow-inner">
+              <Scale className="w-5 h-5 text-red-500" />
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
               <h2 className="text-base sm:text-lg font-bold text-white tracking-wide flex items-center gap-2">
-                Central de Notificações
+                Novidades & Atualizações
               </h2>
               <p className="text-[12px] text-zinc-400 mt-0.5">
-                {unreadCount > 0
-                  ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}`
-                  : 'Tudo em dia'}
+                {curatedItems.length > 0
+                  ? `${curatedItems.length} publicação${curatedItems.length > 1 ? 'ões' : ''} recentes`
+                  : 'Atos do Diário Oficial e Notícias'}
               </p>
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={loadNotifications}
+                onClick={() => {
+                  try { haptic.light(); } catch {}
+                  loadNotifications();
+                }}
                 title="Atualizar"
-                aria-label="Atualizar notificações"
+                aria-label="Atualizar novidades"
                 className="w-9 h-9 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
               <button
-                onClick={onClose}
+                onClick={() => {
+                  try { haptic.light(); } catch {}
+                  onClose();
+                }}
                 aria-label="Fechar"
                 className="w-9 h-9 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
               >
@@ -435,61 +367,84 @@ export default function NotificationsSheet({ open, onClose }: Props) {
             </div>
           </div>
 
-          {/* TABS SELECTOR */}
-          <div className="px-4 pb-3">
-            <div className="p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/90 flex gap-1 shadow-inner">
-              <button
-                type="button"
-                onClick={() => setActiveTab('curadoria')}
-                className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all min-h-[40px] ${
-                  activeTab === 'curadoria'
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50 border border-transparent'
-                }`}
-              >
-                <Scale className="w-3.5 h-3.5 shrink-0" />
-                <span>Novidades</span>
-                {curatedItems.length > 0 && (
-                  <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none font-bold ${
-                      activeTab === 'curadoria'
-                        ? 'bg-white/20 text-white'
-                        : 'bg-zinc-800 text-zinc-400'
+          {/* FILTROS DE CATEGORIA DAS NOVIDADES */}
+          {curatedItems.length > 0 && (
+            <div className="px-4 pb-3 pt-1">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setFiltroTipo('todos');
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                    filtroTipo === 'todos'
+                      ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                      : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
+                  }`}
+                >
+                  <Sparkles className="w-3 h-3" />
+                  <span>Todas</span>
+                  <span className="text-[10px] opacity-80 font-mono">({contadores.todos})</span>
+                </button>
+
+                {contadores.diario > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      setFiltroTipo('diario');
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                      filtroTipo === 'diario'
+                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                        : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
                     }`}
                   >
-                    {curatedItems.length}
-                  </span>
+                    <Scale className="w-3 h-3" />
+                    <span>D.O.U.</span>
+                    <span className="text-[10px] opacity-80 font-mono">({contadores.diario})</span>
+                  </button>
                 )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('pessoal')}
-                className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all min-h-[40px] ${
-                  activeTab === 'pessoal'
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50 border border-transparent'
-                }`}
-              >
-                <Bell className="w-3.5 h-3.5 shrink-0" />
-                <span>Para Você</span>
-                {unreadCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none font-bold bg-red-600 text-white shadow-sm shadow-red-900/60 animate-pulse">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
 
-          {activeTab === 'pessoal' && unreadCount > 0 && (
-            <div className="px-4 pb-2.5 flex justify-end">
-              <button
-                onClick={markAllRead}
-                className="text-xs font-semibold text-zinc-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 transition-colors shadow-sm"
-              >
-                <CheckCheck className="w-3.5 h-3.5 text-red-500" />
-                Marcar todas como lidas
-              </button>
+                {contadores.noticia > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      setFiltroTipo('noticia');
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                      filtroTipo === 'noticia'
+                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                        : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
+                    }`}
+                  >
+                    <Newspaper className="w-3 h-3" />
+                    <span>Notícias</span>
+                    <span className="text-[10px] opacity-80 font-mono">({contadores.noticia})</span>
+                  </button>
+                )}
+
+                {contadores.blog > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      setFiltroTipo('blog');
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                      filtroTipo === 'blog'
+                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-950/60 border border-red-400/30'
+                        : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-zinc-800'
+                    }`}
+                  >
+                    <BookOpen className="w-3 h-3" />
+                    <span>Artigos</span>
+                    <span className="text-[10px] opacity-80 font-mono">({contadores.blog})</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </header>
@@ -499,117 +454,25 @@ export default function NotificationsSheet({ open, onClose }: Props) {
           {loading && (
             <div className="text-center text-zinc-400 py-12 text-sm flex flex-col items-center gap-2">
               <RefreshCw className="w-5 h-5 animate-spin text-red-500" />
-              <span>Carregando notificações...</span>
+              <span>Carregando novidades...</span>
             </div>
           )}
 
-          {/* ABA: MINHAS NOTIFICAÇÕES (PESSOAL) */}
-          {!loading && activeTab === 'pessoal' && (
+          {/* LISTA EXCLUSIVA DE NOVIDADES */}
+          {!loading && (
             <>
-              {userItems.length === 0 ? (
-                <div className="text-center py-16 px-4">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-3">
-                    <Bell className="w-6 h-6 text-zinc-500" />
-                  </div>
-                  <p className="text-sm font-semibold text-zinc-200 mb-1">Nenhuma notificação pessoal recebida</p>
-                  <p className="text-xs text-zinc-500 max-w-xs mx-auto mb-4">
-                    Quando o Direito Prime enviar lembretes de estudo ou avisos direcionados, eles aparecerão aqui.
-                  </p>
-                  <button
-                    onClick={() => setActiveTab('curadoria')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 text-xs font-semibold hover:bg-red-600/30 transition-colors"
-                  >
-                    <Scale className="w-3.5 h-3.5" />
-                    Ver Novidades
-                  </button>
-                </div>
-              ) : (
-                userItems.map((it) => {
-                  const meta = CATEGORY_META[it.category] || CATEGORY_META.geral;
-                  const Icon = meta.icon;
-                  const { rel, abs } = formatRelative(it.createdAt);
-
-                  return (
-                    <div
-                      key={it.id}
-                      onClick={() => handleOpenUserItem(it)}
-                      className={`group relative w-full text-left rounded-2xl border p-3.5 flex gap-3 transition-all cursor-pointer ${
-                        !it.read
-                          ? 'bg-zinc-900/90 border-red-500/30 shadow-sm shadow-red-950/20'
-                          : 'bg-zinc-950/60 border-zinc-900 opacity-80 hover:opacity-100 hover:border-zinc-800'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-xl ${meta.bg} border border-white/5 flex items-center justify-center shrink-0 overflow-hidden mt-0.5`}>
-                        {it.imageUrl ? (
-                          <img src={it.imageUrl} alt="" loading="lazy" className="w-full h-full object-cover" />
-                        ) : (
-                          <Icon className="w-5 h-5" style={{ color: meta.color }} />
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                          <span
-                            className="text-[9.5px] font-black uppercase tracking-wider"
-                            style={{ color: meta.color }}
-                          >
-                            {meta.label}
-                          </span>
-                          {!it.read && (
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Não lida" />
-                          )}
-                          <span
-                            className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium text-zinc-500"
-                            title={abs}
-                          >
-                            <Clock className="w-2.5 h-2.5" />
-                            {rel}
-                          </span>
-                        </div>
-
-                        <p className={`text-[13px] leading-snug line-clamp-2 ${!it.read ? 'font-bold text-white' : 'font-medium text-zinc-300'}`}>
-                          {it.title}
-                        </p>
-                        {it.body && (
-                          <p className="text-[12px] text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
-                            {it.body}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col items-center justify-between shrink-0 pl-1">
-                        <button
-                          onClick={(e) => handleDeleteItem(e, it.id)}
-                          title="Excluir notificação"
-                          aria-label="Excluir notificação"
-                          className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-red-400 transition-opacity"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                        <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white transition-colors" />
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </>
-          )}
-
-          {/* ABA: NOVIDADES DE HOJE (CURADORIA LEGISLATIVA & NOTÍCIAS) */}
-          {!loading && activeTab === 'curadoria' && (
-            <>
-              {curatedItems.length === 0 ? (
+              {itensExibidos.length === 0 ? (
                 <div className="text-center py-16 px-4">
                   <div className="w-14 h-14 mx-auto rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-3">
                     <Scale className="w-6 h-6 text-zinc-500" />
                   </div>
-                  <p className="text-sm font-semibold text-zinc-200 mb-1">Sem publicações no momento</p>
+                  <p className="text-sm font-semibold text-zinc-200 mb-1">Sem publicações nesta categoria</p>
                   <p className="text-xs text-zinc-500">
                     Novos atos do Diário Oficial da União e notícias do dia aparecerão aqui.
                   </p>
                 </div>
               ) : (
-                curatedItems.map((it) => {
+                itensExibidos.map((it) => {
                   const isDiario = it.kind === 'diario';
                   const isNoticia = it.kind === 'noticia';
                   const tagColor = isDiario ? '#DC2626' : isNoticia ? '#A78BFA' : '#34D399';
@@ -621,7 +484,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
                     <button
                       key={it.id}
                       onClick={() => handleOpenCuratedItem(it)}
-                      className="w-full text-left rounded-2xl border border-zinc-900 hover:border-zinc-800 p-3.5 flex gap-3 bg-zinc-950/70 hover:bg-zinc-900/60 transition-all active:scale-[0.99]"
+                      className="w-full text-left rounded-2xl border border-zinc-900 hover:border-zinc-800 p-3.5 flex gap-3 bg-zinc-950/70 hover:bg-zinc-900/60 transition-all active:scale-[0.99] cursor-pointer"
                     >
                       <div className={`w-10 h-10 rounded-xl ${tagBg} border border-white/5 flex items-center justify-center shrink-0 overflow-hidden mt-0.5`}>
                         {it.image ? (
