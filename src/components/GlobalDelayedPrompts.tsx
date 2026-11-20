@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
-import { hasRated, requestReviewNow } from '@/lib/inAppReview';
+import { hasRated, requestReviewNow, trackAppOpen } from '@/lib/inAppReview';
 
 export function GlobalDelayedPrompts() {
   const { user } = useAuth();
@@ -20,7 +20,11 @@ export function GlobalDelayedPrompts() {
       try {
         const rated = await hasRated();
         if (!rated) {
-          await requestReviewNow();
+          // Requer ao menos 2 aberturas do app para evitar queimar cota no primeiro minuto de uso
+          const opens = await trackAppOpen();
+          if (opens >= 2) {
+            await requestReviewNow('global_delayed_onboarding');
+          }
         }
       } catch (e) {
         console.warn('[GlobalDelayedPrompts] erro In-App Review', e);

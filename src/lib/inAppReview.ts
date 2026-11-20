@@ -5,6 +5,7 @@
  *  - Only fires on native platform.
  *  - Requires either 5+ tracked positive events OR 7+ days since first open.
  *  - Cooldown: at most once per 90 days.
+ *  - Immediate memory lock preventing concurrent double triggers.
  *
  * Call `trackReviewEvent()` after high-satisfaction moments
  * (finished simulado ≥ 60%, long reading session, quiz completed).
@@ -23,13 +24,10 @@ const MIN_DAYS_BETWEEN_PROMPTS = 90;
 const MIN_POSITIVE_EVENTS = 5;
 const MIN_DAYS_SINCE_INSTALL = 7;
 const DAY_MS = 86_400_000;
-/** Aberturas mínimas antes de pedir avaliação (evita queimar a cota do Play). */
-const MIN_OPENS_BEFORE_PROMPT = 3;
-/** Dias mínimos de uso quando ainda não houve nenhum momento positivo. */
-const MIN_DAYS_BEFORE_SOFT_PROMPT = 2;
 
-const K_VALID_OPENS_TS = 'iar_valid_opens_ts';
-const HOURS_6_MS = 6 * 60 * 60 * 1000;
+// Trava síncrona em memória contra concorrência e condições de corrida
+let isReviewInFlight = false;
+let memoryHasPrompted: boolean | null = null;
 
 async function get(key: string): Promise<string | null> {
   try {
@@ -39,6 +37,7 @@ async function get(key: string): Promise<string | null> {
     return null;
   }
 }
+
 async function set(key: string, value: string): Promise<void> {
   try {
     await Preferences.set({ key, value });
@@ -60,14 +59,22 @@ export async function seedFirstOpen(): Promise<void> {
  * então usamos a marca local de "prompt exibido" como proxy.
  */
 export async function hasRated(): Promise<boolean> {
+  if (memoryHasPrompted === true) return true;
   const v = await get(K_PROMPTED);
-  return !!v;
+  if (v) {
+    memoryHasPrompted = true;
+    return true;
+  }
+  return false;
 }
 
-async function markPrompted(): Promise<void> {
+async function markPrompted(source = 'unknown'): Promise<void> {
   const now = String(Date.now());
-  // Usar logDb direto para não sofrer o bloqueio de 1 por sessão do logAreaEvent
-  logDb('avaliacao_prompt_exibido');
+  memoryHasPrompted = true;
+  logDb('avaliacao_prompt_exibido', {
+    source,
+    platform: Capacitor.getPlatform(),
+  });
   await set(K_PROMPTED, now);
   await set(K_LAST_SHOWN, now);
 }
@@ -77,17 +84,44 @@ async function markPrompted(): Promise<void> {
  * SKStoreReviewController/AppStore.requestReview no iOS).
  * Retorna true se a chamada nativa foi feita com sucesso.
  */
-export async function requestReviewNow(): Promise<boolean> {
+export async function requestReviewNow(source = 'manual'): Promise<boolean> {
   if (!Capacitor.isNativePlatform()) return false;
+
+  // 1. Bloqueio imediato em memória contra disparos concorrentes
+  if (isReviewInFlight || memoryHasPrompted) return false;
+
+  // 2. Checa se já avaliou no storage persistente
+  const alreadyRated = await hasRated();
+  if (alreadyRated) return false;
+
+  // 3. Trava de cooldown (mínimo de 90 dias entre prompts)
+  const lastShown = await get(K_LAST_SHOWN);
+  const now = Date.now();
+  if (lastShown && now - Number(lastShown) < MIN_DAYS_BETWEEN_PROMPTS * DAY_MS) {
+    return false;
+  }
+
+  isReviewInFlight = true;
+  // Bloqueio otimista imediato em memória para anular qualquer timer concorrente nos próximos ms
+  memoryHasPrompted = true;
+
   try {
     const { InAppReview } = await import('@capacitor-community/in-app-review');
     await InAppReview.requestReview();
-    await markPrompted();
+    await markPrompted(source);
     return true;
   } catch (e: any) {
+    // Se falhou (ex: sem Google Play Services), restaura para permitir nova tentativa
+    memoryHasPrompted = false;
     console.warn('[InAppReview] request failed', e);
-    logDb('avaliacao_prompt_erro', { error: e?.message || String(e) });
+    logDb('avaliacao_prompt_erro', {
+      source,
+      platform: Capacitor.getPlatform(),
+      error: e?.message || String(e),
+    });
     return false;
+  } finally {
+    isReviewInFlight = false;
   }
 }
 
@@ -121,13 +155,12 @@ export async function maybeRequestOnSecondOpen(delayMs = 3500): Promise<void> {
   if (await hasRated()) return;
 
   if (opens === 2) {
-    setTimeout(() => { requestReviewNow(); }, delayMs);
+    setTimeout(() => { void requestReviewNow('second_open'); }, delayMs);
   }
 }
 
 /**
- * Nova lógica: Retorna true imediatamente se ainda não avaliou,
- * disparando o Hórus a cada entrada no app, conforme solicitado.
+ * Retorna true se ainda não avaliou.
  */
 export async function checkHorusAvaliacaoEligibility(): Promise<boolean> {
   if (!Capacitor.isNativePlatform()) return false;
@@ -139,7 +172,7 @@ export async function checkHorusAvaliacaoEligibility(): Promise<boolean> {
 export async function maybeRequestAfterPurchase(delayMs = 1500): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
   if (await hasRated()) return;
-  setTimeout(() => { requestReviewNow(); }, delayMs);
+  setTimeout(() => { void requestReviewNow('after_purchase'); }, delayMs);
 }
 
 /** Increment the positive-event counter and try to prompt. */
@@ -148,12 +181,14 @@ export async function trackReviewEvent(): Promise<void> {
   const raw = await get(K_EVENT_COUNT);
   const n = raw ? Number(raw) + 1 : 1;
   await set(K_EVENT_COUNT, String(n));
-  await maybeRequestReview();
+  await maybeRequestReview('engagement_event');
 }
 
 /** Attempt to show the native review dialog if all conditions met. */
-export async function maybeRequestReview(): Promise<void> {
+export async function maybeRequestReview(source = 'engagement_event'): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
+  if (memoryHasPrompted || isReviewInFlight) return;
+
   try {
     const [lastShown, count, firstOpen] = await Promise.all([
       get(K_LAST_SHOWN),
@@ -171,12 +206,8 @@ export async function maybeRequestReview(): Promise<void> {
     const eligibleByTime = daysSinceInstall >= MIN_DAYS_SINCE_INSTALL;
     if (!eligibleByEvents && !eligibleByTime) return;
 
-    // Lazy import so web bundle stays clean
-    const { InAppReview } = await import('@capacitor-community/in-app-review');
-    await InAppReview.requestReview();
-    await markPrompted();
+    await requestReviewNow(source);
   } catch (e: any) {
     console.warn('[InAppReview] request skipped', e);
-    logDb('avaliacao_prompt_erro', { error: e?.message || String(e) });
   }
 }
