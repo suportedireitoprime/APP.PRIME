@@ -15,36 +15,11 @@ export function usePresenceTracker() {
   const location = useLocation();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const routeRef = useRef(location.pathname);
-  const lastPageViewRouteRef = useRef<string>('');
 
   // Keep routeRef in sync
   useEffect(() => {
     routeRef.current = location.pathname;
   }, [location.pathname]);
-
-  // Registra page_view de forma enxuta via Postgres (sem WebSocket para não estourar rate limit Realtime)
-  useEffect(() => {
-    if (!user?.id) return;
-    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
-    if (lastPageViewRouteRef.current === location.pathname) return;
-    lastPageViewRouteRef.current = location.pathname;
-
-    void (async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (!data.session?.access_token) return;
-
-        await supabase.from('app_events').insert({
-          user_id: user.id,
-          email: user.email ?? '',
-          event_name: 'page_view',
-          metadata: { route: location.pathname }
-        });
-      } catch {
-        /* silencia erros pontuais */
-      }
-    })();
-  }, [location.pathname, user?.id, user?.email]);
 
   // Heartbeat no Postgres (user_activity_log) a cada 30 segundos com proteção estrita de visibilidade e sessão
   useEffect(() => {
