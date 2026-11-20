@@ -21,14 +21,16 @@ import { haptic } from '@/lib/nativeHaptics';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
+import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
 import appLogo from '@/assets/logo-direitoprime-v2.webp';
+import themisOficialImg from '@/assets/icon-foreground.png';
 
 // Code Splitting do Player Nativo
 const PlayerAulaNativo = lazy(() => 
   import('@/components/aulas-interativas/PlayerAulaNativo').then(m => ({ default: m.PlayerAulaNativo }))
 );
 
-type LabFiltro = 'todos' | 'atlas' | 'aulas' | 'conversao';
+type LabFiltro = 'todos' | 'atlas' | 'icones' | 'aulas' | 'conversao';
 
 export default function AdminLaboratorioAulas() {
   const navigate = useNavigate();
@@ -36,6 +38,7 @@ export default function AdminLaboratorioAulas() {
   const [etapaInicial, setEtapaInicial] = useState<number | undefined>(undefined);
   const [filtroAtivo, setFiltroAtivo] = useState<LabFiltro>('todos');
   const [telaPosTrialAtiva, setTelaPosTrialAtiva] = useState(false);
+  const [testadorIconeAtivo, setTestadorIconeAtivo] = useState(false);
 
   const abrirAula = (aula: AulaItem, etapa?: number) => {
     try { haptic.selection(); } catch {}
@@ -47,6 +50,15 @@ export default function AdminLaboratorioAulas() {
     try { haptic.impact('medium'); } catch {}
     setTelaPosTrialAtiva(true);
   };
+
+  // ── SEÇÃO 0: ESTÚDIO DE TESTES DE ÍCONES & LOGO ──
+  if (testadorIconeAtivo) {
+    return (
+      <IconesLogoStudio
+        onVoltar={() => setTestadorIconeAtivo(false)}
+      />
+    );
+  }
 
   // ── SEÇÃO 1: EXIBIÇÃO DA TELA PÓS-TRIAL (NOVA FUNÇÃO SOLICITADA) ──
   if (telaPosTrialAtiva) {
@@ -123,7 +135,18 @@ export default function AdminLaboratorioAulas() {
                   : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Todos (3)
+              Todos (4)
+            </button>
+            <button
+              type="button"
+              onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('icones'); }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+                filtroAtivo === 'icones'
+                  ? 'bg-white text-black shadow'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+              }`}
+            >
+              Ícones & Logo
             </button>
             <button
               type="button"
@@ -211,6 +234,64 @@ export default function AdminLaboratorioAulas() {
                     >
                       <Play className="w-3.5 h-3.5 fill-black" />
                       ABRIR ATLAS 3D
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── PROTÓTIPO NOVO: TESTADOR DE ÍCONES & LOGO ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'icones') && (
+            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-gradient-to-r from-red-950/40 via-zinc-900/70 to-amber-950/20 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all hover:border-amber-400/60 relative overflow-hidden group">
+              <div className="flex items-start gap-3.5 sm:gap-4.5">
+                {/* Miniatura do Ícone com Fundo Oficial */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-gradient-to-br from-[#1f0101] to-[#8C1220] shadow-md flex items-center justify-center p-2">
+                  <img 
+                    src={themisOficialImg} 
+                    alt="Ícone App"
+                    className="w-full h-full object-contain filter drop-shadow(0 4px 8px rgba(0,0,0,0.85))"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = appLogo;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
+                    ÍCONES
+                  </span>
+                </div>
+
+                {/* Conteúdo */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      NOVO · DESIGN STUDIO
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      Cores de Fundo & Logo
+                    </span>
+                  </div>
+
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    Ícones & Logo (Testador de Cores)
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                  </h3>
+
+                  <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                    Laboratório interativo para testar cores de fundo, gradientes (linear e radial), formatos (iOS, Android, OneUI) e proporções do logo sobreposto com simulação em smartphone real e exportação PNG 1024px.
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('medium'); } catch {}
+                        setTestadorIconeAtivo(true);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:scale-95 text-black font-mono font-bold text-xs tracking-wider transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-black" />
+                      TESTAR CORES DE ÍCONE
                     </button>
                   </div>
                 </div>
