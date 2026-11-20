@@ -179,7 +179,7 @@ export function IconesLogoStudio({ onVoltar }: IconesLogoStudioProps) {
 
   // ── ESTADO DO FORMATO & ACABAMENTO ──
   const [formato, setFormato] = useState<FormatoIcone>('ios');
-  const [hasGloss, setHasGloss] = useState<boolean>(true);
+  const [hasGloss, setHasGloss] = useState<boolean>(false);
   const [borda, setBorda] = useState<BordaIcone>('gold');
   const [modoVisualizacao, setModoVisualizacao] = useState<ModoVisualizacao>('studio');
 
@@ -386,16 +386,6 @@ background: ${getBackgroundCss()};
       ctx.fillRect(0, 0, size, size);
     }
 
-    // Efeito Gloss diagonal Apple
-    if (hasGloss) {
-      const glossGrad = ctx.createLinearGradient(0, 0, size, size);
-      glossGrad.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
-      glossGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.08)');
-      glossGrad.addColorStop(0.6, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = glossGrad;
-      ctx.fillRect(0, 0, size, size);
-    }
-
     // Desenhar Logo
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -489,16 +479,6 @@ background: ${getBackgroundCss()};
           background: getBackgroundCss(),
         }}
       >
-        {/* Camada de Brilho / Gloss Apple */}
-        {hasGloss && (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.06) 35%, rgba(255,255,255,0) 65%)'
-            }}
-          />
-        )}
-
         {/* Camada de Vinheta Sutil de Profundidade */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-40"
@@ -1293,57 +1273,41 @@ background: ${getBackgroundCss()};
 
             </div>
 
-            {/* ── SEÇÃO 3: ACABAMENTOS (BRILHO GLASS & BORDA) ── */}
+            {/* ── SEÇÃO 3: ACABAMENTOS (BORDA E ESTILO) ── */}
             <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-3.5 backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sun className="w-4 h-4 text-amber-400" />
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
                   <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
-                    Acabamentos & Borda
+                    Borda & Acabamento Limpo
                   </h3>
                 </div>
+                <span className="text-[11px] font-mono text-zinc-400">Design Puro / Fosco (Sem Reflexos)</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Toggle Brilho Gloss */}
-                <button
-                  type="button"
-                  onClick={() => setHasGloss(!hasGloss)}
-                  className={`flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer ${
-                    hasGloss ? 'bg-zinc-800 border-amber-400/50' : 'bg-zinc-950 border-zinc-800'
-                  }`}
-                >
-                  <div>
-                    <p className="text-xs font-bold text-white">Reflexo de Vidro (Gloss Apple)</p>
-                    <p className="text-[10px] font-mono text-zinc-400">Gradiente diagonal de luz</p>
-                  </div>
-                  <div className={`w-5 h-5 rounded-md flex items-center justify-center font-bold text-xs ${hasGloss ? 'bg-amber-400 text-black' : 'bg-zinc-700 text-zinc-400'}`}>
-                    {hasGloss ? '✓' : ''}
-                  </div>
-                </button>
-
-                {/* Seletor de Borda */}
-                <div className="p-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-1.5">
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase block">Filete de Borda:</span>
-                  <div className="grid grid-cols-4 gap-1">
-                    {[
-                      { id: 'none', label: 'Zero' },
-                      { id: 'gold', label: 'Dourada' },
-                      { id: 'white', label: 'Branca' },
-                      { id: 'glow', label: 'Neon' },
-                    ].map((b) => (
-                      <button
-                        key={b.id}
-                        type="button"
-                        onClick={() => setBorda(b.id as any)}
-                        className={`py-1 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
-                          borda === b.id ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'
-                        }`}
-                      >
-                        {b.label}
-                      </button>
-                    ))}
-                  </div>
+              <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <span className="text-xs font-bold text-white block">Filete de Contorno do Ícone:</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Destaque e acabamento nas bordas</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { id: 'none', label: 'Zero' },
+                    { id: 'gold', label: 'Dourada' },
+                    { id: 'white', label: 'Branca' },
+                    { id: 'glow', label: 'Neon' },
+                  ].map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => setBorda(b.id as any)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                        borda === b.id ? 'bg-amber-500 text-black shadow' : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
