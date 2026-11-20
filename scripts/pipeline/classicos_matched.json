@@ -1,0 +1,260 @@
+[
+  {
+    "key": "01-o-caso-dos-irmaos-naves",
+    "dbId": 179,
+    "dbLivro": "O Caso dos Irmãos Naves",
+    "dbAutor": "João Alamy Filho"
+  },
+  {
+    "key": "02-virando-a-propria-mesa",
+    "dbId": 143,
+    "dbLivro": "Virando a Própria Mesa",
+    "dbAutor": "Ricardo Semler"
+  },
+  {
+    "key": "03-a-estrada-para-o-carater",
+    "dbId": 157,
+    "dbLivro": "A Estrada para o Caráter",
+    "dbAutor": "David Brooks"
+  },
+  {
+    "key": "04-comece-pelo-porque",
+    "dbId": 166,
+    "dbLivro": "Comece pelo Porquê",
+    "dbAutor": "Simon Sinek"
+  },
+  {
+    "key": "05-as-21-irrefutaveis-leis-da-lideranca",
+    "dbId": 164,
+    "dbLivro": "As 21 Irrefutáveis Leis da Liderança",
+    "dbAutor": "John C. Maxwell"
+  },
+  {
+    "key": "06-a-meta",
+    "dbId": 146,
+    "dbLivro": "A Meta: Um Processo de Melhoria Contínua",
+    "dbAutor": "Eliyahu M. Goldratt e Jeff Cox"
+  },
+  {
+    "key": "07-comunicacao-nao-violenta",
+    "dbId": 169,
+    "dbLivro": "Comunicação Não-Violenta",
+    "dbAutor": "Marshall B. Rosenberg"
+  },
+  {
+    "key": "08-blink",
+    "dbId": 165,
+    "dbLivro": "Blink",
+    "dbAutor": "Malcolm Gladwell"
+  },
+  {
+    "key": "09-os-7-habitos-das-pessoas-altamente-eficazes",
+    "dbId": 184,
+    "dbLivro": "Os 7 Hábitos das Pessoas Altamente Eficazes",
+    "dbAutor": "Stephen R. Covey"
+  },
+  {
+    "key": "10-admiravel-mundo-novo",
+    "dbId": 161,
+    "dbLivro": "Admirável Mundo Novo",
+    "dbAutor": "Aldous Huxley"
+  },
+  {
+    "key": "11-a-era-dos-direitos",
+    "dbId": 148,
+    "dbLivro": "A Era dos Direitos",
+    "dbAutor": "Norberto Bobbio"
+  },
+  {
+    "key": "12-a-riqueza-das-nacoes",
+    "dbId": 150,
+    "dbLivro": "A Riqueza das Nações",
+    "dbAutor": "Adam Smith"
+  },
+  {
+    "key": "13-o-leviata",
+    "dbId": 126,
+    "dbLivro": "O Leviatã",
+    "dbAutor": "Thomas Hobbes"
+  },
+  {
+    "key": "14-o-mundo-assombrado-pelos-demonios",
+    "dbId": 137,
+    "dbLivro": "O Mundo Assombrado pelos Demônios",
+    "dbAutor": "Carl Sagan"
+  },
+  {
+    "key": "15-vigiar-e-punir",
+    "dbId": 145,
+    "dbLivro": "Vigiar e Punir: Nascimento da Prisão",
+    "dbAutor": "Michel Foucault"
+  },
+  {
+    "key": "16-o-espirito-das-leis",
+    "dbId": 130,
+    "dbLivro": "O Espírito das Leis",
+    "dbAutor": "Montesquieu"
+  },
+  {
+    "key": "17-1984",
+    "dbId": 131,
+    "dbLivro": "1984",
+    "dbAutor": "George Orwell"
+  },
+  {
+    "key": "18-teoria-pura-do-direito",
+    "dbId": 144,
+    "dbLivro": "Teoria Pura do Direito",
+    "dbAutor": "Hans Kelsen"
+  },
+  {
+    "key": "19-introducao-ao-estudo-do-direito",
+    "dbId": 147,
+    "dbLivro": "Introdução ao Estudo do Direito",
+    "dbAutor": "Tercio Sampaio Ferraz Júnior"
+  },
+  {
+    "key": "20-licoes-preliminares-de-direito",
+    "dbId": 153,
+    "dbLivro": "Lições Preliminares de Direito",
+    "dbAutor": "Miguel Reale"
+  },
+  {
+    "key": "21-como-as-democracias-morrem",
+    "dbId": 135,
+    "dbLivro": "Como as Democracias Morrem",
+    "dbAutor": "Steven Levitsky e Daniel Ziblatt"
+  },
+  {
+    "key": "22-filosofia-do-direito",
+    "dbId": 155,
+    "dbLivro": "Filosofia do Direito",
+    "dbAutor": "Paulo Gustavo Guedes Fontes"
+  },
+  {
+    "key": "23-o-advogado-do-diabo",
+    "dbId": 132,
+    "dbLivro": "O Advogado do Diabo",
+    "dbAutor": "Morris West"
+  },
+  {
+    "key": "24-a-republica",
+    "dbId": 139,
+    "dbLivro": "A República",
+    "dbAutor": "Platão"
+  },
+  {
+    "key": "25-o-contrato-social",
+    "dbId": 129,
+    "dbLivro": "O Contrato Social",
+    "dbAutor": "Jean-Jacques Rousseau"
+  },
+  {
+    "key": "26-a-teoria-das-formas-de-governo",
+    "dbId": 151,
+    "dbLivro": "A Teoria das Formas de Governo",
+    "dbAutor": "Norberto Bobbio"
+  },
+  {
+    "key": "27-justica",
+    "dbId": 122,
+    "dbLivro": "Justiça: O que é fazer a coisa certa",
+    "dbAutor": "Michael J. Sandel"
+  },
+  {
+    "key": "28-o-processo",
+    "dbId": 136,
+    "dbLivro": "O Processo",
+    "dbAutor": "Franz Kafka"
+  },
+  {
+    "key": "29-o-futuro-da-democracia",
+    "dbId": 154,
+    "dbLivro": "O Futuro da Democracia",
+    "dbAutor": "Norberto Bobbio"
+  },
+  {
+    "key": "30-etica-a-nicomaco",
+    "dbId": 141,
+    "dbLivro": "Ética a Nicômaco",
+    "dbAutor": "Aristóteles"
+  },
+  {
+    "key": "31-o-monge-e-o-executivo",
+    "dbId": 124,
+    "dbLivro": "O Monge e o Executivo",
+    "dbAutor": "James C. Hunter"
+  },
+  {
+    "key": "32-acesso-a-justica",
+    "dbId": 128,
+    "dbLivro": "Acesso à Justiça",
+    "dbAutor": "Mauro Cappelletti"
+  },
+  {
+    "key": "33-o-que-e-direito",
+    "dbId": 127,
+    "dbLivro": "O que é Direito (Primeiros Passos)",
+    "dbAutor": "Roberto Lyra Filho"
+  },
+  {
+    "key": "34-eles-os-juizes-vistos-por-nos-os-advogados",
+    "dbId": 142,
+    "dbLivro": "Eles, os Juízes, Vistos por Nós, os Advogados",
+    "dbAutor": "Piero Calamandrei"
+  },
+  {
+    "key": "35-a-luta-pelo-direito",
+    "dbId": 133,
+    "dbLivro": "A Luta pelo Direito",
+    "dbAutor": "Rudolf von Ihering"
+  },
+  {
+    "key": "36-a-arte-da-guerra",
+    "dbId": 125,
+    "dbLivro": "A Arte da Guerra",
+    "dbAutor": "Sun Tzu"
+  },
+  {
+    "key": "37-o-ultimo-dia-de-um-condenado",
+    "dbId": 134,
+    "dbLivro": "O Último Dia de um Condenado",
+    "dbAutor": "Victor Hugo"
+  },
+  {
+    "key": "38-o-principe",
+    "dbId": 140,
+    "dbLivro": "O Príncipe",
+    "dbAutor": "Nicolau Maquiavel"
+  },
+  {
+    "key": "39-o-caso-dos-exploradores-de-cavernas",
+    "dbId": 121,
+    "dbLivro": "O Caso dos Exploradores de Cavernas",
+    "dbAutor": "Lon L. Fuller"
+  },
+  {
+    "key": "40-sobre-a-liberdade",
+    "dbId": 138,
+    "dbLivro": "Sobre a Liberdade",
+    "dbAutor": "John Stuart Mill"
+  },
+  {
+    "key": "41-o-mundo-de-sofia",
+    "dbId": 149,
+    "dbLivro": "O Mundo de Sofia",
+    "dbAutor": "Jostein Gaarder"
+  },
+  {
+    "key": "42-dos-delitos-e-das-penas",
+    "dbId": 123,
+    "dbLivro": "Dos Delitos e das Penas",
+    "dbAutor": "Cesare Beccaria"
+  },
+  {
+    "key": "43-the-concept-of-law",
+    "dbId": 190,
+    "dbLivro": "The Concept of Law",
+    "dbAutor": "H. L. A. Hart"
+  }
+]

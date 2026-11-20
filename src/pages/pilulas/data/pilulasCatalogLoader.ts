@@ -8,10 +8,12 @@ export interface TopicoItem {
   srtUrl: string | null;
   pdfUrl: string | null;
   roteiroUrl: string | null;
-  driveMp3Id: string | null;
-  driveSrtId: string | null;
-  drivePdfId: string | null;
-  driveTxtId: string | null;
+  driveMp3Id?: string | null;
+  driveSrtId?: string | null;
+  drivePdfId?: string | null;
+  driveTxtId?: string | null;
+  autor?: string | null;
+  dbId?: number | null;
 }
 
 export interface ModuloItem {
@@ -25,6 +27,8 @@ export interface ModuloItem {
 }
 
 const CATALOG_LOADERS: Record<string, () => Promise<{ default: ModuloItem[] }>> = {
+  'classicos-do-direito': () => import('@/data/pilulas/classicos-do-direito.json') as unknown as Promise<{ default: ModuloItem[] }>,
+  'classicos': () => import('@/data/pilulas/classicos-do-direito.json') as unknown as Promise<{ default: ModuloItem[] }>,
   'direito-administrativo': () => import('@/data/pilulas/direito-administrativo.json') as Promise<{ default: ModuloItem[] }>,
   'direito-ambiental': () => import('@/data/pilulas/direito-ambiental.json') as Promise<{ default: ModuloItem[] }>,
   'direito-civil': () => import('@/data/pilulas/direito-civil.json') as Promise<{ default: ModuloItem[] }>,

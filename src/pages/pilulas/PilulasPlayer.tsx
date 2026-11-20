@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, List } from 'lucide-react';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+
+const PdfPaginatedReader = lazy(() => import('@/components/biblioteca/PdfPaginatedReader'));
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
@@ -58,6 +60,7 @@ export default function PilulasPlayer() {
 
   const [isGraphOpen, setIsGraphOpen] = useState(false);
   const [isTextOpen, setIsTextOpen] = useState(false);
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
 
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
   const featurePilulas = useGatedFeature('pilulas', 'pilulas', { scope: id, refKey: id });
@@ -65,6 +68,10 @@ export default function PilulasPlayer() {
   const goBack = useGoBack('/pilulas');
   const handleVoltar = () => {
     haptic.light();
+    if (isPdfOpen) {
+      setIsPdfOpen(false);
+      return;
+    }
     if (isGraphOpen) {
       setIsGraphOpen(false);
       return;
@@ -181,6 +188,7 @@ export default function PilulasPlayer() {
             livro={livro} 
             onOpenGraph={() => setIsGraphOpen(true)} 
             onOpenText={() => setIsTextOpen(true)} 
+            onOpenPdf={() => setIsPdfOpen(true)}
           />
 
           {livro.sumarioAudio && livro.sumarioAudio.length > 0 && (
@@ -253,6 +261,17 @@ export default function PilulasPlayer() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Leitor de Ficha Cornell em PDF */}
+      {isPdfOpen && (livro?.fichaCornellPdf || livro?.download) && (
+        <Suspense fallback={<div className="fixed inset-0 z-50 bg-zinc-950 flex items-center justify-center text-white/50 text-sm">Carregando Ficha Cornell...</div>}>
+          <PdfPaginatedReader
+            url={livro.fichaCornellPdf || livro.download!}
+            titulo={`Ficha Cornell: ${livro.titulo}`}
+            onClose={() => setIsPdfOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

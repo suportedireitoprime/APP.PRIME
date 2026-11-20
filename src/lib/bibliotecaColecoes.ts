@@ -235,6 +235,9 @@ export interface LivroNormalizado {
   curiosidades?: string[] | null;
   analiseDetalhada?: string | null;
   audioResumoUrl?: string | null;
+  fichaCornellPdf?: string | null;
+  srtUrl?: string | null;
+  roteiroUrl?: string | null;
   paginas?: number | null;
   minutosLeitura?: number | null;
   sumarioAudio?: { titulo: string; percentage: number }[] | null;
@@ -305,6 +308,9 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
 
   let downloadEscura: string | null = null;
   let versoesPdf: { clara?: string | null; escura?: string | null } | null = null;
+  let fichaCornellPdf: string | null = null;
+  let srtUrl: string | null = null;
+  let roteiroUrl: string | null = null;
 
   const curObj = typeof cur === 'object' && cur !== null
     ? cur
@@ -315,10 +321,14 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
   if (curObj && typeof curObj === 'object') {
     if (curObj.download_escura) downloadEscura = curObj.download_escura;
     if (curObj.versoes_pdf) versoesPdf = curObj.versoes_pdf;
+    if (curObj.ficha_cornell_pdf) fichaCornellPdf = curObj.ficha_cornell_pdf;
+    if (curObj.srt_url) srtUrl = curObj.srt_url;
+    if (curObj.roteiro_url) roteiroUrl = curObj.roteiro_url;
   }
   if (!downloadEscura && row.download_escura) downloadEscura = row.download_escura;
   if (!downloadEscura && row.downloadEscura) downloadEscura = row.downloadEscura;
   if (!versoesPdf && row.versoesPdf) versoesPdf = row.versoesPdf;
+  if (!fichaCornellPdf && row.ficha_cornell_pdf) fichaCornellPdf = row.ficha_cornell_pdf;
 
   // Tratamento especial para Dos Delitos e das Penas e O Caso dos Exploradores de Cavernas com versões no R2
   const isDelitos = String(titulo).toLowerCase().includes('delitos e das penas') || String(row.id) === '123';
@@ -359,6 +369,9 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     curiosidades,
     analiseDetalhada,
     audioResumoUrl: row.audio_resumo_url ?? null,
+    fichaCornellPdf,
+    srtUrl,
+    roteiroUrl,
     paginas: row.paginas ?? null,
     minutosLeitura: row.minutos_leitura ?? null,
     sumarioAudio,
