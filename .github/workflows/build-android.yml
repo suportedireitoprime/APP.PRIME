@@ -3003,14 +3003,14 @@ jobs:
                   count=1,
               )
 
-          # 3) bundle splits — mantém todas densidades/idiomas.
+          # 3) bundle splits — ativa divisões por densidade e ABI (Play Console best practice).
           if re.search(r'\bbundle\s*\{', s) is None:
               s = re.sub(
                   r'(android\s*\{)',
                   r'''\1
               bundle {
                   language { enableSplit = false }
-                  density  { enableSplit = false }
+                  density  { enableSplit = true }
                   abi      { enableSplit = true }
               }''',
                   s,

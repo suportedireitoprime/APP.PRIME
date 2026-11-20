@@ -15,23 +15,25 @@ android {
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
-        // ─── GOOGLE PLAY CONSOLE: Divisões de densidade ───────────────────────
-        // Ativa divisões por densidade no App Bundle para reduzir uso de memória
-        // e evitar escalonamento de imagens em tempo real pelo sistema.
-        // Dispositivos só baixam os recursos adaptados à sua densidade de tela.
-        // Referência: https://developer.android.com/guide/app-bundle/configure-base#density-splits
-        bundle {
-            density {
-                enableSplit true
-            }
-            abi {
-                enableSplit true
-            }
-            language {
-                enableSplit false
-            }
+    }
+
+    // ─── GOOGLE PLAY CONSOLE: Divisões de densidade e recursos (App Bundle) ───
+    // Ativa divisões por densidade de tela e ABI no Android App Bundle (.aab)
+    // para reduzir o consumo de memória do dispositivo e evitar que o SO
+    // faça escalonamento em tempo de execução de bitmaps de densidades diferentes.
+    // Documentação oficial: https://developer.android.com/guide/app-bundle/configure-base#disable_config_apks
+    bundle {
+        density {
+            enableSplit true
+        }
+        abi {
+            enableSplit true
+        }
+        language {
+            enableSplit false
         }
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -46,15 +48,6 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    // ─── GOOGLE PLAY CONSOLE: Redução de resolução de bitmap ──────────────────
-    // O split de densidade é gerenciado nativamente pelo App Bundle (bloco bundle {} acima).
-    // O split de APK clássico via splits {} foi desativado para garantir geração de APK universal.
-    splits {
-        density {
-            enable false
         }
     }
 }
