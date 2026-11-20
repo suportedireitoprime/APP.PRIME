@@ -64,6 +64,15 @@ export default function PilulasHome() {
     navigate('/pilulas/classicos');
   }, [navigate]);
 
+  const handleClassicoItemClick = useCallback((item: PillGalleryItem) => {
+    haptic.selection();
+    if (item.id) {
+      navigate(`/pilulas/${item.id}`);
+    } else {
+      navigate('/pilulas/classicos');
+    }
+  }, [navigate]);
+
   const handleItemClick = useCallback((item: PillGalleryItem) => {
     haptic.selection();
     navigateToCodigoByItem(item, navigate);
@@ -134,7 +143,7 @@ export default function PilulasHome() {
             <div className="-mx-4">
               <PilulasDeck3D
                 items={classicosExibidos.length > 0 ? classicosExibidos : CLASSICOS_ITEMS}
-                onItemClick={handleSelectClassicos}
+                onItemClick={handleClassicoItemClick}
                 defaultBorderColor="#E11D48"
               />
             </div>

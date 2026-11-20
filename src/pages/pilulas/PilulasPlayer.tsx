@@ -20,7 +20,8 @@ import { getMateriaMeta } from './data/pilulasMateriasConfig';
 
 
 export default function PilulasPlayer() {
-  const { id } = useParams<{ id: string }>();
+  const { slug, id: paramId } = useParams<{ slug?: string; id?: string }>();
+  const id = paramId || slug || '';
   const navigate = useNavigate();
 
   // Se o ID for o slug ou alias de uma das 23 matérias, redireciona imediatamente para a matéria

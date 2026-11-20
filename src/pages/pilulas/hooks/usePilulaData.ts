@@ -115,14 +115,51 @@ export function usePilulaData(
             // Primeiro busca na coleção de clássicos
             const classicosCol = COLECOES.find((c) => c.id === 'classicos');
             if (classicosCol) {
-              const { data, error } = await supabase
-                .from(classicosCol.table as any)
-                .select(classicosCol.select)
-                .eq('id', id)
-                .maybeSingle();
+              const CLASSICOS_SLUG_MAP: Record<string, number> = {
+                'ihering': 133,
+                'a-luta-pelo-direito': 133,
+                'mill': 138,
+                'sobre-a-liberdade': 138,
+                'suntzu': 125,
+                'a-arte-da-guerra': 125,
+                'montesquieu': 130,
+                'o-espirito-das-leis': 130,
+                'sagan': 137,
+                'o-mundo-assombrado-pelos-demonios': 137,
+                'foucault': 145,
+                'vigiar-e-punir': 145,
+                'rousseau': 129,
+                'o-contrato-social': 129,
+                'beccaria': 123,
+                'dos-delitos-e-das-penas': 123,
+                'o-caso-dos-exploradores-de-cavernas': 121,
+                'o-mundo-de-sofia': 149,
+                '1984': 131,
+                'o-principe': 140,
+                'maquiavel': 140,
+                'kelsen': 144,
+                'teoria-pura-do-direito': 144,
+                'platao': 139,
+                'a-republica': 139,
+              };
 
-              if (!error && data) {
-                normalizado = normalizeLivro(data, classicosCol);
+              const cleanId = String(id || '').trim().toLowerCase();
+              const numericId = !isNaN(Number(cleanId)) ? Number(cleanId) : (CLASSICOS_SLUG_MAP[cleanId] ?? null);
+
+              let query = supabase.from(classicosCol.table as any).select(classicosCol.select);
+
+              if (numericId !== null) {
+                const { data, error } = await query.eq('id', numericId).maybeSingle();
+                if (!error && data) {
+                  normalizado = normalizeLivro(data, classicosCol);
+                }
+              } else {
+                // Tenta buscar por título do livro
+                const termoBusca = cleanId.replace(/-/g, ' ');
+                const { data, error } = await query.ilike('livro', `%${termoBusca}%`).limit(1).maybeSingle();
+                if (!error && data) {
+                  normalizado = normalizeLivro(data, classicosCol);
+                }
               }
             }
 
