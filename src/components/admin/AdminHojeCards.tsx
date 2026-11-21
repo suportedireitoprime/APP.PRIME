@@ -440,6 +440,10 @@ export function AdminHojeCards() {
       let totalTrialValor = 0;
       let totalRenovou = 0;
       let totalRenovouValor = 0;
+      let cPago = 0;
+      let cRecusado = 0;
+      let cEtapa2 = 0;
+      let cDesistiu = 0;
 
       let rawRpcResponse: any = null;
       if (metricasResults.status === 'fulfilled') {
@@ -833,10 +837,10 @@ export function AdminHojeCards() {
         totalRenovouValor = somaRenovou;
 
         // Cálculo analítico do funil de checkout (Pagos, Recusados, Parou na Etapa 2, Desistência Inicial)
-        let cPago = 0;
-        let cRecusado = 0;
-        let cEtapa2 = 0;
-        let cDesistiu = 0;
+        cPago = 0;
+        cRecusado = 0;
+        cEtapa2 = 0;
+        cDesistiu = 0;
 
         const checkoutUserEvents = new Map<string, string[]>();
         checkoutRawEvents.forEach((e: any) => {
@@ -2149,7 +2153,7 @@ export function AdminHojeCards() {
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
               </span>
             )}
-            {id === 'viu_planos' && cardCount > 0 && (
+            {id === 'viu_planos' && (
               <div className="flex items-center gap-1 mt-0.5 leading-none text-[7.5px] sm:text-[8px] font-bold whitespace-nowrap">
                 {counts.checkoutRecusado > 0 ? (
                   <span className="text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded border border-rose-500/20">
@@ -2276,35 +2280,33 @@ export function AdminHojeCards() {
       </div>
 
       {/* Detalhamento Analítico de Checkouts da Visão Geral */}
-      {counts.viu_planos > 0 && (
-        <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/15 border border-border/35 text-[10px] sm:text-[11px] flex-wrap gap-y-1">
-          <span className="text-muted-foreground font-medium flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-            <span className="font-semibold text-zinc-300">Status dos Checkouts:</span>
+      <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/15 border border-border/35 text-[10px] sm:text-[11px] flex-wrap gap-y-1">
+        <span className="text-muted-foreground font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+          <span className="font-semibold text-zinc-300">Status dos Checkouts:</span>
+        </span>
+        <div className="flex items-center gap-1.5 sm:gap-2 font-semibold flex-wrap">
+          <span className="text-emerald-400 flex items-center gap-1">
+            <span>{counts.checkoutPago}</span> <span className="font-normal text-zinc-400 text-[9.5px]">concluído{counts.checkoutPago === 1 ? '' : 's'}</span>
           </span>
-          <div className="flex items-center gap-1.5 sm:gap-2 font-semibold flex-wrap">
-            <span className="text-emerald-400 flex items-center gap-1">
-              <span>{counts.checkoutPago}</span> <span className="font-normal text-zinc-400 text-[9.5px]">concluído{counts.checkoutPago === 1 ? '' : 's'}</span>
+          <span className="text-zinc-600">·</span>
+          {counts.checkoutRecusado > 0 ? (
+            <span className="text-rose-400 font-bold bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/30">
+              {counts.checkoutRecusado} RECUSADO{counts.checkoutRecusado === 1 ? '' : 'S'}
             </span>
-            <span className="text-zinc-600">·</span>
-            {counts.checkoutRecusado > 0 ? (
-              <span className="text-rose-400 font-bold bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/30">
-                {counts.checkoutRecusado} RECUSADO{counts.checkoutRecusado === 1 ? '' : 'S'}
-              </span>
-            ) : (
-              <span className="text-zinc-400 text-[9.5px] font-normal">0 recusados</span>
-            )}
-            <span className="text-zinc-600">·</span>
-            <span className="text-amber-400/90 text-[9.5px] font-normal">
-              <strong className="font-semibold text-amber-400">{counts.checkoutEtapa2}</strong> parou etapa 2
-            </span>
-            <span className="text-zinc-600">·</span>
-            <span className="text-zinc-400 text-[9.5px] font-normal">
-              <strong className="font-semibold text-zinc-300">{counts.checkoutDesistiu}</strong> desistência inicial
-            </span>
-          </div>
+          ) : (
+            <span className="text-zinc-400 text-[9.5px] font-normal">0 recusados</span>
+          )}
+          <span className="text-zinc-600">·</span>
+          <span className="text-amber-400/90 text-[9.5px] font-normal">
+            <strong className="font-semibold text-amber-400">{counts.checkoutEtapa2}</strong> parou etapa 2
+          </span>
+          <span className="text-zinc-600">·</span>
+          <span className="text-zinc-400 text-[9.5px] font-normal">
+            <strong className="font-semibold text-zinc-300">{counts.checkoutDesistiu}</strong> desistência inicial
+          </span>
         </div>
-      )}
+      </div>
 
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
         <SheetContent side="bottom" className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
