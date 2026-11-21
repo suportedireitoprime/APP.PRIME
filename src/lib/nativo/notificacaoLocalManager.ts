@@ -1085,7 +1085,7 @@ export async function dispararNotificacaoLocalTeste(params: {
         id: notifId,
         title: regra.exemploTitulo,
         body: bodyText,
-        progress,
+        progress: progresso,
         showProgress: regra.mostrarBarraProgresso,
         coverUrl: capaFinal,
         smallIcon: 'notification_icon',
@@ -1094,7 +1094,7 @@ export async function dispararNotificacaoLocalTeste(params: {
         route: regra.rotaPadrao,
         channelId: regra.canalAndroid,
         channelName: regra.nome,
-        delaySeconds,
+        delaySeconds: delaySegundos,
       });
 
       return {

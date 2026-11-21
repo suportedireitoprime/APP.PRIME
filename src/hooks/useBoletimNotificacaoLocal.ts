@@ -28,11 +28,12 @@ export function useBoletimNotificacaoLocal() {
 
         // Extrai a imagem da primeira cena da notícia ou fallback do radar
         let capaUrl: string | undefined = undefined;
-        if (Array.isArray(data.roteiro_json)) {
-          const cenaComImg = data.roteiro_json.find(
-            (s: any) => s.kind !== 'intro' && s.imagem_url && !s.imagem_url.includes('00-slide.jpg')
+        const roteiroArr = Array.isArray(data.roteiro_json) ? (data.roteiro_json as any[]) : null;
+        if (roteiroArr && roteiroArr.length > 0) {
+          const cenaComImg = roteiroArr.find(
+            (s: any) => s && s.kind !== 'intro' && s.imagem_url && typeof s.imagem_url === 'string' && !s.imagem_url.includes('00-slide.jpg')
           );
-          capaUrl = cenaComImg?.imagem_url || data.roteiro_json[0]?.imagem_url;
+          capaUrl = cenaComImg?.imagem_url || roteiroArr[0]?.imagem_url;
         }
 
         await agendarBoletimProntoLocal({

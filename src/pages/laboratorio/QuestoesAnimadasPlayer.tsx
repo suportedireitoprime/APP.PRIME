@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Film, Scale } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import cenaHtml from '@/assets/questoes-animadas/cena-furto-tentado-amanda-fernando-xli-q57.html?raw';
+import { QuestoesAnimadasView } from '@/components/questoes-animadas/furto-tentado/QuestoesAnimadasView';
 
 interface QuestoesAnimadasPlayerProps {
   onVoltar: () => void;
@@ -9,22 +9,24 @@ interface QuestoesAnimadasPlayerProps {
 
 export function QuestoesAnimadasPlayer({ onVoltar }: QuestoesAnimadasPlayerProps) {
   const handleVoltar = () => {
-    try { haptic.selection(); } catch {}
+    try {
+      haptic.selection();
+    } catch {}
     onVoltar();
   };
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#0c0f16] flex flex-col overflow-hidden text-white select-none">
       {/* Barra Superior Minimalista */}
-      <header className="h-14 sm:h-16 px-4 flex items-center justify-between border-b border-white/5 bg-[#0c0f16]/95 backdrop-blur-md shrink-0 z-10 pt-[env(safe-area-inset-top,0px)]">
-        <div className="flex items-center gap-3">
+      <header className="h-13 sm:h-14 px-3 sm:px-4 flex items-center justify-between border-b border-white/5 bg-[#0c0f16]/95 backdrop-blur-md shrink-0 z-20 pt-[env(safe-area-inset-top,0px)]">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={handleVoltar}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center border border-white/10 transition-all text-zinc-200 hover:text-white"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center border border-white/10 transition-all text-zinc-200 hover:text-white"
             aria-label="Voltar para o laboratório"
           >
-            <ArrowLeft className="w-5 h-5" strokeWidth={2.2} />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.2} />
           </button>
 
           <div className="flex flex-col">
@@ -51,16 +53,9 @@ export function QuestoesAnimadasPlayer({ onVoltar }: QuestoesAnimadasPlayerProps
         </div>
       </header>
 
-      {/* Frame da Cena Animada (Canvas 2D + Quiz Interativo) */}
-      <main className="flex-1 w-full h-full relative overflow-hidden bg-[#0c0f16]">
-        <iframe
-          srcDoc={cenaHtml}
-          src="/questoes-animadas/cena-furto-tentado-amanda-fernando-xli-q57.html"
-          title="Cena 2D OAB — Furto Tentado no Supermercado"
-          className="w-full h-full border-0"
-          allow="autoplay"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        />
+      {/* Palco Nativo Modular 2D (120fps, sem iframe, sem layout de celular, sem scrollbars) */}
+      <main className="flex-1 w-full h-full relative overflow-hidden bg-[#0a0d14]">
+        <QuestoesAnimadasView onVoltar={handleVoltar} />
       </main>
     </div>
   );
