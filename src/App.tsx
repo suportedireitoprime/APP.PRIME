@@ -147,7 +147,6 @@ function AppWarmupInitializer() {
   useEffect(() => {
     scheduleAppWarmup(qc);
     scheduleBackgroundImageWarmup();
-    populateFTS5FromBundle();
   }, [qc]);
   return null;
 }

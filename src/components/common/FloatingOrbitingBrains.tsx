@@ -19,6 +19,14 @@ export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
   className,
   position = 'right',
 }) => {
+  const [animar, setAnimar] = React.useState(false);
+
+  React.useEffect(() => {
+    // ⚡ Prioriza o first paint e toque do usuário; inicia a órbita suave após 1.2s
+    const t = setTimeout(() => setAnimar(true), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
   const defaultClass =
     position === 'left'
       ? "absolute left-[-15px] sm:left-4 top-[26%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[3]"
@@ -32,22 +40,31 @@ export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
           <motion.div
             key={i}
             className="absolute w-12 h-12 sm:w-16 sm:h-16"
-            animate={{
-              x: [
-                100 * Math.cos(0),
-                100 * Math.cos((2 * Math.PI) / 3),
-                100 * Math.cos((4 * Math.PI) / 3),
-                100 * Math.cos(2 * Math.PI),
-              ],
-              y: [
-                42 * Math.sin(0),
-                42 * Math.sin((2 * Math.PI) / 3),
-                42 * Math.sin((4 * Math.PI) / 3),
-                42 * Math.sin(2 * Math.PI),
-              ],
-              scale: [1, 0.72, 1.15, 1],
-              opacity: [0.92, 0.5, 1, 0.92],
-            }}
+            animate={
+              animar
+                ? {
+                    x: [
+                      100 * Math.cos(0),
+                      100 * Math.cos((2 * Math.PI) / 3),
+                      100 * Math.cos((4 * Math.PI) / 3),
+                      100 * Math.cos(2 * Math.PI),
+                    ],
+                    y: [
+                      42 * Math.sin(0),
+                      42 * Math.sin((2 * Math.PI) / 3),
+                      42 * Math.sin((4 * Math.PI) / 3),
+                      42 * Math.sin(2 * Math.PI),
+                    ],
+                    scale: [1, 0.72, 1.15, 1],
+                    opacity: [0.92, 0.5, 1, 0.92],
+                  }
+                : {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    opacity: 0.8,
+                  }
+            }
             transition={{
               duration: 14,
               repeat: Infinity,

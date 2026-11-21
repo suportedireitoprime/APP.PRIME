@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Capacitor } from '@capacitor/core';
 import logoThemis from '@/assets/logo-coruja.webp';
 import splashHeroSkyColumns from '@/assets/splash-hero-sky-columns.webp';
 
 export default function AppSplashScreen() {
+  // ⚡ LATÊNCIA ZERO: No ambiente nativo (Android/iOS), o Splash Nativo do sistema
+  // já cobre a inicialização a 120fps sem sobrecarga de DOM.
+  // Retornar null evita o congelamento duplo de 2 segundos no mobile.
+  if (Capacitor.isNativePlatform()) {
+    return null;
+  }
+
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Exibe por 2 segundos e depois inicia o fadeout cinematográfico suave
+    // Na Web, fadeout ultra-rápido (200ms) para não prender o usuário
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 2000);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, []);

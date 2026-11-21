@@ -18,7 +18,7 @@ export function scheduleBackgroundImageWarmup(): void {
   if (syncStarted || typeof window === 'undefined') return;
   syncStarted = true;
 
-  // Aguarda 4 segundos após o carregamento inicial da UI para não disputar banda com o LCP
+  // Aguarda 9 segundos após o carregamento inicial da UI para não disputar banda com o LCP nem com a Home
   setTimeout(() => {
     const runWarmup = async () => {
       // 1. Checa economia de dados
