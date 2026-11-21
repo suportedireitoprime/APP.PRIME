@@ -17,6 +17,18 @@ export function createRouter(routes: Record<string, FnHandler>, fallback?: strin
 
     const url = new URL(req.url);
     let target = url.searchParams.get('fn') ?? '';
+
+    // Extrai do pathname se nenhum fn explícito foi fornecido na query string (ex: /horus/webhook, /horus/admin)
+    if (!target) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      for (const segment of segments) {
+        if (routes[segment]) {
+          target = segment;
+          break;
+        }
+      }
+    }
+
     let forwarded = req;
 
     if (!target && req.method !== 'GET' && req.method !== 'HEAD') {

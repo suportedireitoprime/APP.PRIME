@@ -50,9 +50,9 @@ export const VideoaulasAulaResultCard: React.FC<VideoaulasAulaResultCardProps> =
         </p>
       </div>
 
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white/80 group-hover:bg-rose-600 group-hover:border-rose-500 group-hover:text-white transition-all duration-200 shrink-0 text-xs font-bold tracking-wider uppercase">
-        <span>Assistir</span>
-        <ChevronRight className="w-3.5 h-3.5" />
+      {/* Seta com Fundo Vermelho Carmesim */}
+      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-600 text-white border border-rose-500/50 shadow-md shadow-rose-950/50 group-hover:bg-rose-500 flex items-center justify-center shrink-0 transition-all duration-200">
+        <ChevronRight className="w-5 h-5 stroke-[2.5]" />
       </div>
     </button>
   );

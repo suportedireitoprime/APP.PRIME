@@ -110,8 +110,8 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                 )}
               </h3>
             </div>
-            <p className="text-zinc-400 text-xs sm:text-[13px] leading-tight ml-3.5 mt-1 font-sans">
-              Fundamentos do Direito explicados do zero com resumos e questões
+            <p className="text-zinc-400 text-xs sm:text-[13px] leading-tight ml-3.5 mt-0.5 font-sans whitespace-nowrap overflow-visible">
+              Fundamentos do Direito do zero
             </p>
           </div>
 
@@ -121,10 +121,10 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
               haptic.selection();
               navigate('/videoaulas/iniciante');
             }}
-            className="shrink-0 flex items-center justify-center gap-1 h-[32px] px-3 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 border border-white/10 text-white text-xs font-semibold whitespace-nowrap active:scale-95 transition-all"
+            className="shrink-0 flex items-center justify-center gap-1.5 h-[32px] px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-sm shadow-rose-950/50 active:scale-95 transition-all"
           >
             <span>Ver todas</span>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+            <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
         </div>
 

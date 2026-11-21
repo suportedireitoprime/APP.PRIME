@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import videoaulasHeroCover from '@/assets/videoaulas-hero-cover.webp';
 import { VideoaulasHeroWave } from './VideoaulasHeroWave';
@@ -63,7 +63,7 @@ export const VideoaulasHero = memo(function VideoaulasHero({
       {/* Onda Hiper-Realista em Seda Carmesim / Rubi Idêntica ao Padrão do Início do App */}
       <VideoaulasHeroWave />
 
-      {/* Cabeçalho Superior Transparente (Botão Voltar Padrão Ouro 52px e Busca) */}
+      {/* Cabeçalho Superior Transparente (Botão Voltar Padrão Ouro 52px) */}
       <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
         <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
@@ -80,19 +80,6 @@ export const VideoaulasHero = memo(function VideoaulasHero({
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
-
-          {onOpenSearch && (
-            <button
-              onClick={() => {
-                haptic.light();
-                onOpenSearch();
-              }}
-              aria-label="Buscar videoaulas"
-              className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-xl"
-            >
-              <Search className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
-            </button>
-          )}
         </div>
       </header>
 

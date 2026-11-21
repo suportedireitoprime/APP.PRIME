@@ -1,7 +1,7 @@
 // Evolution GO helper (single instance = Horus)
 const BASE = Deno.env.get("EVOLUTION_API_URL")!.replace(/\/$/, "");
 const KEY = Deno.env.get("EVOLUTION_API_KEY")!;
-export const INSTANCE = Deno.env.get("EVOLUTION_INSTANCE_NAME") || "horus-main";
+export const INSTANCE = Deno.env.get("EVOLUTION_INSTANCE_NAME") || "Horus";
 const WEBHOOK_EVENTS = [
   "ALL",
   "MESSAGE",
@@ -231,18 +231,19 @@ async function getInstanceToken() {
   return KEY;
 }
 
-async function getInstanceHeaders() {
-  let info: any = null;
-  try {
-    info = await getInstanceInfo();
-  } catch {
-    // The global key can still be enough for some Evolution Go deployments.
-  }
+let _cachedHeaders: Record<string, string> | null = null;
+let _cachedHeadersAt = 0;
 
-  const token = Deno.env.get("EVOLUTION_INSTANCE_TOKEN") || info?.token || KEY;
-  const instanceId = Deno.env.get("EVOLUTION_INSTANCE_ID") || info?.id || info?.instanceId;
+async function getInstanceHeaders() {
+  if (_cachedHeaders && Date.now() - _cachedHeadersAt < 10 * 60 * 1000) {
+    return _cachedHeaders;
+  }
+  const token = Deno.env.get("EVOLUTION_INSTANCE_TOKEN") || KEY;
+  const instanceId = Deno.env.get("EVOLUTION_INSTANCE_ID");
   const headers: Record<string, string> = { apikey: token };
   if (instanceId) headers.instanceId = instanceId;
+  _cachedHeaders = headers;
+  _cachedHeadersAt = Date.now();
   return headers;
 }
 
@@ -407,46 +408,49 @@ export const evolution = {
     const number = input.replace(/@.*/, "").replace(/\D/g, "");
     const headers = await getInstanceHeaders();
     const jid = `${number}@s.whatsapp.net`;
-    const candidates = Array.from(new Set([
-      inputIsJid ? input : "",
-      number,
-      jid,
-      ...brazilianNumberVariants(number),
-      ...brazilianNumberVariants(number).map((n) => `${n}@s.whatsapp.net`),
-    ].filter(Boolean)));
-    // Evolution Go's current /send/text contract is strictly { number, text, formatJid }.
-    // Sending legacy keys such as body/message obscures the real delivery error.
-    const payloads = candidates.flatMap((candidate) => [
-      { number: candidate, text: message, formatJid: candidate.includes("@s.whatsapp.net") ? false : true },
-      { number: candidate, text: message, formatJid: false },
-    ]);
 
-    let lastError: unknown = null;
-    for (const payload of payloads) {
+    // 1. Alvos prioritários imediatos (exato recebido ou JID direto)
+    const primaryTargets = Array.from(new Set([
+      inputIsJid ? input : "",
+      jid,
+      number,
+    ].filter(Boolean)));
+
+    for (const target of primaryTargets) {
       try {
         const response = await req(`/message/sendText/${INSTANCE}`, {
           method: "POST",
           headers,
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ number: target, text: message }),
         });
-        console.log("Evolution /send/text success", {
-          target: String((payload as any).number || (payload as any).phone || (payload as any).to || (payload as any).remoteJid || (payload as any).jid || ""),
-          keys: Object.keys(payload),
+        console.log("Evolution /send/text instant success", { target });
+        return response;
+      } catch (err) {
+        console.warn("Evolution /send/text primary attempt failed", { target, error: String((err as any)?.message || err).slice(0, 160) });
+      }
+    }
+
+    // 2. Fallback de contingência caso os formatos diretos falhem
+    const fallbackCandidates = Array.from(new Set([
+      ...brazilianNumberVariants(number),
+      ...brazilianNumberVariants(number).map((n) => `${n}@s.whatsapp.net`),
+    ].filter(Boolean)));
+
+    let lastError: unknown = null;
+    for (const candidate of fallbackCandidates) {
+      try {
+        const response = await req(`/message/sendText/${INSTANCE}`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ number: candidate, text: message }),
         });
+        console.log("Evolution /send/text fallback success", { candidate });
         return response;
       } catch (e) {
         lastError = e;
-        const msg = String(e?.message || e);
-        console.warn("Evolution /send/text failed, trying next payload", {
-          keys: Object.keys(payload),
-          status: msg.match(/\/send\/text \d+/)?.[0] || "unknown",
-          target: String((payload as any).number || ""),
-          error: msg.slice(0, 180),
-        });
-        if (!/not registered|jid|number|whatsapp|invalid|formatJid|parse phone/i.test(msg)) break;
       }
     }
-    throw lastError;
+    throw lastError || new Error("Evolution /send/text: all targets failed");
   },
   async sendButtons(phoneE164: string, title: string, description: string, buttons: { id: string; label: string }[]) {
     const token = await getInstanceToken();

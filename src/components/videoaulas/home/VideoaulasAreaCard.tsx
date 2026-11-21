@@ -41,6 +41,9 @@ export const VideoaulasAreaCard: React.FC<VideoaulasAreaCardProps> = ({ area, on
           loading="lazy"
           decoding="async"
           draggable={false}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-constitucional.webp';
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
         {area.pct > 0 && (
@@ -72,9 +75,9 @@ export const VideoaulasAreaCard: React.FC<VideoaulasAreaCardProps> = ({ area, on
         )}
       </div>
 
-      {/* Seta Suave e Minimalista */}
-      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 border border-white/10 text-zinc-400 group-hover:text-white group-hover:bg-white/10 flex items-center justify-center shrink-0 transition-all duration-200">
-        <ChevronRight className="w-5 h-5" />
+      {/* Seta com Fundo Vermelho Carmesim */}
+      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-600 text-white border border-rose-500/50 shadow-md shadow-rose-950/50 group-hover:bg-rose-500 flex items-center justify-center shrink-0 transition-all duration-200">
+        <ChevronRight className="w-5 h-5 stroke-[2.5]" />
       </div>
     </button>
   );

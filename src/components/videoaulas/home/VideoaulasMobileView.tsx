@@ -187,8 +187,8 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           favoritosCount={favoritosSet.size}
         />
 
-        {/* Conteúdo Principal */}
-        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-5 space-y-5">
+        {/* Conteúdo Principal com Generoso Respiro Visual */}
+        <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 space-y-7 sm:space-y-8">
           {/* Card Dinâmico "Continuar Assistindo" Sem Abreviar */}
           <VideoaulasContinuarCard />
 
@@ -198,7 +198,7 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           )}
 
           {/* Seção Catálogo de Videoaulas */}
-          <section className="pt-1 space-y-3.5">
+          <section className="pt-3 sm:pt-4 space-y-4">
             <div className="flex items-start justify-between px-1 gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">

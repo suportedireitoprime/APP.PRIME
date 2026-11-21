@@ -104,7 +104,7 @@ export function slugify(texto: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-/** Mapa oficial das capas das Aulas Interativas em alta resolução (R2 Cloudflare). */
+/** Mapa oficial das capas das Aulas Interativas em alta resolução (R2 Cloudflare e assets locais verificados). */
 export const CAPAS_AULAS_INTERATIVAS: Record<string, string> = {
   penal: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-penal.webp',
   civil: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-civil.webp',
@@ -128,10 +128,10 @@ export const CAPAS_AULAS_INTERATIVAS: Record<string, string> = {
   portugues: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/portugues.webp',
   filosofia: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/teoria-e-filosofia-do-direito.webp',
   desportivo: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-desportivo.webp',
-  consumidor: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-do-consumidor.webp',
-  eleitoral: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-eleitoral.webp',
-  crianca: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/estatuto-da-crianca-e-do-adolescente.webp',
-  digital: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-digital.webp',
+  consumidor: fundoConsumidor,
+  eleitoral: fundoEleitoral,
+  crianca: fundoEca,
+  digital: fundoDigital,
 };
 
 /** Retorna a capa específica e exclusiva de cada uma das áreas de videoaulas, idêntica às Aulas Interativas. */
@@ -142,34 +142,34 @@ export function getCapaDaArea(areaNome?: string | null): string {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 
-  if (n.includes('consumidor') || n.includes('cdc')) return CAPAS_AULAS_INTERATIVAS.consumidor || fundoConsumidor;
-  if (n.includes('eleitor')) return CAPAS_AULAS_INTERATIVAS.eleitoral || fundoEleitoral;
-  if (n.includes('crianca') || n.includes('adolescente') || n.includes('eca')) return CAPAS_AULAS_INTERATIVAS.crianca || fundoEca;
-  if (n.includes('digital') || n.includes('lgpd') || n.includes('tecnolog') || n.includes('ia')) return CAPAS_AULAS_INTERATIVAS.digital || fundoDigital;
-  if (n.includes('urban') || n.includes('cidade') || n.includes('coletiv') || n.includes('difus')) return CAPAS_AULAS_INTERATIVAS.urbanistico || fundoUrbanistico;
-  if (n.includes('const')) return CAPAS_AULAS_INTERATIVAS.constitucional || fundoConstitucional;
-  if (n.includes('process') && n.includes('penal')) return CAPAS_AULAS_INTERATIVAS['processual-penal'] || fundoProcessualPenal;
-  if (n.includes('process') && (n.includes('trab') || n.includes('trabalhista'))) return CAPAS_AULAS_INTERATIVAS['processual-trabalho'] || fundoProcessualTrabalho;
-  if (n.includes('process') && n.includes('civil')) return CAPAS_AULAS_INTERATIVAS['processual-civil'] || fundoProcessualCivil;
-  if (n.includes('penal') && n.includes('especial')) return CAPAS_AULAS_INTERATIVAS['lei-penal-especial'] || fundoLeiPenalEspecial;
-  if (n.includes('penal') || n.includes('crime')) return CAPAS_AULAS_INTERATIVAS.penal || fundoPenal;
-  if (n.includes('trab')) return CAPAS_AULAS_INTERATIVAS.trabalho || fundoTrabalho;
-  if (n.includes('tribut')) return CAPAS_AULAS_INTERATIVAS.tributario || fundoTributario;
-  if (n.includes('finan')) return CAPAS_AULAS_INTERATIVAS.financeiro || fundoFinanceiro;
-  if (n.includes('empres')) return CAPAS_AULAS_INTERATIVAS.empresarial || fundoEmpresarial;
-  if (n.includes('ambien')) return CAPAS_AULAS_INTERATIVAS.ambiental || fundoAmbiental;
-  if (n.includes('human')) return CAPAS_AULAS_INTERATIVAS['direitos-humanos'] || fundoHumanos;
-  if (n.includes('internac')) return CAPAS_AULAS_INTERATIVAS['internacional-privado'] || fundoInternacional;
-  if (n.includes('previd')) return CAPAS_AULAS_INTERATIVAS.previdenciario || fundoPrevidenciario;
-  if (n.includes('filoso') || n.includes('teoria') || n.includes('etica')) return CAPAS_AULAS_INTERATIVAS.filosofia || fundoFilosofia;
-  if (n.includes('desport')) return CAPAS_AULAS_INTERATIVAS.desportivo || fundoDesportivo;
-  if (n.includes('portugues')) return CAPAS_AULAS_INTERATIVAS.portugues || fundoPortugues;
-  if (n.includes('politic') || n.includes('publicas')) return CAPAS_AULAS_INTERATIVAS['politicas-publicas'] || fundoPoliticasPublicas;
-  if (n.includes('formacao') || n.includes('complementar')) return CAPAS_AULAS_INTERATIVAS['formacao-complementar'] || fundoFormacaoComplementar;
-  if (n.includes('civil') || n.includes('familia') || n.includes('sucessoes')) return CAPAS_AULAS_INTERATIVAS.civil || fundoCivil;
-  if (n.includes('admin')) return CAPAS_AULAS_INTERATIVAS.administrativo || fundoAdministrativo;
+  if (n.includes('consumidor') || n.includes('cdc')) return fundoConsumidor;
+  if (n.includes('eleitor')) return fundoEleitoral;
+  if (n.includes('crianca') || n.includes('adolescente') || n.includes('eca')) return fundoEca;
+  if (n.includes('digital') || n.includes('lgpd') || n.includes('tecnolog') || n.includes('ia')) return fundoDigital;
+  if (n.includes('urban') || n.includes('cidade') || n.includes('coletiv') || n.includes('difus')) return CAPAS_AULAS_INTERATIVAS.urbanistico;
+  if (n.includes('const')) return CAPAS_AULAS_INTERATIVAS.constitucional;
+  if (n.includes('process') && n.includes('penal')) return CAPAS_AULAS_INTERATIVAS['processual-penal'];
+  if (n.includes('process') && (n.includes('trab') || n.includes('trabalhista'))) return CAPAS_AULAS_INTERATIVAS['processual-trabalho'];
+  if (n.includes('process') && n.includes('civil')) return CAPAS_AULAS_INTERATIVAS['processual-civil'];
+  if (n.includes('penal') && n.includes('especial')) return CAPAS_AULAS_INTERATIVAS['lei-penal-especial'];
+  if (n.includes('penal') || n.includes('crime')) return CAPAS_AULAS_INTERATIVAS.penal;
+  if (n.includes('trab')) return CAPAS_AULAS_INTERATIVAS.trabalho;
+  if (n.includes('tribut')) return CAPAS_AULAS_INTERATIVAS.tributario;
+  if (n.includes('finan')) return CAPAS_AULAS_INTERATIVAS.financeiro;
+  if (n.includes('empres')) return CAPAS_AULAS_INTERATIVAS.empresarial;
+  if (n.includes('ambien')) return CAPAS_AULAS_INTERATIVAS.ambiental;
+  if (n.includes('human')) return CAPAS_AULAS_INTERATIVAS['direitos-humanos'];
+  if (n.includes('internac')) return CAPAS_AULAS_INTERATIVAS['internacional-privado'];
+  if (n.includes('previd')) return CAPAS_AULAS_INTERATIVAS.previdenciario;
+  if (n.includes('filoso') || n.includes('teoria') || n.includes('etica')) return CAPAS_AULAS_INTERATIVAS.filosofia;
+  if (n.includes('desport')) return CAPAS_AULAS_INTERATIVAS.desportivo;
+  if (n.includes('portugues')) return CAPAS_AULAS_INTERATIVAS.portugues;
+  if (n.includes('politic') || n.includes('publicas')) return CAPAS_AULAS_INTERATIVAS['politicas-publicas'];
+  if (n.includes('formacao') || n.includes('complementar')) return CAPAS_AULAS_INTERATIVAS['formacao-complementar'];
+  if (n.includes('civil') || n.includes('familia') || n.includes('sucessoes')) return CAPAS_AULAS_INTERATIVAS.civil;
+  if (n.includes('admin')) return CAPAS_AULAS_INTERATIVAS.administrativo;
 
-  return CAPAS_AULAS_INTERATIVAS.constitucional || fundoConstitucional;
+  return CAPAS_AULAS_INTERATIVAS.constitucional;
 }
 
 /** `mq` (320x180) basta para cards de lista e baixa bem mais rápido que `hq`. */

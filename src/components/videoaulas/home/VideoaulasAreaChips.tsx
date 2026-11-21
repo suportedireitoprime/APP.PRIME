@@ -35,13 +35,22 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           haptic.selection();
           onSelectTab('Todos');
         }}
-        className={`px-4 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shadow-sm cursor-pointer touch-manipulation font-sans ${
+        className={`px-4 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shadow-sm cursor-pointer touch-manipulation font-sans flex items-center gap-2 ${
           !activeTab || activeTab.toLowerCase() === 'todos' || activeTab.toLowerCase() === 'todas'
             ? 'bg-rose-600 text-white shadow-rose-950/50 shadow-md font-extrabold border border-rose-500/50'
             : 'bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10'
         }`}
       >
-        Todas ({totalCount})
+        <span>Todas</span>
+        <span
+          className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+            !activeTab || activeTab.toLowerCase() === 'todos' || activeTab.toLowerCase() === 'todas'
+              ? 'bg-rose-800 text-white border border-rose-400/40 shadow-inner'
+              : 'bg-rose-600 text-white shadow-sm'
+          }`}
+        >
+          {totalCount}
+        </span>
       </button>
 
       {/* Aba Em Andamento */}
@@ -62,8 +71,8 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
               activeTab === 'Em Andamento'
-                ? 'bg-black/30 text-white'
-                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                ? 'bg-rose-800 text-white border border-rose-400/40 shadow-inner'
+                : 'bg-rose-600 text-white shadow-sm'
             }`}
           >
             {emAndamentoCount}
@@ -96,8 +105,8 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           >
             <span>{nomeMateria}</span>
             <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
-                isActive ? 'bg-black/30 text-white' : 'bg-white/10 text-zinc-400'
+              className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                isActive ? 'bg-rose-800 text-white border border-rose-400/40 shadow-inner' : 'bg-rose-600 text-white shadow-sm'
               }`}
             >
               {r.total}

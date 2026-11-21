@@ -1,0 +1,525 @@
+import { useState, useEffect, useMemo, startTransition } from "react";
+import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
+import { Capacitor } from '@capacitor/core';
+import { CreditCard, Smartphone, RotateCw, ArrowRight, Headphones, ShieldCheck, Lock, X, Crown } from "lucide-react";
+
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useProfileSummary } from "@/hooks/useProfileSummary";
+import { isAdminEmail } from "@/lib/adminEmails";
+import { maybeRequestAfterPurchase } from "@/lib/inAppReview";
+import { track } from "@/lib/analyticsEvents";
+import { useGoBack } from '@/hooks/useGoBack';
+
+import WelcomePremiumOverlay from "@/components/planos/WelcomePremiumOverlay";
+import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
+import PaywallImageStack from '@/components/planos/PaywallImageStack';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import { TrialCountdownBanner } from '@/components/assinatura/TrialCountdownBanner';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
+import { PricingCards, type PlanOption } from '@/components/assinatura/PricingCards';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, type PlanoCheckout } from '@/lib/precos';
+import { FeaturesList } from '@/components/assinatura/FeaturesList';
+import { FaqAccordion } from '@/components/assinatura/FaqAccordion';
+
+interface AssinaturaPadraoViewProps {
+  onSuccess?: () => void;
+  onVoltar?: () => void;
+}
+
+export function AssinaturaPadraoView({ onSuccess, onVoltar }: AssinaturaPadraoViewProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const goBack = useGoBack();
+  const { session } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const welcomeFlag = searchParams.get('welcome') === '1';
+  const { refresh: refreshSubscription, isPremium, isTrial, loading: subLoading, plano: planoAtual, expiresAt } = useSubscription({ pollOnMount: welcomeFlag });
+  const [showWelcome, setShowWelcome] = useState(welcomeFlag);
+
+  const { data: profileSummary } = useProfileSummary();
+  const falling = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
+
+  const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
+  const statePlan = (location.state as { selectedPlan?: PlanOption } | null)?.selectedPlan;
+  const [tab, setTab] = useState<PlanOption>(statePlan || 'anual');
+
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (!session?.user?.created_at) return 24 * 60 * 60 - 1;
+    const diff = Math.floor((Date.now() - new Date(session.user.created_at).getTime()) / 1000);
+    return Math.max(0, 24 * 60 * 60 - diff);
+  });
+
+  useEffect(() => {
+    if (session?.user?.created_at) {
+      const diff = Math.floor((Date.now() - new Date(session.user.created_at).getTime()) / 1000);
+      setTimeLeft(Math.max(0, 24 * 60 * 60 - diff));
+    }
+  }, [session?.user?.created_at]);
+
+  useEffect(() => {
+    if (!isNewUser || timeLeft <= 0) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isNewUser, timeLeft <= 0]);
+
+  useEffect(() => {
+    if (welcomeFlag) {
+      setShowWelcome(true);
+      maybeRequestAfterPurchase(2500);
+    }
+  }, [welcomeFlag]);
+
+  const closeWelcome = () => {
+    setShowWelcome(false);
+    if (searchParams.has('welcome')) {
+      searchParams.delete('welcome');
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    import('@/lib/appEvents').then(({ appEvents }) => appEvents.verPlanos()).catch(() => {});
+  }, []);
+
+  const nativePlatform = useMemo(() => Capacitor.getPlatform(), []);
+  const showDevToggle = isAdminEmail(session?.user?.email);
+  const [platformOverride, setPlatformOverride] = useState<'ios' | 'android' | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const v = window.localStorage.getItem('assinatura_platform_override');
+    return v === 'ios' || v === 'android' ? v : null;
+  });
+
+  const [devSheetOpen, setDevSheetOpen] = useState(false);
+  const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanoCheckout | null>(null);
+
+  const handleBack = () => {
+    if (onVoltar) return onVoltar();
+    if (showWelcome) return closeWelcome();
+    if (devSheetOpen) return setDevSheetOpen(false);
+    if (searchParams.get('preview') === 'plans') {
+      if (isPremium && !isTrial) return navigate('/planos/ativos', { replace: true });
+      return navigate('/', { replace: true });
+    }
+
+    const stateFrom = (location.state as { from?: string } | undefined)?.from;
+    if (stateFrom && stateFrom !== '/assinatura' && stateFrom !== '/planos/ativos') {
+      return navigate(stateFrom, { replace: true });
+    }
+    navigate('/', { replace: true });
+  };
+
+  useEffect(() => {
+    if (devSheetOpen) return;
+    const t = window.setTimeout(() => { document.body.style.pointerEvents = ''; }, 350);
+    return () => window.clearTimeout(t);
+  }, [devSheetOpen]);
+
+  const applyPlatformOverride = (p: 'ios' | 'android' | null) => {
+    setPlatformOverride(p);
+    if (p) window.localStorage.setItem('assinatura_platform_override', p);
+    else window.localStorage.removeItem('assinatura_platform_override');
+    setDevSheetOpen(false);
+  };
+
+  const handleAssinarAgoraClick = () => {
+    track('subscription_started', { plano: tab, metodo: 'sheet', source: 'botao_assinar_agora' });
+    import('@/lib/appEvents')
+      .then(({ appEvents }) => {
+        appEvents.verPlano({ plano: tab as any });
+        appEvents.assinaturaIniciada({ plano: tab as any, metodo: 'sheet' });
+      })
+      .catch(() => {});
+    setPaymentMethodSheetOpen(true);
+  };
+
+  const startPurchase = async (plano: PlanoCheckout) => {
+    track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
+    import('@/lib/appEvents')
+      .then(({ appEvents }) => {
+        appEvents.verPlano({ plano: plano as any });
+        appEvents.assinaturaIniciada({ plano: plano as any, metodo: 'asaas' });
+      })
+      .catch(() => {});
+
+    if (!session) {
+      try {
+        sessionStorage.setItem('pending_checkout', plano);
+      } catch {}
+      toast.info('Faça login ou cadastre-se para assinar');
+      navigate('/login', { state: { returnTo: '/assinatura' } });
+      return;
+    }
+    if (isPremium && !isTrial) {
+      toast.info('Você já é assinante — sua assinatura está ativa.');
+      navigate('/planos/ativos', { replace: true });
+      return;
+    }
+    startTransition(() => {
+      setCheckoutPlan(plano);
+    });
+  };
+
+  // Restaura checkout se voltou autenticado do login
+  useEffect(() => {
+    if (session && !isPremium) {
+      try {
+        const pending = sessionStorage.getItem('pending_checkout');
+        if (pending) {
+          sessionStorage.removeItem('pending_checkout');
+          startTransition(() => {
+            setCheckoutPlan(pending as any);
+          });
+        }
+      } catch {}
+    }
+  }, [session, isPremium]);
+
+  const previewPlans = searchParams.get('preview') === 'plans' || searchParams.get('planos') === '1' || (location.state as { previewPlans?: boolean } | null)?.previewPlans;
+
+  if (!subLoading && (isPremium && !isTrial) && !showWelcome && !previewPlans) {
+    return <Navigate to="/planos/ativos" replace />;
+  }
+
+  if (session && subLoading && !showWelcome && !previewPlans) {
+    return <div className="min-h-dvh bg-background flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>;
+  }
+
+  return (
+    <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(4rem+var(--sai-bottom))] relative overflow-x-hidden text-white">
+      {/* ── Fundo Imersivo Oficial com Imagem Nobre e Vinheta (Igual Aulas Interativas) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
+        <img
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga e Filósofos"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.88] contrast-[1.08]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85 pointer-events-none" />
+      </div>
+
+      <div className="relative z-10 flex flex-col">
+        <WelcomePremiumOverlay
+          open={showWelcome}
+          planoLabel={planoAtual ?? 'Premium'}
+          syncing={false}
+          onClose={closeWelcome}
+        />
+
+        <CheckoutModal
+          open={!!checkoutPlan}
+          onOpenChange={(v) => { if (!v) setCheckoutPlan(null); }}
+          plan={checkoutPlan}
+          userEmail={session?.user?.email || ''}
+          userName={profileSummary?.nomeCompleto || profileSummary?.displayName || session?.user?.user_metadata?.full_name || ''}
+          onSuccess={() => {
+            refreshSubscription();
+            if (onSuccess) onSuccess();
+          }}
+        />
+
+        <Sheet open={paymentMethodSheetOpen} onOpenChange={setPaymentMethodSheetOpen}>
+          <SheetContent side="bottom" className="h-[92dvh] sm:h-auto sm:max-w-lg mx-auto rounded-t-[32px] sm:rounded-3xl px-0 pt-0 bg-[#0D0D0D] border-border/40 flex flex-col overflow-hidden [&>button.absolute]:hidden">
+            <div className="flex-1 w-full max-w-md mx-auto flex flex-col overflow-y-auto px-6 pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-6">
+              <div className="absolute inset-0 pointer-events-none opacity-[0.15] -z-10">
+                <ShapeGrid />
+              </div>
+
+              {/* Top bar with Close button */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/5 shrink-0">
+                <span className="w-8" />
+                <div className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[10.5px] font-bold text-primary uppercase tracking-wider">Checkout Seguro</span>
+                </div>
+                <button
+                  onClick={() => setPaymentMethodSheetOpen(false)}
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-foreground transition-all active:scale-95"
+                  aria-label="Fechar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <SheetHeader className="my-5 shrink-0 relative z-10 text-center flex flex-col items-center">
+                <SheetTitle className="text-2xl sm:text-3xl font-display font-black text-foreground leading-tight tracking-tight">
+                  Como prefere assinar?
+                </SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1.5 text-muted-foreground max-w-[290px]">
+                  Plano <strong className="text-foreground">{tab === 'vitalicio' ? 'Vitalício Prime' : (tab === 'anual' ? 'Anual Prime' : 'Mensal Prime')}</strong> selecionado. O acesso é liberado instantaneamente.
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-3 relative z-10 mb-6 w-full">
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex items-center justify-start gap-4 px-4.5 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-950/20 via-[#121212] to-[#121212] hover:border-emerald-500 hover:bg-emerald-500/10 transition-all rounded-2xl group relative overflow-hidden shadow-lg text-left"
+                  onClick={() => {
+                    setPaymentMethodSheetOpen(false);
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : (tab === 'anual' ? 'anual_regular_pix' : 'mensal_pix'));
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                    <svg className="w-7 h-7 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M5.283 18.36a3.505 3.505 0 0 0 2.493-1.032l3.6-3.6a.684.684 0 0 1 .946 0l3.613 3.613a3.504 3.504 0 0 0 2.493 1.032h.71l-4.56 4.56a3.647 3.647 0 0 1-5.156 0L4.85 18.36ZM18.428 5.627a3.505 3.505 0 0 0-2.493 1.032l-3.613 3.614a.67.67 0 0 1-.946 0l-3.6-3.6A3.505 3.505 0 0 0 5.283 5.64h-.434l4.573-4.572a3.646 3.646 0 0 1 5.156 0l4.559 4.559ZM1.068 9.422 3.79 6.699h1.492a2.483 2.483 0 0 1 1.744.722l3.6 3.6a1.73 1.73 0 0 0 2.443 0l3.614-3.613a2.482 2.482 0 0 1 1.744-.723h1.767l2.737 2.737a3.646 3.646 0 0 1 0 5.156l-2.736 2.736h-1.768a2.482 2.482 0 0 1-1.744-.722l-3.613-3.613a1.77 1.77 0 0 0-2.444 0l-3.6 3.6a2.483 2.483 0 0 1-1.744.722H3.791l-2.723-2.723a3.646 3.646 0 0 1 0-5.156"/>
+                    </svg>
+                  </div>
+                  <div className="flex flex-col items-start flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-black text-lg text-white">PIX</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider">
+                        Sem CEP
+                      </span>
+                    </div>
+                    <span className="text-sm font-black text-emerald-400 mt-0.5">
+                      {tab === 'vitalicio' ? `${brl(PRECO_VITALICIO)} à vista` : (tab === 'anual' ? `${brl(PRECO_ANUAL)} à vista` : `${brl(PRECO_MENSAL)} à vista`)}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                      Aprovação imediata • Sem necessidade de CEP
+                    </span>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex items-center justify-start gap-4 px-4.5 border-2 border-primary/40 bg-gradient-to-r from-primary/10 via-[#121212] to-[#121212] hover:border-primary hover:bg-primary/15 transition-all rounded-2xl group relative overflow-hidden shadow-lg text-left"
+                  onClick={() => {
+                    setPaymentMethodSheetOpen(false);
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio' : (tab === 'anual' ? 'anual' : 'mensal'));
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-7 h-7 text-primary" />
+                  </div>
+                  <div className="flex flex-col items-start flex-1 min-w-0">
+                    <span className="font-display font-black text-lg text-white">Cartão de Crédito</span>
+                    <span className="text-sm font-black text-foreground mt-0.5">
+                      {tab === 'vitalicio' ? `${brl(PRECO_VITALICIO)} em até 6x` : (tab === 'anual' ? `${brl(PRECO_ANUAL)} em até 6x` : `${brl(PRECO_MENSAL)} / mês`)}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                      {tab === 'vitalicio' ? 'Acesso vitalício definitivo sem renovação' : (tab === 'anual' ? 'Parcelamento em até 6x com juros' : 'Assinatura mensal sem fidelidade')}
+                    </span>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform shrink-0" />
+                </Button>
+              </div>
+
+              <div className="flex flex-col gap-4 mt-auto relative z-10 w-full">
+                <div className="bg-[#121212] border border-[#27272a] rounded-3xl p-5 shadow-sm flex flex-col gap-3 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+
+                  <div className="flex items-start gap-3">
+                    <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-black text-foreground">7 dias de garantia incondicional</span>
+                      <span className="text-[10.5px] text-muted-foreground font-medium mt-0.5">Se não gostar, devolvemos 100% do valor.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Lock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-black text-foreground">Pagamento 100% Seguro</span>
+                      <span className="text-[10.5px] text-muted-foreground font-medium mt-0.5">Ambiente criptografado intermediado pelo Asaas.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        <PageHeader
+          onBack={handleBack}
+          title=""
+          rightAction={
+            <Link
+              to="/suporte-publico"
+              className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all active:scale-[0.96] shrink-0 touch-manipulation shadow-md"
+              style={{
+                background: 'hsl(0 0% 100% / 0.1)',
+                border: '1px solid hsl(0 0% 100% / 0.2)',
+                color: 'hsl(40 25% 97%)',
+              }}
+            >
+              <Headphones className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              <span>Suporte</span>
+            </Link>
+          }
+        />
+
+        {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
+
+        <div className="max-w-2xl mx-auto pt-1 space-y-3.5 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
+            {/* Folhas de louro caindo */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+              {falling.map((i) => (
+                <img
+                  key={i}
+                  src={laurel}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute top-0 lp-fall"
+                  style={{
+                    left: `${(i * 8.5 + 3) % 100}%`,
+                    width: `${16 + (i % 4) * 8}px`,
+                    animationDuration: `${11 + (i % 5) * 3}s`,
+                    animationDelay: `-${i * 1.2}s`,
+                    opacity: 0.7,
+                    filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.45))',
+                  }}
+                />
+              ))}
+            </div>
+
+            <PaywallImageStack />
+
+            <div className="space-y-1.5 text-center px-4 flex flex-col items-center">
+              <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/15 backdrop-blur-md text-white px-3 py-0.5 rounded-full text-[10.5px] font-black uppercase tracking-wider shadow-sm">
+                <Crown className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                <span>DIREITO PRIME</span>
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-tight">
+                Acesso Total ao <span className="text-primary">Aplicativo</span>
+              </h1>
+              <p className="text-xs sm:text-[13.5px] text-zinc-300/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
+                O método definitivo para acelerar a sua aprovação. Aprenda com máxima retenção, domine o conteúdo e conquiste a sua vaga.
+              </p>
+            </div>
+
+            <PricingCards
+              selectedPlan={tab}
+              isNewUser={isNewUser}
+              onSelectPlan={setTab}
+            />
+
+            <div className="px-4 flex flex-col gap-2 -mt-1">
+              <Button
+                onClick={handleAssinarAgoraClick}
+                className="btn-shine-loop relative overflow-hidden w-full h-[58px] rounded-[20px] font-display text-[18px] sm:text-[19px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/95 text-white shadow-[0_12px_35px_rgba(224,31,71,0.45)] border border-white/15"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span>ASSINAR AGORA</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </span>
+              </Button>
+              <div className="flex items-center justify-center gap-2 text-[11.5px] text-zinc-400 font-medium">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>7 dias de garantia incondicional • Liberação imediata</span>
+              </div>
+            </div>
+
+            <FeaturesList tabKey={tab} />
+
+            <FaqAccordion />
+        </div>
+
+        {/* Admin Dev Tools */}
+        {showDevToggle && (
+          <div className="px-4 mt-10 pt-6 border-t border-border/40 flex flex-col items-center gap-3">
+            <div className="flex items-center justify-center gap-2">
+              <span className="font-body text-[10px] uppercase tracking-wide text-muted-foreground">
+                Prévia
+              </span>
+              <div className="inline-flex rounded-full border border-border bg-muted/40 p-0.5">
+                {(['android', 'ios'] as const).map((p) => {
+                  const active = (platformOverride ?? nativePlatform) === p;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => applyPlatformOverride(p)}
+                      className={`px-3 py-1 rounded-full font-body text-[11px] font-bold transition-colors ${
+                        active
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {p === 'ios' ? 'iOS' : 'Android'}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDevSheetOpen(true)}
+              className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-[11px] font-bold border border-primary/50 flex items-center gap-1.5 hover:brightness-95"
+            >
+              <RotateCw className="w-3 h-3" />
+              só pra mim
+              {platformOverride && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary-foreground/20 text-[9px] uppercase">
+                  {platformOverride}
+                </span>
+              )}
+            </button>
+          </div>
+        )}
+
+        <Sheet open={devSheetOpen} onOpenChange={setDevSheetOpen}>
+          <SheetContent side="bottom" className="rounded-t-2xl">
+            <SheetHeader>
+              <SheetTitle>Prévia da assinatura</SheetTitle>
+              <SheetDescription>
+                Escolha como quer visualizar a tela de planos. Só você vê este controle.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <Button
+                variant={(platformOverride ?? nativePlatform) === 'android' ? 'default' : 'outline'}
+                className="h-20 flex flex-col gap-1"
+                onClick={() => applyPlatformOverride('android')}
+              >
+                <Smartphone className="w-5 h-5" />
+                <span className="font-bold">Android</span>
+                <span className="text-[10px] opacity-70">Google Play</span>
+              </Button>
+              <Button
+                variant={(platformOverride ?? nativePlatform) === 'ios' ? 'default' : 'outline'}
+                className="h-20 flex flex-col gap-1"
+                onClick={() => applyPlatformOverride('ios')}
+              >
+                <Smartphone className="w-5 h-5" />
+                <span className="font-bold">Apple</span>
+                <span className="text-[10px] opacity-70">App Store</span>
+              </Button>
+            </div>
+            {isPremium && (
+              <Button
+                variant="secondary"
+                className="w-full mt-3 text-xs"
+                onClick={() => { setDevSheetOpen(false); navigate('/planos/ativos'); }}
+              >
+                Ver tela do plano ativo
+              </Button>
+            )}
+            {platformOverride && (
+              <Button
+                variant="ghost"
+                className="w-full mt-3 text-xs"
+                onClick={() => applyPlatformOverride(null)}
+              >
+                Usar plataforma real ({nativePlatform})
+              </Button>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
+    </div>
+  );
+}

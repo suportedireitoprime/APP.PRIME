@@ -44,8 +44,11 @@ export const handler = async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const eventName = String(body?.event || body?.type || body?.eventName || "");
-    const instanceName = String(body?.instanceName || body?.instance || INSTANCE);
+    const url = new URL(req.url);
+    const pathEnd = url.pathname.split('/').filter(Boolean).pop() || '';
+    const eventFromPath = pathEnd !== 'webhook' && pathEnd !== 'horus' ? pathEnd : '';
+    const eventName = String(body?.event || body?.type || body?.eventName || eventFromPath || "");
+    const instanceName = String(body?.instanceName || body?.instance || body?.data?.instance || INSTANCE || "Horus");
     const qr = normalizeQrPayload(body?.data ?? body, "webhook");
     const status = readConnectionStatus(body);
     console.log("horus-webhook received", summarizeWebhook(body, eventName));
@@ -637,14 +640,18 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
   });
 
 
-  // 2b) Onboarding — número sem conta vinculada OU aguardando confirmação de código
-  const isVerified = await isPhoneVerified(admin, parsed.from);
-  if (!userRow?.linked_user_id && !isVerified) {
+  // 2b) Onboarding / Gate de Acesso:
+  // Administradores, usuários Premium e em período de teste (3 dias) NUNCA são bloqueados.
+  const isAdmin = isPhoneAdmin(parsed.from);
+  const isVerified = isAdmin || (await isPhoneVerified(admin, parsed.from));
+  const isLinked = Boolean(userRow?.linked_user_id || isVerified);
+
+  if (!isAdmin && !premium && !isTrial && !isLinked) {
     const shouldSend = await shouldSendOnboarding(admin, userRow?.id);
     if (shouldSend) {
       const onboardingMsg = userRow?.onboarding_state === "code_sent"
         ? `Vi que você começou a verificação mas ainda não confirmou o código. 🔐\n\nAbre o *Vade Mecum* → *Assistente Horus* e cole o código de 6 dígitos que te mandei. Se não recebeu, peça um novo por lá.`
-        : `Olá! 👋 Sou o *Horus*, assistente jurídico do Vade Mecum.\n\nAinda não te reconheço por aqui. Baixe o app (ou abra no navegador) e verifique este número pra gente conversar. 🦉`;
+        : `Olá! 👋 Sou o *Horus*, assistente jurídico do Vade Mecum.\n\nAinda não te reconheço por aqui. Baixe o app (ou abra no navegador) e vincule este número pra gente conversar sem limites. 🦉`;
       try {
         await evolution.sendText(parsed.remoteJid || parsed.from, onboardingMsg);
         await logOutbound(admin, parsed, "sent", null, { agent: "onboarding" });
@@ -653,7 +660,6 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
           role: "assistant",
           content: onboardingMsg,
         });
-        // Card CTA URL com o link do app (Google Play / web)
         try {
           await evolution.sendCtaUrl(parsed.remoteJid || parsed.from, {
             title: "🦉 Vade Mecum • Horus",
@@ -670,14 +676,6 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
             role: "assistant",
             content: `[card] Baixar app: ${HORUS_APP_URL}`,
           });
-
-          // Enviar cartão de contato se for usuário 100% novo (não está em code_sent)
-          if (userRow?.onboarding_state !== "code_sent") {
-            await evolution.sendContact(parsed.remoteJid || parsed.from, {
-              fullName: "Horus • Vade Mecum",
-              phone: "5511914910906",
-            });
-          }
         } catch (e) {
           console.warn("onboarding CTA url fail", String(e));
         }
@@ -1112,7 +1110,7 @@ async function askOmniRoute(
 
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 22000);
+    const timer = setTimeout(() => controller.abort(), 3500);
     const resp = await fetch(endpoint, {
       method: "POST",
       headers: {
