@@ -3,8 +3,9 @@ import {
   ArrowLeft, Search, BarChart3, History, Bookmark, Flame, X 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import aulasHeroCover from '@/assets/aulas-interativas-hero-cover.jpg';
-import { AulasHeroWave } from './AulasHeroWave';
+import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
+import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
+import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
 
 interface AulasInterativasHeroProps {
   onVoltar: () => void;
@@ -55,19 +56,22 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa Oficial */}
+          {/* Imagem de Capa Oficial Idêntica ao Início do App */}
           <img
-            src={aulasHeroCover}
+            src={heroAdvogadosImg}
             alt="Estudo com Aulas Interativas"
             aria-hidden="true"
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover object-[center_32%] md:object-[center_25%] z-0 pointer-events-none transform-gpu will-change-transform brightness-[0.92] contrast-[1.05]"
+            className="absolute inset-0 w-full h-full object-cover object-[55%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform"
           />
 
-          {/* Onda Hiper-Realista 3D em Verde Petróleo / Esmeralda / Teal */}
-          <AulasHeroWave />
+          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
+          <FloatingOrbitingBrains position="left" />
+
+          {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
+          <HeroAnimatedWave colorScheme="red" />
 
           {/* Cabeçalho Superior Transparente (Botão Voltar e Busca) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">

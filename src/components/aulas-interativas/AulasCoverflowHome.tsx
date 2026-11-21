@@ -19,8 +19,9 @@ import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
 import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
+import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
 import AulasCardRubyBackground from './AulasCardRubyBackground';
-import capaTribunalImg from '@/assets/capa-aulas-tribunal.jpg';
+import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
 
 /** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
 const NOMES_CAPA: Record<string, string> = {
@@ -215,22 +216,22 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa do Tribunal Límpida e Brilhante */}
+          {/* Imagem de Capa Oficial Idêntica ao Início do App (Advogados no Tribunal) */}
           <img
-            src={capaTribunalImg}
-            alt="Tribunal sob o Céu Rubro"
+            src={heroAdvogadosImg}
+            alt="Aulas em Trilha"
             aria-hidden="true"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-[center_30%] md:object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
+            className="absolute inset-0 w-full h-full object-cover object-[55%_center] md:object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
           />
-          {/* Gradientes transparentes leves para leitura e contraste */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute inset-y-0 left-0 w-[60%] sm:w-[45%] bg-gradient-to-r from-black/70 via-black/25 to-transparent pointer-events-none" />
+
+          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
+          <FloatingOrbitingBrains position="left" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
-          <HeroAnimatedWave />
+          <HeroAnimatedWave colorScheme="red" />
 
           {/* Cabeçalho Superior Transparente (Voltar + Busca - Alinhado com o Início) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
