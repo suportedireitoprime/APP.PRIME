@@ -24,7 +24,10 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
   );
 
   return (
-    <div className="sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 overflow-x-auto no-scrollbar flex items-center gap-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/5 shadow-md">
+    <div 
+      className="sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 overflow-x-auto no-scrollbar flex items-center gap-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/5 shadow-md"
+      style={{ touchAction: 'pan-x pan-y' }}
+    >
       {/* Aba Todas */}
       <button
         type="button"

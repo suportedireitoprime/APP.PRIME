@@ -34,7 +34,7 @@ const Videoaulas = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-32 lg:pb-0 overflow-x-hidden w-full relative">
-      <div className="absolute inset-0 z-0 opacity-60">
+      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}

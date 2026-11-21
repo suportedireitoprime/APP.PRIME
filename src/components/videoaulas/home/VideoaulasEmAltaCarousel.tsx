@@ -102,8 +102,11 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
           </div>
         </div>
 
-        {/* Carrossel Fluido com snap horizontal */}
-        <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+        {/* Carrossel Fluido com snap horizontal (Permite scroll vertical ao segurar na capa) */}
+        <div 
+          className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+          style={{ touchAction: 'pan-x pan-y' }}
+        >
           {areasOrdenadas.map((item, idx) => {
             const tema = getDisciplinaVisualTheme(item.slug || item.area);
             const coverUrl = tema.fundoAssetUrl;
@@ -117,7 +120,8 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                   haptic.selection();
                   onSelectArea(item.slug);
                 }}
-                className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150 touch-manipulation"
+                style={{ touchAction: 'pan-y' }}
+                className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150 touch-pan-y"
               >
                 <div className="relative aspect-[3/4.1] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-white/30 transition-all shadow-md">
                   <img
@@ -125,7 +129,8 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
                     alt={displayTitle}
                     loading={idx < 4 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    draggable={false}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 

@@ -31,16 +31,18 @@ export const VideoaulasAreaCard: React.FC<VideoaulasAreaCardProps> = ({ area, on
         haptic.selection();
         onClick(area.slug);
       }}
-      className="w-full flex items-center gap-3.5 p-3 sm:p-4 min-h-[84px] text-left hover:bg-white/[0.04] active:scale-[0.985] transition-all rounded-2xl bg-zinc-900/80 border border-white/10 hover:border-white/20 shadow-md group overflow-hidden relative cursor-pointer touch-manipulation backdrop-blur-md"
+      style={{ touchAction: 'pan-y' }}
+      className="w-full flex items-center gap-3.5 p-3 sm:p-4 min-h-[84px] text-left hover:bg-white/[0.04] active:scale-[0.985] transition-all rounded-2xl bg-zinc-900/80 border border-white/10 hover:border-white/20 shadow-md group overflow-hidden relative cursor-pointer touch-pan-y backdrop-blur-md"
     >
       {/* Capa da Matéria de Aulas Interativas */}
       <div className="w-14 sm:w-16 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-black/40 border border-white/10 shadow-lg relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
         <img
           src={coverUrl}
           alt={displayArea}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover pointer-events-none select-none"
           loading="lazy"
           decoding="async"
+          draggable={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
         {area.pct > 0 && (

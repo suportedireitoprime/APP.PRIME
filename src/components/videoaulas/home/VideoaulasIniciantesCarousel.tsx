@@ -127,8 +127,11 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
           </button>
         </div>
 
-        {/* Carrossel Horizontal Fluido com Indicador de Progresso */}
-        <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+        {/* Carrossel Horizontal Fluido com Indicador de Progresso (Permite scroll vertical ao tocar na capa) */}
+        <div 
+          className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+          style={{ touchAction: 'pan-x pan-y' }}
+        >
           {VIDEOAULAS_INICIANTES.map((item, idx) => {
             const numStr = String(item.numero).padStart(2, '0');
             const p = progresso[item.video_id];
@@ -139,7 +142,8 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
               <div
                 key={`iniciante-${item.video_id}`}
                 onClick={() => handleCardClick(item)}
-                className="snap-start shrink-0 w-[240px] sm:w-[260px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-[0.98] transition-all duration-150 touch-manipulation"
+                style={{ touchAction: 'pan-y' }}
+                className="snap-start shrink-0 w-[240px] sm:w-[260px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-[0.98] transition-all duration-150 touch-pan-y"
               >
                 {/* Capa 16:9 */}
                 <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-amber-500/50 transition-all shadow-lg group-hover:shadow-amber-500/10">
@@ -148,7 +152,8 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                     alt={item.titulo}
                     loading={idx < 4 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    draggable={false}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
 

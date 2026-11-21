@@ -108,16 +108,18 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
       onClick={handleClick}
-      className="w-full flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/90 border border-white/10 hover:border-white/20 text-left active:scale-[0.985] transition-all overflow-hidden relative shadow-lg group cursor-pointer touch-manipulation backdrop-blur-xl"
+      style={{ touchAction: 'pan-y' }}
+      className="w-full flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/90 border border-white/10 hover:border-white/20 text-left active:scale-[0.985] transition-all overflow-hidden relative shadow-lg group cursor-pointer touch-pan-y backdrop-blur-xl"
     >
       {/* Capa Oficial da Matéria Interativa à esquerda */}
       <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300">
         <img
           src={coverUrl}
           alt={titulo}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover pointer-events-none select-none"
           loading="eager"
           decoding="async"
+          draggable={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
         <span className="absolute bottom-1 left-1 right-1 text-center py-0.5 rounded bg-black/75 backdrop-blur-md text-[8px] font-black uppercase text-white border border-white/10 font-sans">
