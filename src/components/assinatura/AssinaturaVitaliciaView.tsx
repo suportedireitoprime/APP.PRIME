@@ -6,8 +6,7 @@ import {
   Crown, 
   ArrowRight, 
   Headphones, 
-  Flame,
-  CheckCircle2
+  Flame 
 } from 'lucide-react';
 
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
@@ -156,7 +155,7 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
           }
         />
 
-        <div className="w-full max-w-xl mx-auto pt-1 space-y-4 pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
+        <div className="w-full max-w-md mx-auto px-4 sm:px-6 pt-1 space-y-4 pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
           {/* Folhas de louro caindo */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
             {falling.map((i) => (
@@ -183,10 +182,10 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
           {/* Pilha de Imagens de Doutrina e Obras */}
           <PaywallImageStack />
 
-          {/* ── CHAMADA PARA A PROMOÇÃO (SEM TAG DIREITO PRIME, ULTRA MINIMALISTA) ── */}
-          <div className="space-y-1.5 text-center px-5 sm:px-6 flex flex-col items-center">
+          {/* ── CHAMADA PARA A PROMOÇÃO (100% VERMELHO, SEM DIREITO PRIME) ── */}
+          <div className="space-y-1.5 text-center flex flex-col items-center">
             <h1 className="font-display text-2xl sm:text-3xl font-black text-white leading-tight uppercase tracking-tight">
-              Acesso Vitalício ao <span className="text-amber-400">Aplicativo</span>
+              Acesso Vitalício ao <span className="text-rose-500">Aplicativo</span>
             </h1>
 
             <p className="text-xs sm:text-[13.5px] text-zinc-300/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
@@ -194,8 +193,8 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
             </p>
 
             {/* Aviso Sutil de Condição Promocional em Linha Única */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-[11px] font-bold mt-1">
-              <Flame className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[11px] font-bold mt-1">
+              <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
               <span>
                 Promoção Relâmpago • Encerra em{' '}
                 <strong className="text-white font-mono font-bold">
@@ -205,74 +204,58 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
             </div>
           </div>
 
-          {/* ── CARD PRINCIPAL DO PLANO VITALÍCIO (COM MARGENS LATERAIS PERFEITAS) ── */}
-          <div className="w-full px-5 sm:px-6">
-            <div className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 sm:p-5 overflow-hidden border-amber-500/80 bg-[#141416]/90 backdrop-blur-xl shadow-[0_0_35px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/40">
-              {/* Badge Nobre Superior */}
-              <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-[9px] sm:text-[10px] px-3 py-1 rounded-bl-xl tracking-wider z-10 flex items-center gap-1 uppercase shadow-md">
+          {/* ── CARD PRINCIPAL DO PLANO VITALÍCIO (VERMELHO, 100% RESPONSIVO, SEM TÓPICOS VERDES) ── */}
+          <div className="w-full">
+            <div className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-5 sm:p-6 overflow-hidden border-rose-500/60 bg-[#141416]/95 backdrop-blur-xl shadow-[0_0_35px_rgba(225,29,72,0.25)] ring-1 ring-rose-500/30">
+              {/* Badge Nobre Superior em Vermelho */}
+              <div className="absolute top-0 right-0 bg-rose-600 text-white font-black text-[9px] sm:text-[10px] px-3.5 py-1 rounded-bl-xl tracking-wider z-10 flex items-center gap-1 uppercase shadow-md">
                 <InfinityIcon className="w-3 h-3" />
                 MELHOR VALOR · PAGAMENTO ÚNICO
               </div>
 
               {/* Título do Card */}
-              <div className="flex justify-between items-start mb-1.5 relative z-10">
+              <div className="flex justify-between items-start mb-2 relative z-10">
                 <div className="flex items-center gap-1.5">
-                  <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <h3 className="font-display font-black text-amber-300 text-base uppercase tracking-wider">
+                  <Crown className="w-4 h-4 text-rose-500 fill-rose-500" />
+                  <h3 className="font-display font-black text-rose-400 text-base uppercase tracking-wider">
                     Plano Vitalício
                   </h3>
                 </div>
               </div>
 
               {/* Linha de Preço Responsiva (De R$ 149,90 por R$ 89,90 no Pix) */}
-              <div className="flex flex-col gap-0.5 mb-2 relative z-10">
+              <div className="flex flex-col gap-1 mb-2.5 relative z-10">
                 <div className="flex items-center gap-2">
                   <span className="text-zinc-500 text-xs sm:text-sm font-semibold line-through">
                     De {brl(PRECO_VITALICIO)}
                   </span>
-                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
                     -40% OFF
                   </span>
                 </div>
 
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl sm:text-4xl font-black text-amber-300 tracking-tight">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="font-display text-3xl sm:text-4xl font-black text-rose-500 tracking-tight whitespace-nowrap">
                     {brl(PRECO_VITALICIO_PROMOCIONAL)}
                   </span>
-                  <span className="font-display text-xs sm:text-sm font-bold text-zinc-400 uppercase tracking-wider">
+                  <span className="font-display text-xs sm:text-sm font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap">
                     pagamento único no Pix
                   </span>
                 </div>
               </div>
 
               {/* Subtítulo Minimalista */}
-              <p className="text-[11.5px] font-bold text-amber-200/90 relative z-10 mb-3">
+              <p className="text-[12px] font-medium text-zinc-300 relative z-10">
                 Acesso para sempre • Sem mensalidades ou renovações • Liberação imediata
               </p>
-
-              {/* 3 Bullets Limpos e Concisos */}
-              <div className="flex flex-col gap-1.5 pt-2.5 border-t border-white/10 relative z-10 text-xs text-zinc-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Vade Mecum completo com atualizações vitalícias</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Áudios de leis, videoaulas e Inteligência Artificial Hórus</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Liberação instantânea com 7 dias de garantia incondicional</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Botão de Ação Primário CTA com as Mesmas Margens Laterais */}
-          <div className="w-full px-5 sm:px-6 flex flex-col gap-2 -mt-1">
+          {/* Botão de Ação Primário CTA 100% Vermelho */}
+          <div className="w-full flex flex-col gap-2 pt-1">
             <Button
               onClick={handleAssinarVitalicioClick}
-              className="btn-shine-loop relative overflow-hidden w-full h-[58px] rounded-[20px] font-display text-[18px] sm:text-[19px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-gradient-to-r from-amber-500 via-rose-600 to-amber-500 hover:from-amber-400 hover:to-rose-500 text-white shadow-[0_12px_35px_rgba(224,31,71,0.45)] border border-white/15"
+              className="btn-shine-loop relative overflow-hidden w-full h-[58px] rounded-[20px] font-display text-[18px] sm:text-[19px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-rose-600 hover:bg-rose-500 text-white shadow-[0_12px_35px_rgba(225,29,72,0.5)] border border-rose-400/30"
             >
               <span className="flex items-center justify-center gap-2">
                 <span>ASSINAR VITALÍCIO POR {brl(PRECO_VITALICIO_PROMOCIONAL)}</span>
@@ -280,7 +263,7 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
               </span>
             </Button>
             <div className="flex items-center justify-center gap-2 text-[11.5px] text-zinc-400 font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-rose-400" />
               <span>7 dias de garantia incondicional • Liberação imediata no Pix</span>
             </div>
             
