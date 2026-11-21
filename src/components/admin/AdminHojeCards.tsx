@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target, Repeat } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target, Repeat, AlertTriangle, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,9 @@ interface Row {
   googleId?: string | null;
   created_at?: string | null;
   faixaEtaria?: string | null;
+  checkoutStatus?: 'pago' | 'recusado' | 'enviando' | 'etapa2_parou' | 'desistiu_inicio';
+  checkoutStatusLabel?: string;
+  checkoutDetalhes?: string;
   logsCheckout?: {
     event_name: string;
     created_at: string;
@@ -45,6 +48,9 @@ interface Row {
     billingType?: string;
     valor?: number;
     pixStatus?: 'pago' | 'nao_pago' | 'pendente';
+    cep?: string;
+    cidade?: string;
+    uf?: string;
   }[];
 }
 
@@ -246,7 +252,7 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId | 'trialValor' | 'renovouValor', number>>(() => {
+  const [counts, setCounts] = useState<Record<CardId | 'trialValor' | 'renovouValor' | 'checkoutPago' | 'checkoutRecusado' | 'checkoutEtapa2' | 'checkoutDesistiu', number>>(() => {
     try {
       const hojeIso = isoDate(getHojeBrasilia());
       const cached = localStorage.getItem(`admin_hoje_counts_cache_${hojeIso}`);
@@ -262,10 +268,17 @@ export function AdminHojeCards() {
           trialValor: Number.isFinite(Number(parsed.trialValor)) ? Number(parsed.trialValor) : 0,
           renovou: Number(parsed.renovou) || 0,
           renovouValor: Number.isFinite(Number(parsed.renovouValor)) ? Number(parsed.renovouValor) : 0,
+          checkoutPago: Number(parsed.checkoutPago) || 0,
+          checkoutRecusado: Number(parsed.checkoutRecusado) || 0,
+          checkoutEtapa2: Number(parsed.checkoutEtapa2) || 0,
+          checkoutDesistiu: Number(parsed.checkoutDesistiu) || 0,
         };
       }
     } catch {}
-    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0, renovou: 0, renovouValor: 0 };
+    return { 
+      online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0, renovou: 0, renovouValor: 0,
+      checkoutPago: 0, checkoutRecusado: 0, checkoutEtapa2: 0, checkoutDesistiu: 0
+    };
   });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = getHojeBrasilia();
@@ -283,6 +296,7 @@ export function AdminHojeCards() {
   const [open, setOpen] = useState<CardId | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [filtroUser, setFiltroUser] = useState<'gratuitos' | 'assinantes' | 'todos'>('gratuitos');
+  const [filtroCheckout, setFiltroCheckout] = useState<'todos' | 'pagos' | 'recusados' | 'abandonos'>('todos');
   const [loading, setLoading] = useState(false);
   const [dossie, setDossie] = useState<Row | null>(null);
   const [periodo, setPeriodo] = useState<PeriodoId>('hoje');
@@ -529,6 +543,7 @@ export function AdminHojeCards() {
         } catch {}
 
         // Visualização de Paywall e Checkout diretamente de app_events excluindo admin (sem inflação artificial)
+        let checkoutRawEvents: any[] = [];
         try {
           const [paywallEvsRes, checkoutEvsRes] = await Promise.all([
             supabase
@@ -539,11 +554,22 @@ export function AdminHojeCards() {
               .lt('created_at', endIso),
             supabase
               .from('app_events')
-              .select('user_id, email')
-              .in('event_name', ['trial_click', 'checkout_pix_gerado', 'checkout_pix_pago', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'])
+              .select('user_id, email, event_name, metadata')
+              .in('event_name', [
+                'trial_click', 
+                'checkout_etapa1_concluida', 
+                'checkout_pix_gerado', 
+                'checkout_pix_pago', 
+                'purchase', 
+                'checkout_cc_enviado', 
+                'checkout_cc_recusado', 
+                'checkout_cc_aprovado'
+              ])
               .gte('created_at', startIso)
               .lt('created_at', endIso),
           ]);
+
+          checkoutRawEvents = checkoutEvsRes.data || [];
 
           const distinctPaywall = new Set(
             (paywallEvsRes.data || [])
@@ -806,13 +832,44 @@ export function AdminHojeCards() {
         });
         totalRenovouValor = somaRenovou;
 
+        // Cálculo analítico do funil de checkout (Pagos, Recusados, Parou na Etapa 2, Desistência Inicial)
+        let cPago = 0;
+        let cRecusado = 0;
+        let cEtapa2 = 0;
+        let cDesistiu = 0;
+
+        const checkoutUserEvents = new Map<string, string[]>();
+        checkoutRawEvents.forEach((e: any) => {
+          const em = (e.email || '').toLowerCase().trim();
+          if (isAdminUser(e.user_id, em)) return;
+          const uid = e.user_id || em;
+          if (!uid) return;
+          if (!checkoutUserEvents.has(uid)) {
+            checkoutUserEvents.set(uid, []);
+          }
+          checkoutUserEvents.get(uid)!.push(e.event_name);
+        });
+
+        checkoutUserEvents.forEach((evList, uid) => {
+          const isPaid = subUsers.has(uid) || evList.includes('checkout_pix_pago') || evList.includes('checkout_cc_aprovado') || evList.includes('purchase');
+          if (isPaid) {
+            cPago++;
+          } else if (evList.includes('checkout_cc_recusado')) {
+            cRecusado++;
+          } else if (evList.includes('checkout_etapa1_concluida')) {
+            cEtapa2++;
+          } else {
+            cDesistiu++;
+          }
+        });
+
       } catch (e: any) {
         console.error('Error fetching today events/subscriptions', e);
       }
 
       const count5m = periodo === 'hoje' ? totalOnline5m : 0;
       const countOnline = Math.max(totalOnline, count5m);
-      const novos: Record<CardId | 'trialValor' | 'renovouValor', number> = {
+      const novos: Record<CardId | 'trialValor' | 'renovouValor' | 'checkoutPago' | 'checkoutRecusado' | 'checkoutEtapa2' | 'checkoutDesistiu', number> = {
         online5m: count5m || 0, 
         online: countOnline || 0, 
         cadastros: totalCadastros || 0, 
@@ -822,6 +879,10 @@ export function AdminHojeCards() {
         trialValor: Number.isFinite(totalTrialValor) ? totalTrialValor : 0,
         renovou: totalRenovou || 0,
         renovouValor: Number.isFinite(totalRenovouValor) ? totalRenovouValor : 0,
+        checkoutPago: cPago,
+        checkoutRecusado: cRecusado,
+        checkoutEtapa2: cEtapa2,
+        checkoutDesistiu: cDesistiu,
       };
 
       // Detecta aumento em tempo real para disparar efeito de pulso neon verde nos cards
@@ -1429,7 +1490,16 @@ export function AdminHojeCards() {
         }
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
-          ? ['trial_click', 'checkout_pix_gerado', 'checkout_pix_pago', 'purchase', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
+          ? [
+              'trial_click', 
+              'checkout_etapa1_concluida', 
+              'checkout_pix_gerado', 
+              'checkout_pix_pago', 
+              'purchase', 
+              'checkout_cc_enviado', 
+              'checkout_cc_recusado', 
+              'checkout_cc_aprovado'
+            ] 
           : ['trial_click', 'assinatura_aberta', 'paywall_view'];
 
         const { data: vpEvents } = await supabase
@@ -1446,12 +1516,15 @@ export function AdminHojeCards() {
           const userIds = Array.from(new Set(vpEvents.map((e: any) => e.user_id).filter(Boolean))) as string[];
           const emails = Array.from(new Set(vpEvents.map((e: any) => (e.email || '').toLowerCase().trim()).filter(Boolean))) as string[];
 
-          const [profsByIdRes, profsByEmailRes] = await Promise.all([
+          const [profsByIdRes, profsByEmailRes, asaasSubsRes] = await Promise.all([
             userIds.length > 0
               ? supabase.from('profiles').select('id, display_name, email, is_premium, avatar_url').in('id', userIds)
               : { data: [] },
             emails.length > 0
               ? supabase.from('profiles').select('id, display_name, email, is_premium, avatar_url').in('email', emails)
+              : { data: [] },
+            userIds.length > 0
+              ? supabase.from('asaas_subscriptions').select('user_id, status, plano, valor, created_at, started_at').in('user_id', userIds)
               : { data: [] },
           ]);
 
@@ -1463,6 +1536,14 @@ export function AdminHojeCards() {
           (profsByEmailRes.data || []).forEach((p: any) => {
             if (p.email) profMap.set(p.email.toLowerCase().trim(), p);
             if (p.id) profMap.set(p.id, p);
+          });
+
+          const asaasSubMap = new Map<string, any>();
+          (asaasSubsRes.data || []).forEach((s: any) => {
+            const st = (s.status || '').toUpperCase();
+            if (st === 'ACTIVE' || st === 'ACTIVE_GRACE' || st === 'CONFIRMED' || st === 'RECEIVED' || st === 'PAGA') {
+              asaasSubMap.set(s.user_id, s);
+            }
           });
 
           const userEventsMap = new Map<string, any>();
@@ -1492,7 +1573,10 @@ export function AdminHojeCards() {
                 plano: e.metadata?.plano,
                 payment_id: e.metadata?.payment_id,
                 billingType: e.metadata?.billingType,
-                valor: e.metadata?.value || e.metadata?.valor
+                valor: e.metadata?.value || e.metadata?.valor,
+                cep: e.metadata?.cep,
+                cidade: e.metadata?.cidade,
+                uf: e.metadata?.uf,
               });
             }
           });
@@ -1505,10 +1589,11 @@ export function AdminHojeCards() {
             // Ordena logs decrescente
             e.logs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-            // Identifica qual método ou PIX foi concluído
+            // Identifica se usuário é assinante ativo ou se concluiu pagamento
             const hasCcAprovado = e.logs.some((l: any) => l.event_name === 'checkout_cc_aprovado');
             const paidPixEvent = e.logs.find((l: any) => l.event_name === 'checkout_pix_pago' || (l.event_name === 'purchase' && (l.billingType === 'PIX' || l.plano?.includes('pix'))));
-            const isUserPaid = Boolean(prof.is_premium || hasCcAprovado || paidPixEvent);
+            const hasAsaasActive = e.user_id && asaasSubMap.has(e.user_id);
+            const isUserPaid = Boolean(prof.is_premium || hasCcAprovado || paidPixEvent || hasAsaasActive);
 
             let matchedPixIdx = -1;
             if (paidPixEvent) {
@@ -1529,8 +1614,7 @@ export function AdminHojeCards() {
                   }
                 });
               }
-            } else if (!hasCcAprovado && prof.is_premium) {
-              // Usuário é assinante ativo e gerou PIX: o PIX mais recente foi o pago
+            } else if (!hasCcAprovado && isUserPaid) {
               matchedPixIdx = e.logs.findIndex((l: any) => l.event_name === 'checkout_pix_gerado');
             }
 
@@ -1546,6 +1630,48 @@ export function AdminHojeCards() {
               }
             });
 
+            const hasCcRecusado = e.logs.some((l: any) => l.event_name === 'checkout_cc_recusado');
+            const lastRecusado = e.logs.find((l: any) => l.event_name === 'checkout_cc_recusado');
+            const etapa1Event = e.logs.find((l: any) => l.event_name === 'checkout_etapa1_concluida');
+            const hasCcEnviado = e.logs.some((l: any) => l.event_name === 'checkout_cc_enviado');
+            const hasPixGerado = e.logs.some((l: any) => l.event_name === 'checkout_pix_gerado');
+
+            let checkoutStatus: 'pago' | 'recusado' | 'enviando' | 'etapa2_parou' | 'desistiu_inicio' = 'desistiu_inicio';
+            let checkoutStatusLabel = 'Desistência inicial (Não preencheu)';
+            let checkoutDetalhes = '';
+
+            if (isUserPaid) {
+              checkoutStatus = 'pago';
+              checkoutStatusLabel = paidPixEvent ? 'Pagamento Confirmado (PIX)' : 'Pagamento Confirmado (Cartão)';
+              if (paidPixEvent?.valor) {
+                checkoutDetalhes = `R$ ${Number(paidPixEvent.valor).toFixed(2)}`;
+              } else if (hasAsaasActive) {
+                const asSub = asaasSubMap.get(e.user_id);
+                checkoutDetalhes = asSub?.plano ? `Plano ${asSub.plano}` : 'Assinante Ativo';
+              }
+            } else if (hasCcRecusado) {
+              checkoutStatus = 'recusado';
+              checkoutStatusLabel = 'Pagamento Recusado pelo Banco';
+              checkoutDetalhes = lastRecusado?.erro || 'Cartão não autorizado';
+            } else if (hasCcEnviado) {
+              checkoutStatus = 'enviando';
+              checkoutStatusLabel = 'Cartão enviado (Processando)';
+            } else if (hasPixGerado) {
+              checkoutStatus = 'enviando';
+              checkoutStatusLabel = 'PIX Gerado (Aguardando Pagamento)';
+            } else if (etapa1Event) {
+              checkoutStatus = 'etapa2_parou';
+              checkoutStatusLabel = 'Parou na Etapa 2 (Não enviou pagamento)';
+              if (etapa1Event.cidade && etapa1Event.uf) {
+                checkoutDetalhes = `${etapa1Event.cidade} - ${etapa1Event.uf}`;
+              } else if (etapa1Event.cep) {
+                checkoutDetalhes = `CEP ${etapa1Event.cep}`;
+              }
+            } else {
+              checkoutStatus = 'desistiu_inicio';
+              checkoutStatusLabel = 'Desistência inicial (Não preencheu)';
+            }
+
             // Oculta evento interno 'purchase' da lista visual se já houver checkout_pix_pago ou checkout_cc_aprovado
             const visibleLogs = e.logs.filter((l: any) => l.event_name !== 'purchase');
 
@@ -1555,12 +1681,15 @@ export function AdminHojeCards() {
               title: prof.display_name || (finalEmail ? finalEmail.split('@')[0] : 'Visitante'),
               email: finalEmail,
               provider: isGoogle ? 'google' : (finalEmail ? 'email' : null),
-              subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Entrou em assinaturas',
+              subtitle: id === 'viu_planos' ? checkoutStatusLabel : 'Entrou em assinaturas',
               at: e.latestAt || e.created_at,
               acessos: e.acessos || 1,
               avatar_url: prof.avatar_url || null,
-              is_premium: prof.is_premium || false,
+              is_premium: isUserPaid,
               created_at: e.created_at,
+              checkoutStatus,
+              checkoutStatusLabel,
+              checkoutDetalhes,
               logsCheckout: visibleLogs
             };
           });
@@ -1960,6 +2089,13 @@ export function AdminHojeCards() {
         if (filtroUser === 'assinantes') return r.isPremium;
         return true;
       })
+    : open === 'viu_planos'
+    ? rows.filter(r => {
+        if (filtroCheckout === 'pagos') return r.checkoutStatus === 'pago';
+        if (filtroCheckout === 'recusados') return r.checkoutStatus === 'recusado';
+        if (filtroCheckout === 'abandonos') return r.checkoutStatus === 'etapa2_parou' || r.checkoutStatus === 'desistiu_inicio';
+        return true;
+      })
     : rows;
 
   const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0], isBottomRow = false) => {
@@ -2012,6 +2148,19 @@ export function AdminHojeCards() {
               <span className="block font-['Plus_Jakarta_Sans',sans-serif] font-bold mt-0.5 leading-none whitespace-nowrap text-[7.5px] sm:text-[8.5px] text-emerald-400">
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
               </span>
+            )}
+            {id === 'viu_planos' && cardCount > 0 && (
+              <div className="flex items-center gap-1 mt-0.5 leading-none text-[7.5px] sm:text-[8px] font-bold whitespace-nowrap">
+                {counts.checkoutRecusado > 0 ? (
+                  <span className="text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded border border-rose-500/20">
+                    {counts.checkoutRecusado} recusado{counts.checkoutRecusado > 1 ? 's' : ''}
+                  </span>
+                ) : (
+                  <span className="text-zinc-400">
+                    <strong className="text-emerald-400">{counts.checkoutPago}</strong> pago · {counts.checkoutEtapa2 + counts.checkoutDesistiu} aband.
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -2082,7 +2231,7 @@ export function AdminHojeCards() {
       </div>
 
       {/* Régua Visual do Funil de Conversão (Item 4) */}
-      <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/20 border border-border/40 backdrop-blur-sm text-[10px] sm:text-[11px]">
+      <div className="flex items-center justify-between px-2.5 py-1.5 mb-2 rounded-xl bg-secondary/20 border border-border/40 backdrop-blur-sm text-[10px] sm:text-[11px]">
         <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-muted-foreground overflow-x-auto scrollbar-none py-0.5">
           <span className="font-semibold text-zinc-400 shrink-0">Funil:</span>
           
@@ -2126,6 +2275,37 @@ export function AdminHojeCards() {
         </div>
       </div>
 
+      {/* Detalhamento Analítico de Checkouts da Visão Geral */}
+      {counts.viu_planos > 0 && (
+        <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/15 border border-border/35 text-[10px] sm:text-[11px] flex-wrap gap-y-1">
+          <span className="text-muted-foreground font-medium flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+            <span className="font-semibold text-zinc-300">Status dos Checkouts:</span>
+          </span>
+          <div className="flex items-center gap-1.5 sm:gap-2 font-semibold flex-wrap">
+            <span className="text-emerald-400 flex items-center gap-1">
+              <span>{counts.checkoutPago}</span> <span className="font-normal text-zinc-400 text-[9.5px]">concluído{counts.checkoutPago === 1 ? '' : 's'}</span>
+            </span>
+            <span className="text-zinc-600">·</span>
+            {counts.checkoutRecusado > 0 ? (
+              <span className="text-rose-400 font-bold bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/30">
+                {counts.checkoutRecusado} RECUSADO{counts.checkoutRecusado === 1 ? '' : 'S'}
+              </span>
+            ) : (
+              <span className="text-zinc-400 text-[9.5px] font-normal">0 recusados</span>
+            )}
+            <span className="text-zinc-600">·</span>
+            <span className="text-amber-400/90 text-[9.5px] font-normal">
+              <strong className="font-semibold text-amber-400">{counts.checkoutEtapa2}</strong> parou etapa 2
+            </span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-400 text-[9.5px] font-normal">
+              <strong className="font-semibold text-zinc-300">{counts.checkoutDesistiu}</strong> desistência inicial
+            </span>
+          </div>
+        </div>
+      )}
+
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
         <SheetContent side="bottom" className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
           <SheetHeader className="px-4 pt-5 pb-3 border-b border-border/50 text-left">
@@ -2147,6 +2327,28 @@ export function AdminHojeCards() {
                 Totais
               </button>
             </div>
+
+            {open === 'viu_planos' && (
+              <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full gap-1 overflow-x-auto scrollbar-none">
+                {(['todos', 'pagos', 'recusados', 'abandonos'] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setFiltroCheckout(f)}
+                    className={cn(
+                      'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-lg transition-all whitespace-nowrap',
+                      filtroCheckout === f
+                        ? 'bg-background shadow-sm text-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {f === 'todos' && `Todos (${rows.length})`}
+                    {f === 'pagos' && `Pagos (${rows.filter(r => r.checkoutStatus === 'pago').length})`}
+                    {f === 'recusados' && `Recusados (${rows.filter(r => r.checkoutStatus === 'recusado').length})`}
+                    {f === 'abandonos' && `Abandonos (${rows.filter(r => r.checkoutStatus === 'etapa2_parou' || r.checkoutStatus === 'desistiu_inicio').length})`}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {(open === 'online' || open === 'online5m') && (
               <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
@@ -2304,6 +2506,84 @@ export function AdminHojeCards() {
                             )}
                           </div>
                         )}
+
+                        {/* Se for modal de Checkout, exibe badge detalhado de status */}
+                        {open === 'viu_planos' && (
+                          <div className="flex flex-col gap-1 mt-1.5">
+                            {r.checkoutStatus === 'pago' && (
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-black text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.25)]">
+                                  <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                                  PAGAMENTO CONFIRMADO
+                                </span>
+                                {r.checkoutDetalhes && (
+                                  <span className="text-[10px] font-bold text-emerald-400">
+                                    · {r.checkoutDetalhes}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {r.checkoutStatus === 'recusado' && (
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 text-[10px] font-black text-rose-300 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.3)]">
+                                    <AlertTriangle className="w-3 h-3 text-rose-400" />
+                                    PAGAMENTO RECUSADO PELO BANCO
+                                  </span>
+                                </div>
+                                {r.checkoutDetalhes && (
+                                  <p className="text-[10px] font-medium text-rose-400/90 leading-tight">
+                                    Motivo: {r.checkoutDetalhes}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {r.checkoutStatus === 'enviando' && (
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                                  <Timer className="w-3 h-3 text-amber-400" />
+                                  PIX GERADO / AGUARDANDO PAGAMENTO
+                                </span>
+                              </div>
+                            )}
+
+                            {r.checkoutStatus === 'etapa2_parou' && (
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-400">
+                                    <Timer className="w-3 h-3 text-amber-400" />
+                                    PAROU NA ETAPA 2 (DADOS PREENCHIDOS)
+                                  </span>
+                                  {r.checkoutDetalhes && (
+                                    <span className="text-[9.5px] font-semibold text-amber-300">
+                                      · {r.checkoutDetalhes}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[9.5px] text-zinc-400 leading-tight">
+                                  Preencheu os dados de cadastro, mas não enviou pagamento (cartão ou PIX).
+                                </p>
+                              </div>
+                            )}
+
+                            {r.checkoutStatus === 'desistiu_inicio' && (
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 rounded-md bg-zinc-800/90 border border-zinc-700/80 px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
+                                    <X className="w-3 h-3 text-zinc-500" />
+                                    DESISTÊNCIA INICIAL (NÃO PREENCHEU)
+                                  </span>
+                                </div>
+                                <p className="text-[9.5px] text-zinc-500 leading-tight">
+                                  Abriu a tela de checkout e voltou sem preencher o formulário.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {r.logsCheckout && r.logsCheckout.length > 0 && (
                           <div className="mt-2 space-y-1.5">
                              {r.logsCheckout.map((log, idx) => {
@@ -2315,6 +2595,12 @@ export function AdminHojeCards() {
                                return (
                                  <div key={idx} className="flex items-center gap-1.5 text-[10px]">
                                    <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
+
+                                   {log.event_name === 'checkout_etapa1_concluida' && (
+                                     <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1 rounded uppercase font-bold text-[9px]">
+                                       ETAPA 1 CONCLUÍDA {log.cidade ? `(${log.cidade}/${log.uf})` : ''}
+                                     </span>
+                                   )}
 
                                    {isPixPago && (
                                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-black uppercase text-[9px] shadow-[0_0_8px_rgba(16,185,129,0.25)] flex items-center gap-1">
