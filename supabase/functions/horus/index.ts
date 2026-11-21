@@ -19,6 +19,6 @@ const router = createRouter({
   'stats-sync': stats_sync,
   'verify': verify,
   'webhook': webhook,
-});
+}, 'webhook');
 
 Deno.serve(router);
