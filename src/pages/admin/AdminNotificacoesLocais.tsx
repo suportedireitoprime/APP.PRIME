@@ -20,6 +20,17 @@ import {
   RefreshCw,
   Trash2,
   Newspaper,
+  Users,
+  BarChart3,
+  Search,
+  Smartphone,
+  Sparkles,
+  CheckCircle2,
+  ExternalLink,
+  Activity,
+  Zap,
+  Filter,
+  Eye,
 } from 'lucide-react';
 import {
   carregarRegrasNotificacoesLocais,
@@ -28,10 +39,13 @@ import {
   obterMetricasNotificacoesLocais,
   limparMetricasLocais,
   registrarAberturaNotificacaoLocal,
+  obterAlunosAtivosParaRetencao,
+  dispararRetencaoParaAluno,
   RegraNotificacaoLocal,
   ModuloNotificacaoLocal,
   PublicoAlvoNotificacao,
   MetricasNotificacoesLocais,
+  AlunoAtivoRetencao,
   REGRAS_PADRAO_NOTIFICACOES_LOCAIS,
 } from '@/lib/nativo/notificacaoLocalManager';
 import { haptic } from '@/lib/nativeHaptics';
@@ -51,6 +65,14 @@ export default function AdminNotificacoesLocais() {
   const [metricas, setMetricas] = useState<MetricasNotificacoesLocais | null>(null);
   const [carregandoMetricas, setCarregandoMetricas] = useState<boolean>(false);
 
+  // Alunos ativos & Telemetria expandida
+  const [alunosAtivos, setAlunosAtivos] = useState<AlunoAtivoRetencao[]>([]);
+  const [carregandoAlunos, setCarregandoAlunos] = useState<boolean>(false);
+  const [subSecaoPublico, setSubSecaoPublico] = useState<'alunos' | 'telemetria' | 'segmentos'>('alunos');
+  const [filtroModuloAluno, setFiltroModuloAluno] = useState<'todos' | ModuloNotificacaoLocal>('todos');
+  const [buscaAluno, setBuscaAluno] = useState<string>('');
+  const [disparandoAlunoId, setDisparandoAlunoId] = useState<string | null>(null);
+
   const carregarMetricas = useCallback(async () => {
     setCarregandoMetricas(true);
     try {
@@ -63,9 +85,66 @@ export default function AdminNotificacoesLocais() {
     }
   }, []);
 
+  const carregarAlunos = useCallback(async () => {
+    setCarregandoAlunos(true);
+    try {
+      const lista = await obterAlunosAtivosParaRetencao();
+      setAlunosAtivos(lista);
+    } catch {
+      /* ignore */
+    } finally {
+      setCarregandoAlunos(false);
+    }
+  }, []);
+
   useEffect(() => {
     void carregarMetricas();
-  }, [carregarMetricas]);
+    void carregarAlunos();
+  }, [carregarMetricas, carregarAlunos]);
+
+  const alunosFiltrados = useMemo(() => {
+    return alunosAtivos.filter((aluno) => {
+      const casaModulo = filtroModuloAluno === 'todos' || aluno.modulo === filtroModuloAluno;
+      const termo = buscaAluno.trim().toLowerCase();
+      const casaBusca =
+        !termo ||
+        aluno.nome.toLowerCase().includes(termo) ||
+        aluno.email.toLowerCase().includes(termo) ||
+        aluno.tituloConteudo.toLowerCase().includes(termo) ||
+        aluno.subtituloConteudo.toLowerCase().includes(termo);
+      return casaModulo && casaBusca;
+    });
+  }, [alunosAtivos, filtroModuloAluno, buscaAluno]);
+
+  const handleDispararAluno = async (aluno: AlunoAtivoRetencao) => {
+    haptic.impact('heavy');
+    setDisparandoAlunoId(aluno.id);
+    toast.loading(`Disparando retenção (${aluno.progressoPct}%) para ${aluno.nome}...`, { id: 'disp_aluno' });
+    const res = await dispararRetencaoParaAluno(aluno, 0);
+    setDisparandoAlunoId(null);
+    if (res.sucesso) {
+      toast.success(res.mensagem, { id: 'disp_aluno' });
+      void carregarMetricas();
+      void carregarAlunos();
+    } else {
+      toast.error(res.mensagem, { id: 'disp_aluno' });
+    }
+  };
+
+  const handleCarregarAlunoNoPreview = (aluno: AlunoAtivoRetencao) => {
+    haptic.selection();
+    const regraCorrespondente = regras.find((r) => r.modulo === aluno.modulo) || regras[0];
+    setRegraAtivaId(regraCorrespondente.id);
+    setProgressoSimulado(aluno.progressoPct);
+    handleAtualizarRegra(regraCorrespondente.id, {
+      exemploTitulo: aluno.tituloConteudo,
+      exemploSubtitulo: aluno.subtituloConteudo,
+      exemploCapaUrl: aluno.capaUrl || regraCorrespondente.exemploCapaUrl,
+      rotaPadrao: aluno.rota,
+    });
+    toast.info(`Dados de ${aluno.nome} carregados no preview!`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const regraSelecionada = useMemo(() => {
     return regras.find((r) => r.id === regraAtivaId) || regras[0];
@@ -174,7 +253,7 @@ export default function AdminNotificacoesLocais() {
         }
       />
 
-      <div className="max-w-md mx-auto px-4 pt-2 space-y-4">
+      <div className="max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 pt-2 space-y-4">
         {/* SELETOR HORIZONTAL DE MÓDULO (Pílulas ultra-limpas) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
           {regras.map((r) => {
@@ -491,80 +570,509 @@ export default function AdminNotificacoesLocais() {
         )}
 
         {/* =========================================================================
-            ABA 3: PÚBLICO & MÉTRICAS
+            ABA 3: PÚBLICO & MÉTRICAS (ALUNOS ATIVOS & TELEMETRIA COMPLETA)
            ========================================================================= */}
         {tabAtiva === 'publicos' && (
-          <div className="space-y-3 pt-1">
-            <div className="space-y-1.5">
-              <span className="text-[11px] text-zinc-400">Público-alvo:</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { id: 'todos' as const, label: 'Todos os Alunos' },
-                  { id: 'gratuitos' as const, label: 'Apenas Gratuitos' },
-                  { id: 'assinantes' as const, label: 'Apenas Assinantes' },
-                  { id: 'inativos_24h' as const, label: 'Inativos (+48h)' },
-                ].map((pub) => {
-                  const ativo = regraSelecionada.publicoAlvo === pub.id;
-                  return (
-                    <button
-                      key={pub.id}
-                      type="button"
-                      onClick={() => {
-                        haptic.selection();
-                        handleAtualizarRegra(regraSelecionada.id, { publicoAlvo: pub.id });
-                      }}
-                      className={`p-2 rounded-xl text-xs text-left font-medium transition-all border ${
-                        ativo
-                          ? 'bg-white text-zinc-950 font-semibold border-white'
-                          : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:text-white'
-                      }`}
-                    >
-                      {pub.label}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="space-y-4 pt-1">
+            {/* SUB-SELETOR ULTRA-LIMPO: Alunos Ativos vs Telemetria vs Segmentação */}
+            <div className="flex items-center gap-1.5 p-1 bg-zinc-900/90 rounded-2xl border border-white/10 text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setSubSecaoPublico('alunos');
+                }}
+                className={`flex-1 py-1.5 px-2 rounded-xl font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  subSecaoPublico === 'alunos'
+                    ? 'bg-white text-zinc-950 font-semibold shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5 text-sky-500" />
+                <span>Alunos Ativos</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                    subSecaoPublico === 'alunos'
+                      ? 'bg-zinc-900 text-white'
+                      : 'bg-white/10 text-zinc-300'
+                  }`}
+                >
+                  {alunosAtivos.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setSubSecaoPublico('telemetria');
+                }}
+                className={`flex-1 py-1.5 px-2 rounded-xl font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  subSecaoPublico === 'telemetria'
+                    ? 'bg-white text-zinc-950 font-semibold shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Telemetria</span>
+                {metricas && metricas.taxaAberturaPct > 0 && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                      subSecaoPublico === 'telemetria'
+                        ? 'bg-emerald-950 text-emerald-400'
+                        : 'bg-emerald-500/20 text-emerald-400'
+                    }`}
+                  >
+                    {metricas.taxaAberturaPct}% CTR
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setSubSecaoPublico('segmentos');
+                }}
+                className={`py-1.5 px-2.5 rounded-xl font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  subSecaoPublico === 'segmentos'
+                    ? 'bg-white text-zinc-950 font-semibold shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                <span>Filtros</span>
+              </button>
             </div>
 
-            {/* Resumo de Métricas em linha única limpa */}
-            <div className="pt-2 border-t border-white/5 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-zinc-300">Aberturas no Aparelho</span>
-                <div className="flex items-center gap-2">
+            {/* ---------------------------------------------------------------------
+                SUB-VIEW 1: ALUNOS ATIVOS COM ESTUDOS EM ANDAMENTO
+               --------------------------------------------------------------------- */}
+            {subSecaoPublico === 'alunos' && (
+              <div className="space-y-3">
+                {/* Busca e Filtros Rápidos */}
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Input
+                      value={buscaAluno}
+                      onChange={(e) => setBuscaAluno(e.target.value)}
+                      placeholder="Pesquisar por aluno, e-mail ou obra..."
+                      className="bg-zinc-900/90 border-white/10 text-xs text-white pl-8.5 h-8.5 rounded-xl placeholder:text-zinc-500"
+                    />
+                    {buscaAluno && (
+                      <button
+                        onClick={() => setBuscaAluno('')}
+                        className="text-[10px] text-zinc-400 hover:text-white absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-white/10"
+                      >
+                        Limpar
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Pílulas de Módulo */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
+                    {[
+                      { id: 'todos', label: 'Todos' },
+                      { id: 'livros', label: '📖 Livros', icon: BookOpen },
+                      { id: 'audioaulas', label: '🎧 Áudio', icon: Headphones },
+                      { id: 'videoaulas', label: '🎬 Vídeo', icon: PlayCircle },
+                    ].map((filtro) => {
+                      const ativo = filtroModuloAluno === filtro.id;
+                      return (
+                        <button
+                          key={filtro.id}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            setFiltroModuloAluno(filtro.id as any);
+                          }}
+                          className={`px-2.5 py-1 rounded-full text-xs shrink-0 transition-all ${
+                            ativo
+                              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 font-semibold'
+                              : 'bg-zinc-900/60 text-zinc-400 border border-white/5 hover:text-zinc-200'
+                          }`}
+                        >
+                          {filtro.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Banner de Status com Botão Atualizar */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-sky-200 text-[11px] font-medium">
+                      {alunosFiltrados.length} alunos com estudos pausados (elegíveis para notificação de retenção)
+                    </span>
+                  </div>
                   <button
-                    onClick={() => void carregarMetricas()}
-                    className="text-zinc-500 hover:text-zinc-300 p-1"
-                    title="Atualizar"
+                    onClick={() => {
+                      haptic.selection();
+                      void carregarAlunos();
+                      void carregarMetricas();
+                    }}
+                    className="p-1 rounded-md text-sky-400 hover:text-sky-200 hover:bg-sky-500/20 transition-colors"
+                    title="Recarregar alunos"
                   >
-                    <RefreshCw className={`w-3 h-3 ${carregandoMetricas ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 ${carregandoAlunos ? 'animate-spin' : ''}`} />
                   </button>
-                  <button
-                    onClick={() => void handleLimparTestes()}
-                    className="text-zinc-500 hover:text-rose-400 p-1"
-                    title="Limpar métricas"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
+                </div>
+
+                {/* Lista de Alunos Ativos com Barra de Progresso Real */}
+                <div className="space-y-2.5">
+                  {alunosFiltrados.length === 0 ? (
+                    <div className="text-center py-8 text-zinc-500 text-xs bg-zinc-900/40 rounded-2xl border border-white/5 p-4">
+                      Nenhum aluno encontrado para os filtros selecionados.
+                    </div>
+                  ) : (
+                    alunosFiltrados.map((aluno) => {
+                      const isFiring = disparandoAlunoId === aluno.id;
+                      return (
+                        <div
+                          key={aluno.id}
+                          className="p-3.5 rounded-2xl bg-[#18181b]/80 border border-white/10 hover:border-white/20 transition-all space-y-3 shadow-lg"
+                        >
+                          {/* Cabeçalho do Aluno: Nome, E-mail, Dispositivo e Tempo Parado */}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">
+                                {aluno.nome.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs font-semibold text-white truncate">
+                                    {aluno.nome}
+                                  </span>
+                                  {aluno.isLocalUser && (
+                                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[9px] px-1.5 py-0">
+                                      Este Aparelho
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-[11px] text-zinc-400 truncate font-mono">
+                                  {aluno.email}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-1 shrink-0">
+                              <Badge
+                                variant="outline"
+                                className="bg-zinc-900/80 border-white/10 text-zinc-300 text-[10px] flex items-center gap-1"
+                              >
+                                <Smartphone className="w-2.5 h-2.5 text-zinc-400" />
+                                <span>{aluno.dispositivo}</span>
+                              </Badge>
+                              <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                                <Clock className="w-2.5 h-2.5 text-amber-400" />
+                                <span>{aluno.tempoParadoFormatado}</span>
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Bloco de Conteúdo: Capa, Título e Barra de Progresso Real */}
+                          <div className="flex gap-3 p-2.5 rounded-xl bg-zinc-900/90 border border-white/5">
+                            {aluno.capaUrl && (
+                              <div className="w-10 h-13 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-zinc-800 shadow-sm">
+                                <img
+                                  src={aluno.capaUrl}
+                                  alt={aluno.tituloConteudo}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    (e.currentTarget as HTMLImageElement).src =
+                                      '/covers/o-investidor-inteligente.jpg';
+                                  }}
+                                />
+                              </div>
+                            )}
+
+                            <div className="flex-1 min-w-0 space-y-1.5 justify-center flex flex-col">
+                              <div className="flex items-center gap-1.5">
+                                {getModuloIcon(aluno.modulo)}
+                                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                                  {aluno.modulo === 'livros'
+                                    ? 'Leitura de Livro'
+                                    : aluno.modulo === 'audioaulas'
+                                    ? 'Áudioaula'
+                                    : 'Videoaula'}
+                                </span>
+                              </div>
+
+                              <div className="text-xs font-semibold text-zinc-100 truncate">
+                                {aluno.tituloConteudo}
+                              </div>
+
+                              <div className="text-[11px] text-zinc-400 truncate">
+                                {aluno.subtituloConteudo}
+                              </div>
+
+                              {/* Barra de Progresso Nativa Azul */}
+                              <div className="space-y-1 pt-0.5">
+                                <div className="w-full h-1.5 bg-white/15 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-[#007aff] rounded-full shadow-[0_0_8px_#007aff] transition-all"
+                                    style={{ width: `${aluno.progressoPct}%` }}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
+                                  <span className="text-sky-400 font-semibold">{aluno.progressoPct}% concluído</span>
+                                  {aluno.paginaAtual && aluno.totalPaginas && (
+                                    <span>Pág {aluno.paginaAtual}/{aluno.totalPaginas}</span>
+                                  )}
+                                  {aluno.tempoRestanteMin && (
+                                    <span>faltam {aluno.tempoRestanteMin} min</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Ações Rápidas: Carregar no Preview & Disparar Notificação com Barra */}
+                          <div className="grid grid-cols-2 gap-2 pt-0.5">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => handleCarregarAlunoNoPreview(aluno)}
+                              className="h-8 text-xs bg-zinc-900 border-white/10 hover:bg-zinc-800 text-zinc-300 rounded-xl flex items-center justify-center gap-1.5 transition-all"
+                            >
+                              <Eye className="w-3 h-3 text-sky-400" />
+                              <span>Ver no Preview</span>
+                            </Button>
+
+                            <Button
+                              type="button"
+                              onClick={() => void handleDispararAluno(aluno)}
+                              disabled={isFiring}
+                              className="h-8 text-xs bg-gradient-to-r from-[#007aff] to-sky-600 hover:from-[#006ee6] hover:to-sky-500 text-white font-semibold rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-[#007aff]/20 active:scale-98 transition-all"
+                            >
+                              <Send className={`w-3 h-3 ${isFiring ? 'animate-spin' : ''}`} />
+                              <span>{isFiring ? 'Disparando...' : 'Disparar Notificação'}</span>
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-3 gap-1.5 text-center">
-                <div className="p-2 rounded-xl bg-zinc-900/60 border border-white/5">
-                  <div className="text-[10px] text-zinc-500">Disparadas</div>
-                  <div className="text-sm font-bold text-white font-mono">{metricas?.totalDisparadas ?? 0}</div>
+            {/* ---------------------------------------------------------------------
+                SUB-VIEW 2: TELEMETRIA COMPLETA EM TEMPO REAL
+               --------------------------------------------------------------------- */}
+            {subSecaoPublico === 'telemetria' && (
+              <div className="space-y-4">
+                {/* 4 Cards de Métricas Principais */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="p-3 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-1">
+                    <div className="text-[10px] text-zinc-400 font-medium flex items-center gap-1">
+                      <Send className="w-3 h-3 text-sky-400" />
+                      <span>Disparadas</span>
+                    </div>
+                    <div className="text-xl font-bold text-white font-mono">
+                      {metricas?.totalDisparadas ?? 0}
+                    </div>
+                    <div className="text-[10px] text-zinc-500">Agendadas no aparelho</div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-1">
+                    <div className="text-[10px] text-zinc-400 font-medium flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span>Abertas</span>
+                    </div>
+                    <div className="text-xl font-bold text-emerald-400 font-mono">
+                      {metricas?.totalAbertas ?? 0}
+                    </div>
+                    <div className="text-[10px] text-zinc-500">Ações de clique no chip</div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-1">
+                    <div className="text-[10px] text-zinc-400 font-medium flex items-center gap-1">
+                      <Activity className="w-3 h-3 text-purple-400" />
+                      <span>Taxa CTR</span>
+                    </div>
+                    <div className="text-xl font-bold text-purple-400 font-mono">
+                      {metricas?.taxaAberturaPct ?? 0}%
+                    </div>
+                    <div className="text-[10px] text-zinc-500">Conversão de retenção</div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-1">
+                    <div className="text-[10px] text-zinc-400 font-medium flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-amber-400" />
+                      <span>Tempo Médio</span>
+                    </div>
+                    <div className="text-xl font-bold text-amber-400 font-mono">
+                      {metricas?.tempoMedioAteAbrirMin ?? 0} min
+                    </div>
+                    <div className="text-[10px] text-zinc-500">Até o retorno do aluno</div>
+                  </div>
                 </div>
 
-                <div className="p-2 rounded-xl bg-zinc-900/60 border border-white/5">
-                  <div className="text-[10px] text-zinc-500">Abertas</div>
-                  <div className="text-sm font-bold text-emerald-400 font-mono">{metricas?.totalAbertas ?? 0}</div>
+                {/* Breakdown de Retenção por Módulo */}
+                <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-white">Retenção por Módulo de Estudo</span>
+                    <span className="text-[10px] text-zinc-400">CTR por Tipo</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {[
+                      { key: 'videoaulas' as const, label: 'Videoaulas', icon: PlayCircle, color: 'bg-sky-500' },
+                      { key: 'audioaulas' as const, label: 'Áudioaulas', icon: Headphones, color: 'bg-emerald-500' },
+                      { key: 'livros' as const, label: 'Leitura de Livros', icon: BookOpen, color: 'bg-amber-500' },
+                      { key: 'streak' as const, label: 'Streak Diário (Fogo)', icon: Flame, color: 'bg-orange-500' },
+                      { key: 'boletim' as const, label: 'Boletim de Notícias', icon: Newspaper, color: 'bg-sky-400' },
+                    ].map((m) => {
+                      const modData = metricas?.porModulo[m.key] || { disparadas: 0, abertas: 0, taxaPct: 0 };
+                      const Icon = m.icon;
+                      return (
+                        <div key={m.key} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5 text-zinc-300">
+                              <Icon className="w-3.5 h-3.5 text-zinc-400" />
+                              <span>{m.label}</span>
+                            </div>
+                            <div className="flex items-center gap-2 font-mono text-[11px]">
+                              <span className="text-zinc-500">{modData.abertas}/{modData.disparadas}</span>
+                              <span className="text-sky-400 font-bold w-10 text-right">{modData.taxaPct}%</span>
+                            </div>
+                          </div>
+                          <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full ${m.color} rounded-full transition-all`}
+                              style={{ width: `${Math.max(modData.taxaPct, 3)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="p-2 rounded-xl bg-zinc-900/60 border border-white/5">
-                  <div className="text-[10px] text-zinc-500">Taxa (CTR)</div>
-                  <div className="text-sm font-bold text-sky-400 font-mono">{metricas?.taxaAberturaPct ?? 0}%</div>
+                {/* Feed de Histórico em Tempo Real */}
+                <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="text-xs font-semibold text-white">Log de Telemetria em Tempo Real</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => void carregarMetricas()}
+                        className="text-zinc-400 hover:text-white p-1"
+                        title="Atualizar"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${carregandoMetricas ? 'animate-spin' : ''}`} />
+                      </button>
+                      <button
+                        onClick={() => void handleLimparTestes()}
+                        className="text-zinc-400 hover:text-rose-400 p-1"
+                        title="Limpar Histórico"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 max-h-80 overflow-y-auto no-scrollbar">
+                    {(!metricas?.historicoEventos || metricas.historicoEventos.length === 0) ? (
+                      <div className="text-center py-6 text-zinc-500 text-xs">
+                        Nenhum evento registrado ainda. Dispare um teste ou aguarde o aluno pausar uma aula.
+                      </div>
+                    ) : (
+                      metricas.historicoEventos.map((ev) => {
+                        const isAberto = ev.tipo === 'aberto';
+                        return (
+                          <div
+                            key={ev.id}
+                            className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1 text-xs"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <Badge
+                                  className={`text-[9px] px-1.5 py-0 font-semibold ${
+                                    isAberto
+                                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                      : 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                                  }`}
+                                >
+                                  {isAberto ? 'ABERTO' : 'DISPARADO'}
+                                </Badge>
+                                <span className="text-zinc-400 text-[10px] font-mono">
+                                  {ev.userEmail || 'aluno@direitoprime.com'}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-zinc-500 font-mono">
+                                {new Date(ev.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-zinc-200">
+                              <span className="font-medium truncate max-w-[200px] sm:max-w-xs">{ev.titulo}</span>
+                              {ev.progresso > 0 && (
+                                <span className="text-sky-400 font-mono text-[11px] font-bold shrink-0">
+                                  {ev.progresso}%
+                                </span>
+                              )}
+                            </div>
+
+                            {ev.tempoAteAbrirMs && ev.tempoAteAbrirMs > 0 && (
+                              <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                                <Clock className="w-2.5 h-2.5" />
+                                <span>Retornou em {Math.round(ev.tempoAteAbrirMs / 1000)}s após receber</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* ---------------------------------------------------------------------
+                SUB-VIEW 3: SEGMENTAÇÃO DE PÚBLICO
+               --------------------------------------------------------------------- */}
+            {subSecaoPublico === 'segmentos' && (
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <span className="text-[11px] text-zinc-400">Público-alvo para esta regra:</span>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { id: 'todos' as const, label: 'Todos os Alunos' },
+                      { id: 'gratuitos' as const, label: 'Apenas Gratuitos' },
+                      { id: 'assinantes' as const, label: 'Apenas Assinantes' },
+                      { id: 'inativos_24h' as const, label: 'Inativos (+48h)' },
+                    ].map((pub) => {
+                      const ativo = regraSelecionada.publicoAlvo === pub.id;
+                      return (
+                        <button
+                          key={pub.id}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            handleAtualizarRegra(regraSelecionada.id, { publicoAlvo: pub.id });
+                          }}
+                          className={`p-2.5 rounded-xl text-xs text-left font-medium transition-all border ${
+                            ativo
+                              ? 'bg-white text-zinc-950 font-semibold border-white shadow-sm'
+                              : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:text-white'
+                          }`}
+                        >
+                          {pub.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
