@@ -147,6 +147,12 @@
             android:resource="@drawable/notification_icon"
         />
 
+        <!-- Receiver para agendamento exato de notificações com barra de progresso -->
+        <receiver
+            android:name=".NotificationBroadcastReceiver"
+            android:exported="false"
+        />
+
         <!-- Fix MLKit Document Scanner restricting orientations (Android 16 Requirement) -->
         <activity
             android:name="com.google.mlkit.vision.documentscanner.internal.GmsDocumentScanningDelegateActivity"

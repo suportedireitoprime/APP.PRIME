@@ -696,6 +696,34 @@ export async function agendarRetencaoAudioaula(dados: {
     rota,
   });
 
+  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+    try {
+      let capaFinal = dados.capaUrl || regra.exemploCapaUrl || '';
+      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:')) {
+        capaFinal = capaFinal.replace(/^\/+/, '');
+      }
+
+      await NativeNotification.showProgressNotification({
+        id: notifId,
+        title: titulo,
+        body: subtitulo,
+        progress: pct,
+        showProgress: true,
+        coverUrl: capaFinal,
+        smallIcon: 'notification_icon',
+        iconColor: '#10B981',
+        actionTitle: regra.textoBotaoAcao,
+        route: rota,
+        channelId: 'retencao_audio',
+        channelName: regra.nome,
+        delaySeconds: Math.round(delayMs / 1000),
+      });
+      return true;
+    } catch (e) {
+      console.warn('[notificacaoLocalManager] Erro no agendamento nativo progress audio:', e);
+    }
+  }
+
   if (Capacitor.isNativePlatform()) {
     try {
       const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -768,6 +796,34 @@ export async function agendarRetencaoVideoaula(dados: {
     rota,
   });
 
+  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+    try {
+      let capaFinal = dados.capaUrl || regra.exemploCapaUrl || '';
+      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:')) {
+        capaFinal = capaFinal.replace(/^\/+/, '');
+      }
+
+      await NativeNotification.showProgressNotification({
+        id: notifId,
+        title: titulo,
+        body: `${subtitulo} · ${pct}% concluído`,
+        progress: pct,
+        showProgress: true,
+        coverUrl: capaFinal,
+        smallIcon: 'notification_icon',
+        iconColor: '#2563EB',
+        actionTitle: regra.textoBotaoAcao,
+        route: rota,
+        channelId: 'retencao_video',
+        channelName: regra.nome,
+        delaySeconds: Math.round(delayMs / 1000),
+      });
+      return true;
+    } catch (e) {
+      console.warn('[notificacaoLocalManager] Erro no agendamento nativo progress video:', e);
+    }
+  }
+
   if (Capacitor.isNativePlatform()) {
     try {
       const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -838,6 +894,34 @@ export async function agendarRetencaoLivro(dados: {
     progresso: pct,
     rota,
   });
+
+  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+    try {
+      let capaFinal = dados.capaUrl || regra.exemploCapaUrl || '';
+      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:')) {
+        capaFinal = capaFinal.replace(/^\/+/, '');
+      }
+
+      await NativeNotification.showProgressNotification({
+        id: notifId,
+        title: titulo,
+        body: subtitulo,
+        progress: pct,
+        showProgress: true,
+        coverUrl: capaFinal,
+        smallIcon: 'notification_icon',
+        iconColor: '#F59E0B',
+        actionTitle: regra.textoBotaoAcao,
+        route: rota,
+        channelId: 'retencao_leitura',
+        channelName: regra.nome,
+        delaySeconds: Math.round(delayMs / 1000),
+      });
+      return true;
+    } catch (e) {
+      console.warn('[notificacaoLocalManager] Erro no agendamento nativo progress livro:', e);
+    }
+  }
 
   if (Capacitor.isNativePlatform()) {
     try {
@@ -1073,12 +1157,12 @@ export async function dispararNotificacaoLocalTeste(params: {
         regra.modulo === 'audioaulas' ? '#10B981' :
         regra.modulo === 'livros' ? '#F59E0B' :
         regra.modulo === 'streak' ? '#EA580C' :
-        regra.modulo === 'boletim' ? '#0284C7' : '#2563EB';
+        regra.modulo === 'boletim' ? '#0284C7' : '#EA580C';
 
-      // Monta URL da capa (ou path de asset)
+      // Normaliza caminho relativo de asset (ex: '/covers/o-investidor-inteligente.jpg' -> 'covers/o-investidor-inteligente.jpg')
       let capaFinal = regra.exemploCapaUrl || '';
-      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:') && typeof window !== 'undefined') {
-        capaFinal = window.location.origin + (capaFinal.startsWith('/') ? '' : '/') + capaFinal;
+      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:')) {
+        capaFinal = capaFinal.replace(/^\/+/, '');
       }
 
       await NativeNotification.showProgressNotification({
@@ -1104,8 +1188,12 @@ export async function dispararNotificacaoLocalTeste(params: {
             ? `Agendado nativamente para disparar em ${delaySegundos} segundos! Minimize o app ou bloqueie a tela.`
             : 'Notificação nativa com barra de progresso e capa disparada no aparelho!',
       };
-    } catch (androidErr) {
-      console.warn('[notificacaoLocalManager] Erro no plugin NativeNotification, tentando LocalNotifications:', androidErr);
+    } catch (androidErr: any) {
+      console.error('[notificacaoLocalManager] Erro no plugin NativeNotification:', androidErr);
+      return {
+        sucesso: false,
+        mensagem: `Erro nativo no aparelho: ${androidErr?.message || androidErr}. Atualize para a versão mais recente do app.`,
+      };
     }
   }
 
