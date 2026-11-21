@@ -1118,7 +1118,7 @@ async function askOmniRoute(
         "Authorization": `Bearer ${omniKey}`,
       },
       body: JSON.stringify({
-        model: "antigravity/gemini-3.8-flash-tiered",
+        model: "antigravity/gemini-3.8-flash-low",
         messages,
         temperature: Number(agent?.temperatura ?? 0.6),
         max_tokens: Number(agent?.max_tokens ?? 800),
