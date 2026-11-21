@@ -8,6 +8,7 @@
 import { Capacitor } from '@capacitor/core';
 import { aumentarBadge, limparBadge } from './badge';
 import { toastNative } from '../nativeToast';
+import { registrarAberturaNotificacaoLocal } from './notificacaoLocalManager';
 
 export const TIPO_LEMBRETE = 'LEMBRETE_ESTUDO';
 export const TIPO_FLASHCARD = 'LEMBRETE_FLASHCARD';
@@ -87,7 +88,25 @@ export async function registrarAcoesNotificacao(): Promise<void> {
 
     await LocalNotifications.addListener('localNotificationActionPerformed', async (evento) => {
       const acao = evento.actionId;
-      const extra = (evento.notification?.extra ?? {}) as { rota?: string };
+      const extra = (evento.notification?.extra ?? {}) as {
+        rota?: string;
+        modulo?: any;
+        progresso?: number;
+        eventoId?: string;
+      };
+
+      // Telemetria: registra que o usuário abriu/clicou na notificação no aparelho local
+      if (extra.modulo) {
+        void registrarAberturaNotificacaoLocal({
+          notificacaoId: Number(evento.notification?.id),
+          modulo: extra.modulo,
+          acao: acao || 'clique_corpo',
+          rota: extra.rota || '/audioaulas',
+          progresso: extra.progresso,
+          eventoId: extra.eventoId,
+        });
+      }
+
       if (acao === 'adiar') {
         await adiarUmaHora({
           title: evento.notification?.title,
@@ -96,6 +115,7 @@ export async function registrarAcoesNotificacao(): Promise<void> {
         });
         return;
       }
+      if (acao === 'continuar') return navegar(extra.rota ?? '/audioaulas');
       if (acao === 'responder') return navegar(extra.rota ?? '/flashcards');
       if (acao === 'ouvir') return navegar(extra.rota ?? '/audioaulas');
       if (acao === 'estudar') return navegar(extra.rota ?? '/aprender');

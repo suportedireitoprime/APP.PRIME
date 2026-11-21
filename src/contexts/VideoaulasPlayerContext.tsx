@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
+import { agendarRetencaoVideoaula, cancelarRetencaoModulo } from '@/lib/nativo/notificacaoLocalManager';
 
 export interface AulaVideo {
   id: string | number;
@@ -82,6 +83,21 @@ export const VideoaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       }
     });
   }, []);
+
+  // Notificação Local de Retenção (Continuar assistindo no aparelho)
+  useEffect(() => {
+    if (tocando) {
+      void cancelarRetencaoModulo('videoaulas');
+    } else if (atual && tempo > 15 && duracao > 0) {
+      void agendarRetencaoVideoaula({
+        id: atual.id,
+        titulo: atual.titulo,
+        tempo,
+        duracao,
+        capaUrl: atual.capa || atual.thumbnail || atual.thumb,
+      });
+    }
+  }, [tocando, atual, tempo, duracao]);
 
   // Mantém processo vivo em background (limitado pelo OS) enquanto a videoaula toca
   useEffect(() => {

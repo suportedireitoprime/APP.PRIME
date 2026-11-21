@@ -18,6 +18,7 @@ import { AUDIOAULAS_ACERVO_INICIAL } from '@/data/audioaulasAcervo';
 import { getCachedAudioaulas, saveCachedAudioaulas } from '@/services/audioaulasWarmup';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 import { NativeAudio } from '@/plugins/NativeAudioPlugin';
+import { agendarRetencaoAudioaula, cancelarRetencaoModulo } from '@/lib/nativo/notificacaoLocalManager';
 
 export const AUDIOAULAS_CACHE_KEY = 'audioaulas_acervo_cache_v2';
 let memoryAulasCache: AulaAudio[] | null = null;
@@ -888,7 +889,10 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             tempoInicialRef.current = null;
           }
         }}
-        onPlay={() => setTocando(true)}
+        onPlay={() => {
+          setTocando(true);
+          void cancelarRetencaoModulo('audioaulas');
+        }}
         onPause={(e) => {
           const introEl = introAudioRef.current;
           if (!introEl || introEl.paused) {
@@ -909,6 +913,15 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
                 tempo: t,
                 duracao: d,
                 timestamp: Date.now(),
+              });
+              // Agenda notificação de retenção no aparelho com barra de progresso
+              void agendarRetencaoAudioaula({
+                id: atual.id,
+                titulo: atual.titulo,
+                area: atual.area,
+                tempo: t,
+                duracao: d,
+                capaUrl: atual.imagem_miniatura,
               });
             }
           }

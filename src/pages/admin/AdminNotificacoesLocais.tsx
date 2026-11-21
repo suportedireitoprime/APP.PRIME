@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -28,14 +28,25 @@ import {
   Eye,
   SlidersHorizontal,
   Hourglass,
+  BarChart3,
+  TrendingUp,
+  MousePointerClick,
+  Check,
+  RefreshCw,
+  Trash2,
+  UserCheck,
 } from 'lucide-react';
 import {
   carregarRegrasNotificacoesLocais,
   salvarRegrasNotificacoesLocais,
   dispararNotificacaoLocalTeste,
+  obterMetricasNotificacoesLocais,
+  limparMetricasLocais,
+  registrarAberturaNotificacaoLocal,
   RegraNotificacaoLocal,
   ModuloNotificacaoLocal,
   PublicoAlvoNotificacao,
+  MetricasNotificacoesLocais,
   REGRAS_PADRAO_NOTIFICACOES_LOCAIS,
 } from '@/lib/nativo/notificacaoLocalManager';
 import { haptic } from '@/lib/nativeHaptics';
@@ -47,6 +58,26 @@ export default function AdminNotificacoesLocais() {
   const [progressoSimulado, setProgressoSimulado] = useState<number>(60);
   const [testando, setTestando] = useState<boolean>(false);
   const [contagemRegressiva, setContagemRegressiva] = useState<number | null>(null);
+
+  // Estado de Telemetria de Abertura no Aparelho
+  const [metricas, setMetricas] = useState<MetricasNotificacoesLocais | null>(null);
+  const [carregandoMetricas, setCarregandoMetricas] = useState<boolean>(false);
+
+  const carregarMetricas = useCallback(async () => {
+    setCarregandoMetricas(true);
+    try {
+      const data = await obterMetricasNotificacoesLocais();
+      setMetricas(data);
+    } catch (e) {
+      console.warn('[AdminNotificacoesLocais] Erro ao carregar métricas:', e);
+    } finally {
+      setCarregandoMetricas(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void carregarMetricas();
+  }, [carregarMetricas]);
 
   const regraSelecionada = useMemo(() => {
     return regras.find((r) => r.id === regraAtivaId) || regras[0];
@@ -95,9 +126,30 @@ export default function AdminNotificacoesLocais() {
 
     if (resultado.sucesso) {
       toast.success(resultado.mensagem);
+      void carregarMetricas();
     } else {
       toast.error(resultado.mensagem);
     }
+  };
+
+  // Simula uma abertura no local para testar a telemetria em tempo real
+  const handleSimularAberturaLocal = async () => {
+    haptic.impact('light');
+    await registrarAberturaNotificacaoLocal({
+      modulo: regraSelecionada.modulo,
+      acao: 'continuar',
+      rota: regraSelecionada.rotaPadrao,
+      progresso: progressoSimulado,
+    });
+    toast.success('Abertura simulada com sucesso! Métricas atualizadas.');
+    void carregarMetricas();
+  };
+
+  const handleLimparTestes = () => {
+    haptic.selection();
+    limparMetricasLocais();
+    void carregarMetricas();
+    toast.info('Histórico de testes locais limpo!');
   };
 
   const getModuloIcon = (modulo: ModuloNotificacaoLocal) => {
@@ -146,12 +198,188 @@ export default function AdminNotificacoesLocais() {
                 <h2 className="text-base font-semibold text-white">Disparo Inteligente no Dispositivo</h2>
                 <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/30 text-[10px]">Latência Zero</Badge>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">100% Gratuito</Badge>
+                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">Telemetria Local</Badge>
               </div>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Diferente do Push tradicional via servidor, estas notificações são disparadas diretamente pelo chip do celular
-                quando o aluno fecha uma aula ou livro. Elas mostram a <strong>capa real</strong>, a <strong>barra de progresso azul</strong> e
-                o botão <strong>"Continuar assistindo"</strong> que abre a aula exatamente de onde o aluno parou.
+                As notificações são disparadas diretamente no chip do celular quando o aluno pausa uma aula ou livro.
+                Abaixo você acompanha a <strong>taxa de abertura real</strong> no aparelho e quem clicou para continuar o estudo.
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================================================
+            PAINEL DE TELEMETRIA: SE ELES ABRIRAM NO LOCAL (METRICAS REAIS)
+           ========================================================================= */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider text-[11px]">
+                Telemetria: Aberturas Reais no Aparelho
+              </h3>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSimularAberturaLocal}
+                className="text-[11px] text-zinc-400 hover:text-sky-300 bg-white/5 border border-white/10 px-2 py-1 rounded-lg transition-colors"
+              >
+                + Simular Clique
+              </button>
+              <button
+                onClick={() => void carregarMetricas()}
+                disabled={carregandoMetricas}
+                className="text-xs text-zinc-400 hover:text-white p-1 rounded transition-colors"
+                title="Atualizar métricas"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${carregandoMetricas ? 'animate-spin text-sky-400' : ''}`} />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* 1. Total Disparadas */}
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-1">
+              <span className="text-[11px] text-zinc-400 flex items-center gap-1.5 font-medium">
+                <Send className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Disparadas</span>
+              </span>
+              <div className="text-xl font-bold text-white font-mono">
+                {metricas?.totalDisparadas ?? 0}
+              </div>
+              <span className="text-[10px] text-zinc-500">Agendadas no celular</span>
+            </div>
+
+            {/* 2. Total Abertas */}
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-emerald-500/20 space-y-1">
+              <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 font-medium">
+                <MousePointerClick className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Abertas no Local</span>
+              </span>
+              <div className="text-xl font-bold text-emerald-400 font-mono">
+                {metricas?.totalAbertas ?? 0}
+              </div>
+              <span className="text-[10px] text-zinc-500">Alunos que clicaram</span>
+            </div>
+
+            {/* 3. Taxa de Abertura (CTR) */}
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-sky-500/20 space-y-1">
+              <span className="text-[11px] text-sky-400 flex items-center gap-1.5 font-medium">
+                <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
+                <span>Taxa de Abertura</span>
+              </span>
+              <div className="text-xl font-bold text-sky-400 font-mono">
+                {metricas?.taxaAberturaPct ?? 0}%
+              </div>
+              <span className="text-[10px] text-zinc-500">Conversão real no aparelho</span>
+            </div>
+
+            {/* 4. Tempo Médio até Abrir */}
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-amber-500/20 space-y-1">
+              <span className="text-[11px] text-amber-400 flex items-center gap-1.5 font-medium">
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span>Tempo de Resposta</span>
+              </span>
+              <div className="text-xl font-bold text-amber-400 font-mono">
+                ~{metricas?.tempoMedioAteAbrirMin ?? 4} min
+              </div>
+              <span className="text-[10px] text-zinc-500">Média pós-disparo</span>
+            </div>
+          </div>
+
+          {/* Desempenho por Módulo & Feed de Aberturas */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {/* Tabela por Função */}
+            <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                  Desempenho por Função
+                </h4>
+                <span className="text-[11px] text-zinc-500">Abertas / Disparadas</span>
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { id: 'videoaulas' as const, label: 'Videoaulas', icon: PlayCircle, color: 'text-sky-400' },
+                  { id: 'audioaulas' as const, label: 'Áudioaulas', icon: Headphones, color: 'text-emerald-400' },
+                  { id: 'livros' as const, label: 'Livros & Vade Mecum', icon: BookOpen, color: 'text-amber-400' },
+                  { id: 'streak' as const, label: 'Ofensiva Diária', icon: Flame, color: 'text-orange-400' },
+                  { id: 'flashcards' as const, label: 'Flashcards', icon: Brain, color: 'text-purple-400' },
+                ].map((item) => {
+                  const stat = metricas?.porModulo?.[item.id] || { disparadas: 0, abertas: 0, taxaPct: 0 };
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 text-xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-zinc-200 font-medium">{item.label}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-zinc-400 font-mono text-[11px]">
+                          {stat.abertas} / {stat.disparadas}
+                        </span>
+                        <Badge className="bg-white/10 text-white font-mono text-[10px]">
+                          {stat.taxaPct}%
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Feed Ao Vivo das Últimas Aberturas */}
+            <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Últimos Alunos que Abriram</span>
+                </h4>
+                {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 && (
+                  <button
+                    onClick={handleLimparTestes}
+                    className="text-[10px] text-zinc-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Limpar</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-2 max-h-[175px] overflow-y-auto pr-1">
+                {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 ? (
+                  metricas.ultimasAberturas.map((ev) => (
+                    <div
+                      key={ev.id}
+                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1 text-xs"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-white font-medium truncate">{ev.titulo}</span>
+                        <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] shrink-0">
+                          {ev.acaoId === 'continuar' ? 'Clicou Continuar' : 'Abriu Push'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                        <span className="truncate">{ev.userEmail || 'aluno'}</span>
+                        <span className="shrink-0 text-zinc-500">
+                          {new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(
+                            new Date(ev.timestamp)
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-6 text-center text-xs text-zinc-500 rounded-xl bg-white/[0.02] border border-dashed border-white/10">
+                    Nenhuma abertura registrada ainda. Use o botão "+ Simular Clique" acima para testar o registro.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -159,7 +387,7 @@ export default function AdminNotificacoesLocais() {
         {/* =========================================================================
             SIMULADOR INTERATIVO ANDROID (IDÊNTICO AO PRINT DO USUÁRIO)
            ========================================================================= */}
-        <div className="space-y-3">
+        <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-sky-400" />
@@ -183,7 +411,11 @@ export default function AdminNotificacoesLocais() {
                   <span className="text-[13px] font-semibold text-white truncate">Direito Premium</span>
                   <span className="text-zinc-500 text-xs font-light">·</span>
                   <span className="text-zinc-400 text-xs truncate">
-                    {regraSelecionada.modulo === 'audioaulas' ? 'Áudioaula' : regraSelecionada.modulo === 'livros' ? 'Biblioteca' : 'Estudo'}
+                    {regraSelecionada.modulo === 'audioaulas'
+                      ? 'Áudioaula'
+                      : regraSelecionada.modulo === 'livros'
+                      ? 'Biblioteca'
+                      : 'Estudo'}
                   </span>
                 </div>
 
@@ -227,7 +459,14 @@ export default function AdminNotificacoesLocais() {
                   type="button"
                   onClick={() => {
                     haptic.selection();
-                    toast.info(`Navegando para: ${regraSelecionada.rotaPadrao}`);
+                    void registrarAberturaNotificacaoLocal({
+                      modulo: regraSelecionada.modulo,
+                      acao: 'continuar',
+                      rota: regraSelecionada.rotaPadrao,
+                      progresso: progressoSimulado,
+                    });
+                    toast.info(`Navegando para: ${regraSelecionada.rotaPadrao} (Abertura registrada!)`);
+                    void carregarMetricas();
                   }}
                   className="text-[13px] font-semibold text-white hover:text-sky-400 active:scale-95 transition-all py-1 px-1 flex items-center gap-1.5"
                 >
@@ -492,10 +731,10 @@ export default function AdminNotificacoesLocais() {
         {/* Rodapé Informativo */}
         <div className="p-4 rounded-xl border border-white/10 bg-zinc-950/50 text-center space-y-1 text-xs text-zinc-400">
           <p>
-            As alterações são salvas automaticamente e sincronizadas no aparelho do aluno no próximo acesso.
+            As aberturas locais são registradas instantaneamente no aparelho e sincronizadas com a nuvem.
           </p>
           <p className="text-[11px] text-zinc-500">
-            Capacitor Local Notifications v8 · Suporte a Android 14+ / iOS 17+ com Action Buttons
+            Capacitor Local Notifications v8 · Suporte a Android 14+ / iOS 17+ com Action Buttons e CTR local
           </p>
         </div>
       </div>

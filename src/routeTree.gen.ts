@@ -17,6 +17,7 @@ import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
 import { Route as AdminLaboratorioAulasRouteImport } from './routes/admin-laboratorio-aulas'
 import { Route as AdminLousaMagicaRouteImport } from './routes/admin-lousa-magica'
+import { Route as AdminNotificacoesLocaisRouteImport } from './routes/admin-notificacoes-locais'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
@@ -201,6 +202,11 @@ const AdminLaboratorioAulasRoute = AdminLaboratorioAulasRouteImport.update({
 const AdminLousaMagicaRoute = AdminLousaMagicaRouteImport.update({
   id: '/admin-lousa-magica',
   path: '/admin-lousa-magica',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNotificacoesLocaisRoute = AdminNotificacoesLocaisRouteImport.update({
+  id: '/admin-notificacoes-locais',
+  path: '/admin-notificacoes-locais',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminOmnirouteRoute = AdminOmnirouteRouteImport.update({
@@ -960,6 +966,7 @@ export interface FileRoutesByFullPath {
   '/admin-horus': typeof AdminHorusRoute
   '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
+  '/admin-notificacoes-locais': typeof AdminNotificacoesLocaisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1115,6 +1122,7 @@ export interface FileRoutesByTo {
   '/admin-horus': typeof AdminHorusRoute
   '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
+  '/admin-notificacoes-locais': typeof AdminNotificacoesLocaisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1271,6 +1279,7 @@ export interface FileRoutesById {
   '/admin-horus': typeof AdminHorusRoute
   '/admin-laboratorio-aulas': typeof AdminLaboratorioAulasRoute
   '/admin-lousa-magica': typeof AdminLousaMagicaRoute
+  '/admin-notificacoes-locais': typeof AdminNotificacoesLocaisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
@@ -1428,6 +1437,7 @@ export interface FileRouteTypes {
     | '/admin-horus'
     | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
+    | '/admin-notificacoes-locais'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1583,6 +1593,7 @@ export interface FileRouteTypes {
     | '/admin-horus'
     | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
+    | '/admin-notificacoes-locais'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1738,6 +1749,7 @@ export interface FileRouteTypes {
     | '/admin-horus'
     | '/admin-laboratorio-aulas'
     | '/admin-lousa-magica'
+    | '/admin-notificacoes-locais'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
@@ -1894,6 +1906,7 @@ export interface RootRouteChildren {
   AdminHorusRoute: typeof AdminHorusRoute
   AdminLaboratorioAulasRoute: typeof AdminLaboratorioAulasRoute
   AdminLousaMagicaRoute: typeof AdminLousaMagicaRoute
+  AdminNotificacoesLocaisRoute: typeof AdminNotificacoesLocaisRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
@@ -2011,6 +2024,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-lousa-magica'
       fullPath: '/admin-lousa-magica'
       preLoaderRoute: typeof AdminLousaMagicaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-notificacoes-locais': {
+      id: '/admin-notificacoes-locais'
+      path: '/admin-notificacoes-locais'
+      fullPath: '/admin-notificacoes-locais'
+      preLoaderRoute: typeof AdminNotificacoesLocaisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-omniroute': {
@@ -3516,6 +3536,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminHorusRoute: AdminHorusRoute,
   AdminLaboratorioAulasRoute: AdminLaboratorioAulasRoute,
   AdminLousaMagicaRoute: AdminLousaMagicaRoute,
+  AdminNotificacoesLocaisRoute: AdminNotificacoesLocaisRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,
