@@ -172,7 +172,7 @@ export default function AdminAulasInterativas() {
     } else if (disciplinaSelecionadaId) {
       setDisciplinaSelecionadaId(null);
     } else {
-      navigate('/admin-funcoes');
+      navigate('/');
     }
     resetScrollToTop();
   }, [aulaAtiva, aulaSheetDetalhe, disciplinaSelecionadaId, materiaSelecionadaId, navigate]);

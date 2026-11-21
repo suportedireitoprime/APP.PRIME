@@ -51,6 +51,7 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PilulasRouteImport } from './routes/pilulas'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as QuestoesRouteImport } from './routes/questoes'
+import { Route as QuestoesAnimadasRouteImport } from './routes/questoes-animadas'
 import { Route as Radar360RouteImport } from './routes/radar-360'
 import { Route as RadaresRouteImport } from './routes/radares'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -372,6 +373,11 @@ const PrivacidadeRoute = PrivacidadeRouteImport.update({
 const QuestoesRoute = QuestoesRouteImport.update({
   id: '/questoes',
   path: '/questoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestoesAnimadasRoute = QuestoesAnimadasRouteImport.update({
+  id: '/questoes-animadas',
+  path: '/questoes-animadas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Radar360Route = Radar360RouteImport.update({
@@ -1000,6 +1006,7 @@ export interface FileRoutesByFullPath {
   '/pilulas': typeof PilulasRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
+  '/questoes-animadas': typeof QuestoesAnimadasRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1156,6 +1163,7 @@ export interface FileRoutesByTo {
   '/pilulas': typeof PilulasRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
+  '/questoes-animadas': typeof QuestoesAnimadasRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1313,6 +1321,7 @@ export interface FileRoutesById {
   '/pilulas': typeof PilulasRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
+  '/questoes-animadas': typeof QuestoesAnimadasRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1471,6 +1480,7 @@ export interface FileRouteTypes {
     | '/pilulas'
     | '/privacidade'
     | '/questoes'
+    | '/questoes-animadas'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1627,6 +1637,7 @@ export interface FileRouteTypes {
     | '/pilulas'
     | '/privacidade'
     | '/questoes'
+    | '/questoes-animadas'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1783,6 +1794,7 @@ export interface FileRouteTypes {
     | '/pilulas'
     | '/privacidade'
     | '/questoes'
+    | '/questoes-animadas'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1940,6 +1952,7 @@ export interface RootRouteChildren {
   PilulasRoute: typeof PilulasRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   QuestoesRoute: typeof QuestoesRouteWithChildren
+  QuestoesAnimadasRoute: typeof QuestoesAnimadasRoute
   Radar360Route: typeof Radar360Route
   RadaresRoute: typeof RadaresRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -2262,6 +2275,13 @@ declare module '@tanstack/react-router' {
       path: '/questoes'
       fullPath: '/questoes'
       preLoaderRoute: typeof QuestoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/questoes-animadas': {
+      id: '/questoes-animadas'
+      path: '/questoes-animadas'
+      fullPath: '/questoes-animadas'
+      preLoaderRoute: typeof QuestoesAnimadasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/radar-360': {
@@ -3570,6 +3590,7 @@ const rootRouteChildren: RootRouteChildren = {
   PilulasRoute: PilulasRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   QuestoesRoute: QuestoesRouteWithChildren,
+  QuestoesAnimadasRoute: QuestoesAnimadasRoute,
   Radar360Route: Radar360Route,
   RadaresRoute: RadaresRoute,
   ResetPasswordRoute: ResetPasswordRoute,

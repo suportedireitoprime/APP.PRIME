@@ -164,22 +164,6 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: "aulas-interativas-cat",
-    title: "Aulas Interativas",
-    desc: "Catálogo de aulas com áudio narrado e conteúdos interativos",
-    icon: Sparkles,
-    route: "/admin-aulas-interativas",
-    items: [
-      {
-        id: "aulas-interativas",
-        label: "Aulas Interativas",
-        icon: Sparkles,
-        desc: "Aulas completas em HTML com narração e ilustrações",
-        route: "/admin-aulas-interativas",
-      },
-    ],
-  },
-  {
     id: "lousa-magica-cat",
     title: "Lousa Mágica",
     desc: "Aulas narradas com lousa animada, traços em giz e ilustrações",
