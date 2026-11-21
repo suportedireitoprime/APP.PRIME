@@ -51,7 +51,10 @@ export const handler = async (req: Request) => {
     const instanceName = String(body?.instanceName || body?.instance || body?.data?.instance || INSTANCE || "Horus");
     const qr = normalizeQrPayload(body?.data ?? body, "webhook");
     const status = readConnectionStatus(body);
-    console.log("horus-webhook received", summarizeWebhook(body, eventName));
+    const isMsg = /messages\.upsert|MESSAGES_UPSERT/i.test(eventName);
+    if (isMsg) {
+      console.log("horus-webhook msg", eventName);
+    }
 
     if (isQrEvent(eventName) && !qr.pending && (qr.qrcode || qr.code)) {
       await admin.from("horus_qr_cache").upsert({
@@ -60,7 +63,7 @@ export const handler = async (req: Request) => {
         code: qr.code,
         event_name: eventName || "QRCODE",
         status: "qr",
-        payload: sanitizePayload(body),
+        payload: { event: eventName },
         received_at: new Date().toISOString(),
         expires_at: new Date(Date.now() + 70_000).toISOString(),
       });

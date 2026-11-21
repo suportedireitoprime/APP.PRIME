@@ -81,7 +81,7 @@ export const getPublicBucketUrl = (bucketName: string, path: string): string => 
   }
 
   // Áudios e Narrações legadas servidos via Cloudflare R2 vacatio-midias
-  if (['audios', 'audioaulas', 'narracoes', 'aulas-audio'].includes(cleanBucket)) {
+  if (['audios', 'audioaulas', 'narracoes', 'narracoes-conteudo', 'aulas-audio'].includes(cleanBucket)) {
     return `${R2_VACATIO_AUDIO_BASE_URL}/${cleanBucket}/${cleanPath}`;
   }
 

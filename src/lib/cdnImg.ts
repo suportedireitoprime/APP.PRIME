@@ -135,7 +135,7 @@ export const safeStorageUrl = (url: string | null | undefined): string | null =>
     if (relativePart.startsWith('narracoes-leis/')) {
       return `${R2_NARRACOES_LEIS_BASE_URL}/${relativePart.replace(/^narracoes-leis\//, '')}`;
     }
-    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
+    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/') || relativePart.startsWith('narracoes-conteudo/')) {
       return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
     }
     if (relativePart.startsWith('biblioteca-obras/') || relativePart.startsWith('livros-pdf/') || relativePart.startsWith('capas/')) {
@@ -158,7 +158,7 @@ export const safeStorageUrl = (url: string | null | undefined): string | null =>
   // Se for caminho absoluto sem domínio (ex: '/storage/v1/object/public/...')
   if (sanitized.startsWith('/storage/v1/object/public/')) {
     const relativePart = sanitized.replace('/storage/v1/object/public/', '');
-    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
+    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/') || relativePart.startsWith('narracoes-conteudo/')) {
       return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
     }
     if (relativePart.startsWith('biblioteca-obras/') || relativePart.startsWith('livros-pdf/') || relativePart.startsWith('capas/')) {
