@@ -76,6 +76,7 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
     <div
       onClick={handleClick}
       data-allow-trial-click="true"
+      data-trial-card="true"
       role="button"
       tabIndex={0}
       aria-label={inTrial ? `Degustação gratuita: ${formattedCountdown}` : 'Período de teste encerrado'}

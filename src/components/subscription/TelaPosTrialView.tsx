@@ -34,7 +34,14 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto">
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && onVoltar) {
+          onVoltar();
+        }
+      }}
+    >
       
       {/* ── FUNDO EM IMAGEM IGUAL AO DE AULAS (GRÉCIA ANTIGA NÍTIDA E ILUMINADA) ── */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120b08]">
@@ -68,13 +75,13 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </div>
       )}
 
-      {/* ── BOTÃO DE FECHAR QUANDO NÃO FOR MODO LAB ── */}
+      {/* ── BOTÃO DE FECHAR QUANDO NÃO FOR MODO LAB (COM SAFE AREA INSETS) ── */}
       {onVoltar && !isLabMode && (
         <button
           type="button"
           onClick={onVoltar}
           aria-label="Fechar"
-          className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/90 hover:text-white transition-all cursor-pointer active:scale-95 backdrop-blur-md"
+          className="absolute top-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-[calc(1.25rem+var(--sai-right,env(safe-area-inset-right,0px)))] z-20 w-12 h-12 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/90 hover:text-white transition-all cursor-pointer active:scale-95 backdrop-blur-md shadow-lg"
         >
           <X className="w-5 h-5" />
         </button>
