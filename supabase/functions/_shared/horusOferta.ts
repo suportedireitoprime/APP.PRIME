@@ -2,7 +2,7 @@
 // um PDF (gerado na hora com o conteúdo da explicação) ou uma videoaula
 // (buscada pela API interna `buscar-videoaulas`).
 
-import { PDFDocument, StandardFonts, rgb } from "npm:pdf-lib@1.17.1";
+import { PDFDocument, StandardFonts, rgb } from "https://esm.sh/pdf-lib@1.17.1";
 import { evolution } from "./evolution.ts";
 import { buscarLivroPorTema } from "./horusBiblioteca.ts";
 

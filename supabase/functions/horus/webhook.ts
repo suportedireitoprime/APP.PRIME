@@ -81,18 +81,24 @@ export const handler = async (req: Request) => {
       });
     }
 
-    // Handle incoming user messages → reply via Gemini
+    // Handle incoming user messages → reply via Gemini / OmniRoute
     if (isMessageEvent(eventName, body)) {
-      await handleIncomingMessage(admin, body).catch((e) => {
+      const messagePromise = handleIncomingMessage(admin, body).catch((e) => {
         console.error("horus-webhook reply error", e);
       });
+
+      if (typeof (globalThis as any).EdgeRuntime?.waitUntil === 'function') {
+        (globalThis as any).EdgeRuntime.waitUntil(messagePromise);
+      } else {
+        await messagePromise;
+      }
     }
 
     return json({ ok: true });
   } catch (e) {
     console.error("horus-webhook error", e);
     // Webhooks should acknowledge receipt so Evolution Go does not get stuck retrying.
-    return json({ ok: false, error: String(e?.message || e) }, 200);
+    return json({ ok: false, error: String((e as any)?.message || e) }, 200);
   }
 };
 
@@ -685,7 +691,7 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
             .eq("id", userRow.id);
         }
       } catch (e) {
-        await logOutbound(admin, parsed, "failed", String(e?.message || e), { agent: "onboarding" });
+        await logOutbound(admin, parsed, "failed", String((e as any)?.message || e), { agent: "onboarding" });
       }
     } else {
       console.log("horus-webhook onboarding skipped (recent)", { phone: parsed.from });
@@ -774,7 +780,6 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     console.error("horus-webhook: no active agents configured");
     return;
   }
-  const isLinked = Boolean(userRow?.linked_user_id);
 
   // 3b) Classifica intenção em paralelo (usada para tom + logs + roteamento)
   const classification = await classifyIntent(parsed.text).catch(() => null);
@@ -898,7 +903,7 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
         .eq("id", userRow.id);
     }
   } catch (e) {
-    await logOutbound(admin, parsed, "failed", String(e?.message || e), { agent: agent?.nome });
+    await logOutbound(admin, parsed, "failed", String((e as any)?.message || e), { agent: agent?.nome });
     throw e;
   }
 }
@@ -1052,7 +1057,7 @@ async function loadHistory(admin: any, phone: string, limit: number = 20) {
     .eq("phone_e164", phone)
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data || []).reverse().filter(m => m && m.content && !m.content.includes("Desculpe, tive um problema"));
+  return (data || []).reverse().filter((m: any) => m && m.content && !m.content.includes("Desculpe, tive um problema"));
 }
 
 async function logOutbound(admin: any, parsed: { from: string; remoteJid: string }, status: "sent" | "failed", error: string | null, extra: Record<string, unknown> = {}) {
@@ -1139,7 +1144,7 @@ async function askOmniRoute(
       return text;
     }
   } catch (e) {
-    console.warn("[OmniRoute Hórus] Falha na chamada:", String(e?.message || e));
+    console.warn("[OmniRoute Hórus] Falha na chamada:", String((e as any)?.message || e));
   }
   return "";
 }
@@ -1320,7 +1325,6 @@ async function askGeminiGateway(history: Array<{ role: string; content: string }
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${GeminiKey}`,
-      "Authorization": GeminiKey,
     },
     body: JSON.stringify({
       model: MODELS.textGateway,

@@ -41,7 +41,7 @@ export const handler = async (req: Request) => {
     return json({ ok: true, ...result });
   } catch (e) {
     console.error("horus-stats-sync error", e);
-    return json({ ok: false, error: String(e?.message || e) }, 500);
+    return json({ ok: false, error: String((e as any)?.message || e) }, 500);
   }
 };
 

@@ -53,13 +53,13 @@ export const handler = async (req: Request) => {
         kind: "manual",
         tipo: "manual",
         status: "failed",
-        error: String(e?.message || e),
+        error: String((e as any)?.message || e),
         payload: { text },
       });
-      return json({ error: String(e?.message || e) }, 500);
+      return json({ error: String((e as any)?.message || e) }, 500);
     }
   } catch (e) {
-    return json({ error: String(e?.message || e) }, 500);
+    return json({ error: String((e as any)?.message || e) }, 500);
   }
 };
 

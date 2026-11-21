@@ -172,7 +172,7 @@ export const handler = async (req: Request) => {
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     console.error("horus-admin error", e);
-    return json({ error: String(e?.message || e) }, 500);
+    return json({ error: String((e as any)?.message || e) }, 500);
   }
 };
 
@@ -197,7 +197,7 @@ function sanitizeState(state: any) {
   return clean;
 }
 
-async function getCurrentQr(admin: ReturnType<typeof createClient>) {
+async function getCurrentQr(admin: any) {
   const now = new Date().toISOString();
 
   const { data: cached } = await admin
@@ -207,11 +207,11 @@ async function getCurrentQr(admin: ReturnType<typeof createClient>) {
     .gt("expires_at", now)
     .maybeSingle();
 
-  if (cached?.qrcode || cached?.code) {
+  if ((cached as any)?.qrcode || (cached as any)?.code) {
     return { pending: false, source: "webhook-cache", ...cached };
   }
 
-  const qr = await evolution.getQr();
+  const qr: any = await evolution.getQr();
   if (!qr.pending && (qr.qrcode || qr.code)) {
     await admin.from("horus_qr_cache").upsert({
       instance_name: INSTANCE,

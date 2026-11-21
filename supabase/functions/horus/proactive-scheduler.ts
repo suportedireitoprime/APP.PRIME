@@ -78,7 +78,7 @@ export const handler = async (req: Request) => {
     return json({ ok: true, enviados: enviados.length, detalhes: enviados });
   } catch (e) {
     console.error("horus-proactive-scheduler error", e);
-    return json({ ok: false, error: String(e?.message || e) }, 500);
+    return json({ ok: false, error: String((e as any)?.message || e) }, 500);
   }
 };
 

@@ -155,7 +155,7 @@ export const handler = async (req: Request) => {
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
     console.error("horus-verify error", e);
-    return json({ error: String(e?.message || e) }, 500);
+    return json({ error: String((e as any)?.message || e) }, 500);
   }
 };
 

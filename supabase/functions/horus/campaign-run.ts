@@ -63,7 +63,7 @@ export const handler = async (req: Request) => {
 
     return json({ ok: true, total: targets.length });
   } catch (e) {
-    return json({ error: String(e?.message || e) }, 500);
+    return json({ error: String((e as any)?.message || e) }, 500);
   }
 };
 
@@ -85,7 +85,7 @@ async function processCampaign(admin: any, campaignId: string, campaign: any) {
       });
       enviado++; consecFail = 0;
     } catch (e) {
-      const err = String(e?.message || e);
+      const err = String((e as any)?.message || e);
       await admin.from("horus_campaign_targets").update({ status: "falha", erro: err }).eq("id", t.id);
       await admin.from("horus_outbound_log").insert({
         phone_e164: t.phone.replace(/\D/g, ""),

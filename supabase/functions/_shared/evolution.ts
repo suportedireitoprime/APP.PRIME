@@ -265,7 +265,7 @@ async function deleteInstance() {
     try {
       return await remove();
     } catch (e) {
-      const msg = String(e?.message || e);
+      const msg = String((e as any)?.message || e);
       if (/404|not found/i.test(msg)) return { ok: true, not_found: true };
       lastError = e;
     }
@@ -296,7 +296,7 @@ export const evolution = {
   },
   async resetInstance(webhookUrl?: string) {
     await deleteInstance().catch((e) => {
-      const msg = String(e?.message || e);
+      const msg = String((e as any)?.message || e);
       if (!/404|not found/i.test(msg)) throw e;
     });
     await new Promise((r) => setTimeout(r, 1200));
@@ -527,7 +527,7 @@ export const evolution = {
         console.log("Evolution /send/button (copy) success", { number: target, code_len: opts.copyCode.length });
         return res;
       } catch (e: any) {
-        const msg = String(e?.message || e);
+        const msg = String((e as any)?.message || e);
         console.warn("Evolution /send/button attempt failed", { target, error: msg.slice(0, 400) });
         lastError = e;
         if (!/number|jid|not registered|whatsapp|parse phone|invalid/i.test(msg)) break;
@@ -586,7 +586,7 @@ export const evolution = {
         console.log("Evolution /send/button (url) success", { number: target, url: opts.url });
         return res;
       } catch (e: any) {
-        const msg = String(e?.message || e);
+        const msg = String((e as any)?.message || e);
         console.warn("Evolution /send/button (url) attempt failed", { target, error: msg.slice(0, 400) });
         lastError = e;
         if (!/number|jid|not registered|whatsapp|parse phone|invalid/i.test(msg)) break;
@@ -644,7 +644,7 @@ export const evolution = {
         console.log("Evolution /send/media (image) success", { number: target });
         break;
       } catch (e: any) {
-        const msg = String(e?.message || e);
+        const msg = String((e as any)?.message || e);
         console.warn("Evolution /send/media attempt failed", { target, error: msg.slice(0, 200) });
         if (!/number|jid|not registered|whatsapp|parse phone|invalid/i.test(msg)) break;
       }
