@@ -9,7 +9,7 @@ import {
   loadProgresso,
   subscribeVideoaulas,
 } from '@/lib/videoaulasStore';
-import { CATALOGOS, ytThumb, limparTitulo, slugify } from '@/lib/videoaulasCatalogos';
+import { CATALOGOS, ytThumb, limparTitulo, slugify, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 
 interface UltimaAulaState {
@@ -94,9 +94,8 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
     }
   };
 
-  const areaSlug = ultimaAula?.slug || 'constitucional';
-  const temaInterativo = getDisciplinaVisualTheme(areaSlug);
-  const coverUrl = temaInterativo.fundoAssetUrl || ultimaAula?.thumb;
+  const areaNome = ultimaAula?.area || ultimaAula?.slug || 'constitucional';
+  const coverUrl = getCapaDaArea(areaNome) || ultimaAula?.thumb;
 
   const titulo = ultimaAula ? ultimaAula.titulo : 'Direitos e Garantias Fundamentais';
   const percentual = ultimaAula?.percentual || 0;

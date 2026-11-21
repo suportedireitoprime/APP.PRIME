@@ -1,8 +1,9 @@
 import React, { memo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, BookOpen, Brain, Layers, HelpCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Play, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { VIDEOAULAS_INICIANTES, type VideoaulaDriveItem } from '@/data/videoaulas/videoaulasDriveData';
+import { getTituloCurado } from '@/data/videoaulas/titulosIniciantes';
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
 import { getCachedProgresso, loadProgresso, subscribeVideoaulas } from '@/lib/videoaulasStore';
 
@@ -137,6 +138,7 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
             const p = progresso[item.video_id];
             const concluida = p?.concluida || (p?.percentual ?? 0) >= 90;
             const pct = concluida ? 100 : (p?.percentual ?? 0);
+            const curado = getTituloCurado(item);
 
             return (
               <div
@@ -145,17 +147,17 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                 style={{ touchAction: 'pan-y' }}
                 className="snap-start shrink-0 w-[240px] sm:w-[260px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-[0.98] transition-all duration-150 touch-pan-y"
               >
-                {/* Capa 16:9 */}
+                {/* Capa 16:9 Limpa e Minimalista (Sem tags cobrindo a arte) */}
                 <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-amber-500/50 transition-all shadow-lg group-hover:shadow-amber-500/10">
                   <img
                     src={item.thumb}
-                    alt={item.titulo}
+                    alt={curado.titulo}
                     loading={idx < 4 ? 'eager' : 'lazy'}
                     decoding="async"
                     draggable={false}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
                   {/* Número da Aula */}
                   <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-md border border-white/15 text-[11px] font-black text-amber-400 shadow">
@@ -187,22 +189,6 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                     </div>
                   </div>
 
-                  {/* Badges de Material Disponível */}
-                  <div className="absolute bottom-2 left-2 right-2 flex items-center gap-1.5 pointer-events-none overflow-hidden">
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 text-[9px] font-semibold text-emerald-400">
-                      <BookOpen className="w-2.5 h-2.5" /> PDF
-                    </span>
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 text-[9px] font-semibold text-cyan-400">
-                      <Brain className="w-2.5 h-2.5" /> Mapa
-                    </span>
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 text-[9px] font-semibold text-amber-400">
-                      <Layers className="w-2.5 h-2.5" /> Cards
-                    </span>
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 text-[9px] font-semibold text-rose-400">
-                      <HelpCircle className="w-2.5 h-2.5" /> Questões
-                    </span>
-                  </div>
-
                   {/* Barra de Progresso Visual na Base da Capa */}
                   {pct > 0 && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60 overflow-hidden">
@@ -218,19 +204,22 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                   )}
                 </div>
 
-                {/* Detalhes da Aula */}
-                <div className="mt-2.5 px-1 space-y-1">
-                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-amber-400 transition-colors leading-snug line-clamp-2">
-                    {item.titulo}
+                {/* Detalhes da Aula: Título Curto + Descrição Curta e Objetiva */}
+                <div className="mt-2.5 px-0.5 space-y-1">
+                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-amber-400 transition-colors leading-snug line-clamp-1">
+                    {curado.titulo}
                   </p>
-                  <p className="text-[11px] text-zinc-400 font-medium leading-none flex items-center justify-between">
-                    <span className="truncate max-w-[140px]">{item.canal}</span>
+                  <p className="font-sans text-[11px] text-zinc-400 font-normal leading-snug line-clamp-1">
+                    {curado.descricao}
+                  </p>
+                  <p className="text-[10.5px] text-zinc-500 font-medium leading-none flex items-center justify-between pt-0.5">
+                    <span className="truncate max-w-[130px]">{item.canal}</span>
                     {concluida ? (
                       <span className="text-emerald-400 font-semibold text-[10.5px]">Assistida</span>
                     ) : pct > 0 ? (
                       <span className="text-amber-400 font-semibold text-[10.5px]">{pct}% visto</span>
                     ) : (
-                      <span className="text-zinc-500 text-[10.5px]">Não iniciada</span>
+                      <span className="text-zinc-500 text-[10px]">Não iniciada</span>
                     )}
                   </p>
                 </div>

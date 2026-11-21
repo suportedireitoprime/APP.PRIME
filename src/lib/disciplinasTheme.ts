@@ -21,6 +21,10 @@ import fundoLeiPenalEspecial from '@/assets/fundos-disciplinas/capa-lei-penal-es
 import fundoPoliticasPublicas from '@/assets/fundos-disciplinas/capa-politicas-publicas.webp';
 import fundoPortugues from '@/assets/fundos-disciplinas/capa-portugues-juridico.webp';
 import fundoFilosofia from '@/assets/fundos-disciplinas/capa-teoria-e-filosofia-do-direito.webp';
+import fundoConsumidor from '@/assets/thumbnails/consumidor.webp';
+import fundoEca from '@/assets/lei-cover-eca.webp';
+import fundoEleitoral from '@/assets/radar/camara-hero.webp';
+import fundoDigital from '@/assets/onboarding/story_3_ia.webp';
 
 export interface DisciplinaVisualTheme {
   id: string;
@@ -622,6 +626,136 @@ const TEMAS_DISCIPLINAS: Record<string, DisciplinaVisualTheme> = {
     fundoAssetUrl: fundoFormacaoComplementar,
     isCustomFundo: true,
   },
+  'consumidor': {
+    id: 'consumidor',
+    nome: 'Direito do Consumidor',
+    primary: '#f97316',
+    accent: '#fdba74',
+    highlight: '#ffedd5',
+    glow: 'rgba(249, 115, 22, 0.65)',
+    glowSoft: 'rgba(249, 115, 22, 0.25)',
+    border: 'rgba(249, 115, 22, 0.55)',
+    borderSubtle: 'rgba(154, 52, 18, 0.35)',
+    bgDark: '#0f0803',
+    bgCard: 'linear-gradient(135deg, rgba(46, 26, 13, 0.94) 0%, rgba(26, 14, 7, 0.94) 100%)',
+    bgActive: 'linear-gradient(135deg, #ffedd5 0%, #fff7ed 50%, #fed7aa 100%)',
+    textActive: '#7c2d12',
+    textAccent: '#f97316',
+    textLight: '#ffedd5',
+    roadGradient: 'linear-gradient(180deg, #fdba74 0%, #f97316 50%, #c2410c 100%)',
+    roadShadow: '0 0 10px rgba(249, 115, 22, 0.8)',
+    modalBg: 'radial-gradient(ellipse at 50% 15%, #2e1a0d 0%, #150b05 50%, #080402 100%)',
+    medalActive: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #ffedd5 35%, #fb923c 80%, #c2410c 100%)',
+    medalBorder: '#fdba74',
+    progressGradient: 'linear-gradient(90deg, #c2410c 0%, #f97316 50%, #fdba74 100%)',
+    progressShadow: '0 0 10px rgba(249, 115, 22, 0.7)',
+    fundoAssetUrl: fundoConsumidor,
+    isCustomFundo: true,
+  },
+  'eleitoral': {
+    id: 'eleitoral',
+    nome: 'Direito Eleitoral',
+    primary: '#0284c7',
+    accent: '#7dd3fc',
+    highlight: '#e0f2fe',
+    glow: 'rgba(2, 132, 199, 0.65)',
+    glowSoft: 'rgba(2, 132, 199, 0.25)',
+    border: 'rgba(2, 132, 199, 0.55)',
+    borderSubtle: 'rgba(7, 89, 133, 0.35)',
+    bgDark: '#030b12',
+    bgCard: 'linear-gradient(135deg, rgba(12, 35, 52, 0.94) 0%, rgba(6, 20, 31, 0.94) 100%)',
+    bgActive: 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #bae6fd 100%)',
+    textActive: '#0c4a6e',
+    textAccent: '#38bdf8',
+    textLight: '#e0f2fe',
+    roadGradient: 'linear-gradient(180deg, #7dd3fc 0%, #0284c7 50%, #0369a1 100%)',
+    roadShadow: '0 0 10px rgba(2, 132, 199, 0.8)',
+    modalBg: 'radial-gradient(ellipse at 50% 15%, #0c2334 0%, #06141f 50%, #02070c 100%)',
+    medalActive: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #e0f2fe 35%, #38bdf8 80%, #0369a1 100%)',
+    medalBorder: '#7dd3fc',
+    progressGradient: 'linear-gradient(90deg, #0369a1 0%, #0284c7 50%, #7dd3fc 100%)',
+    progressShadow: '0 0 10px rgba(2, 132, 199, 0.7)',
+    fundoAssetUrl: fundoEleitoral,
+    isCustomFundo: true,
+  },
+  'eca': {
+    id: 'eca',
+    nome: 'Estatuto da Criança e do Adolescente',
+    primary: '#eab308',
+    accent: '#fde047',
+    highlight: '#fef9c3',
+    glow: 'rgba(234, 179, 8, 0.65)',
+    glowSoft: 'rgba(234, 179, 8, 0.25)',
+    border: 'rgba(234, 179, 8, 0.55)',
+    borderSubtle: 'rgba(133, 77, 14, 0.35)',
+    bgDark: '#0f0c03',
+    bgCard: 'linear-gradient(135deg, rgba(46, 38, 13, 0.94) 0%, rgba(26, 21, 7, 0.94) 100%)',
+    bgActive: 'linear-gradient(135deg, #fef9c3 0%, #fefce8 50%, #fef08a 100%)',
+    textActive: '#713f12',
+    textAccent: '#eab308',
+    textLight: '#fef9c3',
+    roadGradient: 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #a16207 100%)',
+    roadShadow: '0 0 10px rgba(234, 179, 8, 0.8)',
+    modalBg: 'radial-gradient(ellipse at 50% 15%, #2e260d 0%, #151105 50%, #080602 100%)',
+    medalActive: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #fef9c3 35%, #facc15 80%, #a16207 100%)',
+    medalBorder: '#fde047',
+    progressGradient: 'linear-gradient(90deg, #a16207 0%, #eab308 50%, #fde047 100%)',
+    progressShadow: '0 0 10px rgba(234, 179, 8, 0.7)',
+    fundoAssetUrl: fundoEca,
+    isCustomFundo: true,
+  },
+  'digital': {
+    id: 'digital',
+    nome: 'Direito Digital e LGPD',
+    primary: '#8b5cf6',
+    accent: '#c4b5fd',
+    highlight: '#ede9fe',
+    glow: 'rgba(139, 92, 246, 0.65)',
+    glowSoft: 'rgba(139, 92, 246, 0.25)',
+    border: 'rgba(139, 92, 246, 0.55)',
+    borderSubtle: 'rgba(91, 33, 182, 0.35)',
+    bgDark: '#080410',
+    bgCard: 'linear-gradient(135deg, rgba(30, 16, 56, 0.94) 0%, rgba(16, 8, 32, 0.94) 100%)',
+    bgActive: 'linear-gradient(135deg, #ede9fe 0%, #f5f3ff 50%, #ddd6fe 100%)',
+    textActive: '#4c1d95',
+    textAccent: '#8b5cf6',
+    textLight: '#ede9fe',
+    roadGradient: 'linear-gradient(180deg, #c4b5fd 0%, #8b5cf6 50%, #6d28d9 100%)',
+    roadShadow: '0 0 10px rgba(139, 92, 246, 0.8)',
+    modalBg: 'radial-gradient(ellipse at 50% 15%, #1e1038 0%, #0e071c 50%, #05020a 100%)',
+    medalActive: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #ede9fe 35%, #a78bfa 80%, #6d28d9 100%)',
+    medalBorder: '#c4b5fd',
+    progressGradient: 'linear-gradient(90deg, #6d28d9 0%, #8b5cf6 50%, #c4b5fd 100%)',
+    progressShadow: '0 0 10px rgba(139, 92, 246, 0.7)',
+    fundoAssetUrl: fundoDigital,
+    isCustomFundo: true,
+  },
+  'coletivos': {
+    id: 'coletivos',
+    nome: 'Direitos Coletivos',
+    primary: '#06b6d4',
+    accent: '#67e8f9',
+    highlight: '#cffafe',
+    glow: 'rgba(6, 182, 212, 0.65)',
+    glowSoft: 'rgba(6, 182, 212, 0.25)',
+    border: 'rgba(6, 182, 212, 0.55)',
+    borderSubtle: 'rgba(21, 94, 117, 0.35)',
+    bgDark: '#020d10',
+    bgCard: 'linear-gradient(135deg, rgba(10, 42, 50, 0.94) 0%, rgba(5, 23, 28, 0.94) 100%)',
+    bgActive: 'linear-gradient(135deg, #cffafe 0%, #ecfeff 50%, #a5f3fc 100%)',
+    textActive: '#164e63',
+    textAccent: '#06b6d4',
+    textLight: '#cffafe',
+    roadGradient: 'linear-gradient(180deg, #67e8f9 0%, #06b6d4 50%, #0891b2 100%)',
+    roadShadow: '0 0 10px rgba(6, 182, 212, 0.8)',
+    modalBg: 'radial-gradient(ellipse at 50% 15%, #0a2a32 0%, #05171c 50%, #02090b 100%)',
+    medalActive: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #cffafe 35%, #22d3ee 80%, #0891b2 100%)',
+    medalBorder: '#67e8f9',
+    progressGradient: 'linear-gradient(90deg, #0891b2 0%, #06b6d4 50%, #67e8f9 100%)',
+    progressShadow: '0 0 10px rgba(6, 182, 212, 0.7)',
+    fundoAssetUrl: fundoUrbanistico,
+    isCustomFundo: true,
+  },
 };
 
 export function getDisciplinaVisualTheme(disciplinaOuSlug?: string | null): DisciplinaVisualTheme {
@@ -629,6 +763,11 @@ export function getDisciplinaVisualTheme(disciplinaOuSlug?: string | null): Disc
   const s = String(disciplinaOuSlug).toLowerCase().replace(/[^a-z0-9-]/g, '-');
 
   // Mapeamentos precisos de áreas e sub-áreas
+  if (s.includes('consumidor') || s.includes('cdc')) return TEMAS_DISCIPLINAS.consumidor;
+  if (s.includes('eleitor')) return TEMAS_DISCIPLINAS.eleitoral;
+  if (s.includes('eca') || s.includes('crianca') || s.includes('adolescente')) return TEMAS_DISCIPLINAS.eca;
+  if (s.includes('digital') || s.includes('lgpd') || s.includes('tecnolog')) return TEMAS_DISCIPLINAS.digital;
+  if (s.includes('coletiv') || s.includes('difus')) return TEMAS_DISCIPLINAS.coletivos;
   if (s.includes('process') && s.includes('penal')) return TEMAS_DISCIPLINAS['processual-penal'];
   if (s.includes('process') && (s.includes('trab') || s.includes('trabalhista'))) return TEMAS_DISCIPLINAS['processual-trabalho'];
   if (s.includes('process') && s.includes('civil')) return TEMAS_DISCIPLINAS['processual-civil'];
@@ -652,5 +791,5 @@ export function getDisciplinaVisualTheme(disciplinaOuSlug?: string | null): Disc
   if (s.includes('portug')) return TEMAS_DISCIPLINAS.portugues;
   if (s.includes('complem') || s.includes('formacao')) return TEMAS_DISCIPLINAS['formacao-complementar'];
 
-  return TEMAS_DISCIPLINAS[s] || TEMAS_DISCIPLINAS.administrativo;
+  return TEMAS_DISCIPLINAS[s] || TEMAS_DISCIPLINAS.constitucional;
 }

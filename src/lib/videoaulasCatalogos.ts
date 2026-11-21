@@ -10,6 +10,19 @@ import administrativoCapa from '@/assets/thumbnails/administrativo.webp';
 import consumidorCapa from '@/assets/thumbnails/consumidor.webp';
 import civilCapa from '@/assets/thumbnails/civil.webp';
 import filosofiaCapa from '@/assets/thumbnails/filosofia.webp';
+import fundoConstitucional from '@/assets/fundos-disciplinas/capa-direito-constitucional.webp';
+import fundoTributario from '@/assets/fundos-disciplinas/capa-direito-tributario.webp';
+import fundoFinanceiro from '@/assets/fundos-disciplinas/capa-direito-financeiro.webp';
+import fundoEmpresarial from '@/assets/fundos-disciplinas/capa-direito-empresarial.webp';
+import fundoPrevidenciario from '@/assets/fundos-disciplinas/capa-direito-previdenciario.webp';
+import fundoProcessualCivil from '@/assets/fundos-disciplinas/capa-direito-processual-civil.webp';
+import fundoProcessualTrabalho from '@/assets/fundos-disciplinas/capa-direito-processual-do-trabalho.webp';
+import fundoInternacional from '@/assets/fundos-disciplinas/capa-direito-internacional-privado.webp';
+import fundoHumanos from '@/assets/fundos-disciplinas/capa-direitos-humanos.webp';
+import fundoEca from '@/assets/lei-cover-eca.webp';
+import fundoEleitoral from '@/assets/radar/camara-hero.webp';
+import fundoDigital from '@/assets/onboarding/story_3_ia.webp';
+import fundoColetivos from '@/assets/fundos-disciplinas/capa-direito-urbanistico.webp';
 import { srcOf } from '@/lib/assetUrl';
 
 export type CatalogoId = 'iniciante' | 'areas' | 'oab-primeira-fase' | 'oab-segunda-fase';
@@ -86,18 +99,37 @@ export function slugify(texto: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-export function getCapaDaArea(areaNome?: string | null): string | null {
-  if (!areaNome) return null;
-  const n = simplificarNomeArea(areaNome).toLowerCase();
-  if (n.includes('ambiental')) return ambientalCapa;
-  if (n.includes('processo penal')) return processoPenalCapa;
+/** Retorna a capa específica e exclusiva de cada uma das 21 áreas de videoaulas, sem repetições. */
+export function getCapaDaArea(areaNome?: string | null): string {
+  if (!areaNome) return administrativoCapa;
+  const n = simplificarNomeArea(areaNome)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  if (n.includes('consumidor') || n.includes('cdc')) return consumidorCapa;
+  if (n.includes('eleitor')) return fundoEleitoral;
+  if (n.includes('crianca') || n.includes('adolescente') || n.includes('eca')) return fundoEca;
+  if (n.includes('digital') || n.includes('lgpd') || n.includes('tecnolog')) return fundoDigital;
+  if (n.includes('coletiv') || n.includes('difus')) return fundoColetivos;
+  if (n.includes('const')) return fundoConstitucional;
+  if (n.includes('process') && n.includes('penal')) return processoPenalCapa;
+  if (n.includes('process') && (n.includes('trab') || n.includes('trabalhista'))) return fundoProcessualTrabalho;
+  if (n.includes('process') && n.includes('civil')) return fundoProcessualCivil;
   if (n.includes('penal')) return penalCapa;
-  if (n.includes('trabalho') || n.includes('trabalhista')) return trabalhoCapa;
-  if (n.includes('administrativo')) return administrativoCapa;
-  if (n.includes('consumidor')) return consumidorCapa;
-  if (n.includes('civil') || n.includes('família')) return civilCapa;
-  if (n.includes('filosofia')) return filosofiaCapa;
-  return null;
+  if (n.includes('trab')) return trabalhoCapa;
+  if (n.includes('tribut')) return fundoTributario;
+  if (n.includes('finan')) return fundoFinanceiro;
+  if (n.includes('empres')) return fundoEmpresarial;
+  if (n.includes('ambien')) return ambientalCapa;
+  if (n.includes('human')) return fundoHumanos;
+  if (n.includes('internac')) return fundoInternacional;
+  if (n.includes('previd')) return fundoPrevidenciario;
+  if (n.includes('filoso') || n.includes('teoria')) return filosofiaCapa;
+  if (n.includes('civil') || n.includes('familia')) return civilCapa;
+  if (n.includes('admin')) return administrativoCapa;
+
+  return administrativoCapa;
 }
 
 /** `mq` (320x180) basta para cards de lista e baixa bem mais rápido que `hq`. */

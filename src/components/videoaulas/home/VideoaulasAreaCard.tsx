@@ -1,8 +1,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
+import { simplificarNomeArea, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 
 export interface VideoaulaAreaItem {
   area: string;
@@ -21,8 +20,7 @@ interface VideoaulasAreaCardProps {
 export const VideoaulasAreaCard: React.FC<VideoaulasAreaCardProps> = ({ area, onClick }) => {
   if (!area) return null;
   const displayArea = simplificarNomeArea(area.area || '').replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
-  const tema = getDisciplinaVisualTheme(area.slug || area.area || '');
-  const coverUrl = tema.fundoAssetUrl;
+  const coverUrl = getCapaDaArea(area.area || area.slug);
 
   return (
     <button

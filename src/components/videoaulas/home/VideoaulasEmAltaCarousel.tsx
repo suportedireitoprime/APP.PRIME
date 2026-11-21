@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
+import { simplificarNomeArea, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import type { VideoaulaAreaItem } from './VideoaulasAreaCard';
 
 interface VideoaulasEmAltaCarouselProps {
@@ -108,8 +108,7 @@ export const VideoaulasEmAltaCarousel: React.FC<VideoaulasEmAltaCarouselProps> =
           style={{ touchAction: 'pan-x pan-y' }}
         >
           {areasOrdenadas.map((item, idx) => {
-            const tema = getDisciplinaVisualTheme(item.slug || item.area);
-            const coverUrl = tema.fundoAssetUrl;
+            const coverUrl = getCapaDaArea(item.area || item.slug);
             const isFav = favAreas.has(item.area);
             const displayTitle = simplificarNomeArea(item.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
 
