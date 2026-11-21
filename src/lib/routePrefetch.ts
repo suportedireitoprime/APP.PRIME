@@ -61,116 +61,52 @@ export const routePrefetch = {
 
 export type PrefetchKey = keyof typeof routePrefetch;
 
-// Rotas de funções mais acessadas pré-aquecidas em idle para resposta instantânea (0ms de espera)
+// Rotas essenciais para pré-aquecimento escalonado sob demanda
 const MAIN_TAB_KEYS: PrefetchKey[] = [
   "vadeMecum",
   "questoes",
   "flashcards",
-  "aulas",
-  "boletins",
-  "meExplique",
-  "resumosJuridicos",
-  "videoaulas",
-  "audioaulas",
-  "pilulas",
-  "biblioteca",
-  "leiSeca",
-  "dicionario",
-  "radar360",
-  "vademecum",
-  "ferramentas",
-  "blog",
-  "meuEspaco",
 ];
 
 let mainTabsScheduled = false;
 let idleScheduled = false;
 
 import { prewarmFavoritosERecentesIdle } from "@/services/warmFavoritosService";
-import { warmVideoaulasStartup } from "@/services/videoaulasWarmup";
-import { warmQuestoesStartup } from "@/services/questoesWarmup";
 
-/** Pre-aquecimento imediato das 6 abas e rotas principais do BottomNav em idle. */
+/** Pre-aquecimento cirúrgico e leve das abas principais apenas em momentos ociosos */
 export function prefetchMainTabsIdle(): void {
   if (mainTabsScheduled || typeof window === "undefined") return;
   mainTabsScheduled = true;
 
-  const run = () => {
-    MAIN_TAB_KEYS.forEach((key) => {
-      try {
-        routePrefetch[key]();
-      } catch {
-        /* noop */
+  // ⚡ LATÊNCIA ZERO: Aguarda 8 segundos após a Home estar totalmente estável
+  // e pré-carrega apenas 3 rotas críticas de forma cadenciada (1 por segundo)
+  setTimeout(() => {
+    let idx = 0;
+    const step = () => {
+      if (idx < MAIN_TAB_KEYS.length) {
+        try {
+          routePrefetch[MAIN_TAB_KEYS[idx]]();
+        } catch {}
+        idx++;
+        setTimeout(step, 1200);
+      } else {
+        try {
+          prewarmFavoritosERecentesIdle();
+        } catch {}
       }
-    });
-    try {
-      prewarmFavoritosERecentesIdle();
-    } catch {
-      /* noop */
-    }
-    try {
-      warmVideoaulasStartup();
-    } catch {
-      /* noop */
-    }
-    try {
-      import("@/services/giroJuridicoWarmup").then((m) => m.prefetchGiroJuridico());
-    } catch {
-      /* noop */
-    }
-    try {
-      import("@/lib/visuaisJuridicos/materias").then((m) => m.fetchAreasResumos());
-    } catch {
-      /* noop */
-    }
-    try {
-      import("@/lib/visuaisJuridicos/cache").then((m) => m.prefetchVisuais());
-    } catch {
-      /* noop */
-    }
-    try {
-      warmQuestoesStartup();
-    } catch {
-      /* noop */
-    }
-  };
-
-  const ric = (window as any).requestIdleCallback as
-    ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
-
-  if (ric) ric(run, { timeout: 1200 });
-  else setTimeout(run, 350);
+    };
+    step();
+  }, 8000);
 }
 
-/** Prefetches all navigation chunks in staggered batches after the browser is idle. */
+/** 
+ * Pré-aquecimento desativado em massa para evitar o travamento de 6s na tela inicial.
+ * Rotas secundárias são carregadas sob demanda ou ao aproximar o toque (0ms).
+ */
 export function prefetchHeroRoutesIdle(): void {
   if (idleScheduled || typeof window === "undefined") return;
   idleScheduled = true;
-
-  // Primeiro pré-aquece as abas mais acessadas
   prefetchMainTabsIdle();
-
-  const run = () => {
-    const allKeys = Object.keys(routePrefetch) as PrefetchKey[];
-    const remaining = allKeys.filter((k) => !MAIN_TAB_KEYS.includes(k));
-
-    // Pré-carrega o restante de forma cadenciada para não afogar a CPU/rede
-    remaining.forEach((key, index) => {
-      setTimeout(() => {
-        try {
-          routePrefetch[key]();
-        } catch {
-          /* noop */
-        }
-      }, index * 40);
-    });
-  };
-
-  const ric = (window as any).requestIdleCallback as
-    ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
-
-  if (ric) ric(run, { timeout: 3000 });
-  else setTimeout(run, 1500);
 }
 
 /** Fires a single route prefetch (safe to call repeatedly — dedup by browser). */

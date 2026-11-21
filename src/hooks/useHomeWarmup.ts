@@ -7,45 +7,45 @@ import type { QueryClient } from '@tanstack/react-query';
 
 export function useHomeWarmup(imagesToPreload: string[], queryClient?: QueryClient, isDesktop = false) {
   useEffect(() => {
-    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
-      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: isDesktop ? 2000 : 1500 })
-      : (cb) => window.setTimeout(cb, isDesktop ? 500 : 300);
+    // ⚡ LATÊNCIA ZERO: No mobile, aguarda 6s após a Home estar visível para rodar prefetch
+    const delayWarmup = isDesktop ? 1500 : 6000;
+    const timer = setTimeout(() => {
+      const ric: (cb: () => void) => number = (window as any).requestIdleCallback
+        ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 3000 })
+        : (cb) => window.setTimeout(cb, 500);
 
-    const id = ric(() => {
-      // 1. Prefetch Overlays and Heavy Components
-      import('@/components/vademecum/overlays/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/overlays/AssistenteOverlay').catch(() => {});
-      // Prefetch da página principal do Vade Mecum (evita tela branca/delay ao trocar de aba)
-      import('@/pages/vademecum/VadeMecum').catch(() => {});
-      
-      if (!isDesktop) {
-        import('@/components/vademecum/navigation/SideMenu').catch(() => {});
-        import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
-      }
+      ric(() => {
+        // 1. Prefetch Overlays and Heavy Components
+        import('@/components/vademecum/overlays/SearchOverlay').catch(() => {});
+        import('@/components/vademecum/overlays/AssistenteOverlay').catch(() => {});
+        import('@/pages/vademecum/VadeMecum').catch(() => {});
+        
+        if (!isDesktop) {
+          import('@/components/vademecum/navigation/SideMenu').catch(() => {});
+          import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
+        }
 
-      // 2. Preload Images
-      imagesToPreload.forEach(src => {
-        if (src) {
-          const img = new Image();
-          img.src = src;
+        // 2. Preload Images
+        imagesToPreload.forEach(src => {
+          if (src) {
+            const img = new Image();
+            img.src = src;
+          }
+        });
+
+        // 3. Prefetch Data
+        prefetchResenha();
+        prefetchNoticias();
+        
+        if (isDesktop) {
+          prefetchAllArtigos(4);
+          if (queryClient) {
+            window.setTimeout(() => warmBiblioteca(queryClient), 600);
+          }
         }
       });
+    }, delayWarmup);
 
-      // 3. Prefetch Data
-      prefetchResenha();
-      prefetchNoticias();
-      
-      if (isDesktop) {
-        prefetchAllArtigos(4);
-        if (queryClient) {
-          window.setTimeout(() => warmBiblioteca(queryClient), 600);
-        }
-      }
-    });
-
-    return () => {
-      const cic = (window as any).cancelIdleCallback;
-      if (cic) cic(id); else window.clearTimeout(id);
-    };
+    return () => clearTimeout(timer);
   }, [imagesToPreload, queryClient, isDesktop]);
 }

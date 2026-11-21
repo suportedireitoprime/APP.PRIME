@@ -45,6 +45,8 @@ async function insertArtigosBatch(lei: string, artigos: any[]): Promise<number> 
         `INSERT OR IGNORE INTO artigos_cache(id, lei, numero, titulo, texto, updated_at) VALUES ${values};`
       );
       inserted += batch.length;
+      // ⚡ Permite que a UI processe toques e mantenha 120fps sem engasgos
+      await new Promise((r) => setTimeout(r, 25));
     }
   }
   return inserted;
@@ -101,6 +103,8 @@ export async function populateFTS5FromBundle(): Promise<void> {
 
         const inserted = await insertArtigosBatch(tabela, artigos);
         totalArtigos += inserted;
+        // Intervalo entre leis para liberar completamente a GPU e o scroll da tela inicial
+        await new Promise((r) => setTimeout(r, 60));
       } catch {
         // Lei individual falhou — seguir com as demais
       }

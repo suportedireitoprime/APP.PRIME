@@ -45,9 +45,7 @@ const IndexMobile = () => {
   const { data: profileSummary } = useProfileSummary();
   const { isPremium, isTrial } = useSubscription();
 
-  // ⚡ LATÊNCIA ZERO: Oculta o Splash Nativo imediatamente após o commit do layout da Home
-  // sem ficar refém da latência de rede do perfil do Supabase.
-  useHideSplashScreen(100, true);
+  useHideSplashScreen(250, Boolean(profileSummary !== undefined || !Capacitor.isNativePlatform()));
 
   // Invocação Híbrida desativada: A View Nativa (Swift/Compose) sobrepunha a UI e ocultava o menu de rodapé (BottomNav).
   // Agora o app renderizará o layout React padrão com o BottomNav para garantir a UX correta no mobile nativo.
@@ -64,9 +62,10 @@ const IndexMobile = () => {
   }, []);
 
   useEffect(() => {
+    // ⚡ Executa o pré-aquecimento de capas após a tela inicial estar estável e interagida
     const timer = setTimeout(() => {
       warmCoverCache();
-    }, 2000);
+    }, 8000);
     return () => clearTimeout(timer);
   }, []);
 
