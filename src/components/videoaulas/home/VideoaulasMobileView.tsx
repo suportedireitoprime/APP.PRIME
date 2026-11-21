@@ -160,9 +160,14 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   const handleAreaClick = useCallback(
     (slug: string) => {
       haptic.selection();
-      navigate(`/videoaulas/areas/${slug}`);
+      const matched = areasItens.find((a) => a.slug === slug || a.area.toLowerCase() === slug.toLowerCase());
+      if (matched) {
+        setActiveChipTab(matched.area);
+      } else {
+        setActiveChipTab(slug);
+      }
     },
-    [navigate]
+    [areasItens]
   );
 
   return (

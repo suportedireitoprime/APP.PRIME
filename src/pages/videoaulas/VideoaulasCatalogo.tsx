@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from '@/components/ui/input';
 import { ChevronRight, History, Mic, Play, Search, Star, Video } from 'lucide-react';
@@ -56,6 +56,12 @@ type Aula = {
 const VideoaulasCatalogo = () => {
   const { catalogo: catalogoId } = useParams();
   const navigate = useNavigate();
+
+  // A rota /videoaulas/areas é redundante pois a Home já possui o Menu de Alternância completo
+  if (catalogoId === 'areas') {
+    return <Navigate to="/videoaulas" replace />;
+  }
+
   const catalogo = getCatalogo(catalogoId);
   const [aulas, setAulas] = useState<Aula[]>(
     () => (catalogo ? ((getCachedCatalogo(catalogo.id) as Aula[] | null) ?? []) : []),

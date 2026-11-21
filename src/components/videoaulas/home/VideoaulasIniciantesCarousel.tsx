@@ -99,13 +99,10 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
               <span className="w-1.5 h-4.5 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 shrink-0 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-black uppercase tracking-wider flex items-center gap-1.5">
                 <span>Para Iniciantes</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  50 AULAS
-                </span>
                 {totalConcluidas > 0 && (
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                     <CheckCircle2 className="w-2.5 h-2.5" />
-                    {totalConcluidas}/50
+                    {totalConcluidas} concluídas
                   </span>
                 )}
               </h3>
