@@ -3,6 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 // Rendered by the Direito Prime app mounted in __root; this file only registers the URL.
 export const Route = createFileRoute("/admin-notificacoes-locais")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Notificações Locais — Direito Prime" }] }),
+  head: () => ({ meta: [{ title: "Notificações Locais — Estudos Jurídicos" }] }),
   component: () => null,
 });

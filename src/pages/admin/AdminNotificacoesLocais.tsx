@@ -470,7 +470,7 @@ export default function AdminNotificacoesLocais() {
                     <div className="w-6 h-6 rounded-full bg-[#f95738] flex items-center justify-center shrink-0 shadow-sm">
                       <Flame className="w-3.5 h-3.5 text-white fill-white" />
                     </div>
-                    <span className="text-[13px] font-semibold text-white truncate">Direito Premium</span>
+                    <span className="text-[13px] font-semibold text-white truncate">Estudos Jurídicos</span>
                     <span className="text-zinc-500 text-xs font-light">·</span>
                     <span className="text-zinc-400 text-xs truncate">
                       {regraSelecionada.modulo === 'audioaulas'
