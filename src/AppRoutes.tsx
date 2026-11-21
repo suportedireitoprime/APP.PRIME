@@ -116,6 +116,7 @@ const QuestoesHistorico = lazyWithRetry(() => import("./pages/questoes/QuestoesH
 const AdminFuncoes = lazyWithRetry(() => import("./pages/admin/AdminFuncoes.tsx"));
 const AdminAssinantes = lazyWithRetry(() => import("./pages/admin/AdminAssinantes.tsx"));
 const AdminPush = lazyWithRetry(() => import("./pages/admin/AdminPush.tsx"));
+const AdminNotificacoesLocais = lazyWithRetry(() => import("./pages/admin/AdminNotificacoesLocais.tsx"));
 const AdminRotas = lazyWithRetry(() => import("./pages/admin/AdminRotas.tsx"));
 
 const Simulados = lazyWithRetry(() => import("./pages/simulados/Simulados.tsx"));
@@ -979,6 +980,7 @@ function AnimatedRoutes() {
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-notificacoes-locais" element={<ProtectedRoute><PageTransition><AdminNotificacoesLocais /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-rotas" element={<ProtectedRoute><PageTransition><AdminRotas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />

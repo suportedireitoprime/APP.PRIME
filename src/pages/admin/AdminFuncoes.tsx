@@ -55,6 +55,7 @@ import {
   Presentation,
   FlaskConical,
   Globe,
+  Smartphone,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -68,6 +69,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-laboratorio-aulas": () => import("./AdminLaboratorioAulas"),
   "/admin-lousa-magica": () => import("./AdminLousaMagica"),
   "/admin-push": () => import("./AdminPush"),
+  "/admin-notificacoes-locais": () => import("./AdminNotificacoesLocais"),
   "/admin-horus": () => import("./AdminHorus"),
   "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
   "/admin-rotas": () => import("./AdminRotas"),
@@ -228,6 +230,13 @@ const CATEGORIES: Category[] = [
         icon: BellRing,
         desc: "Compor, agendar, campanhas e métricas",
         route: "/admin-push",
+      },
+      {
+        id: "admin-notificacoes-locais",
+        label: "Notificações Locais (Retenção)",
+        icon: Smartphone,
+        desc: "Continuar assistindo/lendo, barra de progresso e regras no aparelho",
+        route: "/admin-notificacoes-locais",
       },
     ],
   },

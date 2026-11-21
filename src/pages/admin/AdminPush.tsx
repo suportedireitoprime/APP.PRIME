@@ -340,6 +340,15 @@ export default function AdminPush() {
         title={<span className="font-bold tracking-wider text-base sm:text-lg uppercase">Gestor de Push</span>}
         subtitle="Notificações a cada 2 horas e alertas inteligentes"
         onBack={() => navigate("/admin-funcoes")}
+        rightAction={
+          <button
+            onClick={() => navigate('/admin-notificacoes-locais')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 hover:bg-sky-500/20 text-xs font-semibold text-sky-300 transition-colors"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden sm:inline">Notificações</span> Locais
+          </button>
+        }
       />
 
       <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 relative z-10">
@@ -413,6 +422,30 @@ export default function AdminPush() {
               </Badge>
             </div>
           )}
+        </div>
+
+        {/* Banner de Atalho para Notificações Locais com Barra de Progresso */}
+        <div 
+          onClick={() => navigate('/admin-notificacoes-locais')}
+          className="cursor-pointer group relative rounded-2xl p-4 bg-gradient-to-r from-sky-950/50 via-zinc-900 to-zinc-900 border border-sky-500/30 hover:border-sky-500/60 shadow-lg transition-all active:scale-[0.99] flex items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center shrink-0 text-sky-400 group-hover:scale-105 transition-transform">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
+                  Notificações Locais (Retenção & Barra de Progresso)
+                </span>
+                <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/30 text-[10px]">Novo</Badge>
+              </div>
+              <p className="text-xs text-zinc-400 truncate mt-0.5">
+                "Continuar assistindo/lendo" com capa, tempo restante e botão no aparelho
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
         </div>
 
         {/* ============================================================== */}
