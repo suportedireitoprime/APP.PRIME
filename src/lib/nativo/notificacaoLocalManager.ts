@@ -13,7 +13,8 @@ export type ModuloNotificacaoLocal =
   | 'videoaulas'
   | 'streak'
   | 'flashcards'
-  | 'trial';
+  | 'trial'
+  | 'boletim';
 
 export type PublicoAlvoNotificacao =
   | 'todos'
@@ -209,6 +210,25 @@ export const REGRAS_PADRAO_NOTIFICACOES_LOCAIS: RegraNotificacaoLocal[] = [
     exemploSubtitulo: 'Restam apenas 6 horas de teste gratuito. Não perca seus grifos e histórico!',
     canalAndroid: 'alertas_urgentes',
   },
+  {
+    id: 'boletim_noticias',
+    modulo: 'boletim',
+    nome: 'Boletim de Notícias (10 min após pronto)',
+    descricao: 'Dispara no chip do celular exatamente 10 minutos após o boletim jurídico ser gerado pelo sistema.',
+    ativo: true,
+    tituloTemplate: '📰 {titulo}',
+    subtituloTemplate: 'Informativo pronto há 10 min · Toque para ouvir as notícias',
+    textoBotaoAcao: 'Ouvir Boletim',
+    rotaPadrao: '/boletins',
+    publicoAlvo: 'todos',
+    gatilhoHorasInatividade: 0.166, // 10 minutos
+    mostrarBarraProgresso: false,
+    progressoExemplo: 0,
+    exemploTitulo: 'Boletim de Notícias: STF e Julgamentos do Dia',
+    exemploSubtitulo: 'Pronto há 10 min · 6 manchetes comentadas em áudio',
+    exemploCapaUrl: '/radar-leis.webp',
+    canalAndroid: 'boletim_diario',
+  },
 ];
 
 const STORAGE_KEY = 'direitoprime_regras_notificacoes_locais_v2';
@@ -258,6 +278,7 @@ const NOTIF_IDS_MODULO: Record<ModuloNotificacaoLocal, number> = {
   streak: 77104,
   flashcards: 77105,
   trial: 77106,
+  boletim: 77107,
 };
 
 let acoesRegistradas = false;
@@ -292,6 +313,15 @@ export async function registrarCanaisEAcoesLocais(): Promise<void> {
         id: 'retencao_leitura',
         name: 'Continuar Leitura',
         description: 'Lembretes de livros e Vade Mecum.',
+        importance: 4,
+        vibration: true,
+        lights: true,
+      });
+
+      await LocalNotifications.createChannel({
+        id: 'boletim_diario',
+        name: 'Boletim Diário de Notícias',
+        description: 'Notícias jurídicas e informativos diários em áudio e vídeo.',
         importance: 4,
         vibration: true,
         lights: true,
@@ -505,6 +535,7 @@ export async function obterMetricasNotificacoesLocais(): Promise<MetricasNotific
     'streak',
     'flashcards',
     'trial',
+    'boletim',
   ];
 
   const porModulo: MetricasNotificacoesLocais['porModulo'] = {} as any;
@@ -881,8 +912,97 @@ export async function agendarRetencaoStreakDiario(dados?: { diasStreak?: number 
       });
       return true;
     } catch (e) {
-      console.warn('[notificacaoLocalManager] Erro no agendamento nativo:', e);
+      console.warn('[notificacaoLocalManager] Erro no agendamento nativo streak:', e);
     }
+  }
+
+  return true;
+}
+
+/**
+ * Disparador Automático: BOLETIM DE NOTÍCIAS JURÍDICAS
+ * Dispara no chip do celular exatamente 10 minutos após o boletim estar pronto no sistema.
+ */
+export async function agendarBoletimProntoLocal(dados: {
+  id: string;
+  titulo: string;
+  subtitulo?: string | null;
+  createdAt: string; // ISO string de created_at
+  capaUrl?: string | null;
+  delayMinutos?: number; // Padrão: 10 minutos
+}): Promise<boolean> {
+  const regras = carregarRegrasNotificacoesLocais();
+  const regra = regras.find((r) => r.id === 'boletim_noticias');
+  if (!regra || !regra.ativo) return false;
+
+  const delayMin = dados.delayMinutos ?? 10;
+  const createdMs = new Date(dados.createdAt).getTime();
+  const momentoAlvo = new Date(createdMs + delayMin * 60 * 1000);
+  const agora = Date.now();
+
+  // Não incomodar se o boletim já foi gerado há mais de 8 horas
+  if (agora - momentoAlvo.getTime() > 8 * 60 * 60 * 1000) {
+    return false;
+  }
+
+  // Previne duplicação para o mesmo boletim
+  const chaveDesduplicacao = `notif_local_boletim_${dados.id}`;
+  if (typeof localStorage !== 'undefined' && localStorage.getItem(chaveDesduplicacao)) {
+    return false;
+  }
+
+  // Se ainda faltam minutos para completar os 10 min, agenda para o momento exato
+  // Se já completou os 10 min (aluno abriu o app depois), programa para 10 segundos depois
+  const scheduleDate = momentoAlvo.getTime() > agora
+    ? momentoAlvo
+    : new Date(agora + 10 * 1000);
+
+  const titulo = dados.titulo.startsWith('📰') ? dados.titulo : `📰 ${dados.titulo}`;
+  const subtitulo = dados.subtitulo || 'Informativo pronto há 10 min · Toque para ouvir as notícias de hoje';
+  const rota = `/boletins?id=${dados.id}`;
+  const notifId = NOTIF_IDS_MODULO.boletim;
+
+  const eventoId = await registrarDisparoLocal({
+    notificacaoId: notifId,
+    modulo: 'boletim',
+    titulo,
+    subtitulo,
+    progresso: 0,
+    rota,
+  });
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const { LocalNotifications } = await import('@capacitor/local-notifications');
+      await registrarCanaisEAcoesLocais();
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: notifId,
+            title: titulo,
+            body: subtitulo,
+            schedule: { at: scheduleDate, allowWhileIdle: true },
+            channelId: 'boletim_diario',
+            smallIcon: 'ic_stat_icon_config_sample',
+            iconColor: '#0284C7',
+            largeIcon: dados.capaUrl || regra.exemploCapaUrl,
+            extra: {
+              rota,
+              modulo: 'boletim',
+              boletimId: dados.id,
+              eventoId,
+            },
+          },
+        ],
+      });
+    } catch (err) {
+      console.warn('[notificacaoLocalManager] Erro ao agendar boletim nativo:', err);
+    }
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(chaveDesduplicacao, new Date().toISOString());
   }
 
   return true;

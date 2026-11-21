@@ -19,6 +19,7 @@ import {
   Moon,
   RefreshCw,
   Trash2,
+  Newspaper,
 } from 'lucide-react';
 import {
   carregarRegrasNotificacoesLocais,
@@ -152,6 +153,8 @@ export default function AdminNotificacoesLocais() {
         return <Brain className="w-3.5 h-3.5 text-purple-400" />;
       case 'trial':
         return <Clock className="w-3.5 h-3.5 text-rose-400" />;
+      case 'boletim':
+        return <Newspaper className="w-3.5 h-3.5 text-sky-400" />;
     }
   };
 
@@ -222,6 +225,8 @@ export default function AdminNotificacoesLocais() {
                     ? 'Áudio'
                     : regraSelecionada.modulo === 'livros'
                     ? 'Leitura'
+                    : regraSelecionada.modulo === 'boletim'
+                    ? 'Notícias'
                     : 'Estudo'}
                 </span>
               </div>

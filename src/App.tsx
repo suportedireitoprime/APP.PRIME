@@ -85,6 +85,7 @@ import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
 import { populateFTS5FromBundle } from "@/services/fts5Populator";
 import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
 import AppSplashScreen from "@/components/ui/AppSplashScreen";
+import { useBoletimNotificacaoLocal } from "@/hooks/useBoletimNotificacaoLocal";
 
 
 const queryClient = new QueryClient({
@@ -142,6 +143,7 @@ const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
 function AppWarmupInitializer() {
   const qc = useQueryClient();
+  useBoletimNotificacaoLocal();
   useEffect(() => {
     scheduleAppWarmup(qc);
     scheduleBackgroundImageWarmup();
