@@ -112,7 +112,7 @@ export const REGRAS_PADRAO_NOTIFICACOES_LOCAIS: RegraNotificacaoLocal[] = [
     progressoExemplo: 60,
     exemploTitulo: 'O Investidor Inteligente - Princípios Fundamentais',
     exemploSubtitulo: 'Capítulo 1 · faltam 1 min',
-    exemploCapaUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=160&auto=format&fit=crop&q=80',
+    exemploCapaUrl: '/covers/o-investidor-inteligente.jpg',
     canalAndroid: 'retencao_video',
   },
   {
@@ -131,7 +131,7 @@ export const REGRAS_PADRAO_NOTIFICACOES_LOCAIS: RegraNotificacaoLocal[] = [
     progressoExemplo: 45,
     exemploTitulo: 'Direito Penal: Teoria do Crime e Imputabilidade',
     exemploSubtitulo: 'Faixa 2 de 6 · faltam 3 min',
-    exemploCapaUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=160&auto=format&fit=crop&q=80',
+    exemploCapaUrl: '/a_luta_pelo_direito_manual.webp',
     canalAndroid: 'retencao_audio',
   },
   {
@@ -150,7 +150,7 @@ export const REGRAS_PADRAO_NOTIFICACOES_LOCAIS: RegraNotificacaoLocal[] = [
     progressoExemplo: 72,
     exemploTitulo: 'Código Penal Comentado & Doutrina Essencial',
     exemploSubtitulo: 'Artigo 121 · 72% lido',
-    exemploCapaUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=160&auto=format&fit=crop&q=80',
+    exemploCapaUrl: '/acesso_a_justica_manual.webp',
     canalAndroid: 'retencao_leitura',
   },
   {
@@ -211,18 +211,28 @@ export const REGRAS_PADRAO_NOTIFICACOES_LOCAIS: RegraNotificacaoLocal[] = [
   },
 ];
 
-const STORAGE_KEY = 'direitoprime_regras_notificacoes_locais_v1';
+const STORAGE_KEY = 'direitoprime_regras_notificacoes_locais_v2';
 const TELEMETRIA_STORAGE_KEY = 'direitoprime_telemetria_notificacoes_locais_v1';
 
 export function carregarRegrasNotificacoesLocais(): RegraNotificacaoLocal[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('direitoprime_regras_notificacoes_locais_v1');
     if (!raw) return REGRAS_PADRAO_NOTIFICACOES_LOCAIS;
     const parsed = JSON.parse(raw) as RegraNotificacaoLocal[];
     if (Array.isArray(parsed) && parsed.length > 0) {
       const idsExistentes = new Set(parsed.map((r) => r.id));
       const faltantes = REGRAS_PADRAO_NOTIFICACOES_LOCAIS.filter((r) => !idsExistentes.has(r.id));
-      return [...parsed, ...faltantes];
+      const mescladas = [...parsed, ...faltantes].map((r) => {
+        // Migração de capas antigas unsplash para as capas oficiais locais
+        if (!r.exemploCapaUrl || r.exemploCapaUrl.includes('unsplash.com')) {
+          const padrao = REGRAS_PADRAO_NOTIFICACOES_LOCAIS.find((p) => p.id === r.id);
+          if (padrao) {
+            return { ...r, exemploCapaUrl: padrao.exemploCapaUrl };
+          }
+        }
+        return r;
+      });
+      return mescladas;
     }
   } catch (err) {
     console.warn('[notificacaoLocalManager] erro ao carregar regras:', err);
