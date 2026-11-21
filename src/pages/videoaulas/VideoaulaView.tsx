@@ -17,6 +17,7 @@ import {
   Download,
   Brain,
   ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
@@ -32,7 +33,6 @@ import { VideoaulaSidebarDesktop } from '@/components/videoaulas/view/VideoaulaS
 import { VideoaulaPanoramaIA } from '@/components/videoaulas/view/VideoaulaPanoramaIA';
 import { VideoaulaPlayerHeader } from '@/components/videoaulas/view/VideoaulaPlayerHeader';
 import { VideoaulaResumeDialog } from '@/components/videoaulas/view/VideoaulaResumeDialog';
-import { VideoaulaMateriaisCompletos } from '@/components/videoaulas/view/VideoaulaMateriaisCompletos';
 import { findVideoaulaByVideoId } from '@/data/videoaulas/videoaulasDriveData';
 import { QuestoesPanel } from '@/components/videoaulas/acoes/VideoaulaQuestoesPanel';
 import { FlashcardsPanel } from '@/components/videoaulas/acoes/VideoaulaEstudoPanels';
@@ -46,7 +46,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-type AbaVideoaula = 'materiais' | 'questoes' | 'flashcards' | 'resumo' | 'transcricao' | 'anotacoes';
+type AbaVideoaula = 'questoes' | 'flashcards' | 'resumo';
 
 const VideoaulaView = () => {
   const { catalogo: catalogoId, area: areaSlug, videoId } = useParams();
@@ -244,16 +244,6 @@ const VideoaulaView = () => {
     );
   }
 
-  // Lista de abas para o Menu de Alternância (Resumo é o 1º e padrão)
-  const abasDisponiveis: Array<{ id: AbaVideoaula; label: string; icon: any; count?: number | string; destaque?: boolean }> = [
-    { id: 'resumo', label: 'Resumo da Aula', icon: BookOpenText },
-    { id: 'questoes', label: 'Questões', icon: ListChecks, count: driveQuestoes.length || undefined, destaque: true },
-    { id: 'materiais', label: 'Materiais & PDFs', icon: FileText, count: driveItem ? 4 : undefined },
-    { id: 'flashcards', label: 'Flashcards', icon: Layers, count: driveCards.length || undefined },
-    { id: 'transcricao', label: 'Transcrição', icon: Subtitles },
-    { id: 'anotacoes', label: 'Minhas Anotações', icon: PenTool },
-  ];
-
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-24 lg:pb-16 selection:bg-rose-500/30">
       {/* Header Superior Limpo */}
@@ -370,75 +360,75 @@ const VideoaulaView = () => {
             </div>
           </div>
 
-          {/* MENU DE ALTERNÂNCIA (SUBSTITUI O ANTIGO RODAPÉ) */}
-          <div className="sticky top-[56px] z-30 -mx-2 sm:-mx-4 lg:mx-0 px-2 sm:px-4 lg:px-0 py-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-y border-white/10 shadow-lg">
-            <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              {abasDisponiveis.map((aba) => {
-                const Icon = aba.icon;
-                const isActive = activeTab === aba.id;
-                return (
-                  <button
-                    key={aba.id}
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      if (aba.id === 'anotacoes') {
-                        setShowAnotacoes(true);
-                      } else {
-                        setActiveTab(aba.id);
-                      }
-                    }}
+          {/* BOTÕES PRINCIPAIS MINIMALISTAS: SOMENTE FLASHCARDS E QUESTÕES */}
+          <div className="sticky top-[56px] z-30 -mx-2 sm:-mx-4 lg:mx-0 px-2 sm:px-4 lg:px-0 py-2.5 bg-[#0D0D0D]/95 backdrop-blur-xl border-y border-white/10 shadow-lg">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-xl mx-auto">
+              {/* Botão Flashcards */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setActiveTab((prev) => (prev === 'flashcards' ? 'resumo' : 'flashcards'));
+                }}
+                className={cn(
+                  'flex items-center justify-center gap-2 sm:gap-2.5 min-h-[48px] px-3 sm:px-4 rounded-xl text-xs sm:text-[14px] font-bold transition-all active:scale-95 cursor-pointer select-none shadow-md',
+                  activeTab === 'flashcards'
+                    ? 'bg-rose-600 text-white shadow-rose-950/60 border border-rose-400/50 font-black'
+                    : 'bg-zinc-900/90 hover:bg-zinc-800/90 border border-white/10 text-zinc-300 hover:text-white',
+                )}
+              >
+                <Layers className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
+                <span>Flashcards</span>
+                {driveCards.length > 0 && (
+                  <span
                     className={cn(
-                      'flex items-center gap-2 min-h-[44px] px-4 rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shrink-0 active:scale-95 cursor-pointer select-none',
-                      isActive
-                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 border border-red-400/40'
-                        : aba.destaque
-                        ? 'bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/40 text-rose-300 hover:text-white shadow-sm shadow-rose-950/40'
-                        : 'bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white',
+                      'text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-black',
+                      activeTab === 'flashcards'
+                        ? 'bg-rose-800 text-white border border-rose-400/40 shadow-inner'
+                        : 'bg-rose-600 text-white shadow-sm',
                     )}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{aba.label}</span>
-                    {aba.count !== undefined && (
-                      <span
-                        className={cn(
-                          'text-[10px] px-1.5 py-0.5 rounded-full font-black',
-                          isActive ? 'bg-black/30 text-white' : 'bg-white/10 text-zinc-400',
-                        )}
-                      >
-                        {aba.count}
-                      </span>
+                    {driveCards.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Botão Questões */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setActiveTab((prev) => (prev === 'questoes' ? 'resumo' : 'questoes'));
+                }}
+                className={cn(
+                  'flex items-center justify-center gap-2 sm:gap-2.5 min-h-[48px] px-3 sm:px-4 rounded-xl text-xs sm:text-[14px] font-bold transition-all active:scale-95 cursor-pointer select-none shadow-md',
+                  activeTab === 'questoes'
+                    ? 'bg-rose-600 text-white shadow-rose-950/60 border border-rose-400/50 font-black'
+                    : 'bg-zinc-900/90 hover:bg-zinc-800/90 border border-white/10 text-zinc-300 hover:text-white',
+                )}
+              >
+                <ListChecks className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
+                <span>Questões</span>
+                {driveQuestoes.length > 0 && (
+                  <span
+                    className={cn(
+                      'text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-black',
+                      activeTab === 'questoes'
+                        ? 'bg-rose-800 text-white border border-rose-400/40 shadow-inner'
+                        : 'bg-rose-600 text-white shadow-sm',
                     )}
-                  </button>
-                );
-              })}
+                  >
+                    {driveQuestoes.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* CONTEÚDO DA ABA SELECIONADA */}
+          {/* CONTEÚDO PRINCIPAL (RESUMO COMO PADRÃO, QUESTÕES OU FLASHCARDS QUANDO ATIVADOS) */}
           <div className="mt-2 min-h-[300px]">
             <AnimatePresence mode="wait">
-              {/* ABA 1: MATERIAIS & PDFs */}
-              {activeTab === 'materiais' && (
-                <motion.div
-                  key="tab-materiais"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-4"
-                >
-                  {driveItem ? (
-                    <VideoaulaMateriaisCompletos item={driveItem} />
-                  ) : (
-                    <div className="p-8 text-center rounded-2xl bg-zinc-900/40 border border-white/10 text-zinc-400 text-sm">
-                      Nenhum material adicional cadastrado para esta aula.
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* ABA 2: QUESTÕES COMENTADAS */}
+              {/* QUESTÕES COMENTADAS */}
               {activeTab === 'questoes' && (
                 <motion.div
                   key="tab-questoes"
@@ -449,13 +439,28 @@ const VideoaulaView = () => {
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-between px-1 pb-1 border-b border-white/10">
-                    <h3 className="font-sans text-sm sm:text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <span className="w-1.5 h-4.5 rounded-full bg-rose-500 shrink-0" />
-                      <span>Questões Comentadas da Aula</span>
-                    </h3>
-                    <span className="text-xs font-semibold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
-                      {driveQuestoes.length} Questões
-                    </span>
+                      <h3 className="font-sans text-sm sm:text-base font-bold text-white uppercase tracking-wider">
+                        Questões Comentadas da Aula
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                        {driveQuestoes.length} Questões
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setActiveTab('resumo');
+                        }}
+                        className="text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Voltar ao Resumo</span>
+                      </button>
+                    </div>
                   </div>
 
                   {driveQuestoes.length > 0 ? (
@@ -468,7 +473,7 @@ const VideoaulaView = () => {
                 </motion.div>
               )}
 
-              {/* ABA 3: FLASHCARDS INTERATIVOS */}
+              {/* FLASHCARDS INTERATIVOS */}
               {activeTab === 'flashcards' && (
                 <motion.div
                   key="tab-flashcards"
@@ -479,13 +484,28 @@ const VideoaulaView = () => {
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-between px-1 pb-1 border-b border-white/10">
-                    <h3 className="font-sans text-sm sm:text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <span className="w-1.5 h-4.5 rounded-full bg-amber-400 shrink-0" />
-                      <span>Flashcards de Fixação</span>
-                    </h3>
-                    <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
-                      {driveCards.length} Cards
-                    </span>
+                      <h3 className="font-sans text-sm sm:text-base font-bold text-white uppercase tracking-wider">
+                        Flashcards de Fixação
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+                        {driveCards.length} Cards
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setActiveTab('resumo');
+                        }}
+                        className="text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Voltar ao Resumo</span>
+                      </button>
+                    </div>
                   </div>
 
                   {driveCards.length > 0 ? (
@@ -613,46 +633,37 @@ const VideoaulaView = () => {
                         </div>
                       </button>
                     </div>
-                  </div>
-                </motion.div>
-              )}
 
-              {/* ABA 5: TRANSCRIÇÃO COMPLETA */}
-              {activeTab === 'transcricao' && (
-                <motion.div
-                  key="tab-transcricao"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center justify-between px-1 pb-1 border-b border-white/10">
-                    <h3 className="font-sans text-sm sm:text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-4.5 rounded-full bg-purple-400 shrink-0" />
-                      <span>Transcrição Integral do Áudio</span>
-                    </h3>
+                    {/* TRANSCRIÇÃO INTEGRAL (SE DISPONÍVEL) */}
                     {driveItem?.transcricao && (
-                      <button
-                        type="button"
-                        onClick={handleCopiarTranscricao}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 border border-white/10 transition-all active:scale-95"
-                      >
-                        {copiado ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{copiado ? 'Copiado!' : 'Copiar'}</span>
-                      </button>
+                      <div className="pt-2 border-t border-white/10">
+                        <details className="group rounded-xl bg-zinc-800/30 border border-white/5 p-3 text-xs">
+                          <summary className="cursor-pointer font-bold text-zinc-300 hover:text-white flex items-center justify-between list-none select-none">
+                            <span className="flex items-center gap-2">
+                              <Subtitles className="w-4 h-4 text-purple-400" />
+                              <span>Transcrição Integral do Áudio</span>
+                            </span>
+                            <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+                          </summary>
+                          <div className="mt-3 pt-3 border-t border-white/5 space-y-3">
+                            <div className="flex justify-end">
+                              <button
+                                type="button"
+                                onClick={handleCopiarTranscricao}
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-700/60 hover:bg-zinc-700 text-[11px] font-semibold text-zinc-200 border border-white/10 transition-all active:scale-95 cursor-pointer"
+                              >
+                                {copiado ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                <span>{copiado ? 'Copiado!' : 'Copiar'}</span>
+                              </button>
+                            </div>
+                            <div className="text-zinc-300 text-xs sm:text-[13px] leading-relaxed whitespace-pre-line font-body max-h-96 overflow-y-auto pr-1">
+                              {driveItem.transcricao}
+                            </div>
+                          </div>
+                        </details>
+                      </div>
                     )}
                   </div>
-
-                  {driveItem?.transcricao ? (
-                    <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 sm:p-6 text-sm text-zinc-300 leading-relaxed whitespace-pre-line space-y-3 font-body">
-                      {driveItem.transcricao}
-                    </div>
-                  ) : (
-                    <div className="p-8 text-center rounded-2xl bg-zinc-900/40 border border-white/10 text-zinc-400 text-sm">
-                      Transcrição não disponível para esta aula.
-                    </div>
-                  )}
                 </motion.div>
               )}
             </AnimatePresence>
