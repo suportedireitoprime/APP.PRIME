@@ -35,6 +35,10 @@ import {
   RefreshCw,
   Trash2,
   UserCheck,
+  Moon,
+  ShieldCheck,
+  Settings,
+  Palette,
 } from 'lucide-react';
 import {
   carregarRegrasNotificacoesLocais,
@@ -51,13 +55,19 @@ import {
 } from '@/lib/nativo/notificacaoLocalManager';
 import { haptic } from '@/lib/nativeHaptics';
 
+type TabView = 'quando_disparar' | 'como_aparece' | 'publicos_telemetria';
+
 export default function AdminNotificacoesLocais() {
   const navigate = useNavigate();
+  const [tabAtiva, setTabAtiva] = useState<TabView>('como_aparece');
   const [regras, setRegras] = useState<RegraNotificacaoLocal[]>(() => carregarRegrasNotificacoesLocais());
   const [regraAtivaId, setRegraAtivaId] = useState<string>('videoaulas_continuar');
   const [progressoSimulado, setProgressoSimulado] = useState<number>(60);
   const [testando, setTestando] = useState<boolean>(false);
   const [contagemRegressiva, setContagemRegressiva] = useState<number | null>(null);
+
+  // Filtro de público para edição de templates
+  const [publicoFiltro, setPublicoFiltro] = useState<PublicoAlvoNotificacao>('todos');
 
   // Estado de Telemetria de Abertura no Aparelho
   const [metricas, setMetricas] = useState<MetricasNotificacoesLocais | null>(null);
@@ -132,7 +142,6 @@ export default function AdminNotificacoesLocais() {
     }
   };
 
-  // Simula uma abertura no local para testar a telemetria em tempo real
   const handleSimularAberturaLocal = async () => {
     haptic.impact('light');
     await registrarAberturaNotificacaoLocal({
@@ -155,17 +164,17 @@ export default function AdminNotificacoesLocais() {
   const getModuloIcon = (modulo: ModuloNotificacaoLocal) => {
     switch (modulo) {
       case 'videoaulas':
-        return <PlayCircle className="w-5 h-5 text-sky-400" />;
+        return <PlayCircle className="w-4 h-4 text-sky-400" />;
       case 'audioaulas':
-        return <Headphones className="w-5 h-5 text-emerald-400" />;
+        return <Headphones className="w-4 h-4 text-emerald-400" />;
       case 'livros':
-        return <BookOpen className="w-5 h-5 text-amber-400" />;
+        return <BookOpen className="w-4 h-4 text-amber-400" />;
       case 'streak':
-        return <Flame className="w-5 h-5 text-orange-400" />;
+        return <Flame className="w-4 h-4 text-orange-400" />;
       case 'flashcards':
-        return <Brain className="w-5 h-5 text-purple-400" />;
+        return <Brain className="w-4 h-4 text-purple-400" />;
       case 'trial':
-        return <Hourglass className="w-5 h-5 text-rose-400" />;
+        return <Hourglass className="w-4 h-4 text-rose-400" />;
     }
   };
 
@@ -181,561 +190,634 @@ export default function AdminNotificacoesLocais() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-medium text-white transition-colors"
           >
             <BellRing className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Push Nuvem</span>
+            <span className="hidden sm:inline">Push Nuvem</span>
           </button>
         }
       />
 
-      <div className="max-w-4xl mx-auto px-4 pt-4 space-y-6">
-        {/* Banner Explicativo */}
-        <div className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-gradient-to-r from-sky-950/40 via-zinc-900 to-zinc-900 p-4 sm:p-5">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center shrink-0 text-sky-400">
-              <Smartphone className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base font-semibold text-white">Disparo Inteligente no Dispositivo</h2>
-                <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/30 text-[10px]">Latência Zero</Badge>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">100% Gratuito</Badge>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">Telemetria Local</Badge>
-              </div>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                As notificações são disparadas diretamente no chip do celular quando o aluno pausa uma aula ou livro.
-                Abaixo você acompanha a <strong>taxa de abertura real</strong> no aparelho e quem clicou para continuar o estudo.
-              </p>
-            </div>
-          </div>
+      <div className="max-w-4xl mx-auto px-4 pt-3 space-y-4">
+        {/* =========================================================================
+            BARRA MINIMALISTA DE NAVEGAÇÃO POR ABAS (3 ABAS LIMPAS)
+           ========================================================================= */}
+        <div className="flex p-1 rounded-2xl bg-zinc-950 border border-white/10 gap-1 select-none">
+          <button
+            onClick={() => {
+              haptic.selection();
+              setTabAtiva('quando_disparar');
+            }}
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
+              tabAtiva === 'quando_disparar'
+                ? 'bg-zinc-800 text-white shadow-md border border-white/10'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5 text-amber-400" />
+            <span className="truncate">Quando Disparar</span>
+          </button>
+
+          <button
+            onClick={() => {
+              haptic.selection();
+              setTabAtiva('como_aparece');
+            }}
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
+              tabAtiva === 'como_aparece'
+                ? 'bg-zinc-800 text-white shadow-md border border-white/10'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5 text-sky-400" />
+            <span className="truncate">Como Aparece</span>
+          </button>
+
+          <button
+            onClick={() => {
+              haptic.selection();
+              setTabAtiva('publicos_telemetria');
+            }}
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
+              tabAtiva === 'publicos_telemetria'
+                ? 'bg-zinc-800 text-white shadow-md border border-white/10'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="truncate">Públicos & Métricas</span>
+          </button>
+        </div>
+
+        {/* SELETOR HORIZONTAL DE MÓDULO (Limpo e compacto) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          {regras.map((r) => {
+            const ativa = r.id === regraAtivaId;
+            return (
+              <button
+                key={r.id}
+                onClick={() => {
+                  haptic.selection();
+                  setRegraAtivaId(r.id);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium shrink-0 transition-all ${
+                  ativa
+                    ? 'bg-white/15 text-white border border-white/20 shadow-sm'
+                    : 'bg-zinc-950/80 text-zinc-400 hover:text-zinc-200 border border-white/5'
+                }`}
+              >
+                {getModuloIcon(r.modulo)}
+                <span>{r.nome.split(' (')[0]}</span>
+                {r.ativo && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+              </button>
+            );
+          })}
         </div>
 
         {/* =========================================================================
-            PAINEL DE TELEMETRIA: SE ELES ABRIRAM NO LOCAL (METRICAS REAIS)
+            ABA 1: ⚙️ QUANDO DISPARAR (GATILHOS & CONDIÇÕES)
            ========================================================================= */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider text-[11px]">
-                Telemetria: Aberturas Reais no Aparelho
-              </h3>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleSimularAberturaLocal}
-                className="text-[11px] text-zinc-400 hover:text-sky-300 bg-white/5 border border-white/10 px-2 py-1 rounded-lg transition-colors"
-              >
-                + Simular Clique
-              </button>
-              <button
-                onClick={() => void carregarMetricas()}
-                disabled={carregandoMetricas}
-                className="text-xs text-zinc-400 hover:text-white p-1 rounded transition-colors"
-                title="Atualizar métricas"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${carregandoMetricas ? 'animate-spin text-sky-400' : ''}`} />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* 1. Total Disparadas */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-1">
-              <span className="text-[11px] text-zinc-400 flex items-center gap-1.5 font-medium">
-                <Send className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Disparadas</span>
-              </span>
-              <div className="text-xl font-bold text-white font-mono">
-                {metricas?.totalDisparadas ?? 0}
-              </div>
-              <span className="text-[10px] text-zinc-500">Agendadas no celular</span>
-            </div>
-
-            {/* 2. Total Abertas */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-emerald-500/20 space-y-1">
-              <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 font-medium">
-                <MousePointerClick className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Abertas no Local</span>
-              </span>
-              <div className="text-xl font-bold text-emerald-400 font-mono">
-                {metricas?.totalAbertas ?? 0}
-              </div>
-              <span className="text-[10px] text-zinc-500">Alunos que clicaram</span>
-            </div>
-
-            {/* 3. Taxa de Abertura (CTR) */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-sky-500/20 space-y-1">
-              <span className="text-[11px] text-sky-400 flex items-center gap-1.5 font-medium">
-                <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                <span>Taxa de Abertura</span>
-              </span>
-              <div className="text-xl font-bold text-sky-400 font-mono">
-                {metricas?.taxaAberturaPct ?? 0}%
-              </div>
-              <span className="text-[10px] text-zinc-500">Conversão real no aparelho</span>
-            </div>
-
-            {/* 4. Tempo Médio até Abrir */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-amber-500/20 space-y-1">
-              <span className="text-[11px] text-amber-400 flex items-center gap-1.5 font-medium">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span>Tempo de Resposta</span>
-              </span>
-              <div className="text-xl font-bold text-amber-400 font-mono">
-                ~{metricas?.tempoMedioAteAbrirMin ?? 4} min
-              </div>
-              <span className="text-[10px] text-zinc-500">Média pós-disparo</span>
-            </div>
-          </div>
-
-          {/* Desempenho por Módulo & Feed de Aberturas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {/* Tabela por Função */}
-            <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Desempenho por Função
-                </h4>
-                <span className="text-[11px] text-zinc-500">Abertas / Disparadas</span>
-              </div>
-
-              <div className="space-y-2">
-                {[
-                  { id: 'videoaulas' as const, label: 'Videoaulas', icon: PlayCircle, color: 'text-sky-400' },
-                  { id: 'audioaulas' as const, label: 'Áudioaulas', icon: Headphones, color: 'text-emerald-400' },
-                  { id: 'livros' as const, label: 'Livros & Vade Mecum', icon: BookOpen, color: 'text-amber-400' },
-                  { id: 'streak' as const, label: 'Ofensiva Diária', icon: Flame, color: 'text-orange-400' },
-                  { id: 'flashcards' as const, label: 'Flashcards', icon: Brain, color: 'text-purple-400' },
-                ].map((item) => {
-                  const stat = metricas?.porModulo?.[item.id] || { disparadas: 0, abertas: 0, taxaPct: 0 };
-                  const Icon = item.icon;
-
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Icon className={`w-4 h-4 ${item.color}`} />
-                        <span className="text-zinc-200 font-medium">{item.label}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-zinc-400 font-mono text-[11px]">
-                          {stat.abertas} / {stat.disparadas}
-                        </span>
-                        <Badge className="bg-white/10 text-white font-mono text-[10px]">
-                          {stat.taxaPct}%
-                        </Badge>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Feed Ao Vivo das Últimas Aberturas */}
-            <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Últimos Alunos que Abriram</span>
-                </h4>
-                {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 && (
-                  <button
-                    onClick={handleLimparTestes}
-                    className="text-[10px] text-zinc-500 hover:text-red-400 flex items-center gap-1 transition-colors"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Limpar</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-2 max-h-[175px] overflow-y-auto pr-1">
-                {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 ? (
-                  metricas.ultimasAberturas.map((ev) => (
-                    <div
-                      key={ev.id}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-1 text-xs"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-white font-medium truncate">{ev.titulo}</span>
-                        <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] shrink-0">
-                          {ev.acaoId === 'continuar' ? 'Clicou Continuar' : 'Abriu Push'}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-zinc-400">
-                        <span className="truncate">{ev.userEmail || 'aluno'}</span>
-                        <span className="shrink-0 text-zinc-500">
-                          {new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(
-                            new Date(ev.timestamp)
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-6 text-center text-xs text-zinc-500 rounded-xl bg-white/[0.02] border border-dashed border-white/10">
-                    Nenhuma abertura registrada ainda. Use o botão "+ Simular Clique" acima para testar o registro.
+        {tabAtiva === 'quando_disparar' && (
+          <div className="space-y-4">
+            <Card className="bg-zinc-950 border-white/10 p-4 sm:p-5 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    {getModuloIcon(regraSelecionada.modulo)}
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* =========================================================================
-            SIMULADOR INTERATIVO ANDROID (IDÊNTICO AO PRINT DO USUÁRIO)
-           ========================================================================= */}
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-sky-400" />
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider text-[11px]">
-                Preview em Tempo Real (Android 14/15)
-              </h3>
-            </div>
-            <span className="text-[11px] text-zinc-400">Arraste para testar o progresso</span>
-          </div>
-
-          <Card className="bg-zinc-950/90 border-white/10 p-5 rounded-2xl shadow-xl space-y-4">
-            {/* O CARD DE NOTIFICAÇÃO ESTILO ANDROID NATIVO */}
-            <div className="relative mx-auto max-w-md w-full bg-[#1e1e20] text-white rounded-2xl p-3.5 sm:p-4 border border-white/10 shadow-2xl space-y-3 font-sans select-none">
-              {/* Header do Sistema: Ícone do App, Nome, Autor e Capa */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  {/* Ícone Redondo com Fogo (como no print) */}
-                  <div className="w-6 h-6 rounded-full bg-[#f95738] flex items-center justify-center shrink-0 shadow-sm">
-                    <Flame className="w-3.5 h-3.5 text-white fill-white" />
+                  <div>
+                    <h3 className="text-sm font-bold text-white">{regraSelecionada.nome}</h3>
+                    <p className="text-xs text-zinc-400">Gatilhos de tempo e regras de inatividade</p>
                   </div>
-                  <span className="text-[13px] font-semibold text-white truncate">Direito Premium</span>
-                  <span className="text-zinc-500 text-xs font-light">·</span>
-                  <span className="text-zinc-400 text-xs truncate">
-                    {regraSelecionada.modulo === 'audioaulas'
-                      ? 'Áudioaula'
-                      : regraSelecionada.modulo === 'livros'
-                      ? 'Biblioteca'
-                      : 'Estudo'}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-zinc-400 hidden sm:inline">
+                    {regraSelecionada.ativo ? 'Ativado' : 'Pausado'}
                   </span>
+                  <Switch
+                    checked={regraSelecionada.ativo}
+                    onCheckedChange={(checked) => {
+                      haptic.selection();
+                      handleAtualizarRegra(regraSelecionada.id, { ativo: checked });
+                    }}
+                  />
                 </div>
+              </div>
 
-                {/* Capa do Livro / Aula (Direita) */}
-                {regraSelecionada.exemploCapaUrl && (
-                  <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 border border-white/10 shadow-md">
-                    <img
-                      src={regraSelecionada.exemploCapaUrl}
-                      alt="Capa"
-                      className="w-full h-full object-cover"
+              {/* 1. Tempo de Inatividade após Pausa */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Quando disparar a notificação:</span>
+                </label>
+
+                {regraSelecionada.horarioFixoDisparo ? (
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <input
+                      type="time"
+                      value={regraSelecionada.horarioFixoDisparo}
+                      onChange={(e) => {
+                        handleAtualizarRegra(regraSelecionada.id, { horarioFixoDisparo: e.target.value });
+                      }}
+                      className="bg-zinc-900 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-mono"
                     />
+                    <span className="text-xs text-zinc-400">
+                      Disparo fixo todos os dias se o aluno ainda não tiver estudado hoje.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { horas: 0.5, label: '30 minutos' },
+                      { horas: 1, label: '1 hora' },
+                      { horas: 2, label: '2 horas (Padrão)', destaque: true },
+                      { horas: 4, label: '4 horas' },
+                      { horas: 12, label: '12 horas' },
+                      { horas: 24, label: '24 horas' },
+                    ].map((opt) => {
+                      const ativo = (regraSelecionada.gatilhoHorasInatividade || 2) === opt.horas;
+                      return (
+                        <button
+                          key={opt.horas}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            handleAtualizarRegra(regraSelecionada.id, { gatilhoHorasInatividade: opt.horas });
+                          }}
+                          className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center ${
+                            ativo
+                              ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 shadow-sm'
+                              : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
 
-              {/* Título & Subtítulo */}
-              <div className="space-y-0.5">
-                <h4 className="text-[14px] font-bold text-white leading-tight line-clamp-1">
-                  {regraSelecionada.exemploTitulo}
+              {/* 2. Condições Inteligentes de Proteção (Anti-Spam) */}
+              <div className="space-y-3 pt-3 border-t border-white/10">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Condições Inteligentes de Proteção</span>
                 </h4>
-                <p className="text-[12px] text-zinc-300 font-normal line-clamp-1">
-                  {regraSelecionada.exemploSubtitulo}
-                </p>
-              </div>
 
-              {/* Barra de Progresso Azul Vibrante (Idêntica ao Print do Usuário!) */}
-              {regraSelecionada.mostrarBarraProgresso && (
-                <div className="space-y-1 pt-1">
-                  <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#007aff] rounded-full transition-all duration-300 shadow-[0_0_8px_#007aff]"
-                      style={{ width: `${progressoSimulado}%` }}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Progresso Mínimo */}
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-zinc-300 font-medium">Progresso mínimo para disparar:</span>
+                      <span className="text-sky-400 font-bold font-mono">
+                        {regraSelecionada.progressoMinimoPct ?? 10}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="5"
+                      max="30"
+                      value={regraSelecionada.progressoMinimoPct ?? 10}
+                      onChange={(e) => {
+                        handleAtualizarRegra(regraSelecionada.id, { progressoMinimoPct: Number(e.target.value) });
+                      }}
+                      className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-500"
                     />
+                    <p className="text-[11px] text-zinc-500">
+                      Evita notificar se o aluno só abriu e fechou por engano em menos de 10%.
+                    </p>
+                  </div>
+
+                  {/* Limite Diário de Disparos */}
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-zinc-300 font-medium">Limite diário por usuário:</span>
+                      <span className="text-amber-400 font-bold font-mono">
+                        {regraSelecionada.limiteDiario ?? 2} por dia
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[1, 2, 3].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            handleAtualizarRegra(regraSelecionada.id, { limiteDiario: num });
+                          }}
+                          className={`flex-1 py-1 rounded-lg text-xs font-semibold border ${
+                            (regraSelecionada.limiteDiario ?? 2) === num
+                              ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
+                              : 'bg-white/5 border-white/10 text-zinc-400'
+                          }`}
+                        >
+                          Máx {num}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-zinc-500">
+                      Protege o aluno contra excesso de alertas no mesmo dia.
+                    </p>
                   </div>
                 </div>
-              )}
 
-              {/* Botão de Ação Interativo ("Continuar assistindo") */}
-              <div className="pt-2 flex items-center justify-between border-t border-white/5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
-                    void registrarAberturaNotificacaoLocal({
-                      modulo: regraSelecionada.modulo,
-                      acao: 'continuar',
-                      rota: regraSelecionada.rotaPadrao,
-                      progresso: progressoSimulado,
-                    });
-                    toast.info(`Navegando para: ${regraSelecionada.rotaPadrao} (Abertura registrada!)`);
-                    void carregarMetricas();
-                  }}
-                  className="text-[13px] font-semibold text-white hover:text-sky-400 active:scale-95 transition-all py-1 px-1 flex items-center gap-1.5"
-                >
-                  <span>{regraSelecionada.textoBotaoAcao}</span>
-                </button>
-                <div className="text-zinc-500 hover:text-zinc-300 transition-colors p-1">
-                  <Clock className="w-3.5 h-3.5" />
+                {/* Quiet Hours (Janela de Silêncio das 23h às 07h) */}
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-400">
+                      <Moon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">Quiet Hours (Janela de Silêncio)</div>
+                      <div className="text-[11px] text-zinc-400">
+                        Não disparar notificações entre 23:00 e 07:00 da manhã.
+                      </div>
+                    </div>
+                  </div>
+
+                  <Switch
+                    checked={regraSelecionada.quietHoursAtivo ?? true}
+                    onCheckedChange={(checked) => {
+                      haptic.selection();
+                      handleAtualizarRegra(regraSelecionada.id, { quietHoursAtivo: checked });
+                    }}
+                  />
                 </div>
               </div>
-            </div>
-
-            {/* Slider de Progresso Interativo */}
-            {regraSelecionada.mostrarBarraProgresso && (
-              <div className="pt-2 max-w-md mx-auto space-y-1.5">
-                <div className="flex justify-between text-xs text-zinc-400 font-medium">
-                  <span>Progresso do Aluno no Teste:</span>
-                  <span className="text-sky-400 font-bold">{progressoSimulado}%</span>
-                </div>
-                <input
-                  type="range"
-                  min="5"
-                  max="95"
-                  value={progressoSimulado}
-                  onChange={(e) => setProgressoSimulado(Number(e.target.value))}
-                  className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                />
-              </div>
-            )}
-
-            {/* Botões de Ação para Teste Real */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
-                onClick={() => handleDispararTeste(0)}
-                disabled={testando || contagemRegressiva !== null}
-                className="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs px-5 h-11 rounded-xl shadow-lg shadow-sky-600/20 active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <Send className="w-4 h-4" />
-                <span>Testar no Meu Aparelho Agora</span>
-              </Button>
-
-              <Button
-                onClick={() => handleDispararTeste(5)}
-                disabled={testando || contagemRegressiva !== null}
-                variant="outline"
-                className="w-full sm:w-auto border-white/20 bg-white/5 hover:bg-white/10 text-white font-medium text-xs px-5 h-11 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span>
-                  {contagemRegressiva !== null
-                    ? `Disparando em ${contagemRegressiva}s... (bloqueie a tela)`
-                    : 'Testar em 5 segundos (Background)'}
-                </span>
-              </Button>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
+        )}
 
         {/* =========================================================================
-            GERENCIADOR DE REGRAS POR FUNÇÃO & PESSOAS
+            ABA 2: 🎨 COMO APARECE (VISUAL DA NOTIFICAÇÃO & PREVIEW 1:1)
            ========================================================================= */}
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider text-[11px]">
-                Regras por Função & Público-Alvo
-              </h3>
-              <p className="text-xs text-zinc-400">Escolha quais módulos enviam e para quem direcionar</p>
-            </div>
-            <button
-              onClick={handleRestaurarPadroes}
-              className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 transition-colors"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Restaurar Padrões</span>
-            </button>
-          </div>
+        {tabAtiva === 'como_aparece' && (
+          <div className="space-y-4">
+            {/* O CARD DE NOTIFICAÇÃO ESTILO ANDROID NATIVO (IDÊNTICO AO PRINT) */}
+            <Card className="bg-zinc-950 border-white/10 p-4 sm:p-5 rounded-2xl shadow-xl space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Preview Real do Aparelho (Android 15 / iOS)</span>
+                </span>
+                <span className="text-[11px] text-zinc-500 font-mono">{progressoSimulado}% concluído</span>
+              </div>
 
-          <div className="grid grid-cols-1 gap-3.5">
-            {regras.map((regra) => {
-              const selecionada = regra.id === regraAtivaId;
-
-              return (
-                <div
-                  key={regra.id}
-                  onClick={() => {
-                    haptic.selection();
-                    setRegraAtivaId(regra.id);
-                  }}
-                  className={`cursor-pointer rounded-2xl border transition-all p-4 ${
-                    selecionada
-                      ? 'border-sky-500/60 bg-zinc-900/90 shadow-lg shadow-sky-500/10'
-                      : 'border-white/10 bg-zinc-950/60 hover:bg-zinc-900/50'
-                  }`}
-                >
-                  {/* Cabeçalho do Card */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                        {getModuloIcon(regra.modulo)}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="text-sm font-bold text-white">{regra.nome}</h4>
-                          {regra.mostrarBarraProgresso && (
-                            <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/30 text-[10px]">
-                              Barra Azul Ativa
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">{regra.descricao}</p>
-                      </div>
+              {/* CARD ANDROID 1:1 */}
+              <div className="relative mx-auto max-w-md w-full bg-[#1e1e20] text-white rounded-2xl p-3.5 sm:p-4 border border-white/10 shadow-2xl space-y-3 font-sans select-none">
+                {/* Header: Ícone Redondo Laranja, Nome, Separador e Capa */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-6 h-6 rounded-full bg-[#f95738] flex items-center justify-center shrink-0 shadow-sm">
+                      <Flame className="w-3.5 h-3.5 text-white fill-white" />
                     </div>
-
-                    <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <span className="text-xs text-zinc-400 font-medium hidden sm:inline">
-                        {regra.ativo ? 'Ativo' : 'Pausado'}
-                      </span>
-                      <Switch
-                        checked={regra.ativo}
-                        onCheckedChange={(checked) => {
-                          haptic.selection();
-                          handleAtualizarRegra(regra.id, { ativo: checked });
-                        }}
-                      />
-                    </div>
+                    <span className="text-[13px] font-semibold text-white truncate">Direito Premium</span>
+                    <span className="text-zinc-500 text-xs font-light">·</span>
+                    <span className="text-zinc-400 text-xs truncate">
+                      {regraSelecionada.modulo === 'audioaulas'
+                        ? 'Áudioaula'
+                        : regraSelecionada.modulo === 'livros'
+                        ? 'Biblioteca'
+                        : 'Estudo'}
+                    </span>
                   </div>
 
-                  {/* Configurações Detalhadas (visíveis quando selecionado) */}
-                  {selecionada && (
-                    <div
-                      className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {/* 1. Para Quais Pessoas Enviar (Público-Alvo) */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                          <Users className="w-3.5 h-3.5 text-sky-400" />
-                          <span>Para quem enviar:</span>
-                        </label>
-                        <select
-                          value={regra.publicoAlvo}
-                          onChange={(e) => {
-                            haptic.selection();
-                            handleAtualizarRegra(regra.id, {
-                              publicoAlvo: e.target.value as PublicoAlvoNotificacao,
-                            });
-                          }}
-                          className="w-full bg-zinc-900 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
-                        >
-                          <option value="todos">👥 Todos os alunos</option>
-                          <option value="gratuitos">🆓 Apenas Gratuitos (Foco em Conversão)</option>
-                          <option value="assinantes">👑 Apenas Assinantes Pro (Engajamento)</option>
-                          <option value="inativos_24h">💤 Inativos há mais de 24 horas</option>
-                        </select>
-                      </div>
-
-                      {/* 2. Tempo de Inatividade / Horário de Disparo */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Gatilho de Disparo:</span>
-                        </label>
-                        {regra.horarioFixoDisparo ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="time"
-                              value={regra.horarioFixoDisparo}
-                              onChange={(e) => {
-                                handleAtualizarRegra(regra.id, { horarioFixoDisparo: e.target.value });
-                              }}
-                              className="w-full bg-zinc-900 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
-                            />
-                            <span className="text-[11px] text-zinc-400 shrink-0">Horário fixo</span>
-                          </div>
-                        ) : (
-                          <select
-                            value={regra.gatilhoHorasInatividade}
-                            onChange={(e) => {
-                              haptic.selection();
-                              handleAtualizarRegra(regra.id, {
-                                gatilhoHorasInatividade: Number(e.target.value),
-                              });
-                            }}
-                            className="w-full bg-zinc-900 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
-                          >
-                            <option value={1}>1 hora após parar o estudo</option>
-                            <option value={2}>2 horas após pausar (Recomendado)</option>
-                            <option value={4}>4 horas após pausar</option>
-                            <option value={12}>12 horas após pausar</option>
-                            <option value={24}>24 horas após pausar</option>
-                          </select>
-                        )}
-                      </div>
-
-                      {/* 3. Título da Notificação */}
-                      <div className="space-y-1.5 sm:col-span-2">
-                        <label className="text-xs font-semibold text-zinc-300">
-                          Exemplo de Título:
-                        </label>
-                        <Input
-                          value={regra.exemploTitulo}
-                          onChange={(e) => handleAtualizarRegra(regra.id, { exemploTitulo: e.target.value })}
-                          className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
-                        />
-                      </div>
-
-                      {/* 4. Subtítulo da Notificação */}
-                      <div className="space-y-1.5 sm:col-span-2">
-                        <label className="text-xs font-semibold text-zinc-300">
-                          Exemplo de Subtítulo:
-                        </label>
-                        <Input
-                          value={regra.exemploSubtitulo}
-                          onChange={(e) => handleAtualizarRegra(regra.id, { exemploSubtitulo: e.target.value })}
-                          className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
-                        />
-                      </div>
-
-                      {/* 5. Botão de Ação & Rota */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-zinc-300">Texto do Botão de Ação:</label>
-                        <Input
-                          value={regra.textoBotaoAcao}
-                          onChange={(e) => handleAtualizarRegra(regra.id, { textoBotaoAcao: e.target.value })}
-                          className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-zinc-300">Rota de Abertura:</label>
-                        <Input
-                          value={regra.rotaPadrao}
-                          onChange={(e) => handleAtualizarRegra(regra.id, { rotaPadrao: e.target.value })}
-                          className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
-                        />
-                      </div>
-
-                      {/* 6. Barra de Progresso Azul */}
-                      <div className="sm:col-span-2 flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
-                        <div>
-                          <div className="text-xs font-semibold text-white">Barra de Progresso Azul</div>
-                          <div className="text-[11px] text-zinc-400">
-                            Exibe a linha azul horizontal idêntica ao player de mídia no painel de notificações
-                          </div>
-                        </div>
-                        <Switch
-                          checked={regra.mostrarBarraProgresso}
-                          onCheckedChange={(checked) => {
-                            haptic.selection();
-                            handleAtualizarRegra(regra.id, { mostrarBarraProgresso: checked });
-                          }}
-                        />
-                      </div>
+                  {regraSelecionada.exemploCapaUrl && (
+                    <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 border border-white/10 shadow-md">
+                      <img
+                        src={regraSelecionada.exemploCapaUrl}
+                        alt="Capa"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Rodapé Informativo */}
-        <div className="p-4 rounded-xl border border-white/10 bg-zinc-950/50 text-center space-y-1 text-xs text-zinc-400">
-          <p>
-            As aberturas locais são registradas instantaneamente no aparelho e sincronizadas com a nuvem.
-          </p>
-          <p className="text-[11px] text-zinc-500">
-            Capacitor Local Notifications v8 · Suporte a Android 14+ / iOS 17+ com Action Buttons e CTR local
-          </p>
+                {/* Título & Subtítulo com valores simulados */}
+                <div className="space-y-0.5">
+                  <h4 className="text-[14px] font-bold text-white leading-tight line-clamp-1">
+                    {regraSelecionada.exemploTitulo}
+                  </h4>
+                  <p className="text-[12px] text-zinc-300 font-normal line-clamp-1">
+                    {regraSelecionada.exemploSubtitulo}
+                  </p>
+                </div>
+
+                {/* Barra de Progresso Azul Vibrante (Idêntica ao Print do Usuário!) */}
+                {regraSelecionada.mostrarBarraProgresso && (
+                  <div className="space-y-1 pt-1">
+                    <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#007aff] rounded-full transition-all duration-300 shadow-[0_0_8px_#007aff]"
+                        style={{ width: `${progressoSimulado}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Botão de Ação Interativo ("Continuar assistindo") */}
+                <div className="pt-2 flex items-center justify-between border-t border-white/5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      void registrarAberturaNotificacaoLocal({
+                        modulo: regraSelecionada.modulo,
+                        acao: 'continuar',
+                        rota: regraSelecionada.rotaPadrao,
+                        progresso: progressoSimulado,
+                      });
+                      toast.info(`Abertura registrada: ${regraSelecionada.rotaPadrao}`);
+                      void carregarMetricas();
+                    }}
+                    className="text-[13px] font-semibold text-white hover:text-sky-400 active:scale-95 transition-all py-1 px-1 flex items-center gap-1.5"
+                  >
+                    <span>{regraSelecionada.textoBotaoAcao}</span>
+                  </button>
+                  <div className="text-zinc-500 hover:text-zinc-300 transition-colors p-1">
+                    <Clock className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Slider de Progresso Interativo */}
+              {regraSelecionada.mostrarBarraProgresso && (
+                <div className="pt-1 max-w-md mx-auto space-y-1.5">
+                  <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                    <span>Ajuste para testar a barra azul:</span>
+                    <span className="text-sky-400 font-bold font-mono">{progressoSimulado}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="95"
+                    value={progressoSimulado}
+                    onChange={(e) => setProgressoSimulado(Number(e.target.value))}
+                    className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                  />
+                </div>
+              )}
+
+              {/* Botões de Disparo de Teste */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                <Button
+                  onClick={() => handleDispararTeste(0)}
+                  disabled={testando || contagemRegressiva !== null}
+                  className="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs px-4 h-10 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Testar no Meu Aparelho Agora</span>
+                </Button>
+
+                <Button
+                  onClick={() => handleDispararTeste(5)}
+                  disabled={testando || contagemRegressiva !== null}
+                  variant="outline"
+                  className="w-full sm:w-auto border-white/15 bg-white/5 hover:bg-white/10 text-white font-medium text-xs px-4 h-10 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <Clock className="w-3.5 h-3.5 text-amber-400" />
+                  <span>
+                    {contagemRegressiva !== null
+                      ? `Disparando em ${contagemRegressiva}s... (bloqueie)`
+                      : 'Testar em 5 segundos'}
+                  </span>
+                </Button>
+              </div>
+            </Card>
+
+            {/* Customizador de Textos & Variáveis */}
+            <Card className="bg-zinc-950 border-white/10 p-4 sm:p-5 rounded-2xl space-y-3.5">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Palette className="w-3.5 h-3.5 text-sky-400" />
+                <span>Editar Textos & Variáveis Dinâmicas</span>
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1 sm:col-span-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <label className="font-semibold text-zinc-300">Título da Notificação:</label>
+                    <span className="text-[11px] text-zinc-500">Variáveis: &#123;titulo&#125;, &#123;aluno&#125;</span>
+                  </div>
+                  <Input
+                    value={regraSelecionada.exemploTitulo}
+                    onChange={(e) => handleAtualizarRegra(regraSelecionada.id, { exemploTitulo: e.target.value })}
+                    className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <label className="font-semibold text-zinc-300">Subtítulo da Notificação:</label>
+                    <span className="text-[11px] text-zinc-500">Variáveis: &#123;minutos&#125;, &#123;progresso&#125;</span>
+                  </div>
+                  <Input
+                    value={regraSelecionada.exemploSubtitulo}
+                    onChange={(e) => handleAtualizarRegra(regraSelecionada.id, { exemploSubtitulo: e.target.value })}
+                    className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-300">Texto do Botão de Ação:</label>
+                  <Input
+                    value={regraSelecionada.textoBotaoAcao}
+                    onChange={(e) => handleAtualizarRegra(regraSelecionada.id, { textoBotaoAcao: e.target.value })}
+                    className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-300">Rota de Abertura:</label>
+                  <Input
+                    value={regraSelecionada.rotaPadrao}
+                    onChange={(e) => handleAtualizarRegra(regraSelecionada.id, { rotaPadrao: e.target.value })}
+                    className="bg-zinc-900 border-white/15 text-xs text-white h-9 rounded-xl"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div>
+                    <div className="text-xs font-semibold text-white">Barra de Progresso Azul</div>
+                    <div className="text-[11px] text-zinc-400">
+                      Exibe a linha horizontal com a porcentagem de conclusão no aparelho
+                    </div>
+                  </div>
+                  <Switch
+                    checked={regraSelecionada.mostrarBarraProgresso}
+                    onCheckedChange={(checked) => {
+                      haptic.selection();
+                      handleAtualizarRegra(regraSelecionada.id, { mostrarBarraProgresso: checked });
+                    }}
+                  />
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* =========================================================================
+            ABA 3: 👥 PÚBLICOS & ABERTURAS (TELEMETRIA E SEGMENTAÇÃO)
+           ========================================================================= */}
+        {tabAtiva === 'publicos_telemetria' && (
+          <div className="space-y-4">
+            {/* 1. SEPARADOR DE PÚBLICOS-ALVO */}
+            <Card className="bg-zinc-950 border-white/10 p-4 sm:p-5 rounded-2xl space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Segmentação de Públicos</span>
+                  </h4>
+                  <p className="text-xs text-zinc-400">Direcione regras e mensagens para perfis específicos</p>
+                </div>
+
+                <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] border-emerald-500/30">
+                  Segmentação Ativa
+                </Badge>
+              </div>
+
+              {/* Botões de Público */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { id: 'todos' as const, label: '👥 Todos os Alunos', desc: 'Regra geral' },
+                  { id: 'gratuitos' as const, label: '🆓 Apenas Gratuitos', desc: 'Foco conversão Pro' },
+                  { id: 'assinantes' as const, label: '👑 Assinantes Pro', desc: 'Foco retenção / LTV' },
+                  { id: 'inativos_24h' as const, label: '💤 Inativos (+48h)', desc: 'Reativação de estudo' },
+                ].map((pub) => {
+                  const ativo = regraSelecionada.publicoAlvo === pub.id;
+                  return (
+                    <button
+                      key={pub.id}
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        handleAtualizarRegra(regraSelecionada.id, { publicoAlvo: pub.id });
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-all space-y-0.5 ${
+                        ativo
+                          ? 'bg-emerald-500/15 border-emerald-500/40 shadow-sm'
+                          : 'bg-white/5 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className={`text-xs font-bold ${ativo ? 'text-emerald-300' : 'text-zinc-200'}`}>
+                        {pub.label}
+                      </div>
+                      <div className="text-[10px] text-zinc-400">{pub.desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* 2. TELEMETRIA: SE ELES ABRIRAM NO LOCAL */}
+            <Card className="bg-zinc-950 border-white/10 p-4 sm:p-5 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-emerald-400" />
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider text-[11px]">
+                    Telemetria: Aberturas Reais no Aparelho
+                  </h3>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSimularAberturaLocal}
+                    className="text-[11px] text-zinc-400 hover:text-sky-300 bg-white/5 border border-white/10 px-2 py-1 rounded-lg transition-colors"
+                  >
+                    + Simular Clique
+                  </button>
+                  <button
+                    onClick={() => void carregarMetricas()}
+                    disabled={carregandoMetricas}
+                    className="text-xs text-zinc-400 hover:text-white p-1 rounded transition-colors"
+                    title="Atualizar métricas"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${carregandoMetricas ? 'animate-spin text-sky-400' : ''}`} />
+                  </button>
+                </div>
+              </div>
+
+              {/* 4 Cards de Métricas */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                  <span className="text-[11px] text-zinc-400 font-medium">Disparadas</span>
+                  <div className="text-xl font-bold text-white font-mono">{metricas?.totalDisparadas ?? 0}</div>
+                  <span className="text-[10px] text-zinc-500">Agendadas no celular</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/5 border border-emerald-500/20 space-y-1">
+                  <span className="text-[11px] text-emerald-400 font-medium">Abertas no Local</span>
+                  <div className="text-xl font-bold text-emerald-400 font-mono">{metricas?.totalAbertas ?? 0}</div>
+                  <span className="text-[10px] text-zinc-500">Alunos que clicaram</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/5 border border-sky-500/20 space-y-1">
+                  <span className="text-[11px] text-sky-400 font-medium">Taxa de Abertura</span>
+                  <div className="text-xl font-bold text-sky-400 font-mono">{metricas?.taxaAberturaPct ?? 0}%</div>
+                  <span className="text-[10px] text-zinc-500">Conversão real</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/5 border border-amber-500/20 space-y-1">
+                  <span className="text-[11px] text-amber-400 font-medium">Tempo até Abrir</span>
+                  <div className="text-xl font-bold text-amber-400 font-mono">~{metricas?.tempoMedioAteAbrirMin ?? 4} min</div>
+                  <span className="text-[10px] text-zinc-500">Média pós-disparo</span>
+                </div>
+              </div>
+
+              {/* Feed das Últimas Aberturas */}
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Últimos Alunos que Abriram a Notificação</span>
+                  </span>
+                  {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 && (
+                    <button
+                      onClick={handleLimparTestes}
+                      className="text-[10px] text-zinc-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Limpar</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+                  {metricas?.ultimasAberturas && metricas.ultimasAberturas.length > 0 ? (
+                    metricas.ultimasAberturas.map((ev) => (
+                      <div
+                        key={ev.id}
+                        className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="text-white font-medium truncate">{ev.titulo}</div>
+                          <div className="text-[11px] text-zinc-400 truncate">{ev.userEmail || 'aluno'}</div>
+                        </div>
+                        <div className="text-right shrink-0 space-y-0.5">
+                          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px]">
+                            {ev.acaoId === 'continuar' ? 'Clicou Continuar' : 'Abriu Push'}
+                          </Badge>
+                          <div className="text-[10px] text-zinc-500">
+                            {new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(
+                              new Date(ev.timestamp)
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-xs text-zinc-500 rounded-xl bg-white/[0.02] border border-dashed border-white/10">
+                      Nenhuma abertura registrada ainda. Use o botão "+ Simular Clique" para testar o registro.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Rodapé Minimalista */}
+        <div className="py-2 text-center text-[11px] text-zinc-600">
+          Notificações Locais · Motor Nativo Capacitor v8 & Web Push
         </div>
       </div>
     </div>

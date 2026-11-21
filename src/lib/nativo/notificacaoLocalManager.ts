@@ -32,7 +32,7 @@ export interface RegraNotificacaoLocal {
   textoBotaoAcao: string;
   rotaPadrao: string;
   publicoAlvo: PublicoAlvoNotificacao;
-  gatilhoHorasInatividade: number; // ex: 2, 4, 12, 24
+  gatilhoHorasInatividade: number; // ex: 0.5, 1, 2, 4, 12, 24
   horarioFixoDisparo?: string; // ex: '19:00'
   mostrarBarraProgresso: boolean;
   progressoExemplo: number; // 0-100 para o preview e teste
@@ -40,6 +40,31 @@ export interface RegraNotificacaoLocal {
   exemploSubtitulo: string;
   exemploCapaUrl?: string;
   canalAndroid: string;
+
+  // GATILHOS INTELIGENTES
+  progressoMinimoPct?: number; // Padrão 10%
+  progressoMaximoPct?: number; // Padrão 95%
+  quietHoursAtivo?: boolean; // Silêncio das 23h às 07h
+  quietHoursInicio?: string; // '23:00'
+  quietHoursFim?: string; // '07:00'
+  limiteDiario?: number; // Máximo de disparos por dia
+
+  // TEMPLATES ESPECÍFICOS POR PÚBLICO
+  templateGratuito?: {
+    titulo: string;
+    subtitulo: string;
+    botao: string;
+  };
+  templateAssinante?: {
+    titulo: string;
+    subtitulo: string;
+    botao: string;
+  };
+  templateInativo?: {
+    titulo: string;
+    subtitulo: string;
+    botao: string;
+  };
 }
 
 export interface EventoTelemetriaLocal {
