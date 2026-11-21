@@ -3,9 +3,30 @@
  * Suporta gatilhos inteligentes no aparelho (Continuar assistindo, continuar lendo,
  * barra de progresso, streak e repetição espaçada) com telemetria de aberturas no local.
  */
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+
+export interface NativeNotificationPluginInterface {
+  showProgressNotification(options: {
+    id: number;
+    title: string;
+    body: string;
+    progress: number;
+    showProgress: boolean;
+    coverUrl?: string;
+    smallIcon?: string;
+    iconColor?: string;
+    actionTitle?: string;
+    route?: string;
+    channelId?: string;
+    channelName?: string;
+    delaySeconds?: number;
+  }): Promise<{ success: boolean; id?: number; progress?: number; coverLoaded?: boolean }>;
+  cancelNotification(options: { id: number }): Promise<{ success: boolean }>;
+}
+
+export const NativeNotification = registerPlugin<NativeNotificationPluginInterface>('NativeNotification');
 
 export type ModuloNotificacaoLocal =
   | 'audioaulas'
@@ -689,7 +710,7 @@ export async function agendarRetencaoAudioaula(dados: {
             schedule: { at: scheduleDate, allowWhileIdle: true },
             actionTypeId: TIPO_RETENCAO_ACAO,
             channelId: 'retencao_audio',
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#10B981', // Verde Esmeralda
             largeIcon: dados.capaUrl || regra.exemploCapaUrl,
             extra: {
@@ -761,7 +782,7 @@ export async function agendarRetencaoVideoaula(dados: {
             schedule: { at: scheduleDate, allowWhileIdle: true },
             actionTypeId: TIPO_RETENCAO_ACAO,
             channelId: 'retencao_video',
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#2563EB', // Azul Royal vibrante idêntico ao print
             largeIcon: dados.capaUrl || regra.exemploCapaUrl,
             extra: {
@@ -832,7 +853,7 @@ export async function agendarRetencaoLivro(dados: {
             schedule: { at: scheduleDate, allowWhileIdle: true },
             actionTypeId: TIPO_RETENCAO_ACAO,
             channelId: 'retencao_leitura',
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#F59E0B',
             largeIcon: dados.capaUrl || regra.exemploCapaUrl,
             extra: {
@@ -899,7 +920,7 @@ export async function agendarRetencaoStreakDiario(dados?: { diasStreak?: number 
             schedule: { at: proximo, allowWhileIdle: true },
             actionTypeId: TIPO_RETENCAO_ACAO,
             channelId: 'lembrete_estudo',
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#EA580C',
             extra: {
               rota,
@@ -984,7 +1005,7 @@ export async function agendarBoletimProntoLocal(dados: {
             body: subtitulo,
             schedule: { at: scheduleDate, allowWhileIdle: true },
             channelId: 'boletim_diario',
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#0284C7',
             largeIcon: dados.capaUrl || regra.exemploCapaUrl,
             extra: {
@@ -1033,7 +1054,62 @@ export async function dispararNotificacaoLocalTeste(params: {
     rota: regra.rotaPadrao,
   });
 
-  // 1. Caminho NATIVO (Capacitor Android / iOS)
+  // 1. Caminho NATIVO ANDROID (Barra de Progresso Real, Capa Decodificada & Ícone Oficial)
+  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+    try {
+      const { LocalNotifications } = await import('@capacitor/local-notifications');
+      await registrarCanaisEAcoesLocais();
+
+      const permStatus = await LocalNotifications.checkPermissions();
+      if (permStatus.display !== 'granted') {
+        const req = await LocalNotifications.requestPermissions();
+        if (req.display !== 'granted') {
+          return { sucesso: false, mensagem: 'Permissão de notificação negada no aparelho' };
+        }
+      }
+
+      const iconColor =
+        regra.modulo === 'videoaulas' ? '#2563EB' :
+        regra.modulo === 'audioaulas' ? '#10B981' :
+        regra.modulo === 'livros' ? '#F59E0B' :
+        regra.modulo === 'streak' ? '#EA580C' :
+        regra.modulo === 'boletim' ? '#0284C7' : '#2563EB';
+
+      // Monta URL da capa (ou path de asset)
+      let capaFinal = regra.exemploCapaUrl || '';
+      if (capaFinal && !capaFinal.startsWith('http') && !capaFinal.startsWith('data:') && typeof window !== 'undefined') {
+        capaFinal = window.location.origin + (capaFinal.startsWith('/') ? '' : '/') + capaFinal;
+      }
+
+      await NativeNotification.showProgressNotification({
+        id: notifId,
+        title: regra.exemploTitulo,
+        body: bodyText,
+        progress,
+        showProgress: regra.mostrarBarraProgresso,
+        coverUrl: capaFinal,
+        smallIcon: 'notification_icon',
+        iconColor,
+        actionTitle: regra.textoBotaoAcao,
+        route: regra.rotaPadrao,
+        channelId: regra.canalAndroid,
+        channelName: regra.nome,
+        delaySeconds,
+      });
+
+      return {
+        sucesso: true,
+        mensagem:
+          delaySegundos > 0
+            ? `Agendado nativamente para disparar em ${delaySegundos} segundos! Minimize o app ou bloqueie a tela.`
+            : 'Notificação nativa com barra de progresso e capa disparada no aparelho!',
+      };
+    } catch (androidErr) {
+      console.warn('[notificacaoLocalManager] Erro no plugin NativeNotification, tentando LocalNotifications:', androidErr);
+    }
+  }
+
+  // 2. Caminho NATIVO GENÉRICO / iOS (LocalNotifications padrão)
   if (Capacitor.isNativePlatform()) {
     try {
       const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -1058,7 +1134,7 @@ export async function dispararNotificacaoLocalTeste(params: {
             schedule: { at: scheduleDate, allowWhileIdle: true },
             actionTypeId: TIPO_RETENCAO_ACAO,
             channelId: regra.canalAndroid,
-            smallIcon: 'ic_stat_icon_config_sample',
+            smallIcon: 'notification_icon',
             iconColor: '#2563EB',
             largeIcon: regra.exemploCapaUrl,
             extra: {

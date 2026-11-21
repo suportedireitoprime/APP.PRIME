@@ -70,6 +70,7 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     LocalNotifications: {
+      smallIcon: 'notification_icon',
       iconColor: '#c9a84c',
     },
     Keyboard: {

@@ -58,10 +58,12 @@ class MainActivity : BridgeActivity() {
         registerPlugin(NativeVideoaulasPlugin::class.java)
         registerPlugin(NativeRadar360Plugin::class.java)
         registerPlugin(NativePdfViewerPlugin::class.java)
+        registerPlugin(NativeNotificationPlugin::class.java)
 
         // Injeta a view customizada da Splash Nativa por cima do WebView
         setupNativeSplash()
         isReady = true
+        handleNotificationNavigation(intent)
     }
 
     private fun setupNativeSplash() {
@@ -136,6 +138,24 @@ class MainActivity : BridgeActivity() {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
             disableWebviewScrollbars()
+        }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent?) {
+        super.onNewIntent(intent)
+        handleNotificationNavigation(intent)
+    }
+
+    private fun handleNotificationNavigation(intent: android.content.Intent?) {
+        val route = intent?.getStringExtra("route")
+        if (!route.isNullOrBlank()) {
+            val wv = bridge?.webView ?: return
+            wv.post {
+                wv.evaluateJavascript(
+                    "window.dispatchEvent(new CustomEvent('direitoprime:push-navigate', { detail: { path: '$route' } }));",
+                    null
+                )
+            }
         }
     }
 
