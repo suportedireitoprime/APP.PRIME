@@ -189,7 +189,11 @@ Deno.serve(async (req) => {
       let maxInstallments = 1;
       let planDescription = 'Direito Prime Anual';
 
-      if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
+      if (plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix') {
+        baseValue = 89.90;
+        maxInstallments = 1;
+        planDescription = 'Direito Prime Vitalício Promocional';
+      } else if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
         baseValue = 149.90;
         maxInstallments = 6;
         planDescription = 'Direito Prime Vitalício';

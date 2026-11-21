@@ -66,8 +66,15 @@ const STORAGE_KEYS = {
   LAST_MODEL: 'omniroute_test_model',
 };
 
-const DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
-const DEFAULT_API_KEY = 'sk-38e56915733a82fb-ae2ff9-2d6df645';
+const DEFAULT_BASE_URL = 'http://147.224.236.150:20128/v1';
+const DEFAULT_API_KEY = 'sk-9d114c31bbf54179-6947cb-36742343';
+
+export const normalizeEndpointUrl = (url: string) => {
+  let u = (url || '').trim().replace(/\/+$/, '');
+  if (!u) return DEFAULT_BASE_URL;
+  if (!u.endsWith('/v1')) u += '/v1';
+  return u;
+};
 
 export interface AntigravityModelInfo {
   id: string;
@@ -189,10 +196,17 @@ export default function AdminOmniRouteTeste() {
   const navigate = useNavigate();
 
   // Conexão
-  const [baseUrl, setBaseUrl] = useState(() => localStorage.getItem(STORAGE_KEYS.BASE_URL) || DEFAULT_BASE_URL);
+  const [baseUrl, setBaseUrl] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEYS.BASE_URL);
+    if (!stored || stored.includes('railway')) {
+      localStorage.setItem(STORAGE_KEYS.BASE_URL, DEFAULT_BASE_URL);
+      return DEFAULT_BASE_URL;
+    }
+    return stored;
+  });
   const [apiKey, setApiKey] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.API_KEY);
-    if (!stored || stored.includes('sk-03fcfd71')) {
+    if (!stored || stored.includes('sk-03fcfd71') || stored.includes('sk-38e56915')) {
       localStorage.setItem(STORAGE_KEYS.API_KEY, DEFAULT_API_KEY);
       return DEFAULT_API_KEY;
     }
@@ -207,10 +221,15 @@ export default function AdminOmniRouteTeste() {
 
   // Garante a nova chave e força o padrão único Gemini 3.8 Flash Tiered
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEYS.API_KEY);
-    if (!stored || stored.includes('sk-03fcfd71')) {
+    const storedKey = localStorage.getItem(STORAGE_KEYS.API_KEY);
+    if (!storedKey || storedKey.includes('sk-03fcfd71') || storedKey.includes('sk-38e56915')) {
       localStorage.setItem(STORAGE_KEYS.API_KEY, DEFAULT_API_KEY);
       setApiKey(DEFAULT_API_KEY);
+    }
+    const storedUrl = localStorage.getItem(STORAGE_KEYS.BASE_URL);
+    if (!storedUrl || storedUrl.includes('railway')) {
+      localStorage.setItem(STORAGE_KEYS.BASE_URL, DEFAULT_BASE_URL);
+      setBaseUrl(DEFAULT_BASE_URL);
     }
     localStorage.setItem(STORAGE_KEYS.LAST_MODEL, 'antigravity/gemini-3.8-flash-tiered');
     setTextModel('antigravity/gemini-3.8-flash-tiered');
@@ -341,7 +360,8 @@ export default function AdminOmniRouteTeste() {
     setConnError(null);
     const start = performance.now();
 
-    const activeUrl = (targetUrl || baseUrl).trim().replace(/\/+$/, '');
+    let activeUrl = (targetUrl || baseUrl).trim().replace(/\/+$/, '');
+    if (!activeUrl.endsWith('/v1')) activeUrl += '/v1';
     const activeKey = (targetKey !== undefined ? targetKey : apiKey).trim();
 
     try {
@@ -393,7 +413,8 @@ export default function AdminOmniRouteTeste() {
   }, [baseUrl, apiKey, textModel]);
 
   const saveConnection = (newUrl: string, newKey: string) => {
-    const cleanUrl = newUrl.trim().replace(/\/+$/, '');
+    let cleanUrl = newUrl.trim().replace(/\/+$/, '');
+    if (!cleanUrl.endsWith('/v1')) cleanUrl += '/v1';
     const cleanKey = newKey.trim();
     setBaseUrl(cleanUrl);
     setApiKey(cleanKey);
@@ -420,7 +441,7 @@ export default function AdminOmniRouteTeste() {
     const start = performance.now();
 
     try {
-      const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+      const cleanUrl = normalizeEndpointUrl(baseUrl);
       const messages: Array<{ role: string; content: string }> = [];
       if (textSystem.trim()) {
         messages.push({ role: 'system', content: textSystem.trim() });
@@ -494,7 +515,7 @@ export default function AdminOmniRouteTeste() {
     const start = performance.now();
 
     try {
-      const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+      const cleanUrl = normalizeEndpointUrl(baseUrl);
       const res = await fetch(`${cleanUrl}/images/generations`, {
         method: 'POST',
         headers: {
@@ -573,7 +594,7 @@ export default function AdminOmniRouteTeste() {
     const start = performance.now();
 
     try {
-      const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+      const cleanUrl = normalizeEndpointUrl(baseUrl);
       const res = await fetch(`${cleanUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -714,7 +735,7 @@ export default function AdminOmniRouteTeste() {
     const start = performance.now();
 
     try {
-      const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+      const cleanUrl = normalizeEndpointUrl(baseUrl);
       const formData = new FormData();
       const ext = audioBlob.type.includes('webm') ? 'webm' : audioBlob.type.includes('mp3') ? 'mp3' : 'wav';
       const fileToSend = new File([audioBlob], audioFileName || `audio_${Date.now()}.${ext}`, { type: audioBlob.type || 'audio/webm' });
@@ -928,10 +949,11 @@ export default function AdminOmniRouteTeste() {
                   <Input
                     value={baseUrl}
                     onChange={(e) => setBaseUrl(e.target.value)}
-                    placeholder="https://sua-url.up.railway.app/v1"
+                    onBlur={() => setBaseUrl(normalizeEndpointUrl(baseUrl))}
+                    placeholder="http://147.224.236.150:20128/v1"
                     className="bg-black/50 border-white/10 text-xs font-mono h-10 rounded-xl"
                   />
-                  <p className="text-[11px] text-white/40">URL pública gerada no Railway terminando em /v1</p>
+                  <p className="text-[11px] text-white/40">URL da VPS Oracle terminando em /v1 (normalização automática)</p>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs text-white/70 font-medium">Chave de API (OmniRoute API Key)</label>

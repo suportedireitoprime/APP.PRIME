@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { precoBase, parcelamento, PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from './precos';
+import { precoBase, parcelamento, PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, PRECO_VITALICIO_PROMOCIONAL } from './precos';
 
 describe('preços de assinatura', () => {
   it('mensal custa 29,90 no cartão e no Pix', () => {
@@ -14,10 +14,13 @@ describe('preços de assinatura', () => {
     expect(PRECO_ANUAL).toBe(89.9);
   });
 
-  it('vitalício custa 149,90 no cartão e no Pix', () => {
+  it('vitalício custa 149,90 no padrão e 89,90 na promoção Pix', () => {
     expect(precoBase('vitalicio')).toBe(149.9);
     expect(precoBase('vitalicio_pix')).toBe(149.9);
     expect(PRECO_VITALICIO).toBe(149.9);
+    expect(precoBase('vitalicio_promocional_pix')).toBe(89.9);
+    expect(precoBase('vitalicio_89_pix')).toBe(89.9);
+    expect(PRECO_VITALICIO_PROMOCIONAL).toBe(89.9);
   });
 
   it('promoções e planos inexistentes disparam erro', () => {

@@ -24,6 +24,9 @@ import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
 import { QuestoesAnimadasPlayer } from '@/pages/laboratorio/QuestoesAnimadasPlayer';
+import { AssinaturaVitaliciaView } from '@/components/assinatura/AssinaturaVitaliciaView';
+import { getSubscriptionLayout, setSubscriptionLayout, type SubscriptionLayoutType } from '@/lib/subscriptionLayoutStore';
+import { toast } from 'sonner';
 import appLogo from '@/assets/logo-direitoprime-v2.webp';
 import logoInicioApp from '@/assets/logo-coruja.webp';
 import themisOficialImg from '@/assets/icon-foreground.png';
@@ -44,6 +47,19 @@ export default function AdminLaboratorioAulas() {
   const [telaPosTrialAtiva, setTelaPosTrialAtiva] = useState(false);
   const [testadorIconeAtivo, setTestadorIconeAtivo] = useState(false);
   const [questaoAnimadaAtiva, setQuestaoAnimadaAtiva] = useState(false);
+  const [activeSubLayout, setActiveSubLayout] = useState<SubscriptionLayoutType>(() => getSubscriptionLayout());
+  const [previewSubLayout, setPreviewSubLayout] = useState<'padrao' | 'vitalicio' | null>(null);
+
+  const alternarLayoutAssinatura = (novo: SubscriptionLayoutType) => {
+    try { haptic.selection(); } catch {}
+    setSubscriptionLayout(novo);
+    setActiveSubLayout(novo);
+    toast.success(
+      novo === 'vitalicio_promocional'
+        ? 'Layout ativo no App: Plano Vitalício Promocional (R$ 89,90 no Pix)!'
+        : 'Layout ativo no App: Padrão 3 Planos (Mensal, Anual e Vitalício)!'
+    );
+  };
 
   const abrirAula = (aula: AulaItem, etapa?: number) => {
     try { haptic.selection(); } catch {}
@@ -55,6 +71,15 @@ export default function AdminLaboratorioAulas() {
     try { haptic.impact('medium'); } catch {}
     setTelaPosTrialAtiva(true);
   };
+
+  // ── SEÇÃO NOVO: PREVIEW DO LAYOUT DE ASSINATURA VITALÍCIA ──
+  if (previewSubLayout === 'vitalicio') {
+    return (
+      <AssinaturaVitaliciaView
+        onVoltar={() => setPreviewSubLayout(null)}
+      />
+    );
+  }
 
   // ── SEÇÃO NOVO: QUESTÕES ANIMADAS 2D (OAB / FGV) ──
   if (questaoAnimadaAtiva) {
@@ -370,6 +395,103 @@ export default function AdminLaboratorioAulas() {
                     >
                       <Play className="w-3 h-3 fill-current" />
                       <span>Testar Cores</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── 3.5. NOVO: SELETOR DE LAYOUT TELA DE ASSINATURA ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'conversao') && (
+            <div className="rounded-2xl border-2 border-rose-500/40 bg-gradient-to-r from-rose-950/20 via-zinc-900/60 to-zinc-900/40 p-4 transition-all hover:border-rose-500/60 shadow-lg group">
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-rose-500/30 relative bg-zinc-950 shadow-md flex items-center justify-center p-2">
+                  <CreditCard className="w-7 h-7 text-rose-400 animate-pulse" />
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7px] font-mono text-rose-300 font-bold uppercase">
+                    LAYOUT
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase">
+                      NOVO RECURSO · PAYWALL
+                    </span>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      activeSubLayout === 'vitalicio_promocional'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    }`}>
+                      Ativo no App: {activeSubLayout === 'vitalicio_promocional' ? 'Plano Vitalício Promocional' : '3 Planos Padrão'}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    Layout da Tela de Assinatura
+                  </h3>
+
+                  <p className="text-xs text-zinc-300 leading-relaxed">
+                    Alterne instantaneamente a experiência que os usuários encontram ao clicar para assinar. Escolha entre o layout com os 3 planos ou o novo <b>Plano Vitalício Promocional a R$ 89,90 no Pix</b> com timer de 5 dias cíclico.
+                  </p>
+
+                  {/* Alternador de Layouts */}
+                  <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                    <button
+                      type="button"
+                      onClick={() => alternarLayoutAssinatura('vitalicio_promocional')}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between sm:justify-start gap-2 border cursor-pointer ${
+                        activeSubLayout === 'vitalicio_promocional'
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-950/50'
+                          : 'bg-zinc-800/80 text-zinc-300 border-white/10 hover:bg-zinc-700/80'
+                      }`}
+                    >
+                      <span>🔥 Vitalício Promocional (R$ 89,90 Pix)</span>
+                      {activeSubLayout === 'vitalicio_promocional' && (
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => alternarLayoutAssinatura('padrao_3_planos')}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between sm:justify-start gap-2 border cursor-pointer ${
+                        activeSubLayout === 'padrao_3_planos'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/50'
+                          : 'bg-zinc-800/80 text-zinc-300 border-white/10 hover:bg-zinc-700/80'
+                      }`}
+                    >
+                      <span>💳 Padrão 3 Planos (Mensal/Anual/Vitalício)</span>
+                      {activeSubLayout === 'padrao_3_planos' && (
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Botões de Ação para Visualizar / Testar as Telas */}
+                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('medium'); } catch {}
+                        setPreviewSubLayout('vitalicio');
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Visualizar Tela Vitalício (R$ 89,90)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        navigate('/assinatura?layout=padrao');
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-zinc-300" />
+                      <span>Ver Tela 3 Planos</span>
                     </button>
                   </div>
                 </div>

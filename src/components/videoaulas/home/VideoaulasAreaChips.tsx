@@ -36,8 +36,8 @@ export const VideoaulasAreaChips: React.FC<VideoaulasAreaChipsProps> = ({
           onSelectTab('Todos');
         }}
         className={`px-4 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shadow-sm cursor-pointer touch-manipulation font-sans ${
-          activeTab === 'Todos'
-            ? 'bg-zinc-100 text-zinc-950 shadow-md font-extrabold'
+          !activeTab || activeTab.toLowerCase() === 'todos' || activeTab.toLowerCase() === 'todas'
+            ? 'bg-rose-600 text-white shadow-rose-950/50 shadow-md font-extrabold border border-rose-500/50'
             : 'bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10'
         }`}
       >

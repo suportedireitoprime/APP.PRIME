@@ -35,6 +35,8 @@ import { PricingCards, type PlanOption } from '@/components/assinatura/PricingCa
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, type PlanoCheckout } from '@/lib/precos';
 import { FeaturesList } from '@/components/assinatura/FeaturesList';
 import { FaqAccordion } from '@/components/assinatura/FaqAccordion';
+import { getSubscriptionLayout } from '@/lib/subscriptionLayoutStore';
+import { AssinaturaVitaliciaView } from '@/components/assinatura/AssinaturaVitaliciaView';
 
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
@@ -47,6 +49,25 @@ export default function Assinatura() {
   const welcomeFlag = searchParams.get('welcome') === '1';
   const { refresh: refreshSubscription, isPremium, isTrial, loading: subLoading, plano: planoAtual, expiresAt } = useSubscription({ pollOnMount: welcomeFlag });
   const [showWelcome, setShowWelcome] = useState(welcomeFlag);
+
+  // Seleção dinâmica do Layout de Assinatura (Vitalício Promocional vs Padrão 3 Planos)
+  const layoutParam = searchParams.get('layout');
+  const activeLayout = layoutParam === 'vitalicio'
+    ? 'vitalicio_promocional'
+    : layoutParam === 'padrao'
+    ? 'padrao_3_planos'
+    : getSubscriptionLayout();
+
+  if (activeLayout === 'vitalicio_promocional') {
+    return (
+      <AssinaturaVitaliciaView
+        onSuccess={() => {
+          refreshSubscription();
+        }}
+        onVoltar={() => goBack()}
+      />
+    );
+  }
 
   const { data: profileSummary } = useProfileSummary();
   const falling = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);

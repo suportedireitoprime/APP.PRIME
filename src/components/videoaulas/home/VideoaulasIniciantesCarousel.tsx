@@ -110,8 +110,8 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                 )}
               </h3>
             </div>
-            <p className="text-zinc-400 text-xs sm:text-[13px] leading-snug ml-3.5 mt-0.5 line-clamp-1 truncate">
-              Fundamentos do Direito com resumos, mapas mentais e questões
+            <p className="text-zinc-400 text-xs sm:text-[13px] leading-tight ml-3.5 mt-1 font-sans">
+              Fundamentos do Direito explicados do zero com resumos e questões
             </p>
           </div>
 

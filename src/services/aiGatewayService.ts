@@ -209,9 +209,9 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
 ];
 
 const STORAGE_KEY_ROUTING = 'omniroute_ai_feature_routing_v2';
-const OMNIROUTE_DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
+const OMNIROUTE_DEFAULT_BASE_URL = 'http://147.224.236.150:20128/v1';
 
-let cachedOmniRouteKey: string | null = 'sk-38e56915733a82fb-ae2ff9-2d6df645';
+let cachedOmniRouteKey: string | null = 'sk-9d114c31bbf54179-6947cb-36742343';
 
 export async function getOmniRouteApiKey(): Promise<string> {
   if (cachedOmniRouteKey) return cachedOmniRouteKey;
@@ -229,10 +229,10 @@ export async function getOmniRouteApiKey(): Promise<string> {
   } catch (err) {
     console.warn('Fallback ativado: Erro ao buscar OMNIROUTE_API_KEY do Supabase:', err);
   }
-  // Fallback para localStorage ou nova chave oficial
+  // Fallback para localStorage ou nova chave oficial da VPS Oracle
   const stored = localStorage.getItem('omniroute_test_api_key');
-  if (stored && !stored.includes('sk-03fcfd71')) return stored;
-  return 'sk-38e56915733a82fb-ae2ff9-2d6df645';
+  if (stored && !stored.includes('sk-03fcfd71') && !stored.includes('sk-38e56915')) return stored;
+  return 'sk-9d114c31bbf54179-6947cb-36742343';
 }
 
 /** Carrega todas as preferências do localStorage */
@@ -299,7 +299,8 @@ export async function executeAiTask(options: {
 }> {
   const { featureKey, prompt, systemPrompt, imageBase64, audioBlob } = options;
   const config = getAiFeaturesRouting()[featureKey];
-  const baseUrl = localStorage.getItem('omniroute_test_base_url') || OMNIROUTE_DEFAULT_BASE_URL;
+  const storedBaseUrl = localStorage.getItem('omniroute_test_base_url');
+  const baseUrl = (!storedBaseUrl || storedBaseUrl.includes('railway')) ? OMNIROUTE_DEFAULT_BASE_URL : storedBaseUrl;
   const apiKey = await getOmniRouteApiKey();
 
   const start = performance.now();
@@ -315,7 +316,8 @@ export async function executeAiTask(options: {
   }
 
   // Execução via OmniRoute (Preferência 1)
-  const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+  let cleanUrl = baseUrl.trim().replace(/\/+$/, '');
+  if (!cleanUrl.endsWith('/v1')) cleanUrl += '/v1';
 
   // 1. Geração de Imagem
   if (featureKey === 'geracao_imagens') {

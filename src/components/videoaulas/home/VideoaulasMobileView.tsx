@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Loader2, ChevronRight } from 'lucide-react';
+import { Search, X, Loader2, ChevronRight, Play } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
 import { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
@@ -11,7 +11,9 @@ import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
-import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
+import { simplificarNomeArea, getCapaDaArea } from '@/lib/videoaulasCatalogos';
+import { getCachedAulasDaArea, loadAulasDaArea, type AulaCache } from '@/lib/videoaulasStore';
+import type { AulaHit } from '@/types/videoaula';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface VideoaulasMobileViewProps {
@@ -112,6 +114,48 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
 
     return list;
   }, [areasItens, heroTab, activeChipTab, q, favoritosSet]);
+
+  // Identifica a área selecionada pelo chip individual
+  const selectedArea = useMemo(() => {
+    if (activeChipTab === 'Todos' || activeChipTab === 'Em Andamento') return null;
+    const tabLower = activeChipTab.toLowerCase();
+    return (
+      areasItens.find(
+        (a) =>
+          a.area.toLowerCase() === tabLower ||
+          a.slug.toLowerCase() === tabLower ||
+          a.displayArea.toLowerCase() === tabLower
+      ) || null
+    );
+  }, [activeChipTab, areasItens]);
+
+  // Carrega as aulas da matéria selecionada em tempo real
+  const [aulasDaMateria, setAulasDaMateria] = useState<AulaCache[]>([]);
+  const [loadingAulasMateria, setLoadingAulasMateria] = useState(false);
+
+  useEffect(() => {
+    if (!selectedArea) {
+      setAulasDaMateria([]);
+      setLoadingAulasMateria(false);
+      return;
+    }
+    const cached = getCachedAulasDaArea('areas', selectedArea.slug);
+    if (cached && cached.length > 0) {
+      setAulasDaMateria(cached);
+    } else {
+      setLoadingAulasMateria(true);
+    }
+    let alive = true;
+    void loadAulasDaArea('areas', selectedArea.slug).then((rows) => {
+      if (alive) {
+        setAulasDaMateria(rows || []);
+        setLoadingAulasMateria(false);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [selectedArea]);
 
   const handleAreaClick = useCallback(
     (slug: string) => {
@@ -229,21 +273,6 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               emAndamentoCount={state.emAndamentoCount}
             />
 
-            {/* Banner de Acesso Rápido quando uma área específica está selecionada */}
-            {activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento' && filteredAreas.length > 0 && (
-              <div className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 shadow-md">
-                <span className="text-xs sm:text-[13px] font-medium">Toque para abrir os módulos e aulas completas</span>
-                <button
-                  type="button"
-                  onClick={() => handleAreaClick(filteredAreas[0].slug)}
-                  className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1 shadow-md shadow-rose-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
-                >
-                  <span>Abrir Matéria</span>
-                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
-                </button>
-              </div>
-            )}
-
             {/* Listagem de Matérias ou Resultados */}
             {q.trim() && state.loading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
@@ -260,6 +289,65 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                     <VideoaulasAulaResultCard key={aula.videoId} aula={aula} />
                   ))}
                 </div>
+              </div>
+            ) : selectedArea ? (
+              <div className="space-y-3.5 pt-1">
+                {/* Cabeçalho da Matéria com Capa Oficial das Aulas Interativas */}
+                <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/95 border border-rose-500/30 text-rose-200 shadow-lg">
+                  <div className="flex items-center gap-3.5 min-w-0 pr-2">
+                    <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-md bg-black relative">
+                      <img
+                        src={getCapaDaArea(selectedArea.area)}
+                        alt={selectedArea.displayArea}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-sans font-bold text-base sm:text-lg text-white truncate">
+                        {selectedArea.displayArea}
+                      </h3>
+                      <p className="font-sans text-xs sm:text-[13px] text-zinc-400 mt-0.5">
+                        {loadingAulasMateria
+                          ? 'Carregando videoaulas...'
+                          : `${aulasDaMateria.length || selectedArea.total} videoaulas disponíveis`}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAreaClick(selectedArea.slug)}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-rose-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
+                  >
+                    <span>Ver Módulos</span>
+                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                </div>
+
+                {/* Lista Completa de Aulas da Matéria */}
+                {loadingAulasMateria ? (
+                  <div className="flex flex-col items-center justify-center py-10 gap-2 text-zinc-400">
+                    <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
+                    <p className="text-xs font-sans">Carregando aulas de {selectedArea.displayArea}...</p>
+                  </div>
+                ) : aulasDaMateria.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {aulasDaMateria.map((aula) => {
+                      const hit: AulaHit = {
+                        videoId: aula.video_id,
+                        titulo: aula.titulo,
+                        area: aula.area || selectedArea.area,
+                        catalogoId: 'areas',
+                        slugArea: selectedArea.slug,
+                      };
+                      return <VideoaulasAulaResultCard key={aula.video_id} aula={hit} />;
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 rounded-2xl bg-zinc-900/40 border border-white/5 p-6 text-zinc-400 text-xs">
+                    Nenhuma aula encontrada para esta matéria.
+                  </div>
+                )}
               </div>
             ) : filteredAreas.length > 0 ? (
               <div className="space-y-3 pt-1">

@@ -199,7 +199,11 @@ export async function loadCatalogo(id: CatalogoId): Promise<AulaCache[]> {
 function filtrarArea(id: CatalogoId, todas: AulaCache[], areaSlug?: string): AulaCache[] {
   const c = getCatalogo(id);
   if (!c?.temAreas || !areaSlug) return todas;
-  return todas.filter((a) => slugify(a.area || 'Outros') === areaSlug);
+  const targetSlug = slugify(areaSlug);
+  return todas.filter((a) => {
+    const s = slugify(a.area || 'Outros');
+    return s === targetSlug || s.includes(targetSlug) || targetSlug.includes(s);
+  });
 }
 
 /** Versão síncrona: usa só o que já está em memória (pode ser null). */

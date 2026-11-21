@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, MAX_PARCELAS_ANUAL, MAX_PARCELAS_VITALICIO, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, PRECO_VITALICIO_PROMOCIONAL, MAX_PARCELAS_ANUAL, MAX_PARCELAS_VITALICIO, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -150,7 +150,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [plan]);
 
-  const isPix = activePlan === 'anual_regular_pix' || activePlan === 'mensal_pix' || activePlan === 'vitalicio_pix';
+  const isPix =
+    activePlan === 'anual_regular_pix' ||
+    activePlan === 'mensal_pix' ||
+    activePlan === 'vitalicio_pix' ||
+    activePlan === 'vitalicio_promocional_pix' ||
+    activePlan === 'vitalicio_89_pix';
+
+  const isOnlyPix = activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix';
 
   useEffect(() => {
     const max = isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
@@ -565,7 +572,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
 
       if (isPix && data?.pixQrCode) {
-        const pixValor = isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
+        const pixValor = (activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix')
+          ? PRECO_VITALICIO_PROMOCIONAL
+          : isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
         void logDb('checkout_pix_gerado', { plano: activePlan, payment_id: data.paymentId || null, valor: pixValor });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
         setPixPaymentId(data.paymentId || null);
@@ -596,7 +605,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        const pixValor = isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
+        const pixValor = (activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix')
+          ? PRECO_VITALICIO_PROMOCIONAL
+          : isVitalicio(activePlan) ? PRECO_VITALICIO : (isAnual(activePlan) ? PRECO_ANUAL : PRECO_MENSAL);
         void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true, payment_id: data.paymentId || null, valor: pixValor });
         openExternal(data.invoiceUrl);
         onSuccess();
@@ -711,6 +722,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const getPlanInfo = () => {
+    if (activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix') {
+      return { title: 'Plano Vitalício Promocional', price: brl(PRECO_VITALICIO_PROMOCIONAL), sub: 'pagamento único no PIX' };
+    }
     if (activePlan === 'mensal' || activePlan === 'mensal_pix') return { title: 'Plano Mensal', price: brl(PRECO_MENSAL), sub: '/ mês' };
     if (isAnual(activePlan)) return { title: 'Plano Anual', price: brl(PRECO_ANUAL), sub: '/ ano' };
     if (isVitalicio(activePlan)) return { title: 'Plano Vitalício', price: brl(PRECO_VITALICIO), sub: 'pagamento único' };
@@ -767,40 +781,52 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
             {/* Alternador de Método de Pagamento no topo do checkout */}
             {step === 1 && (
-              <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio_pix');
-                    else if (activePlan.includes('anual')) setActivePlan('anual_regular_pix');
-                    else setActivePlan('mensal_pix');
-                  }}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    isPix
-                      ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
-                  <span>PIX à vista</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio');
-                    else if (activePlan.includes('anual')) setActivePlan('anual');
-                    else setActivePlan('mensal');
-                  }}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    !isPix
-                      ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Cartão</span>
-                </button>
-              </div>
+              isOnlyPix ? (
+                <div className="flex items-center justify-between p-3.5 bg-emerald-950/40 border border-emerald-500/30 rounded-2xl mb-5 text-emerald-300">
+                  <div className="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
+                    <span className="text-xs font-bold uppercase tracking-wider">Pagamento Exclusivo via PIX</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
+                    Aprovação Imediata
+                  </span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio_pix');
+                      else if (activePlan.includes('anual')) setActivePlan('anual_regular_pix');
+                      else setActivePlan('mensal_pix');
+                    }}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      isPix
+                        ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
+                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
+                    <span>PIX à vista</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio');
+                      else if (activePlan.includes('anual')) setActivePlan('anual');
+                      else setActivePlan('mensal');
+                    }}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      !isPix
+                        ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
+                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>Cartão</span>
+                  </button>
+                </div>
+              )
             )}
 
             {/* Step Indicator */}

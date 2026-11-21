@@ -1091,6 +1091,61 @@ function shouldSearchWeb(agent: any, userText: string): boolean {
   return webKeywords.some((kw) => lower.includes(kw));
 }
 
+async function askOmniRoute(
+  history: Array<{ role: string; content: string }>,
+  systemPrompt: string,
+  agent: any
+): Promise<string> {
+  const omniUrl = (Deno.env.get("OMNIROUTE_URL") || "http://147.224.236.150:20128").trim().replace(/\/+$/, "");
+  const omniKey = (Deno.env.get("OMNIROUTE_API_KEY") || "sk-9d114c31bbf54179-6947cb-36742343").trim();
+  const endpoint = omniUrl.endsWith("/v1") ? `${omniUrl}/chat/completions` : `${omniUrl}/v1/chat/completions`;
+
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...history
+      .filter((m) => m && m.content && !isGenericHorusFailure(m.content))
+      .map((m) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: String(m.content),
+      })),
+  ];
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 22000);
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${omniKey}`,
+      },
+      body: JSON.stringify({
+        model: "antigravity/gemini-3.8-flash-tiered",
+        messages,
+        temperature: Number(agent?.temperatura ?? 0.6),
+        max_tokens: Number(agent?.max_tokens ?? 800),
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+
+    if (!resp.ok) {
+      console.warn("[OmniRoute Hórus] HTTP error:", resp.status, await resp.text().catch(() => ""));
+      return "";
+    }
+
+    const data = await resp.json().catch(() => null);
+    const text = data?.choices?.[0]?.message?.content?.trim() || "";
+    if (text) {
+      console.log("[OmniRoute Hórus] Resposta obtida com sucesso via OmniRoute Oracle VPS");
+      return text;
+    }
+  } catch (e) {
+    console.warn("[OmniRoute Hórus] Falha na chamada:", String(e?.message || e));
+  }
+  return "";
+}
+
 async function askGemini(
   history: Array<{ role: string; content: string }>,
   systemPrompt: string,
@@ -1098,7 +1153,6 @@ async function askGemini(
   userPhone?: string,
   userText?: string
 ): Promise<AskGeminiResult> {
-  const key = Deno.env.get("GEMINI_API_KEY") || "";
   const contents = history
     .filter((m) => m && m.content && !isGenericHorusFailure(m.content))
     .map((m) => ({
@@ -1107,6 +1161,18 @@ async function askGemini(
     }));
   const empty: AskGeminiResult = { text: "", model: "", usage: { input: 0, output: 0, total: 0 } };
   if (!contents.length) return empty;
+
+  // 1. Tenta OmniRoute primariamente (Oracle VPS com Antigravity Gemini 3.8 Flash Tiered)
+  const omniReply = await askOmniRoute(history, systemPrompt, agent);
+  if (omniReply) {
+    return {
+      text: omniReply,
+      model: "omniroute/antigravity/gemini-3.8-flash-tiered",
+      usage: { input: 0, output: 0, total: 0 },
+    };
+  }
+
+  const key = Deno.env.get("GEMINI_API_KEY") || "";
 
   const { TEXT_MODEL_FALLBACKS } = await import("../_shared/ai-models.ts");
   const defaultFastModel = "gemini-3.1-flash-lite";

@@ -154,8 +154,8 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
         </div>
       </div>
 
-      {/* Botão Play Tátil Circular à Direita */}
-      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 border border-white/10 text-white group-hover:bg-white/15 flex items-center justify-center shrink-0 shadow-md transition-all duration-200">
+      {/* Botão Play Tátil Circular Vermelho Transparente */}
+      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-rose-600/20 border border-rose-500/40 text-[#FF4D6D] group-hover:bg-rose-600/35 group-hover:text-white flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(244,63,94,0.25)] transition-all duration-200">
         <Play className="w-5 h-5 fill-current ml-0.5" />
       </div>
     </motion.button>
