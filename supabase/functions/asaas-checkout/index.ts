@@ -125,7 +125,12 @@ Deno.serve(async (req) => {
     // --- Action: checkout regular (Criação de Cobrança / Assinatura) ---
     const { plan, email, name, cpfCnpj, creditCard, creditCardHolderInfo, phone, installmentCount } = body; 
 
-    const VALID_PLANS = ['mensal', 'mensal_pix', 'vitalicio', 'vitalicio_pix', 'anual', 'anual_pix', 'anual_regular_pix', 'promocao'];
+    const VALID_PLANS = [
+      'mensal', 'mensal_pix',
+      'vitalicio', 'vitalicio_pix', 'vitalicio_promocional_pix', 'vitalicio_89_pix',
+      'anual', 'anual_pix', 'anual_regular_pix',
+      'promocao'
+    ];
     if (!VALID_PLANS.includes(plan)) {
       throw new Error('Plano inválido');
     }
@@ -175,8 +180,8 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     const isCreditCard = !!creditCard;
-    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix';
-    const isPixPlan = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'mensal_pix' || plan === 'promocao';
+    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix';
+    const isPixPlan = plan === 'vitalicio_pix' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'mensal_pix' || plan === 'promocao';
     const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
     const isInstallment = installmentCount && installmentCount > 1;
     
