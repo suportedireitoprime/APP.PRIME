@@ -262,19 +262,9 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
               </span>
             </Button>
-            <div className="flex items-center justify-center gap-2 text-[11.5px] text-zinc-400 font-medium">
-              <ShieldCheck className="w-4 h-4 text-rose-400" />
-              <span>7 dias de garantia incondicional • Liberação imediata no Pix</span>
-            </div>
-            
-            {/* Link Discreto para ver outros planos */}
-            <div className="text-center pt-1">
-              <Link 
-                to="/assinatura?layout=padrao" 
-                className="text-[11.5px] text-zinc-400 hover:text-white underline underline-offset-4 transition-colors"
-              >
-                Ver opções de planos Mensal e Anual
-              </Link>
+            <div className="flex items-center justify-center gap-1.5 text-xs text-zinc-400 font-medium pt-0.5">
+              <ShieldCheck className="w-4 h-4 text-rose-500" />
+              <span>Liberação imediata</span>
             </div>
           </div>
         </div>
