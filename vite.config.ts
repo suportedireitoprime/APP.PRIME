@@ -39,6 +39,24 @@ export default defineConfig({
                 return fs.createReadStream(filePath).pipe(res);
               }
             }
+            if (req.url && req.url.startsWith("/questoes-animadas/")) {
+              const cleanUrl = req.url.split("?")[0];
+              const filePath = path.join(__dirname, "public", cleanUrl);
+              if (fs.existsSync(filePath)) {
+                const ext = path.extname(filePath).toLowerCase();
+                const mimeTypes: Record<string, string> = {
+                  ".png": "image/png",
+                  ".jpg": "image/jpeg",
+                  ".jpeg": "image/jpeg",
+                  ".webp": "image/webp",
+                  ".html": "text/html; charset=utf-8",
+                  ".js": "application/javascript",
+                  ".css": "text/css",
+                };
+                res.setHeader("Content-Type", mimeTypes[ext] || "application/octet-stream");
+                return fs.createReadStream(filePath).pipe(res);
+              }
+            }
             next();
           });
         },

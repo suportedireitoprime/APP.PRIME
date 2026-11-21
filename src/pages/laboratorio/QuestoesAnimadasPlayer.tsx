@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowLeft, Sparkles, Scale, Film } from 'lucide-react';
+import { ArrowLeft, Film, Scale } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import cenaHtml from '@/assets/questoes-animadas/cena-furto-tentado-amanda-fernando-xli-q57.html?raw';
 
 interface QuestoesAnimadasPlayerProps {
   onVoltar: () => void;
@@ -15,7 +16,7 @@ export function QuestoesAnimadasPlayer({ onVoltar }: QuestoesAnimadasPlayerProps
   return (
     <div className="fixed inset-0 z-[100] bg-[#0c0f16] flex flex-col overflow-hidden text-white select-none">
       {/* Barra Superior Minimalista */}
-      <header className="h-14 sm:h-16 px-4 flex items-center justify-between border-b border-white/10 bg-[#0c0f16]/95 backdrop-blur-md shrink-0 z-10 pt-[env(safe-area-inset-top,0px)]">
+      <header className="h-14 sm:h-16 px-4 flex items-center justify-between border-b border-white/5 bg-[#0c0f16]/95 backdrop-blur-md shrink-0 z-10 pt-[env(safe-area-inset-top,0px)]">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -28,7 +29,7 @@ export function QuestoesAnimadasPlayer({ onVoltar }: QuestoesAnimadasPlayerProps
 
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+              <span className="text-xs sm:text-sm font-semibold text-white tracking-tight flex items-center gap-1.5">
                 <Film className="w-3.5 h-3.5 text-amber-400" />
                 Questões Animadas 2D
               </span>
@@ -53,6 +54,7 @@ export function QuestoesAnimadasPlayer({ onVoltar }: QuestoesAnimadasPlayerProps
       {/* Frame da Cena Animada (Canvas 2D + Quiz Interativo) */}
       <main className="flex-1 w-full h-full relative overflow-hidden bg-[#0c0f16]">
         <iframe
+          srcDoc={cenaHtml}
           src="/questoes-animadas/cena-furto-tentado-amanda-fernando-xli-q57.html"
           title="Cena 2D OAB — Furto Tentado no Supermercado"
           className="w-full h-full border-0"

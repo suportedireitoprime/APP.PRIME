@@ -27,6 +27,7 @@ import { QuestoesAnimadasPlayer } from '@/pages/laboratorio/QuestoesAnimadasPlay
 import appLogo from '@/assets/logo-direitoprime-v2.webp';
 import logoInicioApp from '@/assets/logo-coruja.webp';
 import themisOficialImg from '@/assets/icon-foreground.png';
+import thumbFurtoTentado from '@/assets/questoes-animadas/thumb-furto-tentado.webp';
 
 // Code Splitting do Player Nativo
 const PlayerAulaNativo = lazy(() => 
@@ -136,16 +137,16 @@ export default function AdminLaboratorioAulas() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 space-y-4">
         
-        {/* ── MENU DE ALTERNÂNCIA (Botões Brancos como antes) ── */}
+        {/* ── MENU DE ALTERNÂNCIA MINIMALISTA ── */}
         <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('todos'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'todos'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
               Todos (5)
@@ -153,21 +154,21 @@ export default function AdminLaboratorioAulas() {
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('questoes'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'questoes'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Questões Animadas (1)
+              Questões Animadas
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('icones'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'icones'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
               Ícones & Logo
@@ -175,21 +176,21 @@ export default function AdminLaboratorioAulas() {
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('atlas'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'atlas'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Atlas Jurídico 3D
+              Atlas 3D
             </button>
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('aulas'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'aulas'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
               Aulas Diagramadas
@@ -197,13 +198,13 @@ export default function AdminLaboratorioAulas() {
             <button
               type="button"
               onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('conversao'); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
                 filtroAtivo === 'conversao'
-                  ? 'bg-white text-black shadow'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Telas de Conversão (Pós-Trial)
+              Pós-Trial
             </button>
           </div>
 
@@ -212,45 +213,48 @@ export default function AdminLaboratorioAulas() {
           </span>
         </div>
 
-        {/* ── GRID DE PROTÓTIPOS MINIMALISTAS ── */}
-        <div className="space-y-3.5">
+        {/* ── GRID DE PROTÓTIPOS ULTRA-MINIMALISTAS ── */}
+        <div className="space-y-3">
 
-          {/* ── PROTÓTIPO NOVO: QUESTÕES ANIMADAS 2D (OAB / FGV) ── */}
+          {/* ── 1. QUESTÕES ANIMADAS 2D (OAB / FGV) ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'questoes') && (
-            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-zinc-900/80 to-blue-950/30 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all hover:border-amber-400/60 relative overflow-hidden group">
-              <div className="flex items-start gap-3.5 sm:gap-4.5">
-                {/* Miniatura da Capa Real */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-zinc-950 shadow-md">
+            <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group">
+              <div className="flex items-start gap-3.5">
+                {/* Miniatura da Capa Otimizada WebP */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-sm">
                   <img
-                    src="/questoes-animadas/capa-furto-tentado-amanda-fernando-xli-q57.png"
+                    src={thumbFurtoTentado}
                     alt="Questão Animada 2D"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/questoes-animadas/thumb-furto-tentado.webp';
+                    }}
                   />
-                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                    <div className="w-7 h-7 rounded-full bg-amber-500 text-zinc-950 flex items-center justify-center shadow-md">
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                    <div className="w-7 h-7 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-md">
                       <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                     </div>
                   </div>
                 </div>
 
-                {/* Conteúdo */}
+                {/* Conteúdo Minimalista */}
                 <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      NOVO · ANIMAÇÃO 2D OAB
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 border border-white/5 font-medium">
+                      ANIMAÇÃO 2D · OAB
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400">
-                      FGV · XLI Exame · Questão 57
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      FGV · XLI · Q57
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                    Questões Animadas: Furto Tentado
-                    <Film className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Furto Tentado no Supermercado
+                    <Film className="w-3.5 h-3.5 text-zinc-400" />
                   </h3>
 
-                  <p className="text-xs text-zinc-300 line-clamp-2">
-                    Amanda e Fernando escondem mercadorias no supermercado · Tentativa, crime impossível e Súmula 567 do STJ com cena em 17 ângulos, Canvas 120fps e quiz interativo.
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Amanda e Fernando escondem mercadorias · Tentativa, crime impossível e Súmula 567 do STJ com cena em 17 ângulos e quiz interativo.
                   </p>
 
                   <div className="pt-2 flex items-center gap-2">
@@ -260,10 +264,10 @@ export default function AdminLaboratorioAulas() {
                         try { haptic.impact('heavy'); } catch {}
                         setQuestaoAnimadaAtiva(true);
                       }}
-                      className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+                      className="px-3.5 py-1.5 rounded-xl bg-white text-zinc-950 hover:bg-zinc-200 font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
                     >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Abrir Questão Animada</span>
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Abrir Questão</span>
                     </button>
                   </div>
                 </div>
@@ -271,49 +275,47 @@ export default function AdminLaboratorioAulas() {
             </div>
           )}
 
-          {/* ── PROTÓTIPO NOVO: ATLAS JURÍDICO 3D (CP ART. 5º) ── */}
+          {/* ── 2. ATLAS JURÍDICO 3D (CP ART. 5º) ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'atlas') && (
-            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-gradient-to-r from-blue-950/40 via-zinc-900/70 to-amber-950/20 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all hover:border-amber-400/60 relative overflow-hidden group">
-              <div className="flex items-start gap-3.5 sm:gap-4.5">
-                {/* Miniatura do Globo */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-gradient-to-br from-blue-900 to-zinc-950 shadow-md flex items-center justify-center p-2">
-                  <Globe className="w-8 h-8 text-amber-400 animate-spin" style={{ animationDuration: '20s' }} />
-                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
-                    3D TERRA
+            <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group">
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-sm flex items-center justify-center p-2">
+                  <Globe className="w-7 h-7 text-sky-400 animate-spin" style={{ animationDuration: '24s' }} />
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-zinc-400 uppercase">
+                    3D
                   </span>
                 </div>
 
-                {/* Conteúdo */}
                 <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      NOVO · 3D INTERATIVO
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 border border-white/5 font-medium">
+                      3D INTERATIVO
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400">
+                    <span className="text-[11px] text-zinc-400 font-normal">
                       CP Art. 5º · Territorialidade
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
                     Atlas Jurídico 3D
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
                   </h3>
 
-                  <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                    Globo 3D segurado pela mão de Têmis com 7 funções de estudo (Texto, Ouvir, Assistir, Entender, Praticar, Aprofundar e Meu Estudo), avião em órbita e planetas vizinhos.
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Globo 3D segurado pela mão de Têmis com 7 funções de estudo, avião em órbita e planetas vizinhos.
                   </p>
 
-                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                  <div className="pt-2 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => {
                         try { haptic.impact('medium'); } catch {}
                         navigate('/admin-atlas-juridico');
                       }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:scale-95 text-black font-mono font-bold text-xs tracking-wider transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all"
                     >
-                      <Play className="w-3.5 h-3.5 fill-black" />
-                      ABRIR ATLAS 3D
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Abrir Atlas</span>
                     </button>
                   </div>
                 </div>
@@ -321,57 +323,53 @@ export default function AdminLaboratorioAulas() {
             </div>
           )}
 
-          {/* ── PROTÓTIPO NOVO: TESTADOR DE ÍCONES & LOGO ── */}
+          {/* ── 3. TESTADOR DE ÍCONES & LOGO ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'icones') && (
-            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-gradient-to-r from-red-950/40 via-zinc-900/70 to-amber-950/20 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all hover:border-amber-400/60 relative overflow-hidden group">
-              <div className="flex items-start gap-3.5 sm:gap-4.5">
-                {/* Miniatura do Ícone com Fundo Oficial */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/40 relative bg-gradient-to-br from-[#1f0101] to-[#8C1220] shadow-md flex items-center justify-center p-2">
+            <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group">
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-sm flex items-center justify-center p-2">
                   <img 
                     src={logoInicioApp} 
                     alt="Ícone App"
-                    className="w-full h-full object-contain filter drop-shadow(0 4px 8px rgba(0,0,0,0.85))"
+                    className="w-full h-full object-contain filter drop-shadow(0 2px 4px rgba(0,0,0,0.7))"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = appLogo;
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-zinc-400 uppercase">
                     ÍCONES
                   </span>
                 </div>
 
-                {/* Conteúdo */}
                 <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      NOVO · DESIGN STUDIO
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 border border-white/5 font-medium">
+                      DESIGN STUDIO
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400">
-                      Cores de Fundo & Logo
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      Cores & Logos
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
                     Ícones & Logo (Testador de Cores)
-                    <Sparkles className="w-4 h-4 text-amber-400" />
                   </h3>
 
-                  <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                    Laboratório interativo para testar cores de fundo, gradientes (linear e radial), formatos (iOS, Android, OneUI) e proporções do logo sobreposto com simulação em smartphone real e exportação PNG 1024px.
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Testador interativo de fundos, gradientes, formatos (iOS, Android, OneUI) e proporções do logo.
                   </p>
 
-                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                  <div className="pt-2 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => {
                         try { haptic.impact('medium'); } catch {}
                         setTestadorIconeAtivo(true);
                       }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:scale-95 text-black font-mono font-bold text-xs tracking-wider transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all"
                     >
-                      <Play className="w-3.5 h-3.5 fill-black" />
-                      TESTAR CORES DE ÍCONE
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Testar Cores</span>
                     </button>
                   </div>
                 </div>
@@ -379,120 +377,107 @@ export default function AdminLaboratorioAulas() {
             </div>
           )}
 
-          {/* ── PROTÓTIPO 1: TELA PÓS-TRIAL DE 3 DIAS (NOVA FUNÇÃO) ── */}
+          {/* ── 4. TELA PÓS-TRIAL DE 3 DIAS ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'conversao') && (
-            <div className="rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/20 via-zinc-900/60 to-zinc-900/40 p-4 sm:p-5 shadow-xl backdrop-blur-md transition-all hover:border-amber-400/50">
-              <div className="flex items-start gap-3.5 sm:gap-4.5">
-                
-                {/* Logo Minimalista 1:1 */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-amber-500/30 relative bg-zinc-950 shadow-md flex items-center justify-center p-2">
+            <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group">
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-sm flex items-center justify-center p-2">
                   <img 
                     src={appLogo} 
                     alt="Direito Prime"
                     className="w-full h-full object-contain" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-amber-300 uppercase">
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-zinc-400 uppercase">
                     PÓS-TRIAL
                   </span>
                 </div>
 
-                {/* Conteúdo Textual Minimalista */}
                 <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                      NOVA FUNÇÃO · PAYWALL
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 border border-white/5 font-medium">
+                      PAYWALL
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-400">
+                    <span className="text-[11px] text-zinc-400 font-normal">
                       3 Dias de Degustação
                     </span>
                   </div>
 
-                  <h3 className="font-serif font-black text-white text-base sm:text-lg leading-snug">
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                     Tela Pós-Trial de 3 Dias
                   </h3>
 
-                  <p className="text-xs text-zinc-300 font-sans line-clamp-2 leading-relaxed">
-                    Experiência visual exibida automaticamente ao aluno quando o período de 3 dias gratuitos expira, apresentando a trava suave, resumo do que ele desbloqueou e os planos de assinatura.
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Experiência visual exibida quando o período gratuito expira, com trava suave e planos.
                   </p>
 
-                  {/* Ação Direta */}
-                  <div className="pt-2 flex items-center gap-2.5">
+                  <div className="pt-2 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={abrirPosTrial}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-xs flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all"
                     >
-                      <Sparkles className="w-3.5 h-3.5 fill-current" />
-                      <span>Abrir Tela Pós-Trial</span>
+                      <Sparkles className="w-3 h-3" />
+                      <span>Abrir Pós-Trial</span>
                     </button>
-                    <span className="text-[11px] font-mono text-zinc-400">
-                      Modo Interativo
-                    </span>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ── PROTÓTIPO 2: AULA COM DIAGRAMAÇÃO AVANÇADA ── */}
+          {/* ── 5. AULAS COM DIAGRAMAÇÃO AVANÇADA ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'aulas') && (
             AULAS_LABORATORIO_CATALOGO.map((aula) => (
               <div 
                 key={aula.id}
-                className="rounded-2xl sm:rounded-3xl border border-zinc-800 bg-zinc-900/50 p-4 sm:p-5 shadow-xl backdrop-blur-md transition-all hover:border-emerald-500/30"
+                className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group"
               >
-                <div className="flex items-start gap-3.5 sm:gap-4.5">
-                  
-                  {/* Capa Minimalista 1:1 */}
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-md">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-white/10 relative bg-zinc-950 shadow-sm">
                     <img 
                       src={aula.capaUrl} 
                       alt={aula.titulo}
                       className="w-full h-full object-cover" 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono font-black text-emerald-300 uppercase">
+                    <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-zinc-400 uppercase">
                       SLIDE 10
                     </span>
                   </div>
 
-                  {/* Conteúdo Textual Minimalista */}
                   <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 border border-white/5 font-medium">
                         DIREITO PENAL
                       </span>
-                      <span className="text-[11px] font-mono text-zinc-400">
+                      <span className="text-[11px] text-zinc-400 font-normal">
                         32 Etapas · Áudio Real
                       </span>
                     </div>
 
-                    <h3 className="font-serif font-black text-white text-base sm:text-lg leading-snug">
+                    <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                       {aula.titulo}
                     </h3>
 
-                    <p className="text-xs text-zinc-400 font-sans line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                       Árvore de decisão (Dolo vs Erro de Tipo), tabelas sinópticas e grids de pilares na Etapa 10.
                     </p>
 
-                    {/* Ações Rápidas */}
                     <div className="pt-2 flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
                         onClick={() => abrirAula(aula, 9)}
-                        className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-[#10b981] to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black font-black text-xs flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all"
                       >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Ver Etapa 10 (Novo Layout)</span>
+                        <Eye className="w-3 h-3" />
+                        <span>Ver Etapa 10</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => abrirAula(aula, 0)}
-                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 font-medium text-xs flex items-center gap-1 border border-white/10 active:scale-95 transition-all cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white font-medium text-xs flex items-center gap-1 border border-white/5 active:scale-95 transition-all"
                       >
-                        <Play className="w-3 h-3 text-zinc-400 fill-current" />
+                        <Play className="w-2.5 h-2.5 fill-current" />
                         <span>Do Início</span>
                       </button>
                     </div>
