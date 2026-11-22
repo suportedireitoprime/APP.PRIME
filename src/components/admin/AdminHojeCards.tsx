@@ -1738,9 +1738,17 @@ export function AdminHojeCards() {
           if (!cur.user_id && r.user_id) cur.user_id = r.user_id;
         }
       });
+      // Preserva enriquecimentos já existentes em cache para evitar flicker ao recarregar a lista
+      const cachedMap = new Map<string, any>();
+      (rowsCache.current[id] || []).forEach((c) => {
+        const k = c.userId || c.key;
+        if (k) cachedMap.set(k, c);
+      });
+
       const list = Array.from(uniqueMap.values()).map((r) => {
         const email = (r.email || '').toLowerCase().trim();
         const isAdmin = r.is_admin ?? isAdminUser(r.user_id, email);
+        const cached = cachedMap.get(r.user_id || r.key);
         return {
           key: r.key,
           userId: r.user_id,
@@ -1749,15 +1757,15 @@ export function AdminHojeCards() {
           provider: r.provider || null,
           subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
           meta: hora(r.at),
-          acessos: typeof r.acessos === 'number' ? r.acessos : 1,
-          avatarUrl: r.avatar_url,
-          isPremium: r.is_premium,
+          acessos: typeof r.acessos === 'number' ? r.acessos : (cached?.acessos ?? 1),
+          avatarUrl: r.avatar_url || cached?.avatarUrl,
+          isPremium: r.is_premium || cached?.isPremium,
           isAdmin,
-          planValue: r.planValue,
-          planTag: r.planTag,
-          created_at: r.created_at,
-          faixaEtaria: r.faixa_etaria,
-          logsCheckout: r.logsCheckout,
+          planValue: r.planValue || cached?.planValue,
+          planTag: r.planTag || cached?.planTag,
+          created_at: r.created_at || cached?.created_at,
+          faixaEtaria: r.faixa_etaria || cached?.faixaEtaria,
+          logsCheckout: r.logsCheckout || cached?.logsCheckout,
         };
       }).filter((r) => {
         // NUNCA exibe administradores em nenhuma lista de usuários
@@ -2465,26 +2473,59 @@ export function AdminHojeCards() {
                             {r.subtitle || 'Usuário'}
                           </div>
                         )}
-                        {!r.planTag && (
-                          <div className="font-body text-[10.5px] text-muted-foreground/60 truncate flex items-center gap-1.5">
-                            {(open === 'online' || open === 'online5m') ? (
-                              renderTrialCountdown(r.created_at, (r as any).isPremium ?? r.is_premium)
-                            ) : (
-                              formatTempoCadastro(r.created_at, null)
-                            )}
-                            {r.faixaEtaria && (
-                              <>
-                                <span>·</span>
-                                <span>{r.faixaEtaria}</span>
-                              </>
-                            )}
-                          </div>
-                        )}
+                        {/* Linha unificada e fixa de Status / Assinatura (Zero Layout Shift) */}
+                        <div className="flex items-center gap-1.5 flex-wrap mt-0.5 min-h-[20px]">
+                          {r.planTag ? (
+                            <>
+                              <span 
+                                className="shrink-0 inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9px] font-bold text-foreground"
+                                title={r.planTag.plano}
+                              >
+                                {formatPlanoTag(r.planTag.plano)}
+                              </span>
+                              <span className="shrink-0 inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-400">
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(r.planValue || 0)}
+                              </span>
+                              <span className={cn(
+                                "shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9px] font-bold",
+                                r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
+                                  ? 'bg-secondary/60 border-border/50 text-emerald-400'
+                                  : r.planTag.status?.toLowerCase() === 'cancelado' || r.planTag.status?.toLowerCase().includes('expir')
+                                  ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                                  : 'bg-secondary/50 border-border/50 text-muted-foreground'
+                              )}>
+                                {formatStatusPt(r.planTag.status)}
+                              </span>
+                              {r.planTag.expires_at && (
+                                <span className="shrink-0 inline-flex items-center text-[9.5px] font-medium text-muted-foreground opacity-80 truncate" title={`Expira em: ${r.planTag.expires_at}`}>
+                                  Até {r.planTag.expires_at}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {(open === 'online' || open === 'online5m') ? (
+                                renderTrialCountdown(r.created_at, (r as any).isPremium ?? r.is_premium)
+                              ) : (
+                                formatTempoCadastro(r.created_at, null)
+                              )}
+                            </>
+                          )}
+                          {r.faixaEtaria && (
+                            <span className="text-[10px] text-muted-foreground/60 truncate">
+                              · {r.faixaEtaria}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Rota atual em posição estável */}
                         {(open === 'online' || open === 'online5m') && r.subtitle && r.subtitle !== 'Desconhecida' && r.subtitle !== 'App aberto' && (
                           <div className="font-body text-[10.5px] text-emerald-400 font-medium truncate mt-0.5">
                             Em {r.subtitle}
                           </div>
                         )}
+
+                        {/* Ação Uso de Recursos sempre estável no rodapé */}
                         {(open === 'online' || open === 'online5m') && (
                           <div className="flex items-center gap-1.5 mt-1">
                             <span
@@ -2494,34 +2535,6 @@ export function AdminHojeCards() {
                               <Target className="w-2.5 h-2.5 text-purple-400" />
                               Uso de Recursos
                             </span>
-                          </div>
-                        )}
-                        {r.planTag && (
-                          <div className="flex items-center gap-1.5 flex-nowrap overflow-hidden mt-0.5">
-                            <span 
-                              className="shrink-0 inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9px] font-bold text-foreground"
-                              title={r.planTag.plano}
-                            >
-                              {formatPlanoTag(r.planTag.plano)}
-                            </span>
-                            <span className="shrink-0 inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-400">
-                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(r.planValue || 0)}
-                            </span>
-                            <span className={cn(
-                              "shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9px] font-bold",
-                              r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
-                                ? 'bg-secondary/60 border-border/50 text-emerald-400'
-                                : r.planTag.status?.toLowerCase() === 'cancelado' || r.planTag.status?.toLowerCase().includes('expir')
-                                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-                                : 'bg-secondary/50 border-border/50 text-muted-foreground'
-                            )}>
-                              {formatStatusPt(r.planTag.status)}
-                            </span>
-                            {r.planTag.expires_at && (
-                              <span className="shrink-0 inline-flex items-center text-[9.5px] font-medium text-muted-foreground opacity-80 truncate" title={`Expira em: ${r.planTag.expires_at}`}>
-                                Até {r.planTag.expires_at}
-                              </span>
-                            )}
                           </div>
                         )}
 
