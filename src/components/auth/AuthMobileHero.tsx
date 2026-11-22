@@ -1,41 +1,13 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
 import { useNavigate } from 'react-router-dom';
 import { HelpCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import authJudgeScene from '@/assets/auth-judge-scene.webp';
-import authCourtroomScene from '@/assets/auth-courtroom-scene.webp';
-import authThemisImpact from '@/assets/auth-themis-impact.webp';
-import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
-import capa1 from '@/assets/capas/capa-1.webp';
-import capa2 from '@/assets/capas/capa-2.webp';
-import capa3 from '@/assets/capas/capa-3.webp';
-import capa4 from '@/assets/capas/capa-4.webp';
-import capa5 from '@/assets/capas/capa-5.webp';
-import capa6 from '@/assets/capas/capa-6.webp';
-import capa7 from '@/assets/capas/capa-7.webp';
-import capa8 from '@/assets/capas/capa-8.webp';
-import capa9 from '@/assets/capas/capa-9.webp';
-import logoImg from '@/assets/bundled/logo-direitoprime-v2.webp';
+import heroLeisecaEstudante from '@/assets/covers/hero-leiseca-estudante.webp';
+import logoCoruja from '@/assets/logo-coruja.webp';
 import type { AuthMode } from './AuthDrawer';
-
-const AUTH_BACKGROUNDS = [
-  authJudgeScene,
-  authCourtroomScene,
-  authThemisImpact,
-  themisAuthYellow,
-  capa1,
-  capa2,
-  capa3,
-  capa4,
-  capa5,
-  capa6,
-  capa7,
-  capa8,
-  capa9,
-];
 
 interface AuthMobileHeroProps {
   onOpenDrawer: (mode: AuthMode) => void;
@@ -47,23 +19,6 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
   onOpenAjuda,
 }) => {
   const navigate = useNavigate();
-  const [currentIdx, setCurrentIdx] = useState(0);
-
-  // Pré-carrega todas as imagens em memória para transição instantânea sem engasgos
-  useEffect(() => {
-    AUTH_BACKGROUNDS.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
-
-  // Alternância cinematográfica a cada 4 segundos
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % AUTH_BACKGROUNDS.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleNativeOrDrawer = async (mode: 'login' | 'signup') => {
     if (Capacitor.isNativePlatform()) {
@@ -100,22 +55,16 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
 
   return (
     <>
-      {/* Background Image Dinâmico com Alternância a cada 4 segundos */}
+      {/* Background Image: Foto oficial da menina segurando a Constituição */}
       <div className="absolute inset-0 w-full h-full overflow-hidden select-none pointer-events-none z-0">
-        <AnimatePresence mode="popLayout">
-          <motion.img
-            key={`auth-bg-${currentIdx}`}
-            src={AUTH_BACKGROUNDS[currentIdx]}
-            alt="Ambiente Jurídico"
-            loading="eager"
-            decoding="async"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: 'easeInOut' }}
-            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.70] saturate-[1.05] transform-gpu"
-          />
-        </AnimatePresence>
+        <img
+          src={heroLeisecaEstudante}
+          alt="Estudante de Direito com a Constituição"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover object-[center_25%] filter brightness-[0.70] saturate-[1.05] transform-gpu"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/35" />
       </div>
 
@@ -126,15 +75,18 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="flex flex-col items-center gap-4"
         >
-          {/* Logo e Tipografia */}
-          <div className="flex flex-col items-center justify-center gap-4">
+          {/* Logo Oficial Vazado (Idêntico ao painel do início do app) e Tipografia */}
+          <div className="flex flex-col items-center justify-center gap-3">
             <img
-              src={logoImg}
-              alt="Logo Direito Prime"
-              className="w-24 h-24 xl:w-32 xl:h-32 object-contain relative z-10"
+              src={logoCoruja}
+              alt="Estudos Jurídicos"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="w-20 h-20 sm:w-24 sm:h-24 object-contain relative z-10 transform-gpu pointer-events-none select-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_0_24px_rgba(230,25,66,0.35)]"
             />
 
-            <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
+            <div className="flex flex-col items-center justify-center gap-1 mt-0.5 w-full">
               <h1 className="font-serif italic font-bold text-[28px] text-white tracking-tight leading-none [text-shadow:0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
                 Estudos Jurídicos
               </h1>

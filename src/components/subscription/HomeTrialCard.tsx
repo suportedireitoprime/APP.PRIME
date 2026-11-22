@@ -16,18 +16,18 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
     Boolean(sub.isPremium && !sub.isTrial) ||
     sub.plano === 'vitalicio';
 
-  if (isPaidSubscriber) {
-    return null;
-  }
-
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
+    if (isPaidSubscriber) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaidSubscriber]);
 
   const trialInfo = useMemo(() => {
+    if (isPaidSubscriber) {
+      return { inTrial: false, trialExpired: false, trialExpiresAt: null, trialRemainingMs: 0 };
+    }
     let dateStr = user?.created_at || sub.startedAt;
     const userTrialKey = user ? `direitoprime:trial_started:${user.id}` : 'direitoprime:trial_started:guest';
     if (!dateStr && typeof localStorage !== 'undefined') {
@@ -42,18 +42,19 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
       dateStr = nowIso;
     }
     return calcTrial(dateStr);
-  }, [user, sub.startedAt]);
+  }, [isPaidSubscriber, user, sub.startedAt]);
 
   const remainingMs = useMemo(() => {
-    if (!trialInfo.trialExpiresAt) return 0;
+    if (isPaidSubscriber || !trialInfo.trialExpiresAt) return 0;
     const expiresTime = new Date(trialInfo.trialExpiresAt).getTime();
     return Math.max(0, expiresTime - now);
-  }, [trialInfo.trialExpiresAt, now]);
+  }, [isPaidSubscriber, trialInfo.trialExpiresAt, now]);
 
   const inTrial = remainingMs > 0;
 
   // Formatação do tempo restante (dias, horas, minutos, segundos)
   const formattedCountdown = useMemo(() => {
+    if (isPaidSubscriber) return '';
     const totalSec = Math.floor(remainingMs / 1000);
     const days = Math.floor(totalSec / (24 * 3600));
     const hours = Math.floor((totalSec % (24 * 3600)) / 3600);
@@ -64,7 +65,12 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
       return `${days}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
     }
     return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
-  }, [remainingMs]);
+  }, [isPaidSubscriber, remainingMs]);
+
+  // Se for assinante pago, não renderiza nada (mas todos os hooks foram executados estavelmente!)
+  if (isPaidSubscriber) {
+    return null;
+  }
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();

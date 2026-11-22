@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 export interface HeroAnimatedWaveProps {
   colorScheme?: 'red' | 'green';
   themeColor?: string; // Cor customizada da lei (ex: '#2563EB', '#059669', etc.)
+  waveHeight?: 'standard' | 'tall';
 }
 
 function shadeHex(hex: string, amt: number): string {
@@ -32,11 +33,17 @@ function shadeHex(hex: string, amt: number): string {
 export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   colorScheme = 'red',
   themeColor,
+  waveHeight = 'standard',
 }) => {
   const isCustom = Boolean(themeColor);
   const isGreen = !isCustom && colorScheme === 'green';
   const c = themeColor || (isGreen ? '#059669' : '#e61942');
   const schemeKey = isCustom ? `c_${themeColor!.replace('#', '')}` : colorScheme;
+
+  const isTall = waveHeight === 'tall';
+  const c1HeightClass = isTall ? 'h-[230px] sm:h-[270px]' : 'h-[140px] sm:h-[175px]';
+  const c2HeightClass = isTall ? 'h-[210px] sm:h-[250px]' : 'h-[128px] sm:h-[160px]';
+  const c3HeightClass = isTall ? 'h-[175px] sm:h-[210px]' : 'h-[102px] sm:h-[130px]';
 
   // Cores dinâmicas para tema customizado
   const deep0 = isCustom ? shadeHex(c, -0.88) : isGreen ? '#011b14' : '#1f0207';
@@ -119,7 +126,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[140px] sm:h-[175px] pointer-events-none transform-gpu"
+          className={`absolute -bottom-1 left-0 w-[200%] ${c1HeightClass} pointer-events-none transform-gpu`}
           style={{
             animation: 'heroSilkBackSlide 24s linear infinite',
             filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
@@ -167,7 +174,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[128px] sm:h-[160px] pointer-events-none transform-gpu"
+          className={`absolute -bottom-1 left-0 w-[200%] ${c2HeightClass} pointer-events-none transform-gpu`}
           style={{
             animation: 'heroSilkMainSlide 16s linear infinite',
             filter: `drop-shadow(0 -10px 24px ${c}99) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))`,
@@ -274,7 +281,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className="absolute -bottom-1 left-0 w-[200%] h-[102px] sm:h-[130px] pointer-events-none transform-gpu"
+          className={`absolute -bottom-1 left-0 w-[200%] ${c3HeightClass} pointer-events-none transform-gpu`}
           style={{
             animation: 'heroSilkFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
             filter: `drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 22px ${c}88)`,

@@ -1,75 +1,23 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
-import authJudgeScene from '@/assets/auth-judge-scene.webp';
-import authCourtroomScene from '@/assets/auth-courtroom-scene.webp';
-import authThemisImpact from '@/assets/auth-themis-impact.webp';
-import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
-import capa1 from '@/assets/capas/capa-1.webp';
-import capa2 from '@/assets/capas/capa-2.webp';
-import capa3 from '@/assets/capas/capa-3.webp';
-import capa4 from '@/assets/capas/capa-4.webp';
-import capa5 from '@/assets/capas/capa-5.webp';
-import capa6 from '@/assets/capas/capa-6.webp';
-import capa7 from '@/assets/capas/capa-7.webp';
-import capa8 from '@/assets/capas/capa-8.webp';
-import capa9 from '@/assets/capas/capa-9.webp';
-import logoImg from '@/assets/bundled/logo-direitoprime-v2.webp';
-
-const AUTH_BACKGROUNDS = [
-  authJudgeScene,
-  authCourtroomScene,
-  authThemisImpact,
-  themisAuthYellow,
-  capa1,
-  capa2,
-  capa3,
-  capa4,
-  capa5,
-  capa6,
-  capa7,
-  capa8,
-  capa9,
-];
+import heroLeisecaEstudante from '@/assets/covers/hero-leiseca-estudante.webp';
+import logoCoruja from '@/assets/logo-coruja.webp';
 
 export const AuthDesktopHero: React.FC = () => {
-  const [currentIdx, setCurrentIdx] = useState(0);
-
-  // Pré-carrega imagens para transição instantânea
-  useEffect(() => {
-    AUTH_BACKGROUNDS.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
-
-  // Alternância a cada 4 segundos
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % AUTH_BACKGROUNDS.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <>
-      {/* Background Images com alternância a cada 4 segundos e máscaras elegantes */}
+      {/* Background Image: Foto oficial da menina segurando a Constituição */}
       <div className="absolute inset-0 w-full h-full pointer-events-none bg-[#0d0f12] overflow-hidden">
-        <AnimatePresence mode="popLayout">
-          <motion.img
-            key={`desktop-auth-bg-${currentIdx}`}
-            src={AUTH_BACKGROUNDS[currentIdx]}
-            alt="Ambiente Jurídico"
-            loading="eager"
-            decoding="async"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: 'easeInOut' }}
-            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.70] saturate-[1.05] transform-gpu"
-          />
-        </AnimatePresence>
+        <img
+          src={heroLeisecaEstudante}
+          alt="Estudante de Direito com a Constituição"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover object-[center_25%] filter brightness-[0.70] saturate-[1.05] transform-gpu"
+        />
       </div>
 
       {/* Gradientes laterais para leitura impecável */}
@@ -87,9 +35,12 @@ export const AuthDesktopHero: React.FC = () => {
           className="flex flex-col items-start text-left max-w-lg"
         >
           <img
-            src={logoImg}
-            alt="Logo Direito Prime"
-            className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl mb-6"
+            src={logoCoruja}
+            alt="Estudos Jurídicos"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_0_24px_rgba(230,25,66,0.35)] mb-6"
           />
 
           <h1 className="font-serif italic font-bold text-5xl xl:text-6xl text-white tracking-tight leading-none drop-shadow-2xl whitespace-nowrap">

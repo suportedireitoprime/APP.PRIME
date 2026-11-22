@@ -57,11 +57,6 @@ const VideoaulasCatalogo = () => {
   const { catalogo: catalogoId } = useParams();
   const navigate = useNavigate();
 
-  // A rota /videoaulas/areas é redundante pois a Home já possui o Menu de Alternância completo
-  if (catalogoId === 'areas') {
-    return <Navigate to="/videoaulas" replace />;
-  }
-
   const catalogo = getCatalogo(catalogoId);
   const [aulas, setAulas] = useState<Aula[]>(
     () => (catalogo ? ((getCachedCatalogo(catalogo.id) as Aula[] | null) ?? []) : []),
@@ -74,6 +69,11 @@ const VideoaulasCatalogo = () => {
   const [progresso, setProgresso] = useState<ProgressoMap>(() =>
     catalogo ? mapearProgresso(getCachedProgresso(), catalogo.tabela) : {}
   );
+
+  // A rota /videoaulas/areas é redundante pois a Home já possui o Menu de Alternância completo
+  if (catalogoId === 'areas') {
+    return <Navigate to="/videoaulas" replace />;
+  }
 
   useEffect(() => {
     if (!catalogo) return;
