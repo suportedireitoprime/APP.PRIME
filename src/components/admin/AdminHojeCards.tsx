@@ -561,6 +561,7 @@ export function AdminHojeCards() {
               .from('app_events')
               .select('user_id, email, event_name, metadata')
               .in('event_name', [
+                'begin_checkout',
                 'trial_click', 
                 'checkout_etapa1_concluida', 
                 'checkout_pix_gerado', 
@@ -1504,6 +1505,7 @@ export function AdminHojeCards() {
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
           ? [
+              'begin_checkout',
               'trial_click', 
               'checkout_etapa1_concluida', 
               'checkout_pix_gerado', 
@@ -1612,8 +1614,8 @@ export function AdminHojeCards() {
             // Identifica se concluiu pagamento hoje
             const hasCcAprovado = e.logs.some((l: any) => l.event_name === 'checkout_cc_aprovado');
             const paidPixEvent = e.logs.find((l: any) => l.event_name === 'checkout_pix_pago' || (l.event_name === 'purchase' && (l.billingType === 'PIX' || l.plano?.includes('pix'))));
-            const isNewSubToday = Boolean(e.user_id && subUsers.has(e.user_id));
-            const isUserPaid = Boolean(hasCcAprovado || paidPixEvent || isNewSubToday);
+            const hasAsaasActive = Boolean(e.user_id && asaasSubMap.has(e.user_id));
+            const isUserPaid = Boolean(hasCcAprovado || paidPixEvent || hasAsaasActive || prof.is_premium);
 
             let matchedPixIdx = -1;
             if (paidPixEvent) {
@@ -2028,6 +2030,8 @@ export function AdminHojeCards() {
       } else {
         if (periodo === 'hoje') rowsCache.current[id] = list;
       }
+    } catch (err) {
+      console.error('[AdminHojeCards fetchRows error]', id, err);
     } finally {
       setLoading(false);
     }
@@ -2626,6 +2630,12 @@ export function AdminHojeCards() {
                                return (
                                  <div key={idx} className="flex items-center gap-1.5 text-[10px]">
                                    <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
+
+                                   {log.event_name === 'begin_checkout' && (
+                                     <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1 rounded uppercase font-bold text-[9px]">
+                                       CHECKOUT INICIADO
+                                     </span>
+                                   )}
 
                                    {log.event_name === 'checkout_etapa1_concluida' && (
                                      <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1 rounded uppercase font-bold text-[9px]">
