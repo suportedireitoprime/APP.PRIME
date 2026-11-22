@@ -189,15 +189,20 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
           toast.success('Enviamos o código de recuperação para seu email.');
           setResetEmailSent(true);
         } else {
-          if (!resetCode || !resetNewPassword) {
+          const cleanCode = resetCode.trim().replace(/[\s-]/g, '');
+          if (!cleanCode || !resetNewPassword) {
             toastErroAuth('Preencha o código e a nova senha.');
+            return;
+          }
+          if (cleanCode.length < 6 || cleanCode.length > 10) {
+            toastErroAuth('O código deve conter entre 6 e 8 dígitos.');
             return;
           }
           if (resetNewPassword.length < 6) {
             toastErroAuth('A nova senha deve ter pelo menos 6 caracteres.');
             return;
           }
-          const { error: otpError } = await verifyOtp(cleanEmail, resetCode.trim(), 'recovery');
+          const { error: otpError } = await verifyOtp(cleanEmail, cleanCode, 'recovery');
           if (otpError) throw otpError;
           const { error: updateError } = await updatePassword(resetNewPassword);
           if (updateError) throw updateError;
@@ -414,8 +419,8 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                     </div>
                     <p className="text-sm font-body text-muted-foreground mt-1">
                       {resetEmailSent
-                        ? `Abra o link enviado para ${email} para criar uma nova senha.`
-                        : 'Informe seu email para receber o link de redefinição'}
+                        ? `Digite o código enviado para ${email} para criar sua nova senha.`
+                        : 'Informe seu email para receber o código de recuperação'}
                     </p>
                   </div>
                 )}
@@ -471,12 +476,14 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                       <input
                         type="text"
                         name="code"
-                        placeholder="Código de 6 dígitos"
+                        placeholder="Código de recuperação (8 dígitos)"
                         value={resetCode}
-                        onChange={(e) => setResetCode(e.target.value)}
+                        onChange={(e) => setResetCode(e.target.value.replace(/[\s-]/g, ''))}
                         required
                         className={inputCls}
-                        maxLength={6}
+                        maxLength={8}
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
                       />
                       <KeyRound className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     </div>
@@ -565,16 +572,41 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
                 )}
 
                 {mode === 'forgot' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode('login');
-                      setResetEmailSent(false);
-                    }}
-                    className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors cursor-pointer"
-                  >
-                    {resetEmailSent ? 'Entendi, voltar ao login' : 'Voltar ao login'}
-                  </button>
+                  <div className="space-y-3 pt-2">
+                    {resetEmailSent && (
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={async () => {
+                          if (submitting) return;
+                          setSubmitting(true);
+                          try {
+                            const clean = email.trim().toLowerCase();
+                            const { error } = await resetPassword(clean);
+                            if (error) throw error;
+                            toast.success('Novo código enviado para seu e-mail!');
+                          } catch (err: unknown) {
+                            toastErroAuth((err as Error).message ?? 'Erro ao reenviar código.');
+                          } finally {
+                            setSubmitting(false);
+                          }
+                        }}
+                        className="w-full text-center text-xs font-body text-primary hover:underline transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        Não recebeu? Reenviar código
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('login');
+                        setResetEmailSent(false);
+                      }}
+                      className="w-full text-center text-sm font-body text-white/60 hover:text-white transition-colors cursor-pointer"
+                    >
+                      {resetEmailSent ? 'Entendi, voltar ao login' : 'Voltar ao login'}
+                    </button>
+                  </div>
                 )}
               </motion.form>
             )}

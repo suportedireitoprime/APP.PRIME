@@ -41,9 +41,12 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   const schemeKey = isCustom ? `c_${themeColor!.replace('#', '')}` : colorScheme;
 
   const isTall = waveHeight === 'tall';
-  const c1HeightClass = isTall ? 'h-[230px] sm:h-[270px]' : 'h-[140px] sm:h-[175px]';
-  const c2HeightClass = isTall ? 'h-[210px] sm:h-[250px]' : 'h-[128px] sm:h-[160px]';
-  const c3HeightClass = isTall ? 'h-[175px] sm:h-[210px]' : 'h-[102px] sm:h-[130px]';
+  const c1HeightPx = isTall ? '240px' : '150px';
+  const c2HeightPx = isTall ? '220px' : '138px';
+  const c3HeightPx = isTall ? '180px' : '110px';
+  const c1HeightClass = isTall ? 'h-[240px]' : 'h-[150px]';
+  const c2HeightClass = isTall ? 'h-[220px]' : 'h-[138px]';
+  const c3HeightClass = isTall ? 'h-[180px]' : 'h-[110px]';
 
   // Cores dinâmicas para tema customizado
   const deep0 = isCustom ? shadeHex(c, -0.88) : isGreen ? '#011b14' : '#1f0207';
@@ -128,6 +131,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c1HeightClass} pointer-events-none transform-gpu`}
           style={{
+            height: c1HeightPx,
             animation: 'heroSilkBackSlide 24s linear infinite',
             filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
           }}
@@ -176,6 +180,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c2HeightClass} pointer-events-none transform-gpu`}
           style={{
+            height: c2HeightPx,
             animation: 'heroSilkMainSlide 16s linear infinite',
             filter: `drop-shadow(0 -10px 24px ${c}99) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))`,
           }}
@@ -283,6 +288,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c3HeightClass} pointer-events-none transform-gpu`}
           style={{
+            height: c3HeightPx,
             animation: 'heroSilkFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
             filter: `drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 22px ${c}88)`,
           }}
