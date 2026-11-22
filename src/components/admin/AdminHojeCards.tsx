@@ -126,7 +126,8 @@ function formatStatusPt(status?: string | null): string {
   if (s.includes('pend')) return 'PENDENTE';
   if (s.includes('overdue') || s.includes('atras')) return 'ATRASADO';
   if (s.includes('trial')) return 'TESTE';
-  return status.toUpperCase();
+  if (s.includes('expir')) return 'EXPIRADO';
+  return status.replace(/^subscription_state_/i, '').toUpperCase();
 }
 
 function formatPlanoTag(plano?: string | null): string {
@@ -2510,7 +2511,7 @@ export function AdminHojeCards() {
                               "shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9px] font-bold",
                               r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
                                 ? 'bg-secondary/60 border-border/50 text-emerald-400'
-                                : r.planTag.status?.toLowerCase() === 'cancelado'
+                                : r.planTag.status?.toLowerCase() === 'cancelado' || r.planTag.status?.toLowerCase().includes('expir')
                                 ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                                 : 'bg-secondary/50 border-border/50 text-muted-foreground'
                             )}>
