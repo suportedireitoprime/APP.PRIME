@@ -848,6 +848,12 @@ export function AdminHojeCards() {
           if (isAdminUser(e.user_id, em)) return;
           const uid = e.user_id || em;
           if (!uid) return;
+          // Ignora eventos purchase de telemetria sem valor financeiro real
+          if (e.event_name === 'purchase') {
+            const meta = e.metadata || {};
+            const val = typeof meta.value === 'number' ? meta.value : 0;
+            if (val <= 0 && !meta.payment_id) return;
+          }
           if (!checkoutUserEvents.has(uid)) {
             checkoutUserEvents.set(uid, []);
           }
@@ -855,7 +861,7 @@ export function AdminHojeCards() {
         });
 
         checkoutUserEvents.forEach((evList, uid) => {
-          const isPaid = subUsers.has(uid) || evList.includes('checkout_pix_pago') || evList.includes('checkout_cc_aprovado') || evList.includes('purchase');
+          const isPaid = subUsers.has(uid) || evList.includes('checkout_pix_pago') || evList.includes('checkout_cc_aprovado');
           if (isPaid) {
             cPago++;
           } else if (evList.includes('checkout_cc_recusado')) {
@@ -1555,6 +1561,13 @@ export function AdminHojeCards() {
             const em = (e.email || '').toLowerCase().trim();
             if (isAdminUser(e.user_id, em)) return;
             const uid = e.user_id || em;
+            if (!uid) return;
+            // Ignora eventos purchase de telemetria sem valor financeiro real
+            if (e.event_name === 'purchase') {
+              const meta = e.metadata || {};
+              const val = typeof meta.value === 'number' ? meta.value : 0;
+              if (val <= 0 && !meta.payment_id) return;
+            }
             if (!userEventsMap.has(uid)) {
               userEventsMap.set(uid, {
                 ...e,
@@ -1593,11 +1606,11 @@ export function AdminHojeCards() {
             // Ordena logs decrescente
             e.logs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-            // Identifica se usuário é assinante ativo ou se concluiu pagamento
+            // Identifica se concluiu pagamento hoje
             const hasCcAprovado = e.logs.some((l: any) => l.event_name === 'checkout_cc_aprovado');
             const paidPixEvent = e.logs.find((l: any) => l.event_name === 'checkout_pix_pago' || (l.event_name === 'purchase' && (l.billingType === 'PIX' || l.plano?.includes('pix'))));
-            const hasAsaasActive = e.user_id && asaasSubMap.has(e.user_id);
-            const isUserPaid = Boolean(prof.is_premium || hasCcAprovado || paidPixEvent || hasAsaasActive);
+            const isNewSubToday = Boolean(e.user_id && subUsers.has(e.user_id));
+            const isUserPaid = Boolean(hasCcAprovado || paidPixEvent || isNewSubToday);
 
             let matchedPixIdx = -1;
             if (paidPixEvent) {

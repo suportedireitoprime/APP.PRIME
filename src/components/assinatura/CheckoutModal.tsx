@@ -14,6 +14,7 @@ import { openExternal } from '@/lib/nativeBrowser';
 import { motion, AnimatePresence } from "framer-motion";
 import { haptic } from '@/lib/nativeHaptics';
 import confetti from 'canvas-confetti';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface CheckoutModalProps {
   open: boolean;
@@ -138,11 +139,20 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange, plan, userEmail, userName, onSuccess }) => {
+  const { isPremium, isTrial } = useSubscription();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [loading, setLoading] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState<number>(1);
   const [activePlan, setActivePlan] = useState<PlanoCheckout>('anual');
+
+  // Proteção absoluta: Se o usuário já é assinante ativo, bloqueia o checkout imediatamente
+  useEffect(() => {
+    if (open && isPremium && !isTrial) {
+      toast.info('Sua assinatura já está ativa.');
+      onOpenChange(false);
+    }
+  }, [open, isPremium, isTrial, onOpenChange]);
 
   useEffect(() => {
     if (plan) {

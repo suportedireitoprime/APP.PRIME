@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+  ChevronLeft,
   ChevronRight,
   Search,
   X,
@@ -588,12 +589,71 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     return booksByColecao[activeAcervo.id] || [];
   }, [booksByColecao, activeAcervo.id]);
 
+  // Controles de rolagem fluida e drag com mouse para as capas de Acervos Especiais
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const isDraggingLivrosRef = useRef(false);
+  const startXLivrosRef = useRef(0);
+  const startScrollLeftLivrosRef = useRef(0);
+  const hasMovedLivrosRef = useRef(false);
+
+  const checkLivrosScroll = useCallback(() => {
+    const el = livrosScrollerRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 12);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 12);
+  }, []);
+
+  const handleScrollLivrosBy = useCallback((direction: 'left' | 'right') => {
+    const el = livrosScrollerRef.current;
+    if (!el) return;
+    haptic.selection();
+    const amount = Math.max(el.clientWidth * 0.72, 280);
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  }, []);
+
+  // Mouse Drag Handlers para Desktop
+  const handleLivrosMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return; // apenas botão principal
+    const el = livrosScrollerRef.current;
+    if (!el) return;
+    isDraggingLivrosRef.current = true;
+    startXLivrosRef.current = e.clientX;
+    startScrollLeftLivrosRef.current = el.scrollLeft;
+    hasMovedLivrosRef.current = false;
+  }, []);
+
+  const handleLivrosMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingLivrosRef.current) return;
+    const el = livrosScrollerRef.current;
+    if (!el) return;
+    const dx = e.clientX - startXLivrosRef.current;
+    if (Math.abs(dx) > 5) {
+      hasMovedLivrosRef.current = true;
+      el.scrollLeft = startScrollLeftLivrosRef.current - dx;
+    }
+  }, []);
+
+  const handleLivrosMouseEnd = useCallback(() => {
+    if (!isDraggingLivrosRef.current) return;
+    isDraggingLivrosRef.current = false;
+    setTimeout(() => {
+      hasMovedLivrosRef.current = false;
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    checkLivrosScroll();
+  }, [activeCarouselIndex, livrosDoAcervo, checkLivrosScroll]);
+
   const handleSelectAcervo = useCallback((idx: number) => {
     haptic.selection();
     setActiveCarouselIndex(idx);
     if (livrosScrollerRef.current) {
       livrosScrollerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
     }
+    setCanScrollLeft(false);
+    setCanScrollRight(true);
   }, []);
 
   return (
@@ -629,18 +689,52 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
               </h3>
             </div>
 
-            {/* Ação para ver o acervo completo da categoria selecionada */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                navigate(`/bibliotecas/${activeAcervo.id}`);
-              }}
-              className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-[11px] sm:text-xs font-semibold text-purple-200 hover:text-white hover:bg-purple-500/25 transition-all active:scale-95 cursor-pointer touch-manipulation shrink-0"
-            >
-              <span>Ver acervo ({livrosDoAcervo.length || activeAcervo.defaultCount})</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Botões de Navegação Desktop/Tablet para deslizar capas */}
+              <div className="hidden sm:flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleScrollLivrosBy('left')}
+                  disabled={!canScrollLeft}
+                  className={cn(
+                    "w-7 h-7 rounded-full flex items-center justify-center border transition-all cursor-pointer",
+                    canScrollLeft
+                      ? "bg-purple-950/50 border-purple-400/40 text-purple-200 hover:text-white hover:bg-purple-600/40 active:scale-95 shadow-sm"
+                      : "bg-white/5 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
+                  )}
+                  aria-label="Voltar capas"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScrollLivrosBy('right')}
+                  disabled={!canScrollRight}
+                  className={cn(
+                    "w-7 h-7 rounded-full flex items-center justify-center border transition-all cursor-pointer",
+                    canScrollRight
+                      ? "bg-purple-950/50 border-purple-400/40 text-purple-200 hover:text-white hover:bg-purple-600/40 active:scale-95 shadow-sm"
+                      : "bg-white/5 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
+                  )}
+                  aria-label="Avançar capas"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Ação para ver o acervo completo da categoria selecionada */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  navigate(`/bibliotecas/${activeAcervo.id}`);
+                }}
+                className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-[11px] sm:text-xs font-semibold text-purple-200 hover:text-white hover:bg-purple-500/25 transition-all active:scale-95 cursor-pointer touch-manipulation shrink-0"
+              >
+                <span>Ver acervo ({livrosDoAcervo.length || activeAcervo.defaultCount})</span>
+                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+            </div>
           </div>
 
           {/* Menu de Alternância de Acervos Especiais (Inicia sempre pelos Clássicos) */}
@@ -690,10 +784,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
           </div>
 
           {/* Carrossel de Livros da Categoria Selecionada (Clássicos, Fora da Toga, etc.) */}
-          {/* Suporta rolagem horizontal e toque vertical em toda a tela (inclusive nas capas) */}
+          {/* Suporta deslize tátil suave no mobile (touch-pan-x) e arrastar com mouse no desktop */}
           <div
             ref={livrosScrollerRef}
-            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-y pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch"
+            onScroll={checkLivrosScroll}
+            onMouseDown={handleLivrosMouseDown}
+            onMouseMove={handleLivrosMouseMove}
+            onMouseUp={handleLivrosMouseEnd}
+            onMouseLeave={handleLivrosMouseEnd}
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x touch-manipulation pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch cursor-grab active:cursor-grabbing select-none"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {livrosDoAcervo.length > 0 ? (
@@ -705,10 +804,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   <div
                     key={`acervo-${activeAcervo.id}-${livro.id}-${bookIdx}`}
                     onClick={() => {
+                      if (hasMovedLivrosRef.current) return;
                       haptic.selection();
                       onAbrirLivro(livro);
                     }}
-                    className="snap-start shrink-0 w-[138px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-200 active:scale-95 touch-pan-y select-none"
+                    className="snap-start shrink-0 w-[138px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-200 active:scale-95 touch-pan-x touch-manipulation select-none"
                   >
                     <div className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden bg-zinc-950 shadow-[0_12px_28px_-6px_rgba(0,0,0,0.85)] ring-1 ring-white/10 group-hover:ring-purple-400/60 group-hover:shadow-[0_16px_36px_-6px_rgba(168,85,247,0.35)] transition-all duration-300 flex flex-col justify-end">
                       <img
@@ -775,10 +875,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             {livrosDoAcervo.length > 0 && (
               <div
                 onClick={() => {
+                  if (hasMovedLivrosRef.current) return;
                   haptic.selection();
                   navigate(`/bibliotecas/${activeAcervo.id}`);
                 }}
-                className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl border-2 border-dashed border-purple-500/40 bg-[#14121a]/90 hover:bg-purple-950/40 flex flex-col items-center justify-center text-center p-3 cursor-pointer group active:scale-95 transition-all touch-pan-y select-none"
+                className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl border-2 border-dashed border-purple-500/40 bg-[#14121a]/90 hover:bg-purple-950/40 flex flex-col items-center justify-center text-center p-3 cursor-pointer group active:scale-95 transition-all touch-pan-x touch-manipulation select-none"
               >
                 <div className="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform mb-2 shadow-md">
                   <ArrowUpRight className="w-5 h-5" />

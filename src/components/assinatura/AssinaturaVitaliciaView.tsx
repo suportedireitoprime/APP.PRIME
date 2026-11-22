@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, startTransition } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link, Navigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Infinity as InfinityIcon, 
@@ -38,7 +38,8 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
   const [searchParams] = useSearchParams();
 
   const welcomeFlag = searchParams.get('welcome') === '1';
-  const { refresh: refreshSubscription, isPremium, isTrial } = useSubscription({ pollOnMount: welcomeFlag });
+  const previewPlans = searchParams.get('preview') === 'plans' || searchParams.get('planos') === '1';
+  const { refresh: refreshSubscription, isPremium, isTrial, loading: subLoading } = useSubscription({ pollOnMount: welcomeFlag });
   const { data: profileSummary } = useProfileSummary();
 
   const [checkoutPlan, setCheckoutPlan] = useState<PlanoCheckout | null>(null);
@@ -63,14 +64,12 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
 
   const handleAssinarVitalicioClick = () => {
     haptic.impact('heavy');
-    track('subscription_started', { plano: 'vitalicio_promocional_pix', metodo: 'pix', source: 'vitalicio_promocional_minimal' });
-    
-    import('@/lib/appEvents')
-      .then(({ appEvents }) => {
-        appEvents.verPlano({ plano: 'vitalicio_promocional_pix' as any });
-        appEvents.assinaturaIniciada({ plano: 'vitalicio_promocional_pix' as any, metodo: 'pix' });
-      })
-      .catch(() => {});
+
+    if (isPremium && !isTrial) {
+      toast.info('Você já é assinante — sua assinatura está ativa.');
+      navigate('/planos/ativos', { replace: true });
+      return;
+    }
 
     if (!session) {
       try {
@@ -81,11 +80,14 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
       return;
     }
 
-    if (isPremium && !isTrial) {
-      toast.info('Você já é assinante — sua assinatura está ativa.');
-      navigate('/planos/ativos', { replace: true });
-      return;
-    }
+    track('subscription_started', { plano: 'vitalicio_promocional_pix', metodo: 'pix', source: 'vitalicio_promocional_minimal' });
+    
+    import('@/lib/appEvents')
+      .then(({ appEvents }) => {
+        appEvents.verPlano({ plano: 'vitalicio_promocional_pix' as any });
+        appEvents.assinaturaIniciada({ plano: 'vitalicio_promocional_pix' as any, metodo: 'pix' });
+      })
+      .catch(() => {});
 
     startTransition(() => {
       setCheckoutPlan('vitalicio_promocional_pix');
@@ -105,6 +107,10 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
       } catch {}
     }
   }, [session, isPremium]);
+
+  if (!subLoading && isPremium && !isTrial && !welcomeFlag && !previewPlans) {
+    return <Navigate to="/planos/ativos" replace />;
+  }
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(4rem+var(--sai-bottom))] relative overflow-x-hidden text-white font-sans">
