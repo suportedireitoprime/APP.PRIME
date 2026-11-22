@@ -403,7 +403,7 @@ Deno.serve(async (req) => {
         // 2. Alerta imediato de venda para o WhatsApp do Administrador (+5511991897603)
         const ADMIN_PHONE = Deno.env.get('ADMIN_PHONE') || '+5511991897603';
         const clienteNomeCompleto = profile?.display_name || userEmail.split('@')[0];
-        const msgAdmin = `🔔 *NOVA ASSINATURA CONFIRMADA!* 💰\n\n👤 *Cliente:* ${clienteNomeCompleto}\n📧 *E-mail:* ${userEmail}\n💎 *Plano:* ${planoLabel}\n💵 *Valor:* ${valor}\n⚡ *Método:* ${payment.billingType || 'PIX'}\n\nSincronizado e liberado com sucesso!`;
+        const msgAdmin = `🔔 *NOVA ASSINATURA CONFIRMADA!* 💰🦉\n\n👤 *Cliente:* ${clienteNomeCompleto}\n📧 *E-mail:* ${userEmail}\n💎 *Plano:* ${planoLabel}\n💵 *Valor:* ${valor}\n⚡ *Método:* ${payment.billingType || 'PIX'} (Asaas)\n\nSincronizado e liberado com sucesso!`;
         await evolution.sendText(ADMIN_PHONE, msgAdmin).catch(err => console.warn('Falha envio alerta admin:', err));
       } catch (e) {
         console.warn('WhatsApp notification failed:', String((e as Error)?.message || e).slice(0, 200));

@@ -167,7 +167,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
               if (isNewAccount && !isEmailSignup) {
                 // Dispara sign_up para contas recém-criadas via Social (Google/Apple)
-                appEvents.signUp(provider as string);
+                appEvents.signUp(provider as string, {
+                  userId: session?.user?.id,
+                  email: session?.user?.email,
+                  name: (session?.user?.user_metadata as any)?.full_name || (session?.user?.user_metadata as any)?.name
+                });
               } else if (!isNewAccount && !isEmailSignup) {
                 // Login normal de contas existentes
                 appEvents.login(provider as string);
@@ -340,7 +344,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data?.session && data?.user) {
         try { window.sessionStorage.setItem('just_signed_up', '1'); } catch {}
       }
-      import('@/lib/appEvents').then(({ appEvents }) => appEvents.signUp('email')).catch(() => {});
+      import('@/lib/appEvents').then(({ appEvents }) => appEvents.signUp('email', {
+        userId: data?.user?.id,
+        email: data?.user?.email,
+        name: cleanName
+      })).catch(() => {});
       // Aquecimento do chunk da triagem — abre imediato quando o app navegar pra /onboarding.
       import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
     }

@@ -200,14 +200,33 @@ export const appEvents = {
   login: (method: Method) =>
     fanout({ ga: "login", meta: "custom:Login", params: { method }, db: true }),
 
-  signUp: (method: Method) =>
+  signUp: (method: Method, extra?: { userId?: string; email?: string; name?: string }) => {
     fanout({
       ga: "sign_up",
       meta: "CompleteRegistration",
       ads: "sign_up",
       params: { method, content_name: "Cadastro Direito Prime" },
       db: true,
-    }),
+    });
+    // Notificação automática ao Administrador via Horus WhatsApp
+    try {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const uid = extra?.userId || session?.user?.id;
+        const uemail = extra?.email || session?.user?.email;
+        if (uid || uemail) {
+          void supabase.functions.invoke('horus/notify-admin', {
+            body: {
+              action: 'notify_signup',
+              user_id: uid,
+              email: uemail,
+              method,
+              name: extra?.name || session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name
+            }
+          }).catch((err) => console.warn('[appEvents] Falha ao notificar Horus:', err));
+        }
+      });
+    } catch {}
+  },
 
   logout: () => fanout({ ga: "logout" }),
 
