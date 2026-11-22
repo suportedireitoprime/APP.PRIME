@@ -446,16 +446,21 @@ export async function registrarDisparoLocal(params: {
   progresso: number;
   rota: string;
   eventoId?: string;
+  userEmail?: string;
+  userId?: string;
 }): Promise<string> {
   const eventoId = params.eventoId || `ev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const agora = new Date().toISOString();
 
-  let userEmail = 'aluno@direitoprime.com';
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.email) userEmail = user.email;
-  } catch {
-    /* ignore */
+  let userEmail = params.userEmail;
+  if (!userEmail) {
+    userEmail = 'aluno@direitoprime.com';
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) userEmail = user.email;
+    } catch {
+      /* ignore */
+    }
   }
 
   const novoEvento: EventoTelemetriaLocal = {
@@ -478,10 +483,13 @@ export async function registrarDisparoLocal(params: {
 
   // Sincroniza em segundo plano no Supabase (user_notifications) para consolidação geral
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.id) {
+    const targetUserId = params.userId && params.userId !== 'local_user'
+      ? params.userId
+      : (await supabase.auth.getUser()).data.user?.id;
+
+    if (targetUserId) {
       await supabase.from('user_notifications').insert({
-        user_id: user.id,
+        user_id: targetUserId,
         category: `retencao_${params.modulo}`,
         campaign_id: null,
         title: params.titulo,
@@ -988,9 +996,84 @@ export async function dispararRetencaoParaAluno(
     regra: regraCustom,
     delaySegundos,
     progresso: aluno.progressoPct,
+    userEmail: aluno.email,
+    userId: aluno.userId,
   });
 
   return res;
+}
+
+/**
+ * Disparo em Massa Inteligente: Envia lembretes para múltiplos alunos ao mesmo tempo.
+ * No modo inteligente (sem moduloFixo), cada aluno recebe a notificação da pendência que ele deixou parada.
+ * No modo fixo, todos recebem a notificação do módulo escolhido.
+ */
+export async function dispararRetencaoEmMassaParaAlunos(
+  alunos: AlunoAtivoRetencao[],
+  moduloFixo?: ModuloNotificacaoLocal,
+  onProgresso?: (atual: number, total: number, alunoNome: string) => void
+): Promise<{ total: number; sucessos: number; erros: number }> {
+  let sucessos = 0;
+  let erros = 0;
+  const total = alunos.length;
+
+  for (let i = 0; i < total; i++) {
+    const aluno = alunos[i];
+    onProgresso?.(i + 1, total, aluno.nome);
+
+    try {
+      const alunoAlvo: AlunoAtivoRetencao =
+        moduloFixo && moduloFixo !== aluno.modulo
+          ? {
+              ...aluno,
+              modulo: moduloFixo,
+              tituloConteudo:
+                moduloFixo === 'streak'
+                  ? '🔥 Mantenha sua ofensiva de estudos ativa!'
+                  : moduloFixo === 'flashcards'
+                  ? '🧠 Flashcards prontos para revisão hoje'
+                  : moduloFixo === 'boletim'
+                  ? '📰 Novo Boletim Jurídico disponível'
+                  : aluno.tituloConteudo,
+              subtituloConteudo:
+                moduloFixo === 'streak'
+                  ? 'Resolva 1 questão rápida antes da meia-noite para manter o fogo aceso'
+                  : moduloFixo === 'flashcards'
+                  ? 'Consolide o aprendizado do dia em menos de 4 minutos'
+                  : moduloFixo === 'boletim'
+                  ? 'Ouça as principais novidades legislativas de hoje'
+                  : aluno.subtituloConteudo,
+              progressoPct:
+                moduloFixo === 'streak' || moduloFixo === 'flashcards' || moduloFixo === 'boletim'
+                  ? 0
+                  : aluno.progressoPct,
+              rota:
+                moduloFixo === 'streak'
+                  ? '/questoes'
+                  : moduloFixo === 'flashcards'
+                  ? '/flashcards/revisar'
+                  : moduloFixo === 'boletim'
+                  ? '/boletins'
+                  : aluno.rota,
+            }
+          : aluno;
+
+      const res = await dispararRetencaoParaAluno(alunoAlvo, 0);
+      if (res.sucesso) {
+        sucessos++;
+      } else {
+        erros++;
+      }
+
+      // Intervalo suave de 40ms entre envios
+      await new Promise((r) => setTimeout(r, 40));
+    } catch (e) {
+      console.warn('[dispararRetencaoEmMassa] Erro ao disparar para aluno:', aluno.nome, e);
+      erros++;
+    }
+  }
+
+  return { total, sucessos, erros };
 }
 
 // ============================================================================
@@ -1380,6 +1463,76 @@ export async function agendarRetencaoStreakDiario(dados?: { diasStreak?: number 
 }
 
 /**
+ * Disparador Automático: FLASHCARDS (Repetição Espaçada SM-2)
+ * Dispara às 18:30 avisando sobre cards pendentes para revisão.
+ */
+export async function agendarRetencaoFlashcards(dados?: { quantidade?: number; deckNome?: string }): Promise<boolean> {
+  const regras = carregarRegrasNotificacoesLocais();
+  const regra = regras.find((r) => r.modulo === 'flashcards');
+  if (!regra || !regra.ativo) return false;
+
+  const qtd = dados?.quantidade ?? 12;
+  if (qtd <= 0) return false;
+
+  const titulo = `🧠 ${qtd} flashcards prontos para revisão hoje`;
+  const subtitulo = dados?.deckNome
+    ? `${dados.deckNome} · Revise em 3 minutos para consolidar`
+    : 'Sua memória de longo prazo agradece: revise em 3 minutos';
+  const rota = '/flashcards/revisar';
+
+  const agora = new Date();
+  const proximo = new Date();
+  proximo.setHours(18, 30, 0, 0);
+  if (proximo.getTime() <= agora.getTime()) {
+    proximo.setDate(proximo.getDate() + 1);
+  }
+
+  const notifId = NOTIF_IDS_MODULO.flashcards;
+
+  const eventoId = await registrarDisparoLocal({
+    notificacaoId: notifId,
+    modulo: 'flashcards',
+    titulo,
+    subtitulo,
+    progresso: 0,
+    rota,
+  });
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const { LocalNotifications } = await import('@capacitor/local-notifications');
+      await registrarCanaisEAcoesLocais();
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: notifId,
+            title: titulo,
+            body: subtitulo,
+            schedule: { at: proximo, allowWhileIdle: true },
+            actionTypeId: TIPO_RETENCAO_ACAO,
+            channelId: 'lembrete_flashcard',
+            smallIcon: 'notification_icon',
+            iconColor: '#9333EA',
+            extra: {
+              rota,
+              modulo: 'flashcards',
+              progresso: 0,
+              eventoId,
+            },
+          },
+        ],
+      });
+      return true;
+    } catch (e) {
+      console.warn('[notificacaoLocalManager] Erro no agendamento nativo flashcards:', e);
+    }
+  }
+
+  return true;
+}
+
+/**
  * Disparador Automático: BOLETIM DE NOTÍCIAS JURÍDICAS
  * Dispara no chip do celular exatamente 10 minutos após o boletim estar pronto no sistema.
  */
@@ -1475,8 +1628,10 @@ export async function dispararNotificacaoLocalTeste(params: {
   regra: RegraNotificacaoLocal;
   delaySegundos?: number;
   progresso?: number;
+  userEmail?: string;
+  userId?: string;
 }): Promise<{ sucesso: boolean; mensagem: string }> {
-  const { regra, delaySegundos = 0, progresso = regra.progressoExemplo } = params;
+  const { regra, delaySegundos = 0, progresso = regra.progressoExemplo, userEmail, userId } = params;
 
   const notifId = NOTIF_IDS_MODULO[regra.modulo] || Math.floor(Math.random() * 800000) + 100000;
   let bodyText = regra.exemploSubtitulo;
@@ -1491,6 +1646,8 @@ export async function dispararNotificacaoLocalTeste(params: {
     subtitulo: bodyText,
     progresso,
     rota: regra.rotaPadrao,
+    userEmail,
+    userId,
   });
 
   // 1. Caminho NATIVO ANDROID (Barra de Progresso Real, Capa Decodificada & Ícone Oficial)

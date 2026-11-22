@@ -41,6 +41,7 @@ import {
   registrarAberturaNotificacaoLocal,
   obterAlunosAtivosParaRetencao,
   dispararRetencaoParaAluno,
+  dispararRetencaoEmMassaParaAlunos,
   RegraNotificacaoLocal,
   ModuloNotificacaoLocal,
   PublicoAlvoNotificacao,
@@ -73,6 +74,15 @@ export default function AdminNotificacoesLocais() {
   const [filtroModuloAluno, setFiltroModuloAluno] = useState<'todos' | ModuloNotificacaoLocal>('todos');
   const [buscaAluno, setBuscaAluno] = useState<string>('');
   const [disparandoAlunoId, setDisparandoAlunoId] = useState<string | null>(null);
+
+  // Disparo em Massa & Lembrete Geral
+  const [disparandoEmMassa, setDisparandoEmMassa] = useState<boolean>(false);
+  const [progressoMassa, setProgressoMassa] = useState<{
+    atual: number;
+    total: number;
+    alunoNome: string;
+  } | null>(null);
+  const [modoDisparoMassa, setModoDisparoMassa] = useState<'inteligente' | 'streak' | 'flashcards' | 'boletim'>('inteligente');
 
   const carregarMetricas = useCallback(async () => {
     setCarregandoMetricas(true);
@@ -129,6 +139,38 @@ export default function AdminNotificacoesLocais() {
       void carregarAlunos();
     } else {
       toast.error(res.mensagem, { id: 'disp_aluno' });
+    }
+  };
+
+  const handleDispararMassa = async () => {
+    if (alunosFiltrados.length === 0) {
+      toast.info('Nenhum aluno elegível no filtro atual.');
+      return;
+    }
+    haptic.impact('heavy');
+    setDisparandoEmMassa(true);
+    setProgressoMassa({ atual: 0, total: alunosFiltrados.length, alunoNome: '' });
+    toast.loading(`Iniciando disparo em massa para ${alunosFiltrados.length} alunos...`, { id: 'disp_massa' });
+
+    const moduloFixo = modoDisparoMassa === 'inteligente' ? undefined : modoDisparoMassa;
+
+    const res = await dispararRetencaoEmMassaParaAlunos(
+      alunosFiltrados,
+      moduloFixo,
+      (atual, total, alunoNome) => {
+        setProgressoMassa({ atual, total, alunoNome });
+      }
+    );
+
+    setDisparandoEmMassa(false);
+    setProgressoMassa(null);
+
+    if (res.sucessos > 0) {
+      toast.success(`Disparo concluído! ${res.sucessos} lembretes enviados (${res.erros} falhas).`, { id: 'disp_massa' });
+      void carregarMetricas();
+      void carregarAlunos();
+    } else {
+      toast.error('Falha ao processar disparos em massa.', { id: 'disp_massa' });
     }
   };
 
@@ -734,6 +776,111 @@ export default function AdminNotificacoesLocais() {
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${carregandoAlunos ? 'animate-spin' : ''}`} />
                   </button>
+                </div>
+
+                {/* CARD DE DISPARO EM MASSA DE ALTA EFICIÊNCIA */}
+                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/70 via-zinc-900/95 to-sky-950/50 border border-sky-500/30 shadow-xl space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
+                        <Send className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span>Disparo em Massa & Retenção 360°</span>
+                          <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/40 text-[10px] px-1.5 py-0">
+                            {alunosFiltrados.length} Alunos
+                          </Badge>
+                        </h4>
+                        <p className="text-[11px] text-zinc-400">
+                          Dispara lembretes automáticos para os alunos não esquecerem os estudos
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seletor de Modo de Disparo */}
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        setModoDisparoMassa('inteligente');
+                      }}
+                      className={`p-2 rounded-xl text-left border transition-all flex flex-col gap-0.5 ${
+                        modoDisparoMassa === 'inteligente'
+                          ? 'bg-sky-500/20 border-sky-500/60 text-white shadow-sm'
+                          : 'bg-zinc-900/60 border-white/5 text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-semibold text-[11px]">
+                        <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                        <span>🎯 Inteligente (360°)</span>
+                      </div>
+                      <span className="text-[10px] text-zinc-400 leading-tight">
+                        Cada aluno recebe sua pendência real (Vídeo, Áudio ou Livro)
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        setModoDisparoMassa('streak');
+                      }}
+                      className={`p-2 rounded-xl text-left border transition-all flex flex-col gap-0.5 ${
+                        modoDisparoMassa === 'streak'
+                          ? 'bg-orange-500/20 border-orange-500/60 text-white shadow-sm'
+                          : 'bg-zinc-900/60 border-white/5 text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-semibold text-[11px]">
+                        <Flame className="w-3.5 h-3.5 text-orange-400" />
+                        <span>🔥 Salvar Streak</span>
+                      </div>
+                      <span className="text-[10px] text-zinc-400 leading-tight">
+                        Alerta de ofensiva para não perder a sequência hoje
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Botão de Ação Primária & Barra de Progresso Real */}
+                  {disparandoEmMassa ? (
+                    <div className="space-y-2 p-2.5 rounded-xl bg-black/50 border border-white/10">
+                      <div className="flex items-center justify-between text-xs text-zinc-300">
+                        <span className="flex items-center gap-1.5 font-medium truncate max-w-[240px]">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-400 shrink-0" />
+                          <span className="truncate">Disparando para {progressoMassa?.alunoNome || 'aluno'}...</span>
+                        </span>
+                        <span className="font-mono text-sky-400 font-bold shrink-0">
+                          {progressoMassa?.atual || 0} / {progressoMassa?.total || alunosFiltrados.length}
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 transition-all duration-150"
+                          style={{
+                            width: `${
+                              progressoMassa
+                                ? Math.round((progressoMassa.atual / progressoMassa.total) * 100)
+                                : 0
+                            }%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={handleDispararMassa}
+                      disabled={alunosFiltrados.length === 0}
+                      className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-sky-900/30 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>
+                        Disparar Lembrete Geral para Todos ({alunosFiltrados.length} Alunos)
+                      </span>
+                    </Button>
+                  )}
                 </div>
 
                 {/* Lista de Alunos Ativos com Barra de Progresso Real */}

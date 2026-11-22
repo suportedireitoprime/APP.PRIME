@@ -19,6 +19,7 @@ import { srcOf } from '@/lib/assetUrl';
 import { useLeitorData, LOCAL_KEY } from '@/hooks/domain/useLeitorData';
 import { useLeitorPaginas } from '@/hooks/domain/useLeitorPaginas';
 import { useLeitorBookmarks } from '@/hooks/domain/useLeitorBookmarks';
+import { agendarRetencaoLivro, cancelarRetencaoModulo } from '@/lib/nativo/notificacaoLocalManager';
 
 // Chunks modulares extraídos para alta manutenibilidade
 import { LeitorHeader } from './leitor/LeitorHeader';
@@ -158,6 +159,20 @@ const LeitorNativo = ({
     const id = window.setInterval(tick, 15_000);
     const onVis = () => {
       last = Date.now();
+      if (document.visibilityState === 'hidden') {
+        const totalP = paginas.length || totalPaginas || 200;
+        const pct = Math.round(((currentIndex + 1) / Math.max(1, totalP)) * 100);
+        void agendarRetencaoLivro({
+          id: livroId,
+          titulo,
+          pagina: currentIndex + 1,
+          totalPaginas: totalP,
+          pct,
+          capaUrl: capa,
+        });
+      } else if (document.visibilityState === 'visible') {
+        void cancelarRetencaoModulo('livros');
+      }
     };
     document.addEventListener('visibilitychange', onVis);
     return () => {
@@ -165,8 +180,26 @@ const LeitorNativo = ({
       document.removeEventListener('visibilitychange', onVis);
       tick();
       pushLeituraProgress(livroTabela, livroId, 0);
+
+      const totalP = paginas.length || totalPaginas || 200;
+      const pct = Math.round(((currentIndex + 1) / Math.max(1, totalP)) * 100);
+      void agendarRetencaoLivro({
+        id: livroId,
+        titulo,
+        pagina: currentIndex + 1,
+        totalPaginas: totalP,
+        pct,
+        capaUrl: capa,
+      });
     };
-  }, [status, livroTabela, livroId]);
+  }, [status, livroTabela, livroId, currentIndex, paginas.length, totalPaginas, titulo, capa]);
+
+  // Ao montar com o livro pronto, cancela notificação anterior
+  useEffect(() => {
+    if (status === 'pronto') {
+      void cancelarRetencaoModulo('livros');
+    }
+  }, [status]);
 
   // Áudio de folhear páginas
   const pageTurnAudioRef = useRef<HTMLAudioElement | null>(null);

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
+import { agendarRetencaoFlashcards, cancelarRetencaoModulo } from '@/lib/nativo/notificacaoLocalManager';
 
 type AreaItem = { area: string; a_revisar: number };
 type TemaItem = { tema: string; a_revisar: number };
@@ -45,11 +46,14 @@ const FlashcardsRevisar = () => {
     setLoading(true);
     const { data } = await supabase.rpc('flashcards_resumo_areas');
     if (data) {
-      setAreas(
-        (data as any[])
-          .filter((a) => Number(a.a_revisar) > 0)
-          .map((a) => ({ area: a.area, a_revisar: Number(a.a_revisar) })),
-      );
+      const filtradas = (data as any[])
+        .filter((a) => Number(a.a_revisar) > 0)
+        .map((a) => ({ area: a.area, a_revisar: Number(a.a_revisar) }));
+      setAreas(filtradas);
+      const totalPend = filtradas.reduce((acc, curr) => acc + curr.a_revisar, 0);
+      if (totalPend > 0) {
+        void agendarRetencaoFlashcards({ quantidade: totalPend });
+      }
     }
     setLoading(false);
   };
@@ -80,6 +84,7 @@ const FlashcardsRevisar = () => {
   // Selecionar Matéria/Tema (Nível 2 ➔ Nível 3)
   const selecionarTema = async (temaNome: string | null) => {
     haptic.selection();
+    void cancelarRetencaoModulo('flashcards');
     setTemaSel(temaNome);
     setLoading(true);
     setNivel('cards');

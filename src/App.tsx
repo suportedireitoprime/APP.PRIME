@@ -150,11 +150,24 @@ function AppWarmupInitializer() {
     if (Capacitor.isNativePlatform()) {
       import('@/lib/nativo/notificacaoLocalManager').then((m) => {
         void m.registrarCanaisEAcoesLocais();
+        void m.agendarRetencaoStreakDiario();
       });
       import('@/lib/nativo/notificacaoAcoes').then((m) => {
         void m.registrarAcoesNotificacao();
       });
     }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden' && Capacitor.isNativePlatform()) {
+        import('@/lib/nativo/notificacaoLocalManager').then((m) => {
+          void m.agendarRetencaoStreakDiario();
+        });
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [qc]);
   return null;
 }
