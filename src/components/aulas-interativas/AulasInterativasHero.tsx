@@ -71,7 +71,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
           <FloatingOrbitingBrains position="left" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
-          <HeroAnimatedWave />
+          <HeroAnimatedWave waveHeight="tall" />
 
           {/* Cabeçalho Superior Transparente (Botão Voltar e Busca) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
