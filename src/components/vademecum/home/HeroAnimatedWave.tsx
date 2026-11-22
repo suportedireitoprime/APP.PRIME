@@ -41,83 +41,74 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   const schemeKey = isCustom ? `c_${themeColor!.replace('#', '')}` : colorScheme;
 
   const isTall = waveHeight === 'tall';
-  const c1HeightPx = isTall ? '280px' : '230px';
-  const c2HeightPx = isTall ? '260px' : '210px';
-  const c3HeightPx = isTall ? '220px' : '170px';
-  const c1HeightClass = isTall ? 'h-[280px]' : 'h-[230px]';
-  const c2HeightClass = isTall ? 'h-[260px]' : 'h-[210px]';
-  const c3HeightClass = isTall ? 'h-[220px]' : 'h-[170px]';
+  const c1HeightClass = isTall ? 'h-[160px] sm:h-[195px]' : 'h-[140px] sm:h-[175px]';
+  const c2HeightClass = isTall ? 'h-[145px] sm:h-[180px]' : 'h-[128px] sm:h-[160px]';
+  const c3HeightClass = isTall ? 'h-[118px] sm:h-[145px]' : 'h-[102px] sm:h-[130px]';
 
-  // Cores dinâmicas para tema customizado (Carmesim Rubi luminoso e acetinado)
-  const deep0 = isCustom ? shadeHex(c, -0.7) : isGreen ? '#01241a' : '#45020c';
-  const deep20 = isCustom ? shadeHex(c, -0.4) : isGreen ? '#024d3a' : '#80081d';
-  const deep40 = isCustom ? shadeHex(c, -0.6) : isGreen ? '#013324' : '#570411';
-  const deep60 = isCustom ? shadeHex(c, -0.3) : isGreen ? '#03694f' : '#a80c26';
-  const deep80 = isCustom ? shadeHex(c, -0.5) : isGreen ? '#024230' : '#6b0516';
+  // Cores dinâmicas para tema customizado
+  const deep0 = isCustom ? shadeHex(c, -0.88) : isGreen ? '#011b14' : '#1f0207';
+  const deep20 = isCustom ? shadeHex(c, -0.65) : isGreen ? '#023b2c' : '#4a0512';
+  const deep40 = isCustom ? shadeHex(c, -0.80) : isGreen ? '#01241a' : '#260309';
+  const deep60 = isCustom ? shadeHex(c, -0.55) : isGreen ? '#04523e' : '#5e0717';
+  const deep80 = isCustom ? shadeHex(c, -0.75) : isGreen ? '#023326' : '#2e040b';
 
-  const crest25 = isCustom ? shadeHex(c, 0.45) : isGreen ? '#34d399' : '#ff7a93';
-  const crest75 = isCustom ? shadeHex(c, 0.65) : isGreen ? '#6ee7b7' : '#ff94aa';
+  const crest25 = isCustom ? shadeHex(c, 0.45) : isGreen ? '#34d399' : '#f4728f';
+  const crest75 = isCustom ? shadeHex(c, 0.65) : isGreen ? '#6ee7b7' : '#f4728f';
 
-  const satin0 = isCustom ? shadeHex(c, -0.6) : isGreen ? '#02382b' : '#590412';
-  const satin10 = isCustom ? shadeHex(c, -0.3) : isGreen ? '#056b50' : '#990a23';
-  const satin22 = isCustom ? shadeHex(c, 0.0) : isGreen ? '#059669' : '#c91234';
-  const satin35 = isCustom ? shadeHex(c, 0.3) : isGreen ? '#10b981' : '#ff2652';
-  const satin45 = isCustom ? c : isGreen ? '#047857' : '#d91438';
-  const satin58 = isCustom ? shadeHex(c, 0.2) : isGreen ? '#10b981' : '#e61942';
-  const satin72 = isCustom ? shadeHex(c, 0.45) : isGreen ? '#34d399' : '#ff4d73';
-  const satin85 = isCustom ? shadeHex(c, -0.15) : isGreen ? '#059669' : '#b80f2d';
+  const satin0 = isCustom ? shadeHex(c, -0.85) : isGreen ? '#022c22' : '#2a0309';
+  const satin10 = isCustom ? shadeHex(c, -0.60) : isGreen ? '#064e3b' : '#690718';
+  const satin22 = isCustom ? shadeHex(c, -0.30) : isGreen ? '#047857' : '#b30f30';
+  const satin35 = isCustom ? shadeHex(c, 0.20) : isGreen ? '#10b981' : '#f22c55';
+  const satin45 = isCustom ? c : isGreen ? '#059669' : '#870a20';
+  const satin58 = isCustom ? shadeHex(c, 0.15) : isGreen ? '#10b981' : '#e61942';
+  const satin72 = isCustom ? shadeHex(c, 0.45) : isGreen ? '#34d399' : '#eb4768';
+  const satin85 = isCustom ? shadeHex(c, -0.35) : isGreen ? '#047857' : '#75081b';
 
-  const glossColor = isCustom ? shadeHex(c, 0.7) : isGreen ? '#a7f3d0' : '#ffe4e8';
-  const glossColor2 = isCustom ? shadeHex(c, 0.6) : isGreen ? '#facc15' : '#ffccd5';
-  const haloColor = isCustom ? c : isGreen ? '#10b981' : '#e61942';
+  const glossColor = isCustom ? shadeHex(c, 0.7) : isGreen ? '#a7f3d0' : '#fecdd3';
+  const glossColor2 = isCustom ? shadeHex(c, 0.6) : isGreen ? '#facc15' : '#fecdd3';
+  const haloColor = c;
 
-  const streakSec = isCustom ? shadeHex(c, 0.5) : isGreen ? '#34d399' : '#ff6b88';
+  const streakSec = isCustom ? shadeHex(c, 0.5) : isGreen ? '#34d399' : '#f4728f';
 
-  const front0 = isCustom ? shadeHex(c, -0.6) : isGreen ? '#02382b' : '#6e0618';
-  const front20 = isCustom ? shadeHex(c, -0.2) : isGreen ? '#057a5c' : '#c21133';
+  const front0 = isCustom ? shadeHex(c, -0.85) : isGreen ? '#01241a' : '#3d030c';
+  const front20 = isCustom ? shadeHex(c, -0.45) : isGreen ? '#045a44' : '#9e0c29';
   const front44 = isCustom ? c : isGreen ? '#10b981' : '#e61942';
-  const front66 = isCustom ? shadeHex(c, 0.35) : isGreen ? '#34d399' : '#ff3b64';
-  const front85 = isCustom ? shadeHex(c, -0.3) : isGreen ? '#04634b' : '#9c0d27';
+  const front66 = isCustom ? shadeHex(c, 0.35) : isGreen ? '#34d399' : '#eb4768';
+  const front85 = isCustom ? shadeHex(c, -0.60) : isGreen ? '#064e3b' : '#70071c';
 
-  const frontCrestColor = isCustom ? shadeHex(c, 0.65) : isGreen ? '#a7f3d0' : '#ffb3c1';
+  const frontCrestColor = isCustom ? shadeHex(c, 0.65) : isGreen ? '#a7f3d0' : '#fecdd3';
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[6]">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
       {/* ── 1. Resplendor Volumétrico e Bloom ── */}
       <div 
-        className="absolute -bottom-8 -left-6 w-[75%] h-[55%] rounded-full blur-3xl pointer-events-none transform-gpu"
+        className={`absolute -bottom-12 -left-10 w-[60%] h-[45%] rounded-full blur-3xl pointer-events-none transform-gpu ${
+          isGreen 
+            ? 'bg-gradient-to-tr from-[#059669]/40 via-[#022c22]/30 to-transparent' 
+            : 'bg-gradient-to-tr from-[#e61942]/35 via-[#3d050f]/25 to-transparent'
+        }`}
         style={{
           background: isCustom
-            ? `radial-gradient(circle at center, ${c}88 0%, ${shadeHex(c, -0.6)}55 50%, transparent 100%)`
+            ? `radial-gradient(circle at center, ${c}66 0%, ${shadeHex(c, -0.7)}4D 50%, transparent 100%)`
             : undefined,
           animation: 'heroSilkAmbientPulse 8s ease-in-out infinite alternate',
         }}
-        {...(!isCustom && {
-          className: `absolute -bottom-8 -left-6 w-[75%] h-[55%] rounded-full blur-3xl pointer-events-none transform-gpu ${
-            isGreen 
-              ? 'bg-gradient-to-tr from-[#059669]/55 via-[#022c22]/35 to-transparent' 
-              : 'bg-gradient-to-tr from-[#e61942]/60 via-[#ff1744]/30 to-transparent'
-          }`
-        })}
       />
       <div 
-        className="absolute -bottom-6 right-0 w-[65%] h-[55%] rounded-full blur-3xl pointer-events-none transform-gpu"
+        className={`absolute -bottom-8 right-0 w-[55%] h-[50%] rounded-full blur-3xl pointer-events-none transform-gpu ${
+          isGreen
+            ? 'bg-gradient-to-tl from-[#10b981]/35 via-[#043d2f]/25 to-transparent'
+            : 'bg-gradient-to-tl from-[#e61942]/35 via-[#4a0512]/20 to-transparent'
+        }`}
         style={{
           background: isCustom
-            ? `radial-gradient(circle at center, ${c}88 0%, ${shadeHex(c, -0.6)}55 50%, transparent 100%)`
+            ? `radial-gradient(circle at center, ${c}66 0%, ${shadeHex(c, -0.7)}4D 50%, transparent 100%)`
             : undefined,
           animation: 'heroSilkAmbientPulse 10s ease-in-out infinite alternate-reverse',
         }}
-        {...(!isCustom && {
-          className: `absolute -bottom-6 right-0 w-[65%] h-[55%] rounded-full blur-3xl pointer-events-none transform-gpu ${
-            isGreen
-              ? 'bg-gradient-to-tl from-[#10b981]/50 via-[#064e3b]/35 to-transparent'
-              : 'bg-gradient-to-tl from-[#e61942]/55 via-[#d91438]/30 to-transparent'
-          }`
-        })}
       />
 
-      {/* ── 2. Gradiente Lateral no Topo para Legibilidade do Título (Sem cobrir a onda na base) ── */}
+      {/* ── 2. Gradiente Lateral no Topo para Legibilidade do Título ── */}
       <div 
         className="absolute top-0 left-0 w-[55%] sm:w-[42%] h-[60%] bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-[2]" 
       />
@@ -131,9 +122,8 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c1HeightClass} pointer-events-none transform-gpu`}
           style={{
-            height: c1HeightPx,
             animation: 'heroSilkBackSlide 24s linear infinite',
-            filter: `drop-shadow(0 -6px 16px ${c}66) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))`,
+            filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
           }}
         >
           <defs>
@@ -155,18 +145,18 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
             </linearGradient>
           </defs>
 
-          {/* Massa Sombreada Traseira Elevada */}
+          {/* Massa Sombreada Traseira */}
           <path
-            d="M 0,165 C 260,75 520,85 720,155 C 940,235 1200,225 1440,165 C 1700,75 1960,85 2160,155 C 2380,235 2640,225 2880,165 L 2880,400 L 0,400 Z"
+            d="M 0,210 C 260,120 520,130 720,200 C 940,280 1200,270 1440,210 C 1700,120 1960,130 2160,200 C 2380,280 2640,270 2880,210 L 2880,400 L 0,400 Z"
             fill={`url(#silkDeepShadowGrad_${schemeKey})`}
           />
 
-          {/* Crista Traseira com Brilho Acetinado Lítio */}
+          {/* Crista Traseira */}
           <path
-            d="M 0,165 C 260,75 520,85 720,155 C 940,235 1200,225 1440,165 C 1700,75 1960,85 2160,155 C 2380,235 2640,225 2880,165"
+            d="M 0,210 C 260,120 520,130 720,200 C 940,280 1200,270 1440,210 C 1700,120 1960,130 2160,200 C 2380,280 2640,270 2880,210"
             fill="none"
             stroke={`url(#silkBackCrestSheen_${schemeKey})`}
-            strokeWidth="8"
+            strokeWidth="2.2"
           />
         </svg>
       </div>
@@ -180,7 +170,6 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c2HeightClass} pointer-events-none transform-gpu`}
           style={{
-            height: c2HeightPx,
             animation: 'heroSilkMainSlide 16s linear infinite',
             filter: `drop-shadow(0 -10px 24px ${c}99) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))`,
           }}
@@ -235,45 +224,45 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
             </linearGradient>
           </defs>
 
-          {/* Tecido Esculpido da Fita Principal Elevada */}
+          {/* Tecido Esculpido da Fita Principal */}
           <path
-            d="M 0,140 C 220,50 500,35 720,115 C 940,195 1220,205 1440,140 C 1660,50 1940,35 2160,115 C 2380,195 2660,205 2880,140 L 2880,400 L 0,400 Z"
+            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185 L 2880,400 L 0,400 Z"
             fill={`url(#silkMasterSatinGrad_${schemeKey})`}
           />
 
           {/* Estria Textural de Seda (Trama de Luz) */}
           <path
-            d="M 0,160 C 220,70 500,55 720,135 C 940,215 1220,225 1440,160 C 1660,70 1940,55 2160,135 C 2380,215 2660,225 2880,160"
+            d="M 0,205 C 220,115 500,100 720,180 C 940,260 1220,270 1440,205 C 1660,115 1940,100 2160,180 C 2380,260 2660,270 2880,205"
             fill="none"
             stroke={`url(#silkTextureStreak_${schemeKey})`}
-            strokeWidth="7"
+            strokeWidth="1.8"
             strokeDasharray="24 12"
           />
 
           {/* Segunda Estria de Profundidade */}
           <path
-            d="M 0,180 C 220,90 500,75 720,155 C 940,235 1220,245 1440,180 C 1660,90 1940,75 2160,155 C 2380,235 2660,245 2880,180"
+            d="M 0,225 C 220,135 500,120 720,200 C 940,280 1220,290 1440,225 C 1660,135 1940,120 2160,200 C 2380,280 2660,290 2880,225"
             fill="none"
             stroke={`url(#silkSecondaryStreak_${schemeKey})`}
-            strokeWidth="6"
+            strokeWidth="1.4"
             strokeDasharray="32 14"
           />
 
           {/* Crista Especular Brilhante (Glow de Seda Pura) */}
           <path
-            d="M 0,140 C 220,50 500,35 720,115 C 940,195 1220,205 1440,140 C 1660,50 1940,35 2160,115 C 2380,195 2660,205 2880,140"
+            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
             fill="none"
             stroke={`url(#silkCrestGlossFine_${schemeKey})`}
-            strokeWidth="12"
+            strokeWidth="3.2"
             strokeLinecap="round"
           />
 
           {/* Halo Translúcido da Crista */}
           <path
-            d="M 0,140 C 220,50 500,35 720,115 C 940,195 1220,205 1440,140 C 1660,50 1940,35 2160,115 C 2380,195 2660,205 2880,140"
+            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
             fill="none"
             stroke={`url(#silkCrestHaloFine_${schemeKey})`}
-            strokeWidth="24"
+            strokeWidth="6.5"
             strokeOpacity="0.75"
           />
         </svg>
@@ -288,9 +277,8 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           preserveAspectRatio="none"
           className={`absolute -bottom-1 left-0 w-[200%] ${c3HeightClass} pointer-events-none transform-gpu`}
           style={{
-            height: c3HeightPx,
             animation: 'heroSilkFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-            filter: `drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 25px ${c}99)`,
+            filter: `drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 22px ${c}88)`,
           }}
         >
           <defs>
@@ -311,18 +299,18 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
             </linearGradient>
           </defs>
 
-          {/* Fita Frontal da Base Elevada */}
+          {/* Fita Frontal da Base */}
           <path
-            d="M 0,180 C 260,100 540,105 720,170 C 940,240 1200,245 1440,180 C 1700,100 1980,105 2160,170 C 2380,240 2640,245 2880,180 L 2880,400 L 0,400 Z"
+            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240 L 2880,400 L 0,400 Z"
             fill={`url(#silkFrontFoldSmall_${schemeKey})`}
           />
 
           {/* Crista Frontal */}
           <path
-            d="M 0,180 C 260,100 540,105 720,170 C 940,240 1200,245 1440,180 C 1700,100 1980,105 2160,170 C 2380,240 2640,245 2880,180"
+            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240"
             fill="none"
             stroke={`url(#silkFrontCrestSmall_${schemeKey})`}
-            strokeWidth="10"
+            strokeWidth="2.8"
             strokeLinecap="round"
           />
         </svg>

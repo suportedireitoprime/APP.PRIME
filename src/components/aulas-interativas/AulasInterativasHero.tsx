@@ -3,7 +3,7 @@ import {
   ArrowLeft, Search, BarChart3, History, Bookmark, Flame, X 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import capaTribunalImg from '@/assets/capa-aulas-tribunal.jpg';
+import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
 import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
 import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
 
@@ -56,22 +56,22 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa Oficial */}
+          {/* Imagem de Capa Oficial (Advogados no Tribunal) */}
           <img
-            src={capaTribunalImg}
+            src={heroAdvogadosImg}
             alt="Estudo com Aulas Interativas"
             aria-hidden="true"
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover object-[center_30%] md:object-center z-0 pointer-events-none transform-gpu will-change-transform"
+            className="absolute inset-0 w-full h-full object-cover object-[55%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform"
           />
 
           {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
           <FloatingOrbitingBrains position="left" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
-          <HeroAnimatedWave waveHeight="tall" />
+          <HeroAnimatedWave />
 
           {/* Cabeçalho Superior Transparente (Botão Voltar e Busca) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
