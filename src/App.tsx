@@ -147,6 +147,14 @@ function AppWarmupInitializer() {
   useEffect(() => {
     scheduleAppWarmup(qc);
     scheduleBackgroundImageWarmup();
+    if (Capacitor.isNativePlatform()) {
+      import('@/lib/nativo/notificacaoLocalManager').then((m) => {
+        void m.registrarCanaisEAcoesLocais();
+      });
+      import('@/lib/nativo/notificacaoAcoes').then((m) => {
+        void m.registrarAcoesNotificacao();
+      });
+    }
   }, [qc]);
   return null;
 }

@@ -482,16 +482,16 @@ export async function registrarDisparoLocal(params: {
     if (user?.id) {
       await supabase.from('user_notifications').insert({
         user_id: user.id,
-        category: 'local_retencao',
-        campaign_id: `local_${params.modulo}`,
+        category: `retencao_${params.modulo}`,
+        campaign_id: null,
         title: params.titulo,
         body: params.subtitulo,
         url: params.rota,
         clicked: false,
       });
     }
-  } catch {
-    /* offline / fallback */
+  } catch (err) {
+    console.warn('[notificacaoLocalManager] erro ao sincronizar no Supabase:', err);
   }
 
   return eventoId;
@@ -561,11 +561,11 @@ export async function registrarAberturaNotificacaoLocal(params: {
           read_at: agoraIso,
         })
         .eq('user_id', user.id)
-        .eq('campaign_id', `local_${params.modulo}`)
+        .like('category', `retencao_%`)
         .eq('clicked', false);
     }
-  } catch {
-    /* offline / fallback */
+  } catch (err) {
+    console.warn('[notificacaoLocalManager] erro ao atualizar clique no Supabase:', err);
   }
 }
 
@@ -609,15 +609,21 @@ export async function obterMetricasNotificacoesLocais(): Promise<MetricasNotific
 
   // Tenta complementar com métricas globais do Supabase (user_notifications)
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    const currentUserId = user?.id;
+
     const { data: supaRows } = await supabase
       .from('user_notifications')
-      .select('campaign_id, clicked, clicked_at, created_at')
-      .eq('category', 'local_retencao')
-      .limit(500);
+      .select('id, user_id, category, clicked, clicked_at, created_at')
+      .like('category', 'retencao_%')
+      .limit(1000);
 
     if (supaRows && supaRows.length > 0) {
       for (const row of supaRows) {
-        const modKey = (row.campaign_id?.replace('local_', '') as ModuloNotificacaoLocal) || 'audioaulas';
+        // Se for da sessão do usuário atual nesta máquina, já computamos no loop local acima
+        if (currentUserId && row.user_id === currentUserId) continue;
+
+        const modKey = (row.category?.replace('retencao_', '') as ModuloNotificacaoLocal) || 'videoaulas';
         if (porModulo[modKey]) {
           porModulo[modKey].disparadas += 1;
           totalDisparadas += 1;
@@ -778,9 +784,10 @@ export async function obterAlunosAtivosParaRetencao(): Promise<AlunoAtivoRetenca
   try {
     const { data: supaNotifs } = await supabase
       .from('user_notifications')
-      .select('id, user_id, title, body, created_at, clicked, clicked_at, url')
+      .select('id, user_id, title, body, created_at, clicked, clicked_at, url, category')
+      .like('category', 'retencao_%')
       .order('created_at', { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (supaNotifs && supaNotifs.length > 0) {
       for (const row of supaNotifs) {
@@ -788,9 +795,10 @@ export async function obterAlunosAtivosParaRetencao(): Promise<AlunoAtivoRetenca
         const jaExiste = listaAlunos.some((a) => a.userId === userId);
         if (!jaExiste) {
           const mod: ModuloNotificacaoLocal =
-            row.title?.includes('🎬') ? 'videoaulas' :
+            (row.category?.replace('retencao_', '') as ModuloNotificacaoLocal) ||
+            (row.title?.includes('🎬') ? 'videoaulas' :
             row.title?.includes('🎧') ? 'audioaulas' :
-            row.title?.includes('📖') ? 'livros' : 'videoaulas';
+            row.title?.includes('📖') ? 'livros' : 'videoaulas');
 
           const pctMatch = row.body?.match(/(\d+)%/);
           const pct = pctMatch ? parseInt(pctMatch[1], 10) : 60;

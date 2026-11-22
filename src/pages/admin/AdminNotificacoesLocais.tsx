@@ -46,6 +46,7 @@ import {
   PublicoAlvoNotificacao,
   MetricasNotificacoesLocais,
   AlunoAtivoRetencao,
+  EventoTelemetriaLocal,
   REGRAS_PADRAO_NOTIFICACOES_LOCAIS,
 } from '@/lib/nativo/notificacaoLocalManager';
 import { haptic } from '@/lib/nativeHaptics';
@@ -215,6 +216,20 @@ export default function AdminNotificacoesLocais() {
       progresso: progressoSimulado,
     });
     toast.success('Abertura registrada no aparelho');
+    void carregarMetricas();
+  };
+
+  const handleSimularAberturaDoEvento = async (ev: EventoTelemetriaLocal) => {
+    haptic.impact('medium');
+    await registrarAberturaNotificacaoLocal({
+      notificacaoId: ev.notificacaoId,
+      modulo: ev.modulo,
+      acao: 'continuar',
+      rota: ev.rota,
+      progresso: ev.progresso,
+      eventoId: ev.id,
+    });
+    toast.success(`Abertura computada para: ${ev.titulo}`);
     void carregarMetricas();
   };
 
@@ -1025,6 +1040,21 @@ export default function AdminNotificacoesLocais() {
                               <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
                                 <Clock className="w-2.5 h-2.5" />
                                 <span>Retornou em {Math.round(ev.tempoAteAbrirMs / 1000)}s após receber</span>
+                              </div>
+                            )}
+
+                            {!isAberto && (
+                              <div className="pt-1.5 flex items-center justify-between border-t border-white/5 mt-1">
+                                <span className="text-[10px] text-zinc-500 italic">Aguardando clique</span>
+                                <button
+                                  type="button"
+                                  onClick={() => void handleSimularAberturaDoEvento(ev)}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9.5px] font-semibold text-emerald-300 hover:bg-emerald-500/25 active:scale-95 transition-all"
+                                  title="Simular que o usuário tocou na notificação para testar a telemetria de abertura"
+                                >
+                                  <Eye className="w-2.5 h-2.5 text-emerald-400" />
+                                  Simular Abertura
+                                </button>
                               </div>
                             )}
                           </div>
