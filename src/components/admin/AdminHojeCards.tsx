@@ -602,8 +602,8 @@ export function AdminHojeCards() {
         const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
-            .select('id, user_id, created_at, started_at, plano, status')
-            .or(`started_at.gte.${startIso},created_at.gte.${startIso}`),
+            .select('id, user_id, created_at, started_at, updated_at, plano, status')
+            .or(`started_at.gte.${startIso},created_at.gte.${startIso},updated_at.gte.${startIso}`),
           supabase
             .from('play_subscriptions')
             .select('id, user_id, created_at, product_id, status')
@@ -690,6 +690,7 @@ export function AdminHojeCards() {
 
           const createdInPeriod = inPeriod(s.created_at);
           const startedInPeriod = inPeriod(s.started_at);
+          const updatedInPeriod = inPeriod(s.updated_at);
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
@@ -697,12 +698,12 @@ export function AdminHojeCards() {
 
           // 1. Renovação de HOJE (2º ciclo em diante, mensal ou anual):
           // Assinaturas criadas antes do período de hoje ou com mais de 20 dias de existência que tiveram pagamento no período
-          if (startedInPeriod && (isCriadaAntes || isSegundoMesOuMais)) {
+          if ((startedInPeriod || updatedInPeriod) && (isCriadaAntes || isSegundoMesOuMais)) {
             renewUsers.set(uid, { plano: planName, valor });
             subUsers.delete(uid);
           }
-          // 2. Novo assinante de HOJE (apenas as criadas no período):
-          else if (!isCriadaAntes && (createdInPeriod || startedInPeriod)) {
+          // 2. Novo assinante de HOJE (apenas as criadas no período ou ativadas hoje):
+          else if (!isCriadaAntes && (createdInPeriod || startedInPeriod || updatedInPeriod)) {
             subUsers.set(uid, { plano: planName, valor });
             renewUsers.delete(uid);
           }
@@ -1094,9 +1095,9 @@ export function AdminHojeCards() {
           supabase
             .from('asaas_subscriptions')
             .select(`
-              id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
+              id, user_id, created_at, started_at, updated_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .or(`started_at.gte.${startIso},created_at.gte.${startIso}`),
+            .or(`started_at.gte.${startIso},created_at.gte.${startIso},updated_at.gte.${startIso}`),
           supabase
             .from('play_subscriptions')
             .select(`
@@ -1216,13 +1217,14 @@ export function AdminHojeCards() {
 
           const createdInPeriod = inPeriod(s.created_at);
           const startedInPeriod = inPeriod(s.started_at);
+          const updatedInPeriod = inPeriod(s.updated_at);
           const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
           const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
           const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
           const isSegundoMesOuMais = createdTime > 0 && (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
-          const isRenovacao = startedInPeriod && (isCriadaAntes || isSegundoMesOuMais);
-          const isNovaAssinatura = !isRenovacao && !isCriadaAntes && (createdInPeriod || startedInPeriod);
+          const isRenovacao = (startedInPeriod || updatedInPeriod) && (isCriadaAntes || isSegundoMesOuMais);
+          const isNovaAssinatura = !isRenovacao && !isCriadaAntes && (createdInPeriod || startedInPeriod || updatedInPeriod);
 
           if (isRenovou) {
             if (!isRenovacao) return;

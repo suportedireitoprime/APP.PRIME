@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { evolution } from '../_shared/evolution.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -88,12 +89,15 @@ Deno.serve(async (req) => {
         const now = new Date();
         const expiresAt = isVitalicio ? null : new Date(now.getTime() + diasCiclo * 24 * 3600 * 1000).toISOString();
 
-        // Preserva started_at se já existir registro prévio
+        // Preserva started_at se já existir registro prévio válido ou inicia agora
         const { data: existingSub } = await admin
           .from('asaas_subscriptions')
-          .select('started_at')
+          .select('started_at, plano')
           .eq('user_id', user.id)
           .maybeSingle();
+
+        // Se a assinatura anterior era de ciclo passado ou se está mudando de plano, atualiza started_at para hoje
+        const shouldRenewStartedAt = !existingSub?.started_at || (existingSub?.plano !== planFinal);
 
         await admin.from('asaas_subscriptions').upsert({
           user_id: user.id,
@@ -101,7 +105,7 @@ Deno.serve(async (req) => {
           status: 'ACTIVE',
           asaas_customer_id: payment.customer,
           asaas_subscription_id: payment.subscription || payment.id,
-          started_at: existingSub?.started_at || now.toISOString(),
+          started_at: shouldRenewStartedAt ? now.toISOString() : (existingSub?.started_at || now.toISOString()),
           expires_at: expiresAt,
           origem: 'asaas',
           updated_at: now.toISOString(),
@@ -111,6 +115,78 @@ Deno.serve(async (req) => {
           is_premium: true,
           updated_at: now.toISOString(),
         }).eq('id', user.id);
+
+        // Registra imediatamente os eventos de compra em app_events (com deduplicação pelo payment_id)
+        const { data: existingEv } = await admin
+          .from('app_events')
+          .select('id')
+          .eq('event_name', 'purchase')
+          .contains('metadata', { payment_id: payment.id })
+          .limit(1)
+          .maybeSingle();
+
+        const userEmail = payment?.customerEmail || user.email || null;
+        if (!existingEv) {
+          const purchaseEvents: any[] = [{
+            user_id: user.id,
+            email: userEmail,
+            event_name: 'purchase',
+            metadata: {
+              plano: planFinal,
+              value: payment.value || 0,
+              currency: 'BRL',
+              source: 'asaas_check_status',
+              payment_id: payment.id,
+              billingType: payment.billingType || 'PIX'
+            }
+          }, {
+            user_id: user.id,
+            email: userEmail,
+            event_name: 'checkout_pix_pago',
+            metadata: {
+              plano: planFinal,
+              value: payment.value || 0,
+              currency: 'BRL',
+              source: 'asaas_check_status',
+              payment_id: payment.id,
+              billingType: 'PIX'
+            }
+          }];
+          await admin.from('app_events').insert(purchaseEvents);
+        }
+
+        // Disparo imediato de confirmação via WhatsApp (Evolution API)
+        try {
+          const { data: profile } = await admin.from('profiles')
+            .select('display_name, telefone, whatsapp_number')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          const phone = profile?.whatsapp_number || profile?.telefone;
+          const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
+          const valorFormatado = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
+          const planoLabel = (planFinal === 'anual') ? 'Anual' : planFinal === 'vitalicio' ? 'Vitalício' : 'Mensal';
+          const notifyTasks: Promise<any>[] = [];
+
+          // 1. Mensagem de confirmação para o Cliente
+          if (phone) {
+            const msgCliente = `${nome}, seu pagamento${valorFormatado ? ` de ${valorFormatado}` : ''} do plano *${planoLabel}* foi confirmado via PIX! ✅\n\nSeu acesso ao *Direito Prime* está liberado. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
+            notifyTasks.push(evolution.sendText(phone, msgCliente).catch(e => console.warn('Erro envio WhatsApp cliente:', e)));
+          }
+
+          // 2. Alerta imediato de venda para o Administrador (+5511991897603)
+          const ADMIN_PHONE = Deno.env.get('ADMIN_PHONE') || '+5511991897603';
+          const clienteNomeCompleto = profile?.display_name || (userEmail ? userEmail.split('@')[0] : 'Cliente');
+          const msgAdmin = `🔔 *NOVA ASSINATURA CONFIRMADA!* 💰\n\n👤 *Cliente:* ${clienteNomeCompleto}\n📧 *E-mail:* ${userEmail || 'Não informado'}\n💎 *Plano:* ${planoLabel}\n💵 *Valor:* ${valorFormatado}\n⚡ *Método:* PIX\n\nAcesso liberado instantaneamente com sucesso!`;
+          notifyTasks.push(evolution.sendText(ADMIN_PHONE, msgAdmin).catch(e => console.warn('Erro envio WhatsApp admin:', e)));
+
+          await Promise.race([
+            Promise.allSettled(notifyTasks),
+            new Promise(r => setTimeout(r, 1500))
+          ]);
+        } catch (notifErr) {
+          console.warn('Erro na rotina de envio de WhatsApp:', notifErr);
+        }
 
         return new Response(JSON.stringify({ confirmed: true, status: payment.status }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -142,7 +218,29 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 1. Check or Create Customer
+    // 1. Salva o telefone do cliente diretamente no perfil para WhatsApp e suporte
+    const rawPhone = phone || creditCardHolderInfo?.phone;
+    if (rawPhone) {
+      const cleanPhone = String(rawPhone).replace(/\D/g, '');
+      if (cleanPhone.length >= 10) {
+        try {
+          const adminProfileClient = createClient(
+            Deno.env.get('SUPABASE_URL')!,
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+          );
+          const e164 = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+          await adminProfileClient.from('profiles').update({
+            telefone: cleanPhone,
+            whatsapp_number: e164,
+            updated_at: new Date().toISOString()
+          }).eq('id', user.id);
+        } catch (phoneErr) {
+          console.warn('Erro ao atualizar telefone do perfil:', phoneErr);
+        }
+      }
+    }
+
+    // 2. Check or Create Customer
     let customerId = '';
     const userEmail = (email || user.email || '').trim().toLowerCase();
     const finalCpfCnpj = cpfCnpj || creditCardHolderInfo?.cpfCnpj;

@@ -307,13 +307,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [formData.cep]);
 
-  // Item 40: PIX Realtime + Polling com Backoff Progressivo (5s, 8s, 11s, 14s, 15s)
+  // Item 40: PIX Realtime + Polling Ultrarrápido (2.5s) com detecção instantânea ao voltar do banco
   useEffect(() => {
     if (step !== 3 || !pixData) return;
 
     let isMounted = true;
     let pollTimer: ReturnType<typeof setTimeout> | null = null;
-    let delay = 5000;
+    const POLL_INTERVAL = 2500; // 2.5s para confirmação instantânea
 
     const handleSuccess = () => {
       if (!isMounted) return;
@@ -358,7 +358,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         .subscribe();
     });
 
-    // 2. Polling de contingência com backoff progressivo + verificação no Asaas
+    // 2. Polling ativo e direto no Asaas (0ms de atraso desnecessário)
     const pollCheck = async () => {
       if (!isMounted) return;
       try {
@@ -379,8 +379,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             return;
           }
 
-          // Se tiver paymentId e já passaram 2 ciclos de polling, consulta o Asaas diretamente
-          if (pixPaymentId && delay >= 8000) {
+          // Consulta direta no Asaas via edge function
+          if (pixPaymentId) {
             const { data: checkData } = await supabase.functions.invoke('asaas-checkout', {
               body: { action: 'check_status', paymentId: pixPaymentId }
             });
@@ -393,18 +393,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       } catch {}
 
       if (isMounted) {
-        delay = Math.min(delay + 3000, 15000);
-        pollTimer = setTimeout(pollCheck, delay);
+        pollTimer = setTimeout(pollCheck, POLL_INTERVAL);
       }
     };
 
-    pollTimer = setTimeout(pollCheck, delay);
+    pollTimer = setTimeout(pollCheck, POLL_INTERVAL);
+
+    // 3. Verificação instantânea ao retornar para o app após pagar no banco
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible' && isMounted) {
+        void pollCheck();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityOrFocus);
+    window.addEventListener('focus', handleVisibilityOrFocus);
 
     return () => {
       isMounted = false;
       if (pollTimer) clearTimeout(pollTimer);
       if (channelAsaas) supabase.removeChannel(channelAsaas);
       if (channelProfile) supabase.removeChannel(channelProfile);
+      document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+      window.removeEventListener('focus', handleVisibilityOrFocus);
     };
   }, [step, pixData, pixPaymentId, onSuccess, onOpenChange]);
 

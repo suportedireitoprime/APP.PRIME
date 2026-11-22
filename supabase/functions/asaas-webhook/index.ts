@@ -304,38 +304,48 @@ Deno.serve(async (req) => {
           updated_at: new Date().toISOString()
         }).eq('id', finalUserId);
 
-        // Registra evento de compra no app_events para histórico e métricas
-        const purchaseEvents: any[] = [{
-          user_id: finalUserId,
-          email: payment?.customerEmail ?? null,
-          event_name: 'purchase',
-          metadata: {
-            plano: effectivePlan,
-            value: payment.value || 0,
-            currency: 'BRL',
-            source: 'asaas',
-            payment_id: payment.id,
-            billingType: payment.billingType
-          }
-        }];
+        // Registra evento de compra no app_events para histórico e métricas (com deduplicação)
+        const { data: existingEv } = await admin
+          .from('app_events')
+          .select('id')
+          .eq('event_name', 'purchase')
+          .contains('metadata', { payment_id: payment.id })
+          .limit(1)
+          .maybeSingle();
 
-        if (payment.billingType === 'PIX') {
-          purchaseEvents.push({
+        if (!existingEv) {
+          const purchaseEvents: any[] = [{
             user_id: finalUserId,
             email: payment?.customerEmail ?? null,
-            event_name: 'checkout_pix_pago',
+            event_name: 'purchase',
             metadata: {
               plano: effectivePlan,
               value: payment.value || 0,
               currency: 'BRL',
               source: 'asaas',
               payment_id: payment.id,
-              billingType: 'PIX'
+              billingType: payment.billingType
             }
-          });
-        }
+          }];
 
-        await admin.from('app_events').insert(purchaseEvents);
+          if (payment.billingType === 'PIX') {
+            purchaseEvents.push({
+              user_id: finalUserId,
+              email: payment?.customerEmail ?? null,
+              event_name: 'checkout_pix_pago',
+              metadata: {
+                plano: effectivePlan,
+                value: payment.value || 0,
+                currency: 'BRL',
+                source: 'asaas',
+                payment_id: payment.id,
+                billingType: 'PIX'
+              }
+            });
+          }
+
+          await admin.from('app_events').insert(purchaseEvents);
+        }
       } else if (cortarAgora) {
         await admin.from('profiles').update({
           is_premium: false,
@@ -356,26 +366,47 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Item 50: Envio de recibo/confirmação via WhatsApp quando pagamento confirmado
+    // Envio de confirmação via WhatsApp para o cliente e para o Administrador (+5511991897603)
     if (pago && finalUserId) {
       try {
         const { data: profile } = await admin.from('profiles')
-          .select('display_name, telefone, whatsapp_number')
+          .select('display_name, telefone, whatsapp_number, email')
           .eq('id', finalUserId)
           .maybeSingle();
 
-        const phone = profile?.whatsapp_number || profile?.telefone;
-        if (phone) {
-          const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
-          const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
-          const planoLabel = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 'Anual' : effectivePlan === 'vitalicio' ? 'Vitalício' : 'Mensal';
-
-          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅\n\nSeu acesso ao *Direito Prime* está ativo. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
-
-          await evolution.sendText(phone, msg);
+        let phone = profile?.whatsapp_number || profile?.telefone;
+        // Fallback: se o perfil ainda não possuía telefone, tenta extrair do payload do Asaas
+        if (!phone && (payment?.mobilePhone || payment?.phone || body?.customer?.mobilePhone || body?.customer?.phone)) {
+          const rawPh = payment?.mobilePhone || payment?.phone || body?.customer?.mobilePhone || body?.customer?.phone;
+          const cleanPh = String(rawPh).replace(/\D/g, '');
+          if (cleanPh.length >= 10) {
+            phone = cleanPh.startsWith('55') ? cleanPh : `55${cleanPh}`;
+            await admin.from('profiles').update({
+              telefone: cleanPh,
+              whatsapp_number: phone,
+              updated_at: new Date().toISOString()
+            }).eq('id', finalUserId);
+          }
         }
+
+        const nome = profile?.display_name?.split(' ')[0] || 'Assinante';
+        const valor = payment.value ? `R$ ${Number(payment.value).toFixed(2).replace('.', ',')}` : '';
+        const planoLabel = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 'Anual' : effectivePlan === 'vitalicio' ? 'Vitalício' : 'Mensal';
+        const userEmail = payment?.customerEmail || profile?.email || 'E-mail não informado';
+
+        // 1. Mensagem de confirmação para o Cliente
+        if (phone) {
+          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅\n\nSeu acesso ao *Direito Prime* está ativo. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
+          await evolution.sendText(phone, msg).catch(err => console.warn('Falha envio recibo cliente:', err));
+        }
+
+        // 2. Alerta imediato de venda para o WhatsApp do Administrador (+5511991897603)
+        const ADMIN_PHONE = Deno.env.get('ADMIN_PHONE') || '+5511991897603';
+        const clienteNomeCompleto = profile?.display_name || userEmail.split('@')[0];
+        const msgAdmin = `🔔 *NOVA ASSINATURA CONFIRMADA!* 💰\n\n👤 *Cliente:* ${clienteNomeCompleto}\n📧 *E-mail:* ${userEmail}\n💎 *Plano:* ${planoLabel}\n💵 *Valor:* ${valor}\n⚡ *Método:* ${payment.billingType || 'PIX'}\n\nSincronizado e liberado com sucesso!`;
+        await evolution.sendText(ADMIN_PHONE, msgAdmin).catch(err => console.warn('Falha envio alerta admin:', err));
       } catch (e) {
-        console.warn('WhatsApp receipt failed:', String((e as Error)?.message || e).slice(0, 200));
+        console.warn('WhatsApp notification failed:', String((e as Error)?.message || e).slice(0, 200));
       }
     }
 
