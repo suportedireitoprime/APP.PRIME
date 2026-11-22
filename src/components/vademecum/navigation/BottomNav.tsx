@@ -150,7 +150,7 @@ const BottomNav = () => {
   };
 
   const keyboardHeight = useKeyboardHeight();
-  const hideNav = sideMenuOpen || externalMenuOpen || explicitHidden || keyboardHeight > 0 || path.startsWith('/blog');
+  const hideNav = sideMenuOpen || externalMenuOpen || explicitHidden || keyboardHeight > 0 || path.startsWith('/blog') || path.startsWith('/noticias/boletins');
 
   const isEstudos = path.startsWith('/estudos') || path.startsWith('/resumos-juridicos') || path.startsWith('/biblioteca');
 

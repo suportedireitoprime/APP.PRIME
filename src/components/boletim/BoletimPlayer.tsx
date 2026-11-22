@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play,
@@ -15,8 +16,6 @@ import {
   Loader2,
   User,
   Share2,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 import brasaoImg from '@/assets/brasao-republica.webp';
 import swooshAsset from '@/assets/swoosh.mp3.asset.json';
@@ -89,7 +88,17 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   // Transições direcionais & progresso contínuo
   const [direction, setDirection] = useState<1 | -1>(1);
   const [audioProgress, setAudioProgress] = useState(0);
-  const [bgMuted, setBgMuted] = useState(false);
+
+  // Esconde o menu de rodapé (BottomNav) e bloqueia o scroll do fundo enquanto o boletim estiver ativo
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: true } }));
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden: false } }));
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
 
   // GA4: abrir_boletim + play_narracao (uma vez por mount)
   useEffect(() => {
@@ -134,15 +143,15 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
     else audioRef.current.pause();
   }, [playing]);
 
-  // Trilha de fundo com controle de mudo
+  // Trilha de fundo contínua (news-bg.mp3 clássico restaurado)
   useEffect(() => {
     const bg = bgAudioRef.current;
     if (!bg) return;
-    bg.volume = bgMuted ? 0 : 0.16;
+    bg.volume = 0.16;
     bg.loop = true;
-    if (playing && !bgMuted) bg.play().catch(() => {});
-    else if (!playing) bg.pause();
-  }, [playing, bgMuted]);
+    if (playing) bg.play().catch(() => {});
+    else bg.pause();
+  }, [playing]);
 
 
   // Sessão do usuário
@@ -404,8 +413,8 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
     }
   })();
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-[#0A0A0C] overflow-hidden flex flex-col">
+  const playerContent = (
+    <div className="fixed inset-0 z-[99999] bg-[#0A0A0C] overflow-hidden flex flex-col" data-boletim-player>
       {/* Background Image: 100% Fullscreen APENAS na capa/intro */}
       {isIntro && (
         <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
@@ -453,29 +462,19 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
           ))}
         </div>
 
-        {/* Som ambiente da trilha */}
+        {/* Fechar — Dimensões padrão premium min 48x48dp / 52x52px */}
         <motion.button
           type="button"
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => {
-            haptic.selection();
-            setBgMuted((m) => !m);
+            haptic.light();
+            onClose?.();
           }}
-          className="w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 transition cursor-pointer text-white/80 hover:text-white"
-          title={bgMuted ? 'Ativar música de fundo' : 'Silenciar música de fundo'}
-        >
-          {bgMuted ? <VolumeX className="w-4 h-4 text-white/50" /> : <Volume2 className="w-4 h-4 text-white" />}
-        </motion.button>
-
-        {/* Fechar */}
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.9 }}
-          onClick={onClose}
-          className="w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 transition cursor-pointer"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] min-w-[48px] min-h-[48px] rounded-full bg-black/60 hover:bg-black/80 active:scale-95 backdrop-blur-md border border-white/20 flex items-center justify-center transition shadow-lg shadow-black/40 cursor-pointer ml-auto shrink-0"
           title="Fechar"
+          aria-label="Fechar"
         >
-          <X className="w-4 h-4 text-white" />
+          <X className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
         </motion.button>
       </div>
 
@@ -848,4 +847,6 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
       <audio ref={bgAudioRef} src="/news-bg.mp3" preload="auto" loop playsInline />
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(playerContent, document.body) : playerContent;
 }
