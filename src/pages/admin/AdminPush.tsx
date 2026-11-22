@@ -12,12 +12,14 @@ import {
   Send, Clock, CheckCircle2, RefreshCw, LayoutDashboard, 
   Database, FlaskConical, ChevronRight, Bot, ArrowUpRight, Eye, AlertCircle, 
   Loader2, Smartphone, Sparkles, Filter, ExternalLink, Calendar,
-  Bell, Scale, PlayCircle, Zap, ShieldCheck, Check
+  Bell, Scale, PlayCircle, Zap, ShieldCheck, Check, Pencil
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { haptic } from '@/lib/nativeHaptics';
+import { dispararNotificacaoLocalTeste, ModuloNotificacaoLocal } from '@/lib/nativo/notificacaoLocalManager';
 
 export interface PushCampaign {
   id: string;
@@ -40,16 +42,16 @@ type TabMode = 'grade2h' | 'dashboard' | 'manual' | 'laboratorio';
 type TargetAudience = 'users_only' | 'premium' | 'free' | 'test_admin';
 
 const GRADE_2_HORAS = [
-  { hora: '06:00', titulo: 'Boletim Matinal', desc: 'Atualizações jurídicas e novidades para iniciar o dia.', emoji: '🌅', tag: 'Notícias', rota: '/radar-360' },
-  { hora: '08:00', titulo: 'Novas Leis & CF88', desc: 'Atos publicados no Diário Oficial e artigos da Constituição.', emoji: '📜', tag: 'Legislação', rota: '/vade-mecum' },
-  { hora: '10:00', titulo: 'Dicionário Jurídico', desc: 'Conceito e vocabulário técnico com exemplo prático.', emoji: '📖', tag: 'Vocabulário', rota: '/ferramentas/dicionario' },
-  { hora: '12:00', titulo: 'Sugestão de Leitura', desc: 'Livro estratégico da biblioteca para a pausa do almoço.', emoji: '📚', tag: 'Biblioteca', rota: '/biblioteca' },
-  { hora: '14:00', titulo: 'Áudio-aula Explicativa', desc: 'Revisão jurídica em áudio citando o nome do estudante.', emoji: '🎧', tag: 'Áudio', rota: '/audioaulas' },
-  { hora: '16:00', titulo: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo doutrinário de 2 minutos.', emoji: '💊', tag: 'Pílula', rota: '/blog' },
-  { hora: '18:00', titulo: 'Resumo do Expediente', desc: 'Fechamento do dia com as principais decisões dos tribunais.', emoji: '🌆', tag: 'Tribunais', rota: '/radar-360' },
-  { hora: '20:00', titulo: 'Questão de Fixação', desc: 'Simulado prático de OAB e Concursos para a noite.', emoji: '🧠', tag: 'Questões', rota: '/questoes' },
-  { hora: '22:00', titulo: 'Áudio de Revisão', desc: 'Revisão passiva antes de dormir para consolidar a matéria.', emoji: '🌙', tag: 'Revisão', rota: '/audioaulas' },
-  { hora: '00:00', titulo: 'Videoaula Coruja', desc: 'Aula rápida com tema coringa para quem estuda na madrugada.', emoji: '🦉', tag: 'Vídeo', rota: '/aprender' },
+  { hora: '06:00', titulo: 'Boletim Matinal', desc: 'Atualizações jurídicas e novidades para iniciar o dia.', emoji: '🌅', tag: 'Notícias', rota: '/radar-360', modulo: 'boletim' as ModuloNotificacaoLocal },
+  { hora: '08:00', titulo: 'Novas Leis & CF88', desc: 'Atos publicados no Diário Oficial e artigos da Constituição.', emoji: '📜', tag: 'Legislação', rota: '/vade-mecum', modulo: 'livros' as ModuloNotificacaoLocal },
+  { hora: '10:00', titulo: 'Dicionário Jurídico', desc: 'Conceito e vocabulário técnico com exemplo prático.', emoji: '📖', tag: 'Vocabulário', rota: '/ferramentas/dicionario', modulo: 'livros' as ModuloNotificacaoLocal },
+  { hora: '12:00', titulo: 'Sugestão de Leitura', desc: 'Livro estratégico da biblioteca para a pausa do almoço.', emoji: '📚', tag: 'Biblioteca', rota: '/biblioteca', modulo: 'livros' as ModuloNotificacaoLocal },
+  { hora: '14:00', titulo: 'Áudio-aula Explicativa', desc: 'Revisão jurídica em áudio citando o nome do estudante.', emoji: '🎧', tag: 'Áudio', rota: '/audioaulas', modulo: 'audioaulas' as ModuloNotificacaoLocal },
+  { hora: '16:00', titulo: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo doutrinário de 2 minutos.', emoji: '💊', tag: 'Pílula', rota: '/blog', modulo: 'boletim' as ModuloNotificacaoLocal },
+  { hora: '18:00', titulo: 'Resumo do Expediente', desc: 'Fechamento do dia com as principais decisões dos tribunais.', emoji: '🌆', tag: 'Tribunais', rota: '/radar-360', modulo: 'boletim' as ModuloNotificacaoLocal },
+  { hora: '20:00', titulo: 'Questão de Fixação', desc: 'Simulado prático de OAB e Concursos para a noite.', emoji: '🧠', tag: 'Questões', rota: '/questoes', modulo: 'streak' as ModuloNotificacaoLocal },
+  { hora: '22:00', titulo: 'Áudio de Revisão', desc: 'Revisão passiva antes de dormir para consolidar a matéria.', emoji: '🌙', tag: 'Revisão', rota: '/audioaulas', modulo: 'audioaulas' as ModuloNotificacaoLocal },
+  { hora: '00:00', titulo: 'Videoaula Coruja', desc: 'Aula rápida com tema coringa para quem estuda na madrugada.', emoji: '🦉', tag: 'Vídeo', rota: '/aprender', modulo: 'videoaulas' as ModuloNotificacaoLocal },
 ];
 
 export default function AdminPush() {
@@ -65,6 +67,16 @@ export default function AdminPush() {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [plannerLoading, setPlannerLoading] = useState(false);
+
+  // Estados dos Slots Operacionais da Grade 2 Horas
+  const [disparandoSlotHora, setDisparandoSlotHora] = useState<string | null>(null);
+  const [testandoSlotHora, setTestandoSlotHora] = useState<string | null>(null);
+  const [slotParaEditar, setSlotParaEditar] = useState<typeof GRADE_2_HORAS[0] | null>(null);
+  const [editTitulo, setEditTitulo] = useState<string>('');
+  const [editDesc, setEditDesc] = useState<string>('');
+  const [editRota, setEditRota] = useState<string>('');
+  const [editEmoji, setEditEmoji] = useState<string>('');
+  const [salvandoEdicao, setSalvandoEdicao] = useState<boolean>(false);
 
   // Form State (Manual Push)
   const [title, setTitle] = useState("");
@@ -255,27 +267,222 @@ export default function AdminPush() {
     }
   };
 
-  // Ativar / Renovar grade de 2 em 2 horas via push-planner
+  // Ativar / Renovar grade de 2 em 2 horas via push-planner (Próximos 7 dias = 70 disparos)
   const handleRegenerate2HourSchedule = async () => {
+    haptic.impact('heavy');
     setPlannerLoading(true);
-    toast.info("Gerando grade de notificações a cada 2 horas para os próximos 7 dias...");
+    toast.loading("Gerando e ativando grade de 2 em 2 horas (próximos 7 dias)...", { id: 'planner_run' });
     try {
+      // 1. Tenta via invoke oficial Supabase
+      const { data, error } = await supabase.functions.invoke('push-planner', {
+        body: { dias: 7 }
+      });
+
+      if (!error && data?.ok) {
+        toast.success(`Grade a cada 2 horas ativada! ${data.generated} disparos programados.`, { id: 'planner_run' });
+        void loadCampaigns();
+        return;
+      }
+
+      // 2. Fallback direto autenticado
       const resp = await fetch("https://dnjrgpldcwcpoywamorr.supabase.co/functions/v1/push-planner", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0"
+        },
         body: JSON.stringify({ dias: 7 })
       });
       const res = await resp.json();
-      if (res.ok) {
-        toast.success(`Grade a cada 2 horas ativada! ${res.generated} disparos programados.`);
-        loadCampaigns();
+      if (res?.ok) {
+        toast.success(`Grade ativada! ${res.generated} disparos programados.`, { id: 'planner_run' });
+        void loadCampaigns();
       } else {
-        toast.error("Falha ao gerar grade de disparos.");
+        toast.error(`Falha ao gerar grade: ${res?.error || 'Erro desconhecido'}`, { id: 'planner_run' });
       }
     } catch (err: any) {
-      toast.error(`Erro: ${err?.message || err}`);
+      toast.error(`Erro: ${err?.message || err}`, { id: 'planner_run' });
     } finally {
       setPlannerLoading(false);
+    }
+  };
+
+  // Dispara imediatamente o slot selecionado para TODOS os usuários
+  const handleDispararSlotAgora = async (slot: typeof GRADE_2_HORAS[0]) => {
+    haptic.impact('heavy');
+    setDisparandoSlotHora(slot.hora);
+    toast.loading(`Disparando notificação das ${slot.hora} (${slot.titulo}) para todos...`, { id: `disp_slot_${slot.hora}` });
+    try {
+      const tituloFinal = `${slot.emoji} ${slot.titulo}`;
+      const { data: campaign, error: cErr } = await supabase.from("push_campaigns").insert({
+        title: tituloFinal,
+        body: slot.desc,
+        url: slot.rota,
+        status: "sending",
+        next_run_at: new Date().toISOString(),
+        audience: { all: true, target: 'all', include_admins: true },
+        tipo: slot.tag.toLowerCase(),
+        automation_key: `manual-slot-${slot.hora.replace(':', 'h')}`,
+      }).select().single();
+
+      if (cErr) throw cErr;
+
+      const { error: sErr } = await supabase.functions.invoke('send-push', {
+        body: {
+          campaign_id: campaign.id,
+          title: tituloFinal,
+          body: slot.desc,
+          url: slot.rota,
+          emoji: slot.emoji,
+          audience: { all: true, target: 'all', include_admins: true },
+          data: {
+            category: slot.tag.toLowerCase(),
+            horaSlot: slot.hora,
+          }
+        }
+      });
+
+      if (sErr) console.warn("Aviso worker send-push:", sErr);
+      toast.success(`Notificação das ${slot.hora} disparada com sucesso!`, { id: `disp_slot_${slot.hora}` });
+      void loadCampaigns();
+    } catch (err: any) {
+      console.error("Erro ao disparar slot agora:", err);
+      toast.error(`Falha ao disparar: ${err.message || err}`, { id: `disp_slot_${slot.hora}` });
+    } finally {
+      setDisparandoSlotHora(null);
+    }
+  };
+
+  // Disparo de teste seguro no aparelho do admin (Nuvem + Nativo local)
+  const handleTestarSlotNoAparelho = async (slot: typeof GRADE_2_HORAS[0]) => {
+    haptic.impact('medium');
+    setTestandoSlotHora(slot.hora);
+    toast.loading(`Testando push das ${slot.hora} no seu aparelho...`, { id: `test_slot_${slot.hora}` });
+    try {
+      const tituloFinal = `${slot.emoji} [Teste] ${slot.titulo}`;
+      
+      // 1. Tenta envio remoto isolado para admins
+      void supabase.functions.invoke('send-push', {
+        body: {
+          title: tituloFinal,
+          body: slot.desc,
+          url: slot.rota,
+          emoji: slot.emoji,
+          audience: { target: 'admins_only', include_admins: true },
+          data: { category: slot.tag.toLowerCase(), slotHora: slot.hora }
+        }
+      });
+
+      // 2. Dispara nativamente no hardware do aparelho
+      await dispararNotificacaoLocalTeste({
+        regra: {
+          id: `slot_teste_${slot.hora}`,
+          modulo: slot.modulo,
+          nome: slot.titulo,
+          descricao: slot.desc,
+          ativo: true,
+          tituloTemplate: tituloFinal,
+          subtituloTemplate: slot.desc,
+          textoBotaoAcao: 'Abrir agora',
+          rotaPadrao: slot.rota,
+          publicoAlvo: 'todos',
+          gatilhoHorasInatividade: 0,
+          mostrarBarraProgresso: false,
+          progressoExemplo: 0,
+          exemploTitulo: tituloFinal,
+          exemploSubtitulo: slot.desc,
+          canalAndroid: 'lembrete_estudo',
+        },
+        delaySegundos: 0,
+      });
+
+      toast.success(`Teste das ${slot.hora} entregue no seu aparelho!`, { id: `test_slot_${slot.hora}` });
+    } catch (err: any) {
+      console.error("Erro ao testar slot:", err);
+      toast.error(`Falha no teste: ${err.message || err}`, { id: `test_slot_${slot.hora}` });
+    } finally {
+      setTestandoSlotHora(null);
+    }
+  };
+
+  // Abre Sheet para editar conteúdo do slot
+  const handleAbrirEditarSlot = (slot: typeof GRADE_2_HORAS[0]) => {
+    haptic.selection();
+    setSlotParaEditar(slot);
+    setEditTitulo(slot.titulo);
+    setEditDesc(slot.desc);
+    setEditRota(slot.rota);
+    setEditEmoji(slot.emoji);
+  };
+
+  // Salva customização do slot ou dispara
+  const handleSalvarEDispararEditado = async (dispararAgora: boolean) => {
+    if (!slotParaEditar) return;
+    if (!editTitulo.trim() || !editDesc.trim()) {
+      toast.error("Preencha título e mensagem");
+      return;
+    }
+    setSalvandoEdicao(true);
+    try {
+      const tituloFinal = `${editEmoji} ${editTitulo.trim()}`;
+      if (dispararAgora) {
+        toast.loading(`Disparando notificação editada para todos...`, { id: 'disp_edit' });
+        const { data: campaign, error: cErr } = await supabase.from("push_campaigns").insert({
+          title: tituloFinal,
+          body: editDesc.trim(),
+          url: editRota.trim() || slotParaEditar.rota,
+          status: "sending",
+          next_run_at: new Date().toISOString(),
+          audience: { all: true, target: 'all', include_admins: true },
+          tipo: slotParaEditar.tag.toLowerCase(),
+          automation_key: `manual-edit-${slotParaEditar.hora.replace(':', 'h')}`,
+        }).select().single();
+
+        if (cErr) throw cErr;
+
+        await supabase.functions.invoke('send-push', {
+          body: {
+            campaign_id: campaign.id,
+            title: tituloFinal,
+            body: editDesc.trim(),
+            url: editRota.trim() || slotParaEditar.rota,
+            emoji: editEmoji,
+            audience: { all: true, target: 'all', include_admins: true },
+            data: { category: slotParaEditar.tag.toLowerCase() }
+          }
+        });
+        toast.success("Notificação enviada com sucesso!", { id: 'disp_edit' });
+      } else {
+        const hoje = new Date();
+        const [hh, mm] = slotParaEditar.hora.split(':').map(Number);
+        const dataAlvo = new Date();
+        dataAlvo.setHours(hh, mm, 0, 0);
+        if (dataAlvo.getTime() <= hoje.getTime()) {
+          dataAlvo.setDate(dataAlvo.getDate() + 1);
+        }
+
+        const { error: cErr } = await supabase.from("push_campaigns").insert({
+          title: tituloFinal,
+          body: editDesc.trim(),
+          url: editRota.trim() || slotParaEditar.rota,
+          status: "scheduled",
+          next_run_at: dataAlvo.toISOString(),
+          audience: { all: true, target: 'all', include_admins: true },
+          tipo: slotParaEditar.tag.toLowerCase(),
+          automation_key: `custom-slot-${slotParaEditar.hora.replace(':', 'h')}`,
+        });
+
+        if (cErr) throw cErr;
+        toast.success(`Notificação agendada para ${slotParaEditar.hora}!`);
+      }
+
+      setSlotParaEditar(null);
+      void loadCampaigns();
+    } catch (err: any) {
+      toast.error(`Falha: ${err.message || err}`);
+    } finally {
+      setSalvandoEdicao(false);
     }
   };
 
@@ -351,167 +558,126 @@ export default function AdminPush() {
         }
       />
 
-      <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 relative z-10">
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-4 relative z-10">
 
         {/* ============================================================== */}
-        {/* HERO BANNER: STATUS DA GRADE A CADA 2 HORAS                    */}
+        {/* BARRA DE CONTROLE & ABAS MINIMALISTA                          */}
         {/* ============================================================== */}
-        <div className="relative rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-red-950/60 via-zinc-900/90 to-zinc-950 border border-red-500/30 shadow-2xl overflow-hidden backdrop-blur-md">
-          <div className="absolute top-0 right-0 -mr-10 -mt-10 w-44 h-44 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1.5 flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Sistema Ativo
-                </span>
-                <span className="text-xs text-zinc-400 font-mono">
-                  {scheduledCampaigns.length} agendados
-                </span>
-              </div>
-              <h2 className="text-lg sm:text-xl font-bold tracking-wide text-white flex items-center gap-2">
-                Disparos a Cada 2 Horas
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                As pessoas recebem pushes dinâmicos das <span className="text-white font-semibold">06h às 00h</span> (Leis, Notícias, Questões, Áudios e Leituras) com exclusão estrita do seu aparelho admin.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap sm:flex-col gap-2 w-full sm:w-auto shrink-0">
-              <Button
-                onClick={handleRegenerate2HourSchedule}
-                disabled={plannerLoading}
-                className="flex-1 sm:flex-initial h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs tracking-wider uppercase rounded-xl shadow-lg transition-transform active:scale-[0.98]"
-              >
-                {plannerLoading ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Programando...</>
-                ) : (
-                  <><RefreshCw className="w-4 h-4 mr-2" /> Renovar 7 Dias</>
-                )}
-              </Button>
-              <Button
-                onClick={handleTestOnAdminDevice}
-                variant="outline"
-                className="flex-1 sm:flex-initial h-10 px-4 border-zinc-700 hover:border-zinc-500 bg-zinc-900/80 text-zinc-200 text-xs font-semibold rounded-xl"
-              >
-                <Smartphone className="w-3.5 h-3.5 mr-2 text-red-400" /> Testar no Celular
-              </Button>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-1.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 backdrop-blur-md">
+          {/* Segmented Control / Abas */}
+          <div className="flex items-center gap-1 bg-zinc-950/60 p-1 rounded-xl border border-white/5">
+            <button
+              type="button"
+              onClick={() => setTab('grade2h')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+                tab === 'grade2h'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>Grade 2 Horas</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('dashboard')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+                tab === 'dashboard'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Linha do Tempo</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('manual')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+                tab === 'manual'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+              }`}
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Criar Manual</span>
+            </button>
           </div>
 
-          {/* PRÓXIMO DISPARO HIGHLIGHT */}
-          {nextScheduled && (
-            <div className="mt-4 pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 text-zinc-300 flex-wrap">
-                <Clock className="w-4 h-4 text-red-400 shrink-0" />
-                <span>Próximo disparo:</span>
-                <span className="font-bold text-white font-mono text-sm bg-zinc-800/80 px-2 py-0.5 rounded border border-white/5">
-                  {new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  {getNextRunInfo(nextScheduled.next_run_at)?.label}
-                </span>
-                <span className="text-zinc-400 truncate max-w-[200px] sm:max-w-xs">
-                  • {nextScheduled.title}
-                </span>
-              </div>
-              <Badge variant="outline" className="text-[10px] border-red-500/30 text-red-400 bg-red-500/10">
-                Horário de Brasília (UTC-3)
-              </Badge>
-            </div>
-          )}
-        </div>
+          {/* Ações Rápidas Minimalistas */}
+          <div className="flex items-center gap-2 self-end sm:self-auto px-1 sm:px-0">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleTestOnAdminDevice}
+              className="h-8 px-2.5 rounded-lg border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-medium cursor-pointer"
+              title="Testar entrega do push no aparelho admin"
+            >
+              <Smartphone className="w-3.5 h-3.5 mr-1.5 text-sky-400" />
+              <span>Testar no Celular</span>
+            </Button>
 
-        {/* Banner de Atalho para Notificações Locais com Barra de Progresso */}
-        <div 
-          onClick={() => navigate('/admin-notificacoes-locais')}
-          className="cursor-pointer group relative rounded-2xl p-4 bg-gradient-to-r from-sky-950/50 via-zinc-900 to-zinc-900 border border-sky-500/30 hover:border-sky-500/60 shadow-lg transition-all active:scale-[0.99] flex items-center justify-between gap-4"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center shrink-0 text-sky-400 group-hover:scale-105 transition-transform">
-              <Smartphone className="w-5 h-5" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
-                  Notificações Locais (Retenção & Barra de Progresso)
-                </span>
-                <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/30 text-[10px]">Novo</Badge>
-              </div>
-              <p className="text-xs text-zinc-400 truncate mt-0.5">
-                "Continuar assistindo/lendo" com capa, tempo restante e botão no aparelho
-              </p>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleRegenerate2HourSchedule}
+              disabled={plannerLoading}
+              className="h-8 px-3 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+              title="Reprogramar agenda de 10 pushes diários para os próximos 7 dias"
+            >
+              {plannerLoading ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              <span>Renovar 7 Dias</span>
+            </Button>
           </div>
-          <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
-        </div>
-
-        {/* ============================================================== */}
-        {/* NAVEGAÇÃO POR ABAS / SEÇÕES                                    */}
-        {/* ============================================================== */}
-        <div className="flex p-1.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 gap-1.5">
-          <button
-            onClick={() => setTab('grade2h')}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 ${
-              tab === 'grade2h'
-                ? 'bg-red-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            Grade 2 Horas
-          </button>
-          <button
-            onClick={() => setTab('dashboard')}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 ${
-              tab === 'dashboard'
-                ? 'bg-red-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            Linha do Tempo
-          </button>
-          <button
-            onClick={() => setTab('manual')}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 ${
-              tab === 'manual'
-                ? 'bg-red-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-            }`}
-          >
-            <Send className="w-3.5 h-3.5" />
-            Criar Manual
-          </button>
         </div>
 
         {/* ============================================================== */}
         {/* ABA 1: GRADE DETALHADA DAS 2 EM 2 HORAS                        */}
         {/* ============================================================== */}
         {tab === 'grade2h' && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            {/* AUDITORIA DE FUSO E CONTAGEM REGRESSIVA EM TEMPO REAL */}
-            <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-between gap-3 flex-wrap">
+          <div className="space-y-3.5 animate-in fade-in duration-200">
+            {/* LINHA DE STATUS ULTRA-MINIMALISTA */}
+            <div className="flex items-center justify-between gap-2 px-1 text-xs text-zinc-400 flex-wrap">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-xs text-zinc-300 font-medium">
-                  Fuso Horário Ativo: <strong className="text-white">Brasília (UTC-3)</strong>
-                </span>
-                <span className="text-[11px] text-zinc-500 font-mono ml-2">• 10 disparos/dia</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="font-medium text-zinc-200">10 disparos/dia</span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400 font-mono text-[11px]">Brasília (UTC-3)</span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400 text-[11px]">{scheduledCampaigns.length} agendados</span>
               </div>
-              {nextScheduled && (
-                <div className="flex items-center gap-2 bg-red-950/40 border border-red-500/30 px-3 py-1 rounded-xl">
-                  <Clock className="w-3.5 h-3.5 text-red-400" />
-                  <span className="text-xs text-zinc-300">
-                    Próximo: <strong className="text-white font-mono">{new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}</strong>
-                  </span>
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-md">
-                    {getNextRunInfo(nextScheduled.next_run_at)?.label}
-                  </span>
-                </div>
-              )}
+
+              <div className="flex items-center gap-2">
+                {nextScheduled && (
+                  <div className="flex items-center gap-1.5 text-[11.5px] bg-zinc-900/60 border border-zinc-800 px-2 py-0.5 rounded-md">
+                    <span className="text-zinc-500">Próximo:</span>
+                    <span className="font-mono font-bold text-white">
+                      {new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}
+                    </span>
+                    <span className="font-semibold text-emerald-400">
+                      ({getNextRunInfo(nextScheduled.next_run_at)?.label})
+                    </span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    void loadCampaigns();
+                  }}
+                  disabled={loading}
+                  className="p-1 rounded text-zinc-500 hover:text-zinc-200 transition-colors"
+                  title="Atualizar lista de agendados"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -522,10 +688,10 @@ export default function AdminPush() {
                 return (
                   <div 
                     key={slot.hora}
-                    className={`p-4 rounded-2xl transition-all flex flex-col justify-between gap-3 ${
+                    className={`p-4 rounded-2xl transition-all flex flex-col justify-between gap-3 shadow-lg ${
                       isNext
                         ? 'bg-red-950/25 border-2 border-red-500/80 ring-2 ring-red-500/30 shadow-xl shadow-red-950/50'
-                        : 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700'
+                        : 'bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700'
                     }`}
                   >
                     <div className="flex items-start gap-3.5">
@@ -554,19 +720,19 @@ export default function AdminPush() {
                     </div>
 
                     {/* STATUS DE DISPARO E ROTA DE REDIRECIONAMENTO */}
-                    <div className="pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2 flex-wrap text-xs">
                       {isNext ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           Próximo às {slot.hora} ({status.countdownLabel})
                         </span>
                       ) : status ? (
-                        <span className="text-[10px] font-mono text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded border border-white/5">
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">
                           Agendado ({status.countdownLabel})
                         </span>
                       ) : (
-                        <span className="text-[10px] text-zinc-500 flex items-center gap-1 font-medium">
-                          <CheckCircle2 className="w-3 h-3 text-zinc-600" /> Disparado hoje
+                        <span className="text-[10px] text-zinc-400 flex items-center gap-1 font-medium">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Ativo na Grade
                         </span>
                       )}
 
@@ -577,6 +743,56 @@ export default function AdminPush() {
                           {slot.rota}
                         </code>
                       </span>
+                    </div>
+
+                    {/* BARRA DE AÇÕES OPERACIONAIS 100% FUNCIONAIS */}
+                    <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5 flex-wrap">
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => handleDispararSlotAgora(slot)}
+                          disabled={disparandoSlotHora === slot.hora}
+                          className="h-7 px-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[10.5px] font-bold shadow-sm cursor-pointer"
+                          title="Disparar push imediatamente para todos os alunos"
+                        >
+                          {disparandoSlotHora === slot.hora ? (
+                            <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                          ) : (
+                            <Send className="w-3 h-3 mr-1" />
+                          )}
+                          <span>Disparar Agora</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleTestarSlotNoAparelho(slot)}
+                          disabled={testandoSlotHora === slot.hora}
+                          className="h-7 px-2 rounded-lg bg-zinc-800/80 border-white/10 text-[10.5px] text-zinc-300 hover:text-white hover:bg-zinc-700/60 cursor-pointer"
+                          title="Testar entrega da notificação no seu aparelho"
+                        >
+                          {testandoSlotHora === slot.hora ? (
+                            <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                          ) : (
+                            <Smartphone className="w-3 h-3 mr-1 text-sky-400" />
+                          )}
+                          <span>Testar</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleAbrirEditarSlot(slot)}
+                          className="h-7 px-2 rounded-lg text-[10.5px] text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
+                          title="Editar texto e rota deste horário"
+                        >
+                          <Pencil className="w-3 h-3 mr-1 text-zinc-400" />
+                          <span>Editar</span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -870,6 +1086,94 @@ export default function AdminPush() {
       </div>
 
       {/* MODAL DE EVENTOS */}
+      {/* SHEET DE EDIÇÃO RÁPIDA DE SLOT */}
+      <Sheet open={Boolean(slotParaEditar)} onOpenChange={(open) => !open && setSlotParaEditar(null)}>
+        <SheetContent side="right" className="bg-[#121214] border-white/10 text-white w-full sm:max-w-md p-6 space-y-5">
+          <SheetHeader className="space-y-1">
+            <SheetTitle className="text-white text-base font-bold flex items-center gap-2">
+              <span className="text-xl">{editEmoji}</span>
+              <span>Editar Notificação das {slotParaEditar?.hora}</span>
+            </SheetTitle>
+            <p className="text-xs text-zinc-400">
+              Personalize o texto, link e dispare agora ou agende para este horário.
+            </p>
+          </SheetHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                Título da Notificação
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  value={editEmoji}
+                  onChange={(e) => setEditEmoji(e.target.value)}
+                  className="w-14 bg-zinc-900 border-white/10 text-center text-lg rounded-xl"
+                  title="Emoji"
+                />
+                <Input
+                  value={editTitulo}
+                  onChange={(e) => setEditTitulo(e.target.value)}
+                  placeholder="Ex: Hora da Leitura"
+                  className="flex-1 bg-zinc-900 border-white/10 text-xs text-white rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                Mensagem (Corpo do Push)
+              </label>
+              <Textarea
+                value={editDesc}
+                onChange={(e) => setEditDesc(e.target.value)}
+                placeholder="Mensagem do push. Use {nome} para personalizar."
+                rows={3}
+                className="bg-zinc-900 border-white/10 text-xs text-white rounded-xl resize-none"
+              />
+              <span className="text-[10px] text-zinc-500">
+                Dica: use &#123;nome&#125; para citar o primeiro nome do estudante automaticamente.
+              </span>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                Link de Destino (Rota)
+              </label>
+              <Input
+                value={editRota}
+                onChange={(e) => setEditRota(e.target.value)}
+                placeholder="Ex: /radar-360, /audioaulas"
+                className="bg-zinc-900 border-white/10 text-xs text-white font-mono rounded-xl"
+              />
+            </div>
+
+            <div className="pt-4 space-y-2">
+              <Button
+                type="button"
+                onClick={() => handleSalvarEDispararEditado(true)}
+                disabled={salvandoEdicao}
+                className="w-full h-10 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-lg shadow-red-950/40 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {salvandoEdicao ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                <span>Disparar Esta Mensagem Agora para Todos</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleSalvarEDispararEditado(false)}
+                disabled={salvandoEdicao}
+                className="w-full h-10 rounded-xl bg-zinc-900/80 border-white/10 text-zinc-200 hover:text-white text-xs flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Clock className="w-4 h-4 text-emerald-400" />
+                <span>Salvar Agendamento para às {slotParaEditar?.hora}</span>
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       <PushEventsModal 
         date={selectedDate} 
         type={selectedEventType} 
