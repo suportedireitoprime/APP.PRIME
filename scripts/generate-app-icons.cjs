@@ -2,8 +2,8 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-// Fonte de verdade: Têmis Vazada Oficial transparente do app
-const themisVazadaPath = path.resolve('src/assets/logo-coruja.webp');
+// Fonte de verdade em alta definição: Têmis Vazada Oficial PNG (243KB sem perdas)
+const themisVazadaPath = path.resolve('src/assets/logo-coruja.png');
 
 if (!fs.existsSync(themisVazadaPath)) {
   console.error('Imagem da Têmis Vazada não encontrada em:', themisVazadaPath);
@@ -14,6 +14,9 @@ if (!fs.existsSync(themisVazadaPath)) {
 // Cor 1: #F20723 | Cor 2: #C91823 | Ângulo: 0° (Linear do topo ao rodapé)
 const COR1 = '#F20723';
 const COR2 = '#C91823';
+
+// Escala / Expansão Oficial calibrada para preencher com imponência a safe-zone (82%)
+const EXPANSION_RATIO = 0.82;
 
 // Gera SVG de fundo com gradiente linear oficial
 function createGradientSvg(width, height) {
@@ -26,6 +29,25 @@ function createGradientSvg(width, height) {
     </linearGradient>
   </defs>
   <rect width="${width}" height="${height}" fill="url(#carmesimOficial)" />
+</svg>
+`);
+}
+
+// Gera SVG de sombra de profundidade 3D
+function createShadowSvg(width, height) {
+  const cx = width / 2;
+  const cy = height * 0.58;
+  const r = width * 0.38;
+  return Buffer.from(`
+<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="shadow" cx="50%" cy="58%" r="38%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.55)" />
+      <stop offset="70%" stop-color="rgba(0,0,0,0.22)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+    </radialGradient>
+  </defs>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#shadow)" />
 </svg>
 `);
 }
@@ -57,8 +79,17 @@ function createIco(pngBuffer) {
   return Buffer.concat([header, dirEntry, pngBuffer]);
 }
 
+// Função utilitária para renderizar o busto com brilho, saturação e nitidez cristalina
+async function getEnhancedThemis(width, height) {
+  return await sharp(themisVazadaPath)
+    .resize(width, height, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .modulate({ brightness: 1.16, saturation: 1.25 })
+    .sharpen({ sigma: 1.2, m1: 1.2, m2: 2.2 })
+    .toBuffer();
+}
+
 async function main() {
-  console.log('🚀 Gerando Ícones do Aplicativo: Têmis Vazada Oficial + Vermelho Carmesim (#F20723 -> #C91823)...');
+  console.log('🚀 Gerando Ícones do Aplicativo: Têmis Vazada HD (Expansão 82%) + Vermelho Carmesim Oficial (#F20723 -> #C91823)...');
 
   // Garante diretórios
   const dirs = ['resources', 'assets', 'build-assets', 'public'];
@@ -67,22 +98,25 @@ async function main() {
   });
 
   // ── 1. GERAÇÃO DO ÍCONE MESTRE (1024x1024) ──
-  console.log('1. Criando Master Icon 1024x1024 em resources/ e assets/...');
+  console.log('1. Criando Master Icon 1024x1024 com expansão a 82% em resources/ e assets/...');
   const masterBgSvg = createGradientSvg(1024, 1024);
   const masterBgBuffer = await sharp(masterBgSvg).png().toBuffer();
+  const masterShadowBuffer = await sharp(createShadowSvg(1024, 1024)).png().toBuffer();
 
-  // Fundo do adaptive icon (1024x1024 gradiente carmesim)
+  // Fundo do adaptive icon (1024x1024 gradiente carmesim oficial)
   await sharp(masterBgSvg).png().toFile('resources/icon-background.png');
   fs.copyFileSync('resources/icon-background.png', 'assets/icon-background.png');
 
-  // Busto da Têmis para o Master Icon: 820x820 (~80% da área, proporcional e imponente)
-  const masterThemisBuffer = await sharp(themisVazadaPath)
-    .resize(820, 820, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .toBuffer();
+  // Busto da Têmis para o Master Icon: 840x840 (~82% da área, imponente e nítido)
+  const masterThemisSize = Math.round(1024 * EXPANSION_RATIO); // ~840px
+  const masterThemisBuffer = await getEnhancedThemis(masterThemisSize, masterThemisSize);
 
-  // Master Icon completo (1024x1024 com fundo gradiente + busto centralizado)
+  // Master Icon completo (1024x1024 com fundo gradiente + sombra 3D + busto centralizado)
   const masterIconBuffer = await sharp(masterBgBuffer)
-    .composite([{ input: masterThemisBuffer, gravity: 'center' }])
+    .composite([
+      { input: masterShadowBuffer, gravity: 'center' },
+      { input: masterThemisBuffer, gravity: 'center' }
+    ])
     .png()
     .toBuffer();
 
@@ -90,11 +124,8 @@ async function main() {
   fs.copyFileSync('resources/icon.png', 'assets/icon.png');
   fs.copyFileSync('resources/icon.png', 'build-assets/ios-app-icon.png');
 
-  // Foreground do adaptive icon (1024x1024 transparente, busto a ~68% para caber 100% na safe-zone de 72dp)
-  const fgThemisSize = Math.round(1024 * 0.68); // ~696px
-  const fgThemisBuffer = await sharp(themisVazadaPath)
-    .resize(fgThemisSize, fgThemisSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .toBuffer();
+  // Foreground do adaptive icon (1024x1024 transparente, busto a 82% preenchendo a safe-zone perfeitamente)
+  const fgThemisBuffer = await getEnhancedThemis(masterThemisSize, masterThemisSize);
 
   await sharp({
     create: {
@@ -119,9 +150,7 @@ async function main() {
   // ── 2. SPLASH SCREENS (2732x2732) ──
   console.log('2. Gerando Splash Screens 2732x2732...');
   const splashBgSvg = createGradientSvg(2732, 2732);
-  const splashThemisBuffer = await sharp(themisVazadaPath)
-    .resize(850, 850, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .toBuffer();
+  const splashThemisBuffer = await getEnhancedThemis(950, 950);
 
   const splashBuffer = await sharp(splashBgSvg)
     .composite([{ input: splashThemisBuffer, gravity: 'center' }])
@@ -158,7 +187,7 @@ async function main() {
   }
 
   // ── 5. ANDROID MIPMAPS (ic_launcher, round, foreground, background) ──
-  console.log('5. Gerando Mipmaps Nativos do Android...');
+  console.log('5. Gerando Mipmaps Nativos do Android com expansão a 82%...');
   const androidMipmaps = [
     { dir: 'mipmap-mdpi', size: 48, fgSize: 108 },
     { dir: 'mipmap-hdpi', size: 72, fgSize: 162 },
@@ -180,10 +209,8 @@ async function main() {
         .toFile(path.join(targetDir, 'ic_launcher.png'));
 
       // Ícone redondo clássico (com máscara circular para launchers redondos legados)
-      const roundThemisSize = Math.round(m.size * 0.72);
-      const roundThemis = await sharp(themisVazadaPath)
-        .resize(roundThemisSize, roundThemisSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-        .toBuffer();
+      const roundThemisSize = Math.round(m.size * EXPANSION_RATIO);
+      const roundThemis = await getEnhancedThemis(roundThemisSize, roundThemisSize);
       const roundBg = await sharp(createGradientSvg(m.size, m.size)).png().toBuffer();
       const circleMask = getCircleMask(m.size);
 
@@ -199,11 +226,9 @@ async function main() {
         .png()
         .toFile(path.join(targetDir, 'ic_launcher_background.png'));
 
-      // Adaptive Foreground: fundo 100% TRANSPARENTE com busto centralizado a ~68%
-      const fgInnerSize = Math.round(m.fgSize * 0.68);
-      const fgInnerBuffer = await sharp(themisVazadaPath)
-        .resize(fgInnerSize, fgInnerSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-        .toBuffer();
+      // Adaptive Foreground: fundo 100% TRANSPARENTE com busto centralizado a 82%
+      const fgInnerSize = Math.round(m.fgSize * EXPANSION_RATIO);
+      const fgInnerBuffer = await getEnhancedThemis(fgInnerSize, fgInnerSize);
 
       await sharp({
         create: {
@@ -218,7 +243,7 @@ async function main() {
         .toFile(path.join(targetDir, 'ic_launcher_foreground.png'));
     }
 
-    // Atualiza cor de fundo oficial em XML do Android
+    // Atualiza cor de fundo oficial em XML do Android para o Carmesim Oficial
     const bgXmlPath = path.join(resBase, 'values', 'ic_launcher_background.xml');
     if (fs.existsSync(bgXmlPath)) {
       fs.writeFileSync(
@@ -235,7 +260,7 @@ async function main() {
       );
     }
 
-    // Garante que mipmap-anydpi-v26/ic_launcher.xml use background e foreground sem cortes anormais
+    // Garante que mipmap-anydpi-v26/ic_launcher.xml use background e foreground corretos
     const anyDpiDir = path.join(resBase, 'mipmap-anydpi-v26');
     if (fs.existsSync(anyDpiDir)) {
       const adaptiveLauncherXml = `<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@mipmap/ic_launcher_background" />\n    <foreground android:drawable="@mipmap/ic_launcher_foreground" />\n</adaptive-icon>\n`;
@@ -270,7 +295,7 @@ async function main() {
     }
   }
 
-  console.log('✅ SUCESSO: Todos os ícones gerados e sincronizados com a Têmis Vazada e Fundo Carmesim Oficial!');
+  console.log('✅ SUCESSO: Todos os ícones gerados e sincronizados com a Têmis HD (82%) e Fundo Carmesim Oficial!');
 }
 
 main().catch(err => {
