@@ -277,7 +277,9 @@ Deno.serve(async (req) => {
         currentStatus = currSub.status;
       }
       
-      const nextStatus = pago ? 'ACTIVE' : (vitalicio ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus));
+      // Vitalício SÓ ativa se pago === true. Se já era vitalício ativo no banco, preserva o status ativo.
+      const isAlreadyActiveVitalicio = currSub?.plano === 'vitalicio' && ['ACTIVE', 'ACTIVE_GRACE', 'active', 'CONFIRMED'].includes(currSub?.status);
+      const nextStatus = pago ? 'ACTIVE' : (isAlreadyActiveVitalicio ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus));
 
       const subUpsertPayload: any = {
         user_id: finalUserId,

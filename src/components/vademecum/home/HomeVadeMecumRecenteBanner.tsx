@@ -120,17 +120,11 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
       }}
       className="w-full flex items-center gap-2.5 xs:gap-3 px-3 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative group cursor-pointer backdrop-blur-md"
     >
-      {/* Ícone principal à esquerda */}
-      <div 
-        className="flex items-center justify-center shrink-0 z-10 w-9 h-9 xs:w-10 xs:h-10 rounded-xl border"
-        style={{
-          backgroundColor: `${themeColor}20`,
-          borderColor: `${themeColor}35`,
-          color: themeColor,
-        }}
-      >
+      {/* Ícone principal à esquerda — sem caixa de fundo, 100% limpo */}
+      <div className="flex items-center justify-center shrink-0 z-10">
         <IconeLei
-          className="w-5 h-5 xs:w-5.5 xs:h-5.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+          className="w-6 h-6 xs:w-6.5 xs:h-6.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+          style={{ color: themeColor }}
           strokeWidth={1.8}
         />
       </div>

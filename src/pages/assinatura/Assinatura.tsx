@@ -22,7 +22,7 @@ export default function Assinatura() {
     return <Navigate to="/planos/ativos" replace />;
   }
 
-  // Seleção dinâmica do Layout de Assinatura (Vitalício Promocional vs Padrão 3 Planos)
+  // Seleção dinâmica do Layout de Assinatura (Padrão 3 Planos como default oficial)
   const layoutParam = searchParams.get('layout');
   const activeLayout = layoutParam === 'vitalicio'
     ? 'vitalicio_promocional'

@@ -5,10 +5,10 @@ const STORAGE_KEY = 'app_subscription_layout_mode_v1';
 export function getSubscriptionLayout(): SubscriptionLayoutType {
   try {
     const val = localStorage.getItem(STORAGE_KEY);
-    if (val === 'padrao_3_planos') return 'padrao_3_planos';
-    return 'vitalicio_promocional';
+    if (val === 'vitalicio_promocional') return 'vitalicio_promocional';
+    return 'padrao_3_planos';
   } catch {
-    return 'vitalicio_promocional';
+    return 'padrao_3_planos';
   }
 }
 

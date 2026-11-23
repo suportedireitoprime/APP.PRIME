@@ -1,8 +1,9 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, Bot, BookOpen, ArrowRight, type LucideIcon } from 'lucide-react';
+import { GraduationCap, BookOpen, ArrowRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import horusOwl from '@/assets/horus/horus-owl.webp';
 
 export interface BannerDestaqueItem {
   id: string;
@@ -10,7 +11,8 @@ export interface BannerDestaqueItem {
   nome: string;
   subtitulo: string;
   color: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  imageSrc?: string;
   to: string;
 }
 
@@ -30,7 +32,7 @@ const BANNER_ITEMS: BannerDestaqueItem[] = [
     nome: 'Hórus IA',
     subtitulo: 'Tire dúvidas em tempo real',
     color: '#EAB308', // Amarelo Dourado
-    icon: Bot,
+    imageSrc: horusOwl, // Passarinho / Corujinha do Hórus
     to: '/assistente-horus',
   },
   {
@@ -125,21 +127,25 @@ const HomeAulasInterativasBanner = () => {
                 background: `linear-gradient(to right, ${item.color}33, ${item.color}0D)`,
                 borderColor: `${item.color}4D`,
               }}
-              className="w-full shrink-0 snap-center flex items-center gap-2.5 xs:gap-3 px-3 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
+              className="w-full shrink-0 snap-center flex items-center gap-2.5 xs:gap-3 px-3.5 xs:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
             >
-              {/* Ícone principal à esquerda com cor temática */}
-              <div
-                className="flex items-center justify-center shrink-0 z-10 w-9 h-9 xs:w-10 xs:h-10 rounded-xl border"
-                style={{
-                  backgroundColor: `${item.color}20`,
-                  borderColor: `${item.color}35`,
-                  color: item.color,
-                }}
-              >
-                <Icon
-                  className="w-5 h-5 xs:w-5.5 xs:h-5.5 drop-shadow-sm group-hover:scale-105 transition-transform"
-                  strokeWidth={1.8}
-                />
+              {/* Ícone principal à esquerda — SEM caixa de fundo, 100% limpo */}
+              <div className="flex items-center justify-center shrink-0 z-10">
+                {item.imageSrc ? (
+                  <img
+                    src={item.imageSrc}
+                    alt={item.nome}
+                    className="w-7 h-7 xs:w-8 xs:h-8 object-contain drop-shadow-[0_2px_8px_rgba(234,179,8,0.5)] group-hover:scale-105 transition-transform select-none pointer-events-none"
+                    loading="eager"
+                    decoding="async"
+                  />
+                ) : Icon ? (
+                  <Icon
+                    className="w-6 h-6 xs:w-6.5 xs:h-6.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+                    style={{ color: item.color }}
+                    strokeWidth={1.8}
+                  />
+                ) : null}
               </div>
 
               {/* Textos informativos centrais */}
@@ -176,11 +182,22 @@ const HomeAulasInterativasBanner = () => {
                   filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px ${item.color}40)`,
                 }}
               >
-                <Icon
-                  className="w-18 h-18 opacity-15"
-                  style={{ color: item.color }}
-                  strokeWidth={1.2}
-                />
+                {item.imageSrc ? (
+                  <img
+                    src={item.imageSrc}
+                    alt=""
+                    aria-hidden="true"
+                    className="w-18 h-18 opacity-15 object-contain select-none pointer-events-none"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : Icon ? (
+                  <Icon
+                    className="w-18 h-18 opacity-15"
+                    style={{ color: item.color }}
+                    strokeWidth={1.2}
+                  />
+                ) : null}
               </div>
 
               {/* 🌟 ANIMAÇÃO DE REFLEXO / SHIMMER LUMINOSO */}

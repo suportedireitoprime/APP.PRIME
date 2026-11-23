@@ -1,304 +1,103 @@
-const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
-// Fonte de verdade em alta definição: Têmis Vazada Oficial PNG (243KB sem perdas)
-const themisVazadaPath = path.resolve('src/assets/logo-coruja.png');
+const sourceImage = 'C:/Users/ext_wpereira/.gemini/antigravity/brain/dd21ad5e-0e2e-4bc6-b4ba-29d49b970504/.user_uploaded/media_1795439743327_55f11f31.jpg';
 
-if (!fs.existsSync(themisVazadaPath)) {
-  console.error('Imagem da Têmis Vazada não encontrada em:', themisVazadaPath);
-  process.exit(1);
-}
+async function generate() {
+  console.log('Generating icons from:', sourceImage);
 
-// Cores Oficiais selecionadas no Studio:
-// Cor 1: #F20723 | Cor 2: #C91823 | Ângulo: 0° (Linear do topo ao rodapé)
-const COR1 = '#F20723';
-const COR2 = '#C91823';
-
-// Escala / Expansão Oficial calibrada para preencher com imponência a safe-zone (82%)
-const EXPANSION_RATIO = 0.82;
-
-// Gera SVG de fundo com gradiente linear oficial
-function createGradientSvg(width, height) {
-  return Buffer.from(`
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="carmesimOficial" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="${COR1}" />
-      <stop offset="100%" stop-color="${COR2}" />
-    </linearGradient>
-  </defs>
-  <rect width="${width}" height="${height}" fill="url(#carmesimOficial)" />
-</svg>
-`);
-}
-
-// Gera SVG de sombra de profundidade 3D
-function createShadowSvg(width, height) {
-  const cx = width / 2;
-  const cy = height * 0.58;
-  const r = width * 0.38;
-  return Buffer.from(`
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="shadow" cx="50%" cy="58%" r="38%">
-      <stop offset="0%" stop-color="rgba(0,0,0,0.55)" />
-      <stop offset="70%" stop-color="rgba(0,0,0,0.22)" />
-      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
-    </radialGradient>
-  </defs>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#shadow)" />
-</svg>
-`);
-}
-
-// Máscara circular para ícones redondos
-function getCircleMask(size) {
-  return Buffer.from(
-    `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#000"/></svg>`
-  );
-}
-
-// Cria buffer ICO a partir de PNG 32x32
-function createIco(pngBuffer) {
-  const header = Buffer.alloc(6);
-  header.writeUInt16LE(0, 0); // reservado
-  header.writeUInt16LE(1, 2); // tipo (1 = ICO)
-  header.writeUInt16LE(1, 4); // 1 imagem
-
-  const dirEntry = Buffer.alloc(16);
-  dirEntry.writeUInt8(32, 0); // largura
-  dirEntry.writeUInt8(32, 1); // altura
-  dirEntry.writeUInt8(0, 2);  // paleta de cores
-  dirEntry.writeUInt8(0, 3);  // reservado
-  dirEntry.writeUInt16LE(1, 4); // planos de cor
-  dirEntry.writeUInt16LE(32, 6); // bits por pixel
-  dirEntry.writeUInt32LE(pngBuffer.length, 8); // tamanho dos dados
-  dirEntry.writeUInt32LE(6 + 16, 12); // offset
-
-  return Buffer.concat([header, dirEntry, pngBuffer]);
-}
-
-// Função utilitária para renderizar o busto com brilho, saturação e nitidez cristalina
-async function getEnhancedThemis(width, height) {
-  return await sharp(themisVazadaPath)
-    .resize(width, height, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .modulate({ brightness: 1.16, saturation: 1.25 })
-    .sharpen({ sigma: 1.2, m1: 1.2, m2: 2.2 })
-    .toBuffer();
-}
-
-async function main() {
-  console.log('🚀 Gerando Ícones do Aplicativo: Têmis Vazada HD (Expansão 82%) + Vermelho Carmesim Oficial (#F20723 -> #C91823)...');
-
-  // Garante diretórios
-  const dirs = ['resources', 'assets', 'build-assets', 'public'];
-  dirs.forEach(d => {
-    if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
-  });
-
-  // ── 1. GERAÇÃO DO ÍCONE MESTRE (1024x1024) ──
-  console.log('1. Criando Master Icon 1024x1024 com expansão a 82% em resources/ e assets/...');
-  const masterBgSvg = createGradientSvg(1024, 1024);
-  const masterBgBuffer = await sharp(masterBgSvg).png().toBuffer();
-  const masterShadowBuffer = await sharp(createShadowSvg(1024, 1024)).png().toBuffer();
-
-  // Fundo do adaptive icon (1024x1024 gradiente carmesim oficial)
-  await sharp(masterBgSvg).png().toFile('resources/icon-background.png');
-  fs.copyFileSync('resources/icon-background.png', 'assets/icon-background.png');
-
-  // Busto da Têmis para o Master Icon: 840x840 (~82% da área, imponente e nítido)
-  const masterThemisSize = Math.round(1024 * EXPANSION_RATIO); // ~840px
-  const masterThemisBuffer = await getEnhancedThemis(masterThemisSize, masterThemisSize);
-
-  // Master Icon completo (1024x1024 com fundo gradiente + sombra 3D + busto centralizado)
-  const masterIconBuffer = await sharp(masterBgBuffer)
-    .composite([
-      { input: masterShadowBuffer, gravity: 'center' },
-      { input: masterThemisBuffer, gravity: 'center' }
-    ])
-    .png()
-    .toBuffer();
-
-  await sharp(masterIconBuffer).toFile('resources/icon.png');
-  fs.copyFileSync('resources/icon.png', 'assets/icon.png');
-  fs.copyFileSync('resources/icon.png', 'build-assets/ios-app-icon.png');
-
-  // Foreground do adaptive icon (1024x1024 transparente, busto a 82% preenchendo a safe-zone perfeitamente)
-  const fgThemisBuffer = await getEnhancedThemis(masterThemisSize, masterThemisSize);
-
-  await sharp({
-    create: {
-      width: 1024,
-      height: 1024,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 }
-    }
-  })
-    .composite([{ input: fgThemisBuffer, gravity: 'center' }])
-    .png()
-    .toFile('resources/icon-foreground.png');
-
-  fs.copyFileSync('resources/icon-foreground.png', 'assets/icon-foreground.png');
-  fs.copyFileSync('resources/icon-foreground.png', 'assets/icon-only.png');
-
-  // Atualiza também src/assets/icon-foreground.png e themis-master-icon.jpg para sincronia total
-  fs.copyFileSync('resources/icon-foreground.png', 'src/assets/icon-foreground.png');
-  await sharp(masterIconBuffer).jpeg({ quality: 95 }).toFile('src/assets/themis-master-icon.jpg');
-  await sharp(masterIconBuffer).jpeg({ quality: 95 }).toFile('resources/themis-master-icon.jpg');
-
-  // ── 2. SPLASH SCREENS (2732x2732) ──
-  console.log('2. Gerando Splash Screens 2732x2732...');
-  const splashBgSvg = createGradientSvg(2732, 2732);
-  const splashThemisBuffer = await getEnhancedThemis(950, 950);
-
-  const splashBuffer = await sharp(splashBgSvg)
-    .composite([{ input: splashThemisBuffer, gravity: 'center' }])
-    .png()
-    .toBuffer();
-
-  await sharp(splashBuffer).toFile('resources/splash.png');
-  fs.copyFileSync('resources/splash.png', 'resources/splash-dark.png');
-  fs.copyFileSync('resources/splash.png', 'assets/splash.png');
-  fs.copyFileSync('resources/splash.png', 'assets/splash-dark.png');
-  fs.copyFileSync('resources/splash.png', 'build-assets/ios-splash.png');
-
-  // ── 3. ÍCONES PUBLIC (PWA & WEB) ──
-  console.log('3. Gerando Ícones Web & PWA (public/)...');
-  await sharp(masterIconBuffer).resize(512, 512).png().toFile('public/icon-512.png');
-  await sharp(masterIconBuffer).resize(192, 192).png().toFile('public/icon-192.png');
-  await sharp(masterIconBuffer).resize(180, 180).png().toFile('public/apple-touch-icon.png');
-  await sharp(masterIconBuffer).resize(32, 32).png().toFile('public/favicon-32x32.png');
-  await sharp(masterIconBuffer).resize(16, 16).png().toFile('public/favicon-16x16.png');
-  await sharp(masterIconBuffer).resize(512, 512).png().toFile('public/favicon.png');
-  await sharp(masterIconBuffer).resize(1024, 1024).jpeg({ quality: 95 }).toFile('public/app-icon.jpg');
-  await sharp(masterIconBuffer).resize(1024, 1024).webp({ quality: 92 }).toFile('public/app-icon.webp');
-  await sharp(masterIconBuffer).resize(512, 512).webp({ quality: 92 }).toFile('public/logo-prime.webp');
-  await sharp(masterIconBuffer).resize(512, 512).png().toFile('public/logo-coruja.png');
-
-  const fav32Png = await sharp(masterIconBuffer).resize(32, 32).png().toBuffer();
-  fs.writeFileSync('public/favicon.ico', createIco(fav32Png));
-
-  // ── 4. iOS APP ICON (1024x1024) ──
-  const iosIconPath = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png';
-  if (fs.existsSync(path.dirname(iosIconPath))) {
-    console.log('4. Atualizando iOS AppIcon...');
-    await sharp(masterIconBuffer).resize(1024, 1024).png().toFile(iosIconPath);
-  }
-
-  // ── 5. ANDROID MIPMAPS (ic_launcher, round, foreground, background) ──
-  console.log('5. Gerando Mipmaps Nativos do Android com expansão a 82%...');
-  const androidMipmaps = [
-    { dir: 'mipmap-mdpi', size: 48, fgSize: 108 },
-    { dir: 'mipmap-hdpi', size: 72, fgSize: 162 },
-    { dir: 'mipmap-xhdpi', size: 96, fgSize: 216 },
-    { dir: 'mipmap-xxhdpi', size: 144, fgSize: 324 },
-    { dir: 'mipmap-xxxhdpi', size: 192, fgSize: 432 },
+  // 1. Web & PWA (public/)
+  const publicTargets = [
+    { file: 'public/icon-512.png', size: 512, format: 'png' },
+    { file: 'public/icon-192.png', size: 192, format: 'png' },
+    { file: 'public/apple-touch-icon.png', size: 180, format: 'png' },
+    { file: 'public/favicon.png', size: 512, format: 'png' },
+    { file: 'public/favicon-32x32.png', size: 32, format: 'png' },
+    { file: 'public/favicon-16x16.png', size: 16, format: 'png' },
+    { file: 'public/app-icon.webp', size: 512, format: 'webp' },
+    { file: 'public/app-icon.jpg', size: 512, format: 'jpeg' },
   ];
 
-  const resBase = 'android/app/src/main/res';
-  if (fs.existsSync(resBase)) {
-    for (const m of androidMipmaps) {
-      const targetDir = path.join(resBase, m.dir);
-      if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
-
-      // Ícone clássico (quadrado com cantos pelo launcher legado)
-      await sharp(masterIconBuffer)
-        .resize(m.size, m.size)
-        .png()
-        .toFile(path.join(targetDir, 'ic_launcher.png'));
-
-      // Ícone redondo clássico (com máscara circular para launchers redondos legados)
-      const roundThemisSize = Math.round(m.size * EXPANSION_RATIO);
-      const roundThemis = await getEnhancedThemis(roundThemisSize, roundThemisSize);
-      const roundBg = await sharp(createGradientSvg(m.size, m.size)).png().toBuffer();
-      const circleMask = getCircleMask(m.size);
-
-      await sharp(roundBg)
-        .composite([{ input: roundThemis, gravity: 'center' }])
-        .composite([{ input: circleMask, blend: 'dest-in' }])
-        .png()
-        .toFile(path.join(targetDir, 'ic_launcher_round.png'));
-
-      // Adaptive Background: gradiente carmesim oficial em resolução exata fgSize
-      const bgMipmapSvg = createGradientSvg(m.fgSize, m.fgSize);
-      await sharp(bgMipmapSvg)
-        .png()
-        .toFile(path.join(targetDir, 'ic_launcher_background.png'));
-
-      // Adaptive Foreground: fundo 100% TRANSPARENTE com busto centralizado a 82%
-      const fgInnerSize = Math.round(m.fgSize * EXPANSION_RATIO);
-      const fgInnerBuffer = await getEnhancedThemis(fgInnerSize, fgInnerSize);
-
-      await sharp({
-        create: {
-          width: m.fgSize,
-          height: m.fgSize,
-          channels: 4,
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
-        }
-      })
-        .composite([{ input: fgInnerBuffer, gravity: 'center' }])
-        .png()
-        .toFile(path.join(targetDir, 'ic_launcher_foreground.png'));
+  for (const t of publicTargets) {
+    const dest = path.resolve(t.file);
+    if (t.format === 'png') {
+      await sharp(sourceImage)
+        .resize(t.size, t.size, { fit: 'cover' })
+        .png({ quality: 100, compressionLevel: 9 })
+        .toFile(dest);
+    } else if (t.format === 'webp') {
+      await sharp(sourceImage)
+        .resize(t.size, t.size, { fit: 'cover' })
+        .webp({ quality: 95 })
+        .toFile(dest);
+    } else if (t.format === 'jpeg') {
+      await sharp(sourceImage)
+        .resize(t.size, t.size, { fit: 'cover' })
+        .jpeg({ quality: 95 })
+        .toFile(dest);
     }
-
-    // Atualiza cor de fundo oficial em XML do Android para o Carmesim Oficial
-    const bgXmlPath = path.join(resBase, 'values', 'ic_launcher_background.xml');
-    if (fs.existsSync(bgXmlPath)) {
-      fs.writeFileSync(
-        bgXmlPath,
-        `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">${COR1}</color>\n</resources>\n`
-      );
-    }
-
-    const drawableBgPath = path.join(resBase, 'drawable', 'ic_launcher_background.xml');
-    if (fs.existsSync(drawableBgPath)) {
-      fs.writeFileSync(
-        drawableBgPath,
-        `<?xml version="1.0" encoding="utf-8"?>\n<vector xmlns:android="http://schemas.android.com/apk/res/android"\n    android:width="108dp"\n    android:height="108dp"\n    android:viewportHeight="108"\n    android:viewportWidth="108">\n    <path\n        android:fillColor="${COR1}"\n        android:pathData="M0,0h108v108h-108z" />\n</vector>\n`
-      );
-    }
-
-    // Garante que mipmap-anydpi-v26/ic_launcher.xml use background e foreground corretos
-    const anyDpiDir = path.join(resBase, 'mipmap-anydpi-v26');
-    if (fs.existsSync(anyDpiDir)) {
-      const adaptiveLauncherXml = `<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@mipmap/ic_launcher_background" />\n    <foreground android:drawable="@mipmap/ic_launcher_foreground" />\n</adaptive-icon>\n`;
-      fs.writeFileSync(path.join(anyDpiDir, 'ic_launcher.xml'), adaptiveLauncherXml);
-      fs.writeFileSync(path.join(anyDpiDir, 'ic_launcher_round.xml'), adaptiveLauncherXml);
-    }
+    console.log('Generated:', t.file);
   }
 
-  // ── 6. SINCRONIZA COM .output/public (se existir) ──
-  const outputPublic = '.output/public';
-  if (fs.existsSync(outputPublic)) {
-    console.log('6. Sincronizando com .output/public...');
-    const filesToSync = [
-      'icon-512.png',
-      'icon-192.png',
-      'apple-touch-icon.png',
-      'favicon-32x32.png',
-      'favicon-16x16.png',
-      'favicon.png',
-      'favicon.ico',
-      'app-icon.jpg',
-      'app-icon.webp',
-      'logo-prime.webp',
-      'logo-coruja.png'
-    ];
-    for (const f of filesToSync) {
-      const srcF = path.join('public', f);
-      const destF = path.join(outputPublic, f);
-      if (fs.existsSync(srcF)) {
-        fs.copyFileSync(srcF, destF);
-      }
-    }
+  // 2. iOS AppIcon
+  const iosFile = path.resolve('ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png');
+  if (fs.existsSync(path.dirname(iosFile))) {
+    await sharp(sourceImage)
+      .resize(1024, 1024, { fit: 'cover' })
+      .png({ quality: 100, compressionLevel: 9 })
+      .toFile(iosFile);
+    console.log('Generated iOS: AppIcon-512@2x.png (1024x1024)');
   }
 
-  console.log('✅ SUCESSO: Todos os ícones gerados e sincronizados com a Têmis HD (82%) e Fundo Carmesim Oficial!');
+  // 3. Android Mipmaps
+  const androidDensities = [
+    { dir: 'mipmap-mdpi', launcher: 48, foreground: 108 },
+    { dir: 'mipmap-hdpi', launcher: 72, foreground: 162 },
+    { dir: 'mipmap-xhdpi', launcher: 96, foreground: 216 },
+    { dir: 'mipmap-xxhdpi', launcher: 144, foreground: 324 },
+    { dir: 'mipmap-xxxhdpi', launcher: 192, foreground: 432 },
+  ];
+
+  for (const d of androidDensities) {
+    const dirPath = path.resolve('android/app/src/main/res', d.dir);
+    if (!fs.existsSync(dirPath)) continue;
+
+    // ic_launcher.png
+    await sharp(sourceImage)
+      .resize(d.launcher, d.launcher, { fit: 'cover' })
+      .png({ quality: 100, compressionLevel: 9 })
+      .toFile(path.join(dirPath, 'ic_launcher.png'));
+
+    // ic_launcher_round.png
+    await sharp(sourceImage)
+      .resize(d.launcher, d.launcher, { fit: 'cover' })
+      .png({ quality: 100, compressionLevel: 9 })
+      .toFile(path.join(dirPath, 'ic_launcher_round.png'));
+
+    // ic_launcher_foreground.png
+    await sharp(sourceImage)
+      .resize(d.foreground, d.foreground, { fit: 'cover' })
+      .png({ quality: 100, compressionLevel: 9 })
+      .toFile(path.join(dirPath, 'ic_launcher_foreground.png'));
+
+    console.log(`Generated Android ${d.dir}: launcher(${d.launcher}), round(${d.launcher}), foreground(${d.foreground})`);
+  }
+
+  // Also update android webview public asset if it exists
+  const androidWebAsset = path.resolve('android/app/src/main/assets/public/icon-512.png');
+  if (fs.existsSync(path.dirname(androidWebAsset))) {
+    await sharp(sourceImage)
+      .resize(512, 512, { fit: 'cover' })
+      .png({ quality: 100, compressionLevel: 9 })
+      .toFile(androidWebAsset);
+    console.log('Updated android assets/public/icon-512.png');
+  }
+
+  console.log('ALL ICONS GENERATED SUCCESSFULLY!');
 }
 
-main().catch(err => {
-  console.error('Erro ao gerar ícones:', err);
+generate().catch(err => {
+  console.error('Error generating icons:', err);
   process.exit(1);
 });

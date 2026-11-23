@@ -79,7 +79,7 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: BookOpen,    color: '#FFE600', route: '/bibliotecas' },
+  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: BookOpen,    color: '#8B5CF6', route: '/bibliotecas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: '#00D0FF', route: '/resumos-juridicos' },
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',             icon: Video,       color: '#FF2A2A', route: '/videoaulas' },
   { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech,      color: '#F97316', route: '/me-explique' },
