@@ -126,34 +126,40 @@ const VideoaulasArea = () => {
     <div className="min-h-screen bg-[#0A0A0A] pb-[calc(1.25rem+var(--sai-bottom))]">
       <PageHeader
         title={nomeArea}
-        subtitle={loading ? 'Carregando…' : `${aulas.length} aulas`}
-        onBack={() => navigate(`/videoaulas/${catalogo.id}`)}
+        subtitle={loading ? 'Carregando…' : `${aulas.length} videoaulas`}
+        variant="dark"
+        onBack={() => {
+          if (catalogo.id === 'areas') {
+            navigate('/videoaulas');
+          } else {
+            navigate(`/videoaulas/${catalogo.id}`);
+          }
+        }}
       />
 
       <AnimatePresence mode="wait">
         {(aba === 'videos' || aba === 'favoritos' || aba === 'recentes') && (
           <motion.div key="lista" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="mx-auto max-w-md lg:max-w-5xl px-4 pt-4 space-y-3">
-              <div className="flex gap-2 items-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    value={listening ? partial : busca}
-                    onChange={(e) => setBusca(e.target.value)}
-                    placeholder={listening ? 'Ouvindo…' : 'Buscar aula…'}
-                    aria-label="Buscar aula"
-                    className="rounded-full bg-card pl-9 pr-4"
-                  />
-                </div>
+            <div className="mx-auto max-w-md lg:max-w-7xl px-4 pt-4">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none stroke-[1.6]" />
+                <input
+                  type="text"
+                  value={listening ? partial : busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder={listening ? 'Ouvindo…' : 'Buscar aula ou assunto…'}
+                  aria-label="Buscar aula"
+                  className="w-full pl-10 pr-10 h-10 sm:h-11 text-xs sm:text-[13px] rounded-xl bg-zinc-950/60 border border-white/[0.07] text-white/90 placeholder-zinc-500 focus:outline-none focus:border-white/20 transition-colors shadow-inner font-sans font-light"
+                />
                 <button
                   type="button"
                   onClick={toggle}
                   aria-label={listening ? 'Parar busca por voz' : 'Buscar por voz'}
-                  className={`shrink-0 grid h-12 w-12 place-items-center rounded-full transition-colors ${
-                    listening ? 'bg-red-500/20 text-red-500' : 'bg-[#E3262F] text-white hover:bg-red-600'
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer active:scale-95 ${
+                    listening ? 'bg-red-500/20 text-red-500' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  <Mic className="h-5 w-5" />
+                  <Mic className="w-4 h-4 stroke-[1.6]" />
                 </button>
               </div>
             </div>

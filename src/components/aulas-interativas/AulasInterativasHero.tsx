@@ -3,9 +3,9 @@ import {
   ArrowLeft, Search, BarChart3, History, Bookmark, Flame, X 
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
-import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
+import { VideoaulasHeroWave } from '@/components/videoaulas/home/VideoaulasHeroWave';
 import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
+import tribunalVermelhoTrilha from '@/assets/tribunal_vermelho_trilha.webp';
 
 interface AulasInterativasHeroProps {
   onVoltar: () => void;
@@ -56,24 +56,24 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa Oficial (Advogados no Tribunal) */}
+          {/* Imagem de Capa Oficial das Aulas Interativas */}
           <img
-            src={heroAdvogadosImg}
+            src={tribunalVermelhoTrilha}
             alt="Estudo com Aulas Interativas"
             aria-hidden="true"
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover object-[55%_center] md:object-center z-0 pointer-events-none transform-gpu will-change-transform"
+            className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none transform-gpu will-change-transform"
           />
 
           {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
           <FloatingOrbitingBrains position="left" />
 
-          {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início) */}
-          <HeroAnimatedWave />
+          {/* Onda Vermelha Fluida e Animada em Movimento */}
+          <VideoaulasHeroWave />
 
-          {/* Cabeçalho Superior Transparente (Botão Voltar e Busca) */}
+          {/* Cabeçalho Superior Transparente (Apenas Voltar) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
             <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
               <button
@@ -86,22 +86,6 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                 className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
               >
                 <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setBuscaAberta(!buscaAberta);
-                }}
-                aria-label="Pesquisar matéria ou aula"
-                className={`grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full border text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg ${
-                  buscaAberta || buscaTermo
-                    ? 'bg-teal-600/30 border-teal-400/60 text-[#2dd4bf]'
-                    : 'bg-black/40 border-white/10 hover:bg-black/60'
-                }`}
-              >
-                <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
               </button>
             </div>
           </header>

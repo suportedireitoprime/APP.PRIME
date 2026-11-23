@@ -10,7 +10,7 @@ import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
-import { simplificarNomeArea, getCapaDaArea } from '@/lib/videoaulasCatalogos';
+import { simplificarNomeArea, getCapaDaArea, slugify } from '@/lib/videoaulasCatalogos';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { getCachedAulasDaArea, loadAulasDaArea, type AulaCache } from '@/lib/videoaulasStore';
 import type { AulaHit } from '@/types/videoaula';
@@ -60,9 +60,10 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   const areasItens: VideoaulaAreaItem[] = useMemo(() => {
     return (state.areasDireito || []).filter((a): a is typeof a & { area: string } => Boolean(a && a.area)).map((a) => {
       const display = simplificarNomeArea(a.area).replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
+      const s = a.slug ? slugify(a.slug) : slugify(a.area);
       return {
         area: a.area,
-        slug: a.slug || '',
+        slug: s,
         total: a.total || 0,
         concluidas: a.concluidas || 0,
         pct: a.pct || 0,
@@ -160,14 +161,10 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
   const handleAreaClick = useCallback(
     (slug: string) => {
       haptic.selection();
-      const matched = areasItens.find((a) => a.slug === slug || a.area.toLowerCase() === slug.toLowerCase());
-      if (matched) {
-        setActiveChipTab(matched.area);
-      } else {
-        setActiveChipTab(slug);
-      }
+      const s = slugify(slug);
+      navigate(`/videoaulas/areas/${s}`);
     },
-    [areasItens]
+    [navigate]
   );
 
   return (

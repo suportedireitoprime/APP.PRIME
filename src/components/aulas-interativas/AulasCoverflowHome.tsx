@@ -18,10 +18,10 @@ import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
 import { AulasRecentesModal } from './AulasRecentesModal';
 import { AulasEmAltaModal } from './AulasEmAltaModal';
 import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
-import HeroAnimatedWave from '@/components/vademecum/home/HeroAnimatedWave';
+import { VideoaulasHeroWave } from '@/components/videoaulas/home/VideoaulasHeroWave';
 import FloatingOrbitingBrains from '@/components/common/FloatingOrbitingBrains';
 import AulasCardRubyBackground from './AulasCardRubyBackground';
-import heroAdvogadosImg from '@/assets/covers/hero-advogados-tribunal.webp';
+import tribunalVermelhoTrilha from '@/assets/tribunal_vermelho_trilha.webp';
 
 /** Nomes curtos para dentro da capa — sem quebras manuais nem hífens */
 const NOMES_CAPA: Record<string, string> = {
@@ -203,7 +203,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         
         {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] sm:min-h-[340px] mb-4"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[330px] xs:min-h-[350px] sm:min-h-[370px] mb-4"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
@@ -216,23 +216,23 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa dos Advogados no Tribunal sob Céu Rubro (Oficial) */}
+          {/* Imagem de Capa Oficial das Aulas Interativas */}
           <img
-            src={heroAdvogadosImg}
+            src={tribunalVermelhoTrilha}
             alt="Aulas em Trilha"
             aria-hidden="true"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-[55%_center] md:object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
+            className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
           />
           {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
           <FloatingOrbitingBrains position="left" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início do App) */}
-          <HeroAnimatedWave />
+          <VideoaulasHeroWave />
 
-          {/* Cabeçalho Superior Transparente (Voltar + Busca - Alinhado com o Início) */}
+          {/* Cabeçalho Superior Transparente (Apenas Voltar - Botão de busca removido conforme pedido) */}
           <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
             <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
               <button
@@ -242,19 +242,6 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 aria-label="Voltar para o início"
               >
                 <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-              </button>
-
-              {/* Botão de Busca */}
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setBuscaAberta(!buscaAberta);
-                }}
-                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-md"
-                aria-label="Buscar matérias ou módulos"
-              >
-                <Search className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
               </button>
             </div>
           </header>
@@ -316,7 +303,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
 
           {/* ── 4 Botões de Ação Rápida no Rodapé do Painel (Acabamento e proporção idênticos ao Início do App) ── */}
-          <div className="relative z-10 px-3 sm:px-5 pt-2.5 pb-4 sm:pb-5">
+          <div className="relative z-10 px-3 sm:px-5 pt-2 pb-7 sm:pb-8">
             <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
               {/* Recentes */}
               <button
