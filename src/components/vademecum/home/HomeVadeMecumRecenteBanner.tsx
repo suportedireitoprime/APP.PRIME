@@ -118,29 +118,35 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
         borderColor: `${themeColor}40`,
         boxShadow: `0 12px 32px rgba(0,0,0,0.7), inset 0 1px 0 ${themeColor}30`,
       }}
-      className="w-full flex items-center gap-3 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative group cursor-pointer backdrop-blur-md"
+      className="w-full flex items-center gap-2.5 xs:gap-3 px-3 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative group cursor-pointer backdrop-blur-md"
     >
       {/* Ícone principal à esquerda */}
-      <div className="flex items-center justify-center shrink-0 z-10">
+      <div 
+        className="flex items-center justify-center shrink-0 z-10 w-9 h-9 xs:w-10 xs:h-10 rounded-xl border"
+        style={{
+          backgroundColor: `${themeColor}20`,
+          borderColor: `${themeColor}35`,
+          color: themeColor,
+        }}
+      >
         <IconeLei
-          className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-sm group-hover:scale-105 transition-transform"
-          style={{ color: themeColor }}
-          strokeWidth={1.6}
+          className="w-5 h-5 xs:w-5.5 xs:h-5.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+          strokeWidth={1.8}
         />
       </div>
 
       {/* Textos informativos centrais */}
       <div className="flex-1 min-w-0 z-10">
         <p 
-          className="text-[10px] font-bold uppercase tracking-wider mb-0.5 font-mono"
+          className="text-[9px] xs:text-[9.5px] font-bold uppercase tracking-wider mb-0.5 font-mono"
           style={{ color: themeColor }}
         >
           {displayTag}
         </p>
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+        <p className="font-serif italic text-[14px] xs:text-[14.5px] sm:text-[15.5px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
           {displayNome}
         </p>
-        <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
+        <p className="text-[10px] xs:text-[10.5px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
           <span 
             className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
             style={{ backgroundColor: themeColor }} 
@@ -149,23 +155,23 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
         </p>
       </div>
 
-      {/* Seta indicativa à direita ampliada */}
+      {/* Seta indicativa à direita calibrada e proporcional */}
       <ArrowRight
-        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
+        className="w-5 h-5 xs:w-5.5 xs:h-5.5 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
         style={{ color: themeColor }}
         strokeWidth={2.4}
       />
 
       {/* Decoração de fundo — SVG translúcido no lado direito com glow da cor da lei */}
       <div
-        className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
+        className="absolute -right-2 -bottom-2 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
         style={{
           filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 12px ${themeColor}35)`,
           color: themeColor,
         }}
       >
         <IconeLei
-          className="w-24 h-24 opacity-15"
+          className="w-18 h-18 opacity-15"
           strokeWidth={1.2}
         />
       </div>

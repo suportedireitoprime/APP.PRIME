@@ -1,20 +1,59 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, ArrowRight } from 'lucide-react';
+import { GraduationCap, Bot, BookOpen, ArrowRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
-const RED_COLOR = '#E11D48';
+export interface BannerDestaqueItem {
+  id: string;
+  tag: string;
+  nome: string;
+  subtitulo: string;
+  color: string;
+  icon: LucideIcon;
+  to: string;
+}
+
+const BANNER_ITEMS: BannerDestaqueItem[] = [
+  {
+    id: 'aulas',
+    tag: 'Aulas Interativas',
+    nome: 'Aulas de Direito',
+    subtitulo: 'Domine as matérias',
+    color: '#E11D48', // Vermelho Carmesim
+    icon: GraduationCap,
+    to: '/aulas',
+  },
+  {
+    id: 'horus',
+    tag: 'Assistente Jurídico IA',
+    nome: 'Hórus IA',
+    subtitulo: 'Tire dúvidas em tempo real',
+    color: '#EAB308', // Amarelo Dourado
+    icon: Bot,
+    to: '/assistente-horus',
+  },
+  {
+    id: 'biblioteca',
+    tag: 'Biblioteca Jurídica',
+    nome: 'Biblioteca Digital',
+    subtitulo: 'Obras fundamentais e clássicos',
+    color: '#8B5CF6', // Roxo Violeta
+    icon: BookOpen,
+    to: '/bibliotecas',
+  },
+];
 
 const HomeAulasInterativasBanner = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   // Contador para disparar a animação de reflexo sempre que entrar ou voltar para o Início
   const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
-    // Dispara logo após o carregamento/retorno
     const timer = setTimeout(() => {
       setAnimKey((prev) => prev + 1);
     }, 150);
@@ -35,121 +74,199 @@ const HomeAulasInterativasBanner = () => {
     };
   }, [location.pathname, location.key]);
 
-  const handleClick = () => {
+  const handleScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const scrollLeft = el.scrollLeft;
+    const width = el.clientWidth;
+    if (width > 0) {
+      const idx = Math.round(scrollLeft / width);
+      setActiveIndex(Math.max(0, Math.min(BANNER_ITEMS.length - 1, idx)));
+    }
+  }, []);
+
+  const scrollToIndex = useCallback((index: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
     haptic.selection();
-    navigate('/aulas');
+    el.scrollTo({
+      left: index * el.clientWidth,
+      behavior: 'smooth',
+    });
+    setActiveIndex(index);
+  }, []);
+
+  const handleClickItem = (item: BannerDestaqueItem) => {
+    haptic.selection();
+    navigate(item.to);
   };
 
-  const displayNome = 'Aulas de Direito';
-  const displaySubtitulo = 'Domine as matérias';
-
   return (
-    <motion.button
-      type="button"
-      initial={{ opacity: 0, y: -6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      onClick={handleClick}
-      style={{
-        background: `linear-gradient(to right, ${RED_COLOR}33, ${RED_COLOR}0D)`,
-        borderColor: `${RED_COLOR}4D`,
-      }}
-      className="w-full flex items-center gap-3 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
-    >
-      {/* Ícone principal à esquerda — Chapéu de Formatura */}
-      <div className="flex items-center justify-center shrink-0 z-10">
-        <GraduationCap
-          className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-sm text-red-400 group-hover:scale-105 transition-transform"
-          strokeWidth={1.7}
-        />
-      </div>
-
-      {/* Textos informativos centrais */}
-      <div className="flex-1 min-w-0 z-10">
-        <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-red-400">
-          Aulas Interativas
-        </p>
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
-          {displayNome}
-        </p>
-        <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-red-300/80">
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-red-500 shrink-0" />
-          <span>{displaySubtitulo}</span>
-        </p>
-      </div>
-
-      {/* Seta indicativa à direita ampliada */}
-      <ArrowRight
-        className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 z-10 text-red-400 group-hover:translate-x-1.5 transition-transform"
-        strokeWidth={2.6}
-      />
-
-      {/* Decoração de fundo — SVG translúcido no lado direito com glow vermelho */}
+    <div className="w-full flex flex-col gap-1.5 select-none">
+      {/* Carrossel horizontal snap com largura total dos cards */}
       <div
-        className="absolute -right-3 -bottom-3 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
-        style={{
-          filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px ${RED_COLOR}40)`,
-        }}
+        ref={scrollerRef}
+        onScroll={handleScroll}
+        className="w-full flex overflow-x-auto snap-x snap-mandatory gap-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        <GraduationCap
-          className="w-24 h-24 opacity-25 text-red-500"
-          strokeWidth={1.2}
-        />
+        {BANNER_ITEMS.map((item, idx) => {
+          const Icon = item.icon;
+          const isActive = idx === activeIndex;
+
+          return (
+            <motion.button
+              key={item.id}
+              type="button"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => handleClickItem(item)}
+              style={{
+                background: `linear-gradient(to right, ${item.color}33, ${item.color}0D)`,
+                borderColor: `${item.color}4D`,
+              }}
+              className="w-full shrink-0 snap-center flex items-center gap-2.5 xs:gap-3 px-3 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
+            >
+              {/* Ícone principal à esquerda com cor temática */}
+              <div
+                className="flex items-center justify-center shrink-0 z-10 w-9 h-9 xs:w-10 xs:h-10 rounded-xl border"
+                style={{
+                  backgroundColor: `${item.color}20`,
+                  borderColor: `${item.color}35`,
+                  color: item.color,
+                }}
+              >
+                <Icon
+                  className="w-5 h-5 xs:w-5.5 xs:h-5.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+                  strokeWidth={1.8}
+                />
+              </div>
+
+              {/* Textos informativos centrais */}
+              <div className="flex-1 min-w-0 z-10">
+                <p
+                  className="text-[9px] xs:text-[9.5px] font-bold uppercase tracking-wider mb-0.5"
+                  style={{ color: item.color }}
+                >
+                  {item.tag}
+                </p>
+                <p className="font-serif italic text-[14px] xs:text-[14.5px] sm:text-[15.5px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+                  {item.nome}
+                </p>
+                <p className="text-[10px] xs:text-[10.5px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span>{item.subtitulo}</span>
+                </p>
+              </div>
+
+              {/* Seta indicativa à direita calibrada e proporcional */}
+              <ArrowRight
+                className="w-5 h-5 xs:w-5.5 xs:h-5.5 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
+                style={{ color: item.color }}
+                strokeWidth={2.4}
+              />
+
+              {/* Decoração de fundo — SVG translúcido no lado direito com glow temático */}
+              <div
+                className="absolute -right-2 -bottom-2 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
+                style={{
+                  filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px ${item.color}40)`,
+                }}
+              >
+                <Icon
+                  className="w-18 h-18 opacity-15"
+                  style={{ color: item.color }}
+                  strokeWidth={1.2}
+                />
+              </div>
+
+              {/* 🌟 ANIMAÇÃO DE REFLEXO / SHIMMER LUMINOSO */}
+              <AnimatePresence>
+                {animKey > 0 && isActive && (
+                  <>
+                    {/* Feixe Amplo de Reflexo Suave */}
+                    <motion.div
+                      key={`reflexo-broad-${animKey}-${item.id}`}
+                      initial={{ x: '-160%', opacity: 0 }}
+                      animate={{
+                        x: ['-160%', '350%'],
+                        opacity: [0, 0.85, 0.85, 0],
+                      }}
+                      transition={{
+                        delay: 0.25,
+                        duration: 1.15,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="pointer-events-none absolute inset-y-0 w-32 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/30 to-transparent z-20"
+                      style={{
+                        filter: 'blur(4px)',
+                      }}
+                    />
+
+                    {/* Linha Fina Brilhante de Alta Intensidade */}
+                    <motion.div
+                      key={`reflexo-sharp-${animKey}-${item.id}`}
+                      initial={{ x: '-160%', opacity: 0 }}
+                      animate={{
+                        x: ['-160%', '360%'],
+                        opacity: [0, 1, 1, 0],
+                      }}
+                      transition={{
+                        delay: 0.35,
+                        duration: 0.95,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="pointer-events-none absolute inset-y-0 w-10 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/80 to-transparent z-20"
+                    />
+
+                    {/* Pulso Luminoso no Contorno do Botão durante o Reflexo */}
+                    <motion.div
+                      key={`reflexo-border-${animKey}-${item.id}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 0.75, 0] }}
+                      transition={{ delay: 0.3, duration: 0.8 }}
+                      className="pointer-events-none absolute inset-0 rounded-xl xs:rounded-2xl border-2 border-white/50 z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                    />
+                  </>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          );
+        })}
       </div>
 
-      {/* 🌟 ANIMAÇÃO DE REFLEXO / SHIMMER LUMINOSO (Ao entrar ou voltar para o Início) */}
-      <AnimatePresence>
-        {animKey > 0 && (
-          <>
-            {/* Feixe Amplo de Reflexo Suave */}
-            <motion.div
-              key={`reflexo-broad-${animKey}`}
-              initial={{ x: '-160%', opacity: 0 }}
-              animate={{
-                x: ['-160%', '350%'],
-                opacity: [0, 0.85, 0.85, 0],
-              }}
-              transition={{
-                delay: 0.25,
-                duration: 1.15,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="pointer-events-none absolute inset-y-0 w-32 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/30 to-transparent z-20"
-              style={{
-                filter: 'blur(4px)',
-              }}
-            />
-
-            {/* Linha Fina Brilhante de Alta Intensidade */}
-            <motion.div
-              key={`reflexo-sharp-${animKey}`}
-              initial={{ x: '-160%', opacity: 0 }}
-              animate={{
-                x: ['-160%', '360%'],
-                opacity: [0, 1, 1, 0],
-              }}
-              transition={{
-                delay: 0.35,
-                duration: 0.95,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="pointer-events-none absolute inset-y-0 w-10 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/80 to-transparent z-20"
-            />
-
-            {/* Pulso Luminoso no Contorno do Botão durante o Reflexo */}
-            <motion.div
-              key={`reflexo-border-${animKey}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.75, 0] }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-white/50 z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-            />
-          </>
-        )}
-      </AnimatePresence>
-    </motion.button>
+      {/* Indicadores de Paginação do Carrossel (Dots temáticos) */}
+      <div className="flex items-center justify-center gap-1.5 pt-0.5">
+        {BANNER_ITEMS.map((item, idx) => {
+          const isActive = idx === activeIndex;
+          return (
+            <button
+              key={`dot-${item.id}`}
+              type="button"
+              onClick={() => scrollToIndex(idx)}
+              aria-label={`Ir para ${item.nome}`}
+              className="p-1 cursor-pointer focus:outline-none"
+            >
+              <span
+                className={`block transition-all duration-300 rounded-full ${
+                  isActive
+                    ? 'w-5 h-1.5 shadow-sm'
+                    : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
+                }`}
+                style={{
+                  backgroundColor: isActive ? item.color : undefined,
+                  boxShadow: isActive ? `0 0 8px ${item.color}80` : undefined,
+                }}
+              />
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
 export default memo(HomeAulasInterativasBanner);
-

@@ -42,10 +42,10 @@ const HomeTabEstudos = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-      className="space-y-6"
+      className="space-y-4 xs:space-y-4.5 sm:space-y-5"
     >
       {/* Botão de Aulas Interativas abaixo do painel */}
-      <div className="pt-2">
+      <div className="pt-1">
         <HomeAulasInterativasBanner />
       </div>
 

@@ -52,9 +52,9 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   const schemeKey = isCustom ? `c_${themeColor!.replace('#', '')}` : colorScheme;
 
   const isTall = waveHeight === 'tall';
-  const c1HeightClass = isTall ? 'h-[160px] sm:h-[195px]' : 'h-[140px] sm:h-[175px]';
-  const c2HeightClass = isTall ? 'h-[145px] sm:h-[180px]' : 'h-[128px] sm:h-[160px]';
-  const c3HeightClass = isTall ? 'h-[118px] sm:h-[145px]' : 'h-[102px] sm:h-[130px]';
+  const c1HeightClass = isTall ? 'h-[135px] sm:h-[165px]' : 'h-[105px] sm:h-[130px]';
+  const c2HeightClass = isTall ? 'h-[120px] sm:h-[150px]' : 'h-[92px] sm:h-[115px]';
+  const c3HeightClass = isTall ? 'h-[90px] sm:h-[115px]' : 'h-[72px] sm:h-[90px]';
 
   // Cores dinâmicas para tema customizado
   const deep0 = isCustom ? shadeHex(c, -0.88) : isGreen ? '#011b14' : '#1f0207';

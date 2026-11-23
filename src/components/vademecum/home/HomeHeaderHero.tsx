@@ -86,7 +86,7 @@ const HomeHeaderHero = ({
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll — 100% idêntico ao Vade Mecum */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] sm:min-h-[340px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[28px] xs:rounded-b-[32px] sm:rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[245px] xs:min-h-[260px] sm:min-h-[290px]"
         style={{
           transform: "translateZ(0)",
           backgroundColor: "#050505",
@@ -117,19 +117,19 @@ const HomeHeaderHero = ({
         <HeroAnimatedWave />
 
         {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
-        <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-          <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
+        <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+          <div className="pointer-events-auto px-3 xs:px-4 pb-1 pt-1.5 flex items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={() => {
                 haptic.light();
                 setNotifOpen(true);
               }}
               aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ""}`}
-              className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 relative"
+              className="grid w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 relative"
             >
-              <Bell className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+              <Bell className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6" strokeWidth={2.4} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
+                <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}
@@ -143,25 +143,25 @@ const HomeHeaderHero = ({
                 (onOpenMenu || (() => setMenuOpen(true)))();
               }}
               aria-label="Abrir menu"
-              className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
+              className="grid w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
             >
-              <MenuIcon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+              <MenuIcon className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6" strokeWidth={2.4} />
             </button>
           </div>
         </header>
 
         {/* Conteúdo: Logo à esquerda e Card de Status à direita — altura, recuo e proporção 100% idênticos ao Vade Mecum */}
-        <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[145px] sm:min-h-[160px]">
-          <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
+        <div className="relative z-10 pt-2 xs:pt-2.5 sm:pt-3 flex flex-col justify-start min-h-[110px] xs:min-h-[120px] sm:min-h-[135px]">
+          <div className="flex items-start justify-between gap-2.5 px-3 sm:px-4">
             <HomeBrandBanner />
-            <div className="relative z-10 w-[145px] xs:w-[160px] sm:w-[180px] shrink-0 pt-[58px] xs:pt-[64px] sm:pt-[68px] pr-1 sm:pr-2 empty:hidden">
+            <div className="relative z-10 w-[130px] xs:w-[145px] sm:w-[165px] shrink-0 pt-[44px] xs:pt-[50px] sm:pt-[56px] pr-1 sm:pr-2 empty:hidden">
               <HomeTrialCard />
             </div>
           </div>
         </div>
 
         {/* Atalhos Rápidos — dentro do painel (alinhamento idêntico ao Vade Mecum) */}
-        <div className="relative z-10 px-3 sm:px-5 pt-2.5 pb-4 sm:pb-5">
+        <div className="relative z-10 px-2.5 xs:px-3.5 sm:px-4 pt-1 pb-2.5 xs:pb-3 sm:pb-3.5">
           <HomeActionShortcuts />
         </div>
       </div>

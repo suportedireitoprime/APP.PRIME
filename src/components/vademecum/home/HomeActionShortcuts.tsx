@@ -17,7 +17,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="flex items-center justify-between gap-1.5 xs:gap-2 mx-0.5 xs:mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl py-2 xs:py-2.5 sm:py-3 px-2 xs:px-3 sm:px-4 shadow-2xl">
+    <div className="flex items-center justify-between gap-1 xs:gap-1.5 mx-0.5 mt-0.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl xs:rounded-3xl py-1 xs:py-1.5 sm:py-2 px-1 xs:px-2 sm:px-3 shadow-xl">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
@@ -36,20 +36,20 @@ const HomeActionShortcuts = () => {
               navigate(item.to);
             }}
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2.5 pb-2 px-0.5 xs:px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1 text-center select-none cursor-pointer overflow-visible"
+            className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-1.5 pb-1 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 text-center select-none cursor-pointer overflow-visible"
           >
             <div className="relative flex items-center justify-center">
               {item.tag && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] xs:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-1 py-0.2 rounded-full bg-primary text-white text-[7px] xs:text-[7.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_6px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                   {item.tag}
                 </span>
               )}
               <Icon
-                className="w-5 h-5 xs:w-6 xs:h-6 sm:w-6.5 sm:h-6.5 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                className="w-4.5 h-4.5 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                 strokeWidth={2.1}
               />
             </div>
-            <span className="text-white/95 text-[11px] xs:text-xs sm:text-[0.8125rem] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
+            <span className="text-white/95 text-[10px] xs:text-[10.5px] sm:text-[11.5px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>
