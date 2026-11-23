@@ -79,12 +79,12 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: BookOpen,    color: '#8B5CF6', route: '/bibliotecas' },
-  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: '#00D0FF', route: '/resumos-juridicos' },
-  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',             icon: Video,       color: '#FF2A2A', route: '/videoaulas' },
-  { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech,      color: '#F97316', route: '/me-explique' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',          icon: Brain,       color: '#B026FF', route: '/mapas-mentais' },
-  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',      icon: BookA,       color: '#FF8C00', route: '/ferramentas/dicionario' },
+  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',             icon: BookOpen,    color: 'hsl(var(--primary))', route: '/bibliotecas' },
+  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',         icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
+  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',             icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
+  { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech,      color: 'hsl(var(--primary))', route: '/me-explique' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',          icon: Brain,       color: 'hsl(var(--primary))', route: '/mapas-mentais' },
+  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',            icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 
 export const FAST_PILLS_ITEMS = [

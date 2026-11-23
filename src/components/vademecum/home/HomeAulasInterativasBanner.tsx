@@ -139,7 +139,7 @@ const HomeAulasInterativasBanner = () => {
                 background: `linear-gradient(to right, ${item.color}33, ${item.color}0D)`,
                 borderColor: `${item.color}4D`,
               }}
-              className="w-full shrink-0 snap-center flex items-center gap-2.5 xs:gap-3 px-3.5 xs:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
+              className="w-full shrink-0 snap-center flex items-center gap-3.5 xs:gap-4 px-4 xs:px-5 sm:px-6 py-3.5 xs:py-4 sm:py-5 min-h-[82px] xs:min-h-[88px] sm:min-h-[96px] rounded-2xl xs:rounded-3xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-xl group cursor-pointer"
             >
               {/* Ícone principal à esquerda — SEM caixa de fundo, 100% limpo */}
               <div className="flex items-center justify-center shrink-0 z-10">
@@ -147,13 +147,13 @@ const HomeAulasInterativasBanner = () => {
                   <img
                     src={item.imageSrc}
                     alt={item.nome}
-                    className="w-7 h-7 xs:w-8 xs:h-8 object-contain drop-shadow-[0_2px_8px_rgba(234,179,8,0.5)] group-hover:scale-105 transition-transform select-none pointer-events-none"
+                    className="w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 object-contain drop-shadow-[0_2px_10px_rgba(234,179,8,0.55)] group-hover:scale-105 transition-transform select-none pointer-events-none"
                     loading="eager"
                     decoding="async"
                   />
                 ) : Icon ? (
                   <Icon
-                    className="w-6 h-6 xs:w-6.5 xs:h-6.5 drop-shadow-sm group-hover:scale-105 transition-transform"
+                    className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 drop-shadow-sm group-hover:scale-105 transition-transform"
                     style={{ color: item.color }}
                     strokeWidth={1.8}
                   />
@@ -163,15 +163,15 @@ const HomeAulasInterativasBanner = () => {
               {/* Textos informativos centrais */}
               <div className="flex-1 min-w-0 z-10">
                 <p
-                  className="text-[9px] xs:text-[9.5px] font-bold uppercase tracking-wider mb-0.5"
+                  className="text-[10px] xs:text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider mb-1"
                   style={{ color: item.color }}
                 >
                   {item.tag}
                 </p>
-                <p className="font-serif italic text-[14px] xs:text-[14.5px] sm:text-[15.5px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+                <p className="font-serif italic text-[17px] xs:text-[18px] sm:text-[20px] font-bold tracking-tight text-white truncate drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)] leading-tight">
                   {item.nome}
                 </p>
-                <p className="text-[10px] xs:text-[10.5px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
+                <p className="text-[11px] xs:text-[11.5px] sm:text-[12px] font-medium truncate flex items-center gap-1.5 text-zinc-300 mt-0.5">
                   <span
                     className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
                     style={{ backgroundColor: item.color }}
@@ -182,9 +182,9 @@ const HomeAulasInterativasBanner = () => {
 
               {/* Seta indicativa à direita calibrada e proporcional */}
               <ArrowRight
-                className="w-5 h-5 xs:w-5.5 xs:h-5.5 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
+                className="w-6 h-6 xs:w-6.5 xs:h-6.5 shrink-0 z-10 group-hover:translate-x-1.5 transition-transform"
                 style={{ color: item.color }}
-                strokeWidth={2.4}
+                strokeWidth={2.5}
               />
 
               {/* Decoração de fundo — SVG translúcido no lado direito com glow temático */}
@@ -199,13 +199,13 @@ const HomeAulasInterativasBanner = () => {
                     src={item.imageSrc}
                     alt=""
                     aria-hidden="true"
-                    className="w-18 h-18 opacity-15 object-contain select-none pointer-events-none"
+                    className="w-24 h-24 xs:w-28 xs:h-28 opacity-15 object-contain select-none pointer-events-none"
                     loading="lazy"
                     decoding="async"
                   />
                 ) : Icon ? (
                   <Icon
-                    className="w-18 h-18 opacity-15"
+                    className="w-24 h-24 xs:w-28 xs:h-28 opacity-15"
                     style={{ color: item.color }}
                     strokeWidth={1.2}
                   />
