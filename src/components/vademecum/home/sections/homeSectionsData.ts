@@ -89,10 +89,10 @@ export const EMALTA_CATS: EmAltaCat[] = [
 
 export const FAST_PILLS_ITEMS = [
   { id: 'cp', image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp', 300), text: 'CP', fullName: 'Código Penal' },
-  { id: 'cf', image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
-  { id: 'cc', image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
-  { id: 'cpp', image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-  { id: 'clt', image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
+  { id: 'cf', image: '/pilulas/cf_portrait.webp', text: 'CF88', fullName: 'Constituição Federal' },
+  { id: 'cc', image: '/pilulas/cc_portrait.webp', text: 'CC', fullName: 'Código Civil' },
+  { id: 'cpp', image: '/pilulas/cpp_portrait.webp', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+  { id: 'clt', image: '/pilulas/clt_portrait.webp', text: 'CLT', fullName: 'Leis Trabalhistas' },
 ];
 
 export const shuffle = <T,>(arr: T[]): T[] => {

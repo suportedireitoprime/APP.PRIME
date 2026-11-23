@@ -35,7 +35,7 @@ const HomeBrandBanner: React.FC<HomeBrandBannerProps> = () => {
       {/* Traço vertical carmesim e slogan oficial */}
       <div className="mt-1 xs:mt-1.5 sm:mt-2 flex items-start text-left gap-1.5">
         <div className="w-[2.5px] sm:w-[3px] h-5 sm:h-5.5 bg-gradient-to-b from-primary to-[#701526] rounded-full shrink-0 mt-0.5 shadow-[0_0_8px_rgba(230,25,66,0.55)]" />
-        <p className="font-serif italic text-white/90 text-[9.5px] xs:text-[10px] sm:text-[11px] leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+        <p className="font-serif italic text-white/90 text-[11px] xs:text-[11.5px] sm:text-[12.5px] leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
           Conteúdo de qualidade
           <br />
           para sua jornada no Direito.

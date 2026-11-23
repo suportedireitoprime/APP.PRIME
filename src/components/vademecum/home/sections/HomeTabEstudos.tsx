@@ -45,7 +45,7 @@ const HomeTabEstudos = ({
       className="space-y-4 xs:space-y-4.5 sm:space-y-5"
     >
       {/* Botão de Aulas Interativas abaixo do painel */}
-      <div className="pt-1">
+      <div className="pt-1 max-w-4xl mx-auto w-full">
         <HomeAulasInterativasBanner />
       </div>
 

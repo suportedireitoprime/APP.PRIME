@@ -17,13 +17,8 @@ import { useUnreadNotifCount } from "@/components/vademecum/outros/Notifications
 import { Bell, Menu as MenuIcon } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
 
-const SideMenu = lazyWithRetry(() => import("@/components/vademecum/navigation/SideMenu"));
 const NotificationsSheet = lazyWithRetry(
   () => import("@/components/vademecum/outros/NotificationsSheet"),
-);
-const SearchOverlay = lazyWithRetry(() => import("@/components/vademecum/overlays/SearchOverlay"));
-const RecentesOverlay = lazyWithRetry(
-  () => import("@/components/vademecum/overlays/RecentesOverlay"),
 );
 
 // Re-exports for backward compatibility
@@ -167,38 +162,7 @@ const HomeHeaderHero = ({
       </div>
 
       <Suspense fallback={null}>
-        {!onOpenMenu && menuOpen && <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />}
         {notifOpen && <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />}
-        {!onOpenSearch && (
-          <SearchOverlay
-            open={searchOpen}
-            onClose={() => setSearchOpen(false)}
-            onSelectLei={(lei) => {
-              setSearchOpen(false);
-              pushRecente({
-                tipo: lei.tipo,
-                leiId: lei.leiId,
-                nome: lei.nome,
-                descricao: lei.descricao,
-                tabela_nome: lei.tabela_nome,
-              });
-              const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
-              const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
-              navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-            }}
-          />
-        )}
-        <RecentesOverlay
-          open={recentesOpen}
-          onClose={() => setRecentesOpen(false)}
-          onSelectLei={(lei) => {
-            setRecentesOpen(false);
-            pushRecente(lei);
-            navigate(
-              `/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`,
-            );
-          }}
-        />
       </Suspense>
     </>
   );

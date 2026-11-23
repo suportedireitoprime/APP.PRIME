@@ -22,9 +22,27 @@ export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
   const [animar, setAnimar] = React.useState(false);
 
   React.useEffect(() => {
+    const isReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isReduced) return;
+
     // ⚡ Prioriza o first paint e toque do usuário; inicia a órbita suave após 1.2s
-    const t = setTimeout(() => setAnimar(true), 1200);
-    return () => clearTimeout(t);
+    const t = setTimeout(() => {
+      if (!document.hidden) setAnimar(true);
+    }, 1200);
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        setAnimar(false);
+      } else if (!isReduced) {
+        setAnimar(true);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   const defaultClass =

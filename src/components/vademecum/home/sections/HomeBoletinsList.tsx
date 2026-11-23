@@ -1,6 +1,7 @@
 // @ts-nocheck
-import React, { memo, useState, useEffect, useMemo, useCallback, Suspense, lazy } from 'react';
+import React, { memo, useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Play, Radio, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -63,41 +64,26 @@ function formatData(dataRef?: string, createdAt?: string): string {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
 }
 
-let boletinsCache: Boletim[] | null = null;
-
 export const HomeBoletinsList: React.FC = () => {
   const navigate = useNavigate();
-  const [boletins, setBoletins] = useState<Boletim[]>(() => boletinsCache || []);
-  const [loading, setLoading] = useState<boolean>(!boletinsCache);
   const [playerAtivo, setPlayerAtivo] = useState<Boletim | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    const fetchBoletins = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('boletins_juridicos')
-          .select('*')
-          .eq('status', 'pronto')
-          .order('created_at', { ascending: false })
-          .limit(5);
+  const { data: boletins = [], isLoading: loading } = useQuery<Boletim[]>({
+    queryKey: ['boletins_juridicos_home'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('boletins_juridicos')
+        .select('*')
+        .eq('status', 'pronto')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-        if (!error && data && mounted) {
-          boletinsCache = data as Boletim[];
-          setBoletins(data as Boletim[]);
-        }
-      } catch (err) {
-        console.warn('[HomeBoletinsList] Erro ao carregar boletins:', err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    fetchBoletins();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+      if (error) throw error;
+      return (data || []) as Boletim[];
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  });
 
   const handlePlay = useCallback((b: Boletim, e?: React.MouseEvent) => {
     e?.stopPropagation();

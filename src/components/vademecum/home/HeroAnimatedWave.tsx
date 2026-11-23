@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 
 export interface HeroAnimatedWaveProps {
   colorScheme?: 'red' | 'green';
@@ -35,15 +35,30 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   themeColor,
   waveHeight = 'standard',
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Otimização de bateria e GPU: pausa animações contínuas quando o app/aba estiver em background
+  // Otimização de bateria e GPU: pausa animações contínuas quando em background ou fora de viewport
   useEffect(() => {
     const handleVisibility = () => {
-      setIsPaused(document.hidden);
+      if (document.hidden) {
+        setIsPaused(true);
+      }
     };
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
+
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
+      observer = new IntersectionObserver(([entry]) => {
+        setIsPaused(!entry.isIntersecting || document.hidden);
+      }, { threshold: 0.05 });
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      observer?.disconnect();
+    };
   }, []);
 
   const isCustom = Boolean(themeColor);
@@ -90,7 +105,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   const frontCrestColor = isCustom ? shadeHex(c, 0.65) : isGreen ? '#a7f3d0' : '#fecdd3';
 
   return (
-    <div className={`absolute inset-0 pointer-events-none overflow-hidden z-[5] ${isPaused ? 'hero-silk-paused' : ''}`}>
+    <div ref={containerRef} className={`absolute inset-0 pointer-events-none overflow-hidden z-[5] ${isPaused ? 'hero-silk-paused' : ''}`}>
       {/* ── 1. Resplendor Volumétrico e Bloom Suave ── */}
       <div 
         className={`absolute -bottom-12 -left-10 w-[60%] h-[45%] rounded-full blur-3xl pointer-events-none transform-gpu ${
