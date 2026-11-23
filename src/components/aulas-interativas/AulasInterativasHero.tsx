@@ -67,8 +67,8 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
             className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none transform-gpu will-change-transform"
           />
 
-          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
-          <FloatingOrbitingBrains position="left" />
+          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Direita */}
+          <FloatingOrbitingBrains position="right" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento */}
           <VideoaulasHeroWave />
@@ -91,10 +91,10 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
           </header>
 
           {/* Conteúdo: Tipografia de Marca Minimalista */}
-          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[155px] sm:min-h-[170px]">
+          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[165px] sm:min-h-[185px]">
             <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-4 sm:ml-6 max-w-[290px]">
-              {/* Espaçador para o botão de voltar */}
-              <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
+              {/* Espaçador para o botão de voltar com respiro generoso */}
+              <div className="h-[76px] xs:h-[82px] sm:h-[88px] mb-3.5 xs:mb-4 sm:mb-4.5 shrink-0 w-full" aria-hidden="true" />
 
               {/* Tipografia de Marca */}
               <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">

@@ -203,7 +203,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         
         {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[330px] xs:min-h-[350px] sm:min-h-[370px] mb-4"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[330px] xs:min-h-[348px] sm:min-h-[372px] mb-4"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
@@ -226,8 +226,8 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none select-none transform-gpu will-change-transform"
           />
-          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Esquerda */}
-          <FloatingOrbitingBrains position="left" />
+          {/* 3 Cérebros Vazados Transparentes com Glow Orbitando na Direita */}
+          <FloatingOrbitingBrains position="right" />
 
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início do App) */}
           <VideoaulasHeroWave />
@@ -275,9 +275,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           )}
 
           {/* Conteúdo de Marca: Aulas (branco) + em Trilha (Carmesim Primário #E61942) - Proporções e Alturas 100% idênticas ao Início */}
-          <div className="relative z-10 pt-3 sm:pt-4 flex flex-col justify-start min-h-[145px] sm:min-h-[160px]">
-            {/* Espaçador calibrado para o botão de voltar padrão ouro */}
-            <div className="h-[52px] sm:h-[56px] mb-1 shrink-0 w-full" aria-hidden="true" />
+          <div className="relative z-10 pt-3 xs:pt-3.5 sm:pt-4 flex flex-col justify-start min-h-[155px] xs:min-h-[168px] sm:min-h-[185px]">
+            {/* Espaçador calibrado para o botão de voltar padrão ouro com respiro generoso e sem encavalar */}
+            <div className="h-[76px] xs:h-[82px] sm:h-[88px] mb-3 xs:mb-3.5 sm:mb-4 shrink-0 w-full" aria-hidden="true" />
             <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
               <div className="flex flex-col items-start text-left z-10 relative ml-1 xs:ml-2 sm:ml-4 max-w-[280px] sm:max-w-[340px]">
                 <h1 className="tracking-tight leading-[1.04] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
@@ -303,8 +303,8 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           </div>
 
           {/* ── 4 Botões de Ação Rápida no Rodapé do Painel (Acabamento e proporção idênticos ao Início do App) ── */}
-          <div className="relative z-10 px-3 sm:px-5 pt-2 pb-7 sm:pb-8">
-            <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
+          <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-2.5 xs:mt-3 sm:mt-3.5 pb-4 xs:pb-4.5 sm:pb-5">
+            <div className="flex items-center justify-between gap-1.5 xs:gap-2 mx-0.5 mt-0.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl xs:rounded-3xl py-1.5 xs:py-2 sm:py-2.5 px-1.5 xs:px-2.5 sm:px-3.5 shadow-xl">
               {/* Recentes */}
               <button
                 type="button"
