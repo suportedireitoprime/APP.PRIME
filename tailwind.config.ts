@@ -208,6 +208,12 @@ export default {
       },
     },
     extend: {
+      screens: {
+        'xs': '360px',
+        'sm-m': '390px',
+        'md-m': '412px',
+        'lg-m': '430px',
+      },
       borderRadius: {
         lg: "1rem",
         xl: "1rem",

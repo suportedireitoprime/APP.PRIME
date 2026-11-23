@@ -43,6 +43,26 @@
   --sai-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
 }
 
+html {
+  /* ==========================================================================
+     ESCALA DE PROPORÇÃO UNIVERSAL (320px a 440px)
+     Faz o aplicativo crescer ou diminuir proporcionalmente por um todo unificado:
+     - 320px: 14.0px (-12.5%)
+     - 360px: 15.0px (-6.25%)
+     - 390px: 16.0px (100% base)
+     - 412px: 16.7px (+4.4%)
+     - 430px: 17.3px (+8.1%)
+     ========================================================================== */
+  font-size: clamp(14px, calc(14px + (17.5 - 14) * ((100vw - 320px) / (440 - 320))), 17.5px);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 16px;
+  }
+}
+
 html,
 body {
   height: 100%;
