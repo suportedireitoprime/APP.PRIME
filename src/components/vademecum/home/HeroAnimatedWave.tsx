@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 export interface HeroAnimatedWaveProps {
   colorScheme?: 'red' | 'green';
@@ -23,7 +23,7 @@ function shadeHex(hex: string, amt: number): string {
 /**
  * HeroAnimatedWave
  * Onda hiper-realista em cetim/seda pura 3D com caimento calibrado,
- * efeitos visuais avançados e detalhismo cinematográfico na base do cabeçalho.
+ * iluminação física suave, paralaxe de 3 camadas e fluidez contínua a 120fps.
  * 
  * Suporta variantes:
  * - 'red': Carmesim rubi acetinado (#E61942) - Padrão Início do App
@@ -35,6 +35,17 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   themeColor,
   waveHeight = 'standard',
 }) => {
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Otimização de bateria e GPU: pausa animações contínuas quando o app/aba estiver em background
+  useEffect(() => {
+    const handleVisibility = () => {
+      setIsPaused(document.hidden);
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
+
   const isCustom = Boolean(themeColor);
   const isGreen = !isCustom && colorScheme === 'green';
   const c = themeColor || (isGreen ? '#059669' : '#e61942');
@@ -79,17 +90,17 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
   const frontCrestColor = isCustom ? shadeHex(c, 0.65) : isGreen ? '#a7f3d0' : '#fecdd3';
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
-      {/* ── 1. Resplendor Volumétrico e Bloom ── */}
+    <div className={`absolute inset-0 pointer-events-none overflow-hidden z-[5] ${isPaused ? 'hero-silk-paused' : ''}`}>
+      {/* ── 1. Resplendor Volumétrico e Bloom Suave ── */}
       <div 
         className={`absolute -bottom-12 -left-10 w-[60%] h-[45%] rounded-full blur-3xl pointer-events-none transform-gpu ${
           isGreen 
-            ? 'bg-gradient-to-tr from-[#059669]/40 via-[#022c22]/30 to-transparent' 
-            : 'bg-gradient-to-tr from-[#e61942]/35 via-[#3d050f]/25 to-transparent'
+            ? 'bg-gradient-to-tr from-[#059669]/30 via-[#022c22]/20 to-transparent' 
+            : 'bg-gradient-to-tr from-[#e61942]/25 via-[#3d050f]/15 to-transparent'
         }`}
         style={{
           background: isCustom
-            ? `radial-gradient(circle at center, ${c}66 0%, ${shadeHex(c, -0.7)}4D 50%, transparent 100%)`
+            ? `radial-gradient(circle at center, ${c}4D 0%, ${shadeHex(c, -0.7)}33 50%, transparent 100%)`
             : undefined,
           animation: 'heroSilkAmbientPulse 8s ease-in-out infinite alternate',
         }}
@@ -97,12 +108,12 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
       <div 
         className={`absolute -bottom-8 right-0 w-[55%] h-[50%] rounded-full blur-3xl pointer-events-none transform-gpu ${
           isGreen
-            ? 'bg-gradient-to-tl from-[#10b981]/35 via-[#043d2f]/25 to-transparent'
-            : 'bg-gradient-to-tl from-[#e61942]/35 via-[#4a0512]/20 to-transparent'
+            ? 'bg-gradient-to-tl from-[#10b981]/25 via-[#043d2f]/15 to-transparent'
+            : 'bg-gradient-to-tl from-[#e61942]/25 via-[#4a0512]/15 to-transparent'
         }`}
         style={{
           background: isCustom
-            ? `radial-gradient(circle at center, ${c}66 0%, ${shadeHex(c, -0.7)}4D 50%, transparent 100%)`
+            ? `radial-gradient(circle at center, ${c}4D 0%, ${shadeHex(c, -0.7)}33 50%, transparent 100%)`
             : undefined,
           animation: 'heroSilkAmbientPulse 10s ease-in-out infinite alternate-reverse',
         }}
@@ -114,16 +125,16 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
       />
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          CAMADA 1: Fita Traseira de Veludo Profundo (Profundidade e Sombra 3D)
+          CAMADA 1: Fita Traseira de Veludo Profundo (Profundidade e Oclusão 3D)
           ══════════════════════════════════════════════════════════════════════════ */}
       <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform opacity-90 z-[4]">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className={`absolute -bottom-1 left-0 w-[200%] ${c1HeightClass} pointer-events-none transform-gpu`}
+          className={`absolute -bottom-1 left-0 w-[200%] ${c1HeightClass} pointer-events-none transform-gpu hero-silk-layer`}
           style={{
             animation: 'heroSilkBackSlide 24s linear infinite',
-            filter: 'drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98))',
+            filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.85))',
           }}
         >
           <defs>
@@ -138,40 +149,41 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
 
             <linearGradient id={`silkBackCrestSheen_${schemeKey}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
-              <stop offset="25%" stopColor={crest25} stopOpacity="0.8" />
+              <stop offset="25%" stopColor={crest25} stopOpacity="0.75" />
               <stop offset="50%" stopColor="#ffffff" stopOpacity="0.2" />
-              <stop offset="75%" stopColor={crest75} stopOpacity="0.85" />
+              <stop offset="75%" stopColor={crest75} stopOpacity="0.8" />
               <stop offset="100%" stopColor="#ffffff" stopOpacity="0.2" />
             </linearGradient>
           </defs>
 
-          {/* Massa Sombreada Traseira */}
+          {/* Massa Sombreada Traseira com continuidade C1 perfeita nas emendas */}
           <path
-            d="M 0,210 C 260,120 520,130 720,200 C 940,280 1200,270 1440,210 C 1700,120 1960,130 2160,200 C 2380,280 2640,270 2880,210 L 2880,400 L 0,400 Z"
+            d="M 0,200 C 260,130 480,120 720,185 C 960,250 1180,260 1440,200 C 1700,130 1920,120 2160,185 C 2400,250 2620,260 2880,200 L 2880,400 L 0,400 Z"
             fill={`url(#silkDeepShadowGrad_${schemeKey})`}
           />
 
-          {/* Crista Traseira */}
+          {/* Crista Traseira suave */}
           <path
-            d="M 0,210 C 260,120 520,130 720,200 C 940,280 1200,270 1440,210 C 1700,120 1960,130 2160,200 C 2380,280 2640,270 2880,210"
+            d="M 0,200 C 260,130 480,120 720,185 C 960,250 1180,260 1440,200 C 1700,130 1920,120 2160,185 C 2400,250 2620,260 2880,200"
             fill="none"
             stroke={`url(#silkBackCrestSheen_${schemeKey})`}
-            strokeWidth="2.2"
+            strokeWidth="1.8"
+            strokeLinecap="round"
           />
         </svg>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          CAMADA 2: Fita Mestra de Cetim
+          CAMADA 2: Fita Mestra de Seda e Cetim (Luminosidade e Caimento Principal)
           ══════════════════════════════════════════════════════════════════════════ */}
       <div className="absolute inset-0 overflow-hidden transform-gpu will-change-transform z-[5]">
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className={`absolute -bottom-1 left-0 w-[200%] ${c2HeightClass} pointer-events-none transform-gpu`}
+          className={`absolute -bottom-1 left-0 w-[200%] ${c2HeightClass} pointer-events-none transform-gpu hero-silk-layer`}
           style={{
             animation: 'heroSilkMainSlide 16s linear infinite',
-            filter: `drop-shadow(0 -10px 24px ${c}99) drop-shadow(0 18px 36px rgba(0, 0, 0, 0.98))`,
+            filter: `drop-shadow(0 -4px 14px ${c}55)`,
           }}
         >
           <defs>
@@ -187,83 +199,83 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
               <stop offset="100%" stopColor={satin0} />
             </linearGradient>
 
-            {/* Crista de Alto Brilho Especular (Gloss Esmaltado) */}
+            {/* Crista Especular Contínua de Alto Brilho (Gloss da Seda) */}
             <linearGradient id={`silkCrestGlossFine_${schemeKey}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-              <stop offset="15%" stopColor="#ffffff" stopOpacity="0.98" />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
+              <stop offset="15%" stopColor="#ffffff" stopOpacity="0.95" />
               <stop offset="28%" stopColor={glossColor} stopOpacity="0.85" />
-              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.3" />
-              <stop offset="65%" stopColor="#ffffff" stopOpacity="0.98" />
+              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.35" />
+              <stop offset="65%" stopColor="#ffffff" stopOpacity="0.95" />
               <stop offset="78%" stopColor={glossColor2} stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.3" />
             </linearGradient>
 
-            {/* Halo de Brilho Translúcido sobre a Crista */}
+            {/* Halo Translúcido da Crista */}
             <linearGradient id={`silkCrestHaloFine_${schemeKey}`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
-              <stop offset="35%" stopColor={haloColor} stopOpacity="0.6" />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+              <stop offset="35%" stopColor={haloColor} stopOpacity="0.5" />
               <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
             </linearGradient>
 
-            {/* Estrias de Reflexão Anisotrópica (Trama de Tecido) */}
+            {/* Estria Contínua de Seda (Sem tracejados artificiais) */}
             <linearGradient id={`silkTextureStreak_${schemeKey}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.06" />
-              <stop offset="20%" stopColor="#ffffff" stopOpacity="0.45" />
-              <stop offset="45%" stopColor="#ffffff" stopOpacity="0.08" />
-              <stop offset="70%" stopColor="#ffffff" stopOpacity="0.48" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.08" />
+              <stop offset="22%" stopColor="#ffffff" stopOpacity="0.35" />
+              <stop offset="48%" stopColor="#ffffff" stopOpacity="0.08" />
+              <stop offset="72%" stopColor="#ffffff" stopOpacity="0.38" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
             </linearGradient>
 
-            {/* Segunda Estria de Relevo */}
+            {/* Relevo Suave Secundário */}
             <linearGradient id={`silkSecondaryStreak_${schemeKey}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor={streakSec} stopOpacity="0.1" />
-              <stop offset="30%" stopColor="#ffffff" stopOpacity="0.35" />
+              <stop offset="30%" stopColor="#ffffff" stopOpacity="0.25" />
               <stop offset="60%" stopColor={streakSec} stopOpacity="0.1" />
-              <stop offset="85%" stopColor="#ffffff" stopOpacity="0.38" />
+              <stop offset="85%" stopColor="#ffffff" stopOpacity="0.28" />
               <stop offset="100%" stopColor={streakSec} stopOpacity="0.1" />
             </linearGradient>
           </defs>
 
-          {/* Tecido Esculpido da Fita Principal */}
+          {/* Tecido Esculpido da Fita Principal com Tangentes C1 Idênticas nas Emendas */}
           <path
-            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185 L 2880,400 L 0,400 Z"
+            d="M 0,165 C 220,85 480,75 720,150 C 960,225 1220,235 1440,165 C 1660,85 1920,75 2160,150 C 2400,225 2660,235 2880,165 L 2880,400 L 0,400 Z"
             fill={`url(#silkMasterSatinGrad_${schemeKey})`}
           />
 
-          {/* Estria Textural de Seda (Trama de Luz) */}
+          {/* Estria Textural Suave de Seda Contínua (Sem cortes/pontilhados) */}
           <path
-            d="M 0,205 C 220,115 500,100 720,180 C 940,260 1220,270 1440,205 C 1660,115 1940,100 2160,180 C 2380,260 2660,270 2880,205"
+            d="M 0,185 C 220,105 480,95 720,170 C 960,245 1220,255 1440,185 C 1660,105 1920,95 2160,170 C 2400,245 2660,255 2880,185"
             fill="none"
             stroke={`url(#silkTextureStreak_${schemeKey})`}
-            strokeWidth="1.8"
-            strokeDasharray="24 12"
+            strokeWidth="1.6"
+            strokeLinecap="round"
           />
 
-          {/* Segunda Estria de Profundidade */}
+          {/* Segunda Estria de Profundidade Contínua */}
           <path
-            d="M 0,225 C 220,135 500,120 720,200 C 940,280 1220,290 1440,225 C 1660,135 1940,120 2160,200 C 2380,280 2660,290 2880,225"
+            d="M 0,205 C 220,125 480,115 720,190 C 960,265 1220,275 1440,205 C 1660,125 1920,115 2160,190 C 2400,265 2660,275 2880,205"
             fill="none"
             stroke={`url(#silkSecondaryStreak_${schemeKey})`}
-            strokeWidth="1.4"
-            strokeDasharray="32 14"
+            strokeWidth="1.2"
+            strokeLinecap="round"
           />
 
           {/* Crista Especular Brilhante (Glow de Seda Pura) */}
           <path
-            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
+            d="M 0,165 C 220,85 480,75 720,150 C 960,225 1220,235 1440,165 C 1660,85 1920,75 2160,150 C 2400,225 2660,235 2880,165"
             fill="none"
             stroke={`url(#silkCrestGlossFine_${schemeKey})`}
-            strokeWidth="3.2"
+            strokeWidth="2.8"
             strokeLinecap="round"
           />
 
           {/* Halo Translúcido da Crista */}
           <path
-            d="M 0,185 C 220,95 500,80 720,160 C 940,240 1220,250 1440,185 C 1660,95 1940,80 2160,160 C 2380,240 2660,250 2880,185"
+            d="M 0,165 C 220,85 480,75 720,150 C 960,225 1220,235 1440,165 C 1660,85 1920,75 2160,150 C 2400,225 2660,235 2880,165"
             fill="none"
             stroke={`url(#silkCrestHaloFine_${schemeKey})`}
-            strokeWidth="6.5"
-            strokeOpacity="0.75"
+            strokeWidth="5"
+            strokeOpacity="0.6"
           />
         </svg>
       </div>
@@ -275,10 +287,10 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         <svg
           viewBox="0 0 2880 400"
           preserveAspectRatio="none"
-          className={`absolute -bottom-1 left-0 w-[200%] ${c3HeightClass} pointer-events-none transform-gpu`}
+          className={`absolute -bottom-1 left-0 w-[200%] ${c3HeightClass} pointer-events-none transform-gpu hero-silk-layer`}
           style={{
             animation: 'heroSilkFrontSlide 20s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-            filter: `drop-shadow(0 -7px 18px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 22px ${c}88)`,
+            filter: 'drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.7))',
           }}
         >
           <defs>
@@ -293,39 +305,49 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
 
             <linearGradient id={`silkFrontCrestSmall_${schemeKey}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-              <stop offset="42%" stopColor="#ffffff" stopOpacity="0.98" />
-              <stop offset="58%" stopColor={frontCrestColor} stopOpacity="0.82" />
+              <stop offset="42%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="58%" stopColor={frontCrestColor} stopOpacity="0.8" />
               <stop offset="100%" stopColor="#ffffff" stopOpacity="0.25" />
             </linearGradient>
           </defs>
 
-          {/* Fita Frontal da Base */}
+          {/* Fita Frontal da Base com Tangentes Suaves */}
           <path
-            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240 L 2880,400 L 0,400 Z"
+            d="M 0,225 C 240,150 520,155 720,215 C 920,275 1200,280 1440,225 C 1680,150 1960,155 2160,215 C 2360,275 2640,280 2880,225 L 2880,400 L 0,400 Z"
             fill={`url(#silkFrontFoldSmall_${schemeKey})`}
           />
 
-          {/* Crista Frontal */}
+          {/* Crista Frontal Suave */}
           <path
-            d="M 0,240 C 260,160 540,165 720,230 C 940,300 1200,305 1440,240 C 1700,160 1980,165 2160,230 C 2380,300 2640,305 2880,240"
+            d="M 0,225 C 240,150 520,155 720,215 C 920,275 1200,280 1440,225 C 1680,150 1960,155 2160,215 C 2360,275 2640,280 2880,225"
             fill="none"
             stroke={`url(#silkFrontCrestSmall_${schemeKey})`}
-            strokeWidth="2.8"
+            strokeWidth="2.4"
             strokeLinecap="round"
           />
         </svg>
       </div>
 
-
-
-      {/* ── 5. Keyframes Orgânicos a 120fps (Sem solavanco, ciclo contínuo) ── */}
+      {/* ── 4. Keyframes Orgânicos a 120fps com Ancoragem na Base (Sem descolamento) ── */}
       <style>{`
+        .hero-silk-layer {
+          transform-origin: bottom center;
+          will-change: transform;
+          contain: layout paint;
+          backface-visibility: hidden;
+        }
+
+        .hero-silk-paused .hero-silk-layer,
+        .hero-silk-paused div {
+          animation-play-state: paused !important;
+        }
+
         @keyframes heroSilkMainSlide {
           0% {
             transform: translate3d(0, 0, 0) scaleY(1);
           }
           50% {
-            transform: translate3d(-25%, -6px, 0) scaleY(1.05);
+            transform: translate3d(-25%, 0, 0) scaleY(1.03);
           }
           100% {
             transform: translate3d(-50%, 0, 0) scaleY(1);
@@ -334,13 +356,13 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
 
         @keyframes heroSilkBackSlide {
           0% {
-            transform: translate3d(0, 0, 0) scaleY(0.97);
+            transform: translate3d(0, 0, 0) scaleY(0.98);
           }
           50% {
-            transform: translate3d(-25%, 6px, 0) scaleY(1.06);
+            transform: translate3d(-25%, 0, 0) scaleY(1.04);
           }
           100% {
-            transform: translate3d(-50%, 0, 0) scaleY(0.97);
+            transform: translate3d(-50%, 0, 0) scaleY(0.98);
           }
         }
 
@@ -349,7 +371,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
             transform: translate3d(0, 0, 0) scaleY(1);
           }
           50% {
-            transform: translate3d(-25%, -7px, 0) scaleY(1.06);
+            transform: translate3d(-25%, 0, 0) scaleY(1.03);
           }
           100% {
             transform: translate3d(-50%, 0, 0) scaleY(1);
@@ -359,16 +381,16 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         @keyframes heroSilkAmbientPulse {
           0% {
             opacity: 0.55;
-            transform: scale(0.96);
+            transform: scale(0.97);
           }
           100% {
-            opacity: 0.95;
-            transform: scale(1.06);
+            opacity: 0.9;
+            transform: scale(1.04);
           }
         }
 
-
         @media (prefers-reduced-motion: reduce) {
+          .hero-silk-layer,
           .hero-animated-wave * {
             animation: none !important;
           }
