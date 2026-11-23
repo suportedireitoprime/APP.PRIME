@@ -11,7 +11,6 @@ async function createCircularMask(size) {
 }
 
 function buildIcoBuffer(images) {
-  // images: array of { width, height, buffer } (PNG format)
   const count = images.length;
   const headerSize = 6;
   const entrySize = 16;
@@ -40,8 +39,15 @@ function buildIcoBuffer(images) {
   return Buffer.concat([header, ...entries, ...images.map(img => img.buffer)]);
 }
 
+function ensureDir(filePath) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
 async function generate() {
-  console.log('Generating high-quality app icons from master image:');
+  console.log('Generating high-quality app icons across ALL project locations from:');
   console.log(sourceImage);
 
   if (!fs.existsSync(sourceImage)) {
@@ -53,14 +59,18 @@ async function generate() {
   fs.copyFileSync(sourceImage, path.resolve('resources/app-icon-master.jpg'));
   console.log('Copied raw master images to resources/');
 
-  // 2. Resources Master Icons (for @capacitor/assets)
+  // 2. ROOT ASSETS/ FOLDER (CRITICAL: Used by GitHub Actions build-android.yml and capacitor-assets)
+  ensureDir(path.resolve('assets/icon.png'));
   await sharp(sourceImage)
     .resize(1024, 1024, { fit: 'cover' })
     .png({ quality: 100, compressionLevel: 9 })
-    .toFile(path.resolve('resources/icon.png'));
-  console.log('Generated: resources/icon.png (1024x1024)');
+    .toFile(path.resolve('assets/icon.png'));
 
-  // resources/icon-background.png (solid #210303)
+  await sharp(sourceImage)
+    .resize(1024, 1024, { fit: 'cover' })
+    .png({ quality: 100, compressionLevel: 9 })
+    .toFile(path.resolve('assets/icon-only.png'));
+
   await sharp({
     create: {
       width: 1024,
@@ -70,10 +80,9 @@ async function generate() {
     },
   })
     .png()
-    .toFile(path.resolve('resources/icon-background.png'));
-  console.log('Generated: resources/icon-background.png (1024x1024 solid)');
+    .toFile(path.resolve('assets/icon-background.png'));
 
-  // resources/icon-foreground.png (medallion centered with 72% safe zone for Android adaptive icons)
+  // Foreground with safe zone
   const foregroundEmblem1024 = await sharp(sourceImage)
     .resize(768, 768, { fit: 'cover' })
     .png({ quality: 100 })
@@ -89,10 +98,23 @@ async function generate() {
   })
     .composite([{ input: foregroundEmblem1024, gravity: 'center' }])
     .png({ quality: 100, compressionLevel: 9 })
-    .toFile(path.resolve('resources/icon-foreground.png'));
-  console.log('Generated: resources/icon-foreground.png (1024x1024 with 75% safe area)');
+    .toFile(path.resolve('assets/icon-foreground.png'));
 
-  // 3. Web & PWA (public/)
+  console.log('Generated root assets/: icon.png, icon-only.png, icon-background.png, icon-foreground.png');
+
+  // Also update src/assets/icon-foreground.png
+  ensureDir(path.resolve('src/assets/icon-foreground.png'));
+  fs.copyFileSync(path.resolve('assets/icon-foreground.png'), path.resolve('src/assets/icon-foreground.png'));
+  console.log('Updated src/assets/icon-foreground.png');
+
+  // 3. RESOURCES/ FOLDER
+  ensureDir(path.resolve('resources/icon.png'));
+  fs.copyFileSync(path.resolve('assets/icon.png'), path.resolve('resources/icon.png'));
+  fs.copyFileSync(path.resolve('assets/icon-foreground.png'), path.resolve('resources/icon-foreground.png'));
+  fs.copyFileSync(path.resolve('assets/icon-background.png'), path.resolve('resources/icon-background.png'));
+  console.log('Updated resources/ icons');
+
+  // 4. Web & PWA (public/)
   const publicTargets = [
     { file: 'public/icon-512.png', size: 512, format: 'png' },
     { file: 'public/icon-192.png', size: 192, format: 'png' },
@@ -102,10 +124,17 @@ async function generate() {
     { file: 'public/favicon-16x16.png', size: 16, format: 'png' },
     { file: 'public/app-icon.webp', size: 512, format: 'webp' },
     { file: 'public/app-icon.jpg', size: 512, format: 'jpeg' },
+    // Also public/icons/ for service worker fallbacks
+    { file: 'public/icons/icon-192.png', size: 192, format: 'png' },
+    { file: 'public/icons/icon-512.png', size: 512, format: 'png' },
+    // Also public/assets/icons/ for capacitor assets
+    { file: 'public/assets/icons/icon-192.webp', size: 192, format: 'webp' },
+    { file: 'public/assets/icons/icon-512.webp', size: 512, format: 'webp' },
   ];
 
   for (const t of publicTargets) {
     const dest = path.resolve(t.file);
+    ensureDir(dest);
     if (t.format === 'png') {
       await sharp(sourceImage)
         .resize(t.size, t.size, { fit: 'cover' })
@@ -135,9 +164,9 @@ async function generate() {
     { width: 16, height: 16, buffer: ico16Buffer },
   ]);
   fs.writeFileSync(path.resolve('public/favicon.ico'), icoData);
-  console.log('Generated: public/favicon.ico (16, 32, 48 multi-res)');
+  console.log('Generated: public/favicon.ico');
 
-  // 4. iOS Universal AppIcon (Xcode 14+ 1024x1024)
+  // 5. iOS Universal AppIcon (Xcode 14+ 1024x1024)
   const iosFile = path.resolve('ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png');
   if (fs.existsSync(path.dirname(iosFile))) {
     await sharp(sourceImage)
@@ -156,7 +185,7 @@ async function generate() {
     console.log('Generated build-assets/ios-app-icon.png');
   }
 
-  // 5. Android Mipmaps
+  // 6. Android Mipmaps
   const androidDensities = [
     { dir: 'mipmap-mdpi', launcher: 48, foreground: 108 },
     { dir: 'mipmap-hdpi', launcher: 72, foreground: 162 },
@@ -215,10 +244,10 @@ async function generate() {
       .png({ quality: 100, compressionLevel: 9 })
       .toFile(path.join(dirPath, 'ic_launcher_foreground.png'));
 
-    console.log(`Generated Android ${d.dir}: launcher(${d.launcher}), round(${d.launcher}), background(${d.foreground}), foreground(${d.foreground})`);
+    console.log(`Generated Android ${d.dir}`);
   }
 
-  // 6. Update Android WebView public asset if exists
+  // 7. Update Android WebView public asset if exists
   const androidWebAsset = path.resolve('android/app/src/main/assets/public/icon-512.png');
   if (fs.existsSync(path.dirname(androidWebAsset))) {
     await sharp(sourceImage)
@@ -228,7 +257,7 @@ async function generate() {
     console.log('Updated android assets/public/icon-512.png');
   }
 
-  console.log('\n✅ ALL APP INSTALLATION ICONS GENERATED WITH 100% QUALITY!');
+  console.log('\n✅ ALL PROJECT ANDROID/IOS/PWA/WORKFLOW ICONS FULLY SYNCHRONIZED!');
 }
 
 generate().catch(err => {
