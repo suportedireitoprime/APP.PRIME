@@ -316,28 +316,7 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
         </svg>
       </div>
 
-      {/* ── 4. Glints e Pontos de Reflexo Especular Diamantinos (Micro-brilhos) ── */}
-      <div 
-        className="absolute bottom-16 sm:bottom-22 left-[26%] sm:left-[32%] w-3 h-3 rounded-full bg-white blur-[0.8px] pointer-events-none transform-gpu z-[7]"
-        style={{
-          boxShadow: `0 0 16px 4px rgba(255, 255, 255, 0.98), 0 0 30px 10px ${c}E6`,
-          animation: 'heroSilkSparkle 5.5s ease-in-out infinite',
-        }}
-      />
-      <div 
-        className="absolute bottom-14 sm:bottom-18 right-[22%] sm:right-[30%] w-2.5 h-2.5 rounded-full bg-white blur-[0.8px] pointer-events-none transform-gpu z-[7]"
-        style={{
-          boxShadow: `0 0 14px 3px rgba(255, 255, 255, 0.92), 0 0 26px 8px ${c}D9`,
-          animation: 'heroSilkSparkle 7.5s ease-in-out infinite 2.5s',
-        }}
-      />
-      <div 
-        className="absolute bottom-20 sm:bottom-28 right-[10%] sm:right-[15%] w-2 h-2 rounded-full bg-white blur-[0.6px] pointer-events-none transform-gpu z-[7]"
-        style={{
-          boxShadow: `0 0 12px 3px rgba(255, 255, 255, 0.9), 0 0 20px 6px ${c}CC`,
-          animation: 'heroSilkSparkle 6.5s ease-in-out infinite 4s',
-        }}
-      />
+
 
       {/* ── 5. Keyframes Orgânicos a 120fps (Sem solavanco, ciclo contínuo) ── */}
       <style>{`
@@ -388,16 +367,6 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           }
         }
 
-        @keyframes heroSilkSparkle {
-          0%, 100% {
-            opacity: 0.25;
-            transform: scale(0.7);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.35);
-          }
-        }
 
         @media (prefers-reduced-motion: reduce) {
           .hero-animated-wave * {
