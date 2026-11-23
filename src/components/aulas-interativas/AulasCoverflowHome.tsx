@@ -203,7 +203,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         
         {/* ── PAINEL HERO SUPERIOR COM CAPA DO TRIBUNAL SOB CÉU RUBRO ── */}
         <div 
-          className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[330px] xs:min-h-[348px] sm:min-h-[372px] mb-4"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[295px] xs:min-h-[315px] sm:min-h-[345px]"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
@@ -232,16 +232,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           {/* Onda Vermelha Fluida e Animada em Movimento (100% cetim rubi padrão Início do App) */}
           <VideoaulasHeroWave />
 
-          {/* Cabeçalho Superior Transparente (Apenas Voltar - Botão de busca removido conforme pedido) */}
-          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-            <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
+          {/* Cabeçalho Superior Transparente — Proporção idêntica ao Início do App */}
+          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.65rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(0.9rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.35rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+            <div className="pointer-events-auto px-3.5 xs:px-4.5 pb-1 pt-1.5 flex items-center justify-between">
               <button
                 type="button"
                 onClick={handleVoltar}
-                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-md"
+                className="grid w-11 h-11 xs:w-11.5 xs:h-11.5 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-md"
                 aria-label="Voltar para o início"
               >
-                <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+                <ArrowLeft className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6" strokeWidth={2.4} />
               </button>
             </div>
           </header>
@@ -275,24 +275,24 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           )}
 
           {/* Conteúdo de Marca: Aulas (branco) + em Trilha (Carmesim Primário #E61942) - Proporções e Alturas 100% idênticas ao Início */}
-          <div className="relative z-10 pt-3 xs:pt-3.5 sm:pt-4 flex flex-col justify-start min-h-[155px] xs:min-h-[168px] sm:min-h-[185px]">
-            {/* Espaçador calibrado para o botão de voltar padrão ouro com respiro generoso e sem encavalar */}
-            <div className="h-[76px] xs:h-[82px] sm:h-[88px] mb-3 xs:mb-3.5 sm:mb-4 shrink-0 w-full" aria-hidden="true" />
-            <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
+          <div className="relative z-10 pt-3 xs:pt-3.5 sm:pt-4 flex flex-col justify-start min-h-[135px] xs:min-h-[148px] sm:min-h-[162px]">
+            {/* Espaçador calibrado para o botão de voltar padrão ouro do Início */}
+            <div className="h-[46px] xs:h-[50px] sm:h-[56px] mb-1 xs:mb-1.5 shrink-0 w-full" aria-hidden="true" />
+            <div className="flex items-start justify-between gap-3 px-3.5 sm:px-4.5">
               <div className="flex flex-col items-start text-left z-10 relative ml-1 xs:ml-2 sm:ml-4 max-w-[280px] sm:max-w-[340px]">
                 <h1 className="tracking-tight leading-[1.04] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
-                  <span className="font-serif text-[22px] xs:text-[24px] sm:text-[27px] md:text-[30px] font-medium text-white block">
+                  <span className="font-serif text-[19px] xs:text-[21px] sm:text-[24px] md:text-[27px] font-medium text-white block">
                     Aulas
                   </span>
-                  <span className="font-serif italic text-[24px] xs:text-[26px] sm:text-[29px] md:text-[32px] font-semibold text-primary block drop-shadow-[0_2px_14px_rgba(230,25,66,0.65)] mt-0 xs:mt-0.5">
+                  <span className="font-serif italic text-[21px] xs:text-[23px] sm:text-[26px] md:text-[29px] font-semibold text-primary block drop-shadow-[0_2px_14px_rgba(230,25,66,0.65)] mt-0 xs:mt-0.5">
                     em Trilha
                   </span>
                 </h1>
 
                 {/* Traço vertical carmesim e slogan oficial */}
-                <div className="mt-1.5 xs:mt-2 sm:mt-2.5 flex items-start text-left gap-1.5">
-                  <div className="w-[2.5px] sm:w-[3px] h-6 sm:h-7 bg-gradient-to-b from-primary to-[#701526] rounded-full shrink-0 mt-0.5 shadow-[0_0_8px_rgba(230,25,66,0.55)]" />
-                  <p className="font-serif italic text-white/90 text-[10.5px] xs:text-[11px] sm:text-[12px] leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+                <div className="mt-1.5 xs:mt-2 flex items-start text-left gap-1.5">
+                  <div className="w-[2.5px] sm:w-[3px] h-5 sm:h-5.5 bg-gradient-to-b from-primary to-[#701526] rounded-full shrink-0 mt-0.5 shadow-[0_0_8px_rgba(230,25,66,0.55)]" />
+                  <p className="font-serif italic text-white/90 text-[10px] xs:text-[10.5px] sm:text-[11.5px] leading-snug drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
                     Cronograma de alta precisão.
                     <br />
                     {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} aulas • 106 módulos oficiais.
@@ -302,8 +302,8 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </div>
           </div>
 
-          {/* ── 4 Botões de Ação Rápida no Rodapé do Painel (Acabamento e proporção idênticos ao Início do App) ── */}
-          <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-2.5 xs:mt-3 sm:mt-3.5 pb-4 xs:pb-4.5 sm:pb-5">
+          {/* ── 4 Botões de Ação Rápida no Rodapé do Painel (Acabamento e proporção 100% idênticos ao Início do App) ── */}
+          <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-3 xs:mt-4 sm:mt-5 pb-3 xs:pb-3.5 sm:pb-4">
             <div className="flex items-center justify-between gap-1.5 xs:gap-2 mx-0.5 mt-0.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl xs:rounded-3xl py-1.5 xs:py-2 sm:py-2.5 px-1.5 xs:px-2.5 sm:px-3.5 shadow-xl">
               {/* Recentes */}
               <button
@@ -312,21 +312,21 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setRecentesModalOpen(true);
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2 pb-1.5 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 xs:gap-1 text-center select-none cursor-pointer overflow-visible"
                 aria-label="Aulas Recentes"
               >
                 <div className="relative flex items-center justify-center">
                   {totalEmAndamento > 0 && (
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] sm:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[7.5px] xs:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_6px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                       {totalEmAndamento}
                     </span>
                   )}
                   <History
-                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     strokeWidth={2.1}
                   />
                 </div>
-                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+                <span className="text-white/95 text-[10.5px] xs:text-[11px] sm:text-[12px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
                   Recentes
                 </span>
               </button>
@@ -338,16 +338,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setAbaAtiva('favoritos');
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2 pb-1.5 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 xs:gap-1 text-center select-none cursor-pointer overflow-visible"
                 aria-label="Aulas Favoritas"
               >
                 <div className="relative flex items-center justify-center">
                   <Bookmark
-                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     strokeWidth={2.1}
                   />
                 </div>
-                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+                <span className="text-white/95 text-[10.5px] xs:text-[11px] sm:text-[12px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
                   Favoritos
                 </span>
               </button>
@@ -359,16 +359,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setEmAltaModalOpen(true);
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2 pb-1.5 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 xs:gap-1 text-center select-none cursor-pointer overflow-visible"
                 aria-label="Aulas Em Alta"
               >
                 <div className="relative flex items-center justify-center">
                   <Flame
-                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     strokeWidth={2.1}
                   />
                 </div>
-                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+                <span className="text-white/95 text-[10.5px] xs:text-[11px] sm:text-[12px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
                   Em Alta
                 </span>
               </button>
@@ -380,21 +380,21 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   try { haptic.selection(); } catch {}
                   setAbaAtiva('estatisticas');
                 }}
-                className="flex-1 group relative flex flex-col items-center justify-center pt-3 pb-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-visible min-h-[48px]"
+                className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2 pb-1.5 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 xs:gap-1 text-center select-none cursor-pointer overflow-visible"
                 aria-label="Desempenho e Estatísticas"
               >
                 <div className="relative flex items-center justify-center">
                   {porcentagemGeral > 0 && (
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[8px] sm:text-[8.5px] font-black tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[7.5px] xs:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_6px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
                       {porcentagemGeral}%
                     </span>
                   )}
                   <BarChart3
-                    className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                    className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
                     strokeWidth={2.1}
                   />
                 </div>
-                <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+                <span className="text-white/95 text-[10.5px] xs:text-[11px] sm:text-[12px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
                   Desempenho
                 </span>
               </button>

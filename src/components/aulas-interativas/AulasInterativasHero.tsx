@@ -43,7 +43,7 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
       <div className="relative mb-5">
         {/* Shell unificado idêntico ao início do app e Áudio Aulas */}
         <div
-          className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
+          className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[295px] xs:min-h-[315px] sm:min-h-[345px]"
           style={{
             transform: 'translateZ(0)',
             backgroundColor: '#050505',
@@ -74,8 +74,8 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
           <VideoaulasHeroWave />
 
           {/* Cabeçalho Superior Transparente (Apenas Voltar) */}
-          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-            <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
+          <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.65rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(0.9rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.35rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
+            <div className="pointer-events-auto px-3.5 xs:px-4.5 pb-1 pt-1.5 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => {
@@ -83,18 +83,18 @@ export const AulasInterativasHero: React.FC<AulasInterativasHeroProps> = React.m
                   onVoltar();
                 }}
                 aria-label="Voltar"
-                className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
+                className="grid w-11 h-11 xs:w-11.5 xs:h-11.5 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 cursor-pointer shadow-lg"
               >
-                <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.4]" />
+                <ArrowLeft className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6" strokeWidth={2.4} />
               </button>
             </div>
           </header>
 
           {/* Conteúdo: Tipografia de Marca Minimalista */}
-          <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[165px] sm:min-h-[185px]">
+          <div className="relative z-10 pt-3 xs:pt-3.5 sm:pt-4 flex-1 flex flex-col justify-start min-h-[135px] xs:min-h-[148px] sm:min-h-[162px]">
             <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-4 sm:ml-6 max-w-[290px]">
-              {/* Espaçador para o botão de voltar com respiro generoso */}
-              <div className="h-[76px] xs:h-[82px] sm:h-[88px] mb-3.5 xs:mb-4 sm:mb-4.5 shrink-0 w-full" aria-hidden="true" />
+              {/* Espaçador para o botão de voltar com respiro calibrado */}
+              <div className="h-[46px] xs:h-[50px] sm:h-[56px] mb-1 xs:mb-1.5 shrink-0 w-full" aria-hidden="true" />
 
               {/* Tipografia de Marca */}
               <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
