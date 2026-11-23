@@ -102,6 +102,29 @@ Deno.serve(async (req) => {
         }
         results.campaigns = { found: scheduledCampaigns?.length || 0, processed };
       }
+
+      // 1.1 Auto-Replenish da Grade de 2 em 2 Horas:
+      // Se houver menos de 10 campanhas futuras agendadas (garantindo que os próximos dias nunca fiquem vazios),
+      // chama push-planner para semear os próximos 7 dias automaticamente.
+      try {
+        const { count: futureScheduledCount } = await supabase
+          .from("push_campaigns")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "scheduled")
+          .gte("next_run_at", nowIso);
+
+        if ((futureScheduledCount || 0) < 10) {
+          const { data: plannerData } = await supabase.functions.invoke("push-planner", {
+            body: { dias: 7 },
+          });
+          results.auto_replenish = { status: "replenished", count_before: futureScheduledCount, result: plannerData };
+        } else {
+          results.auto_replenish = { status: "sufficient", future_count: futureScheduledCount };
+        }
+      } catch (planErr: any) {
+        console.warn("[push-dispatcher] Erro ao auto-renovar grade 7 dias:", planErr);
+        results.auto_replenish = { error: planErr.message };
+      }
     }
 
     // 2. Processa Lembretes de Leitura / Artigos (reminders-tick)

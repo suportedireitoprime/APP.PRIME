@@ -58,8 +58,12 @@ export default function AdminPush() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabMode>('grade2h');
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    try {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+    } catch {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
   });
   
   const [selectedEventType, setSelectedEventType] = useState<'delivered' | 'opened' | 'failed' | null>(null);
@@ -513,20 +517,30 @@ export default function AdminPush() {
     }
   };
 
-  const getLocalDateStr = (d: Date | string) => {
-    const dateObj = typeof d === 'string' ? new Date(d) : d;
-    return dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
+  const getBrasiliaDateStr = (d: Date | string) => {
+    try {
+      const dateObj = typeof d === 'string' ? new Date(d) : d;
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(dateObj);
+    } catch {
+      const dateObj = typeof d === 'string' ? new Date(d) : d;
+      return dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
+    }
   };
 
   const agendadosDoDia = useMemo(() => {
-    return campaigns.filter(c => c.status === 'scheduled' && c.next_run_at && getLocalDateStr(c.next_run_at) === selectedDate);
+    return campaigns.filter(c => c.status === 'scheduled' && c.next_run_at && getBrasiliaDateStr(c.next_run_at) === selectedDate);
   }, [campaigns, selectedDate]);
 
   const historicoDoDia = useMemo(() => {
     return campaigns.filter(c => {
-      const isAgendado = c.status === 'scheduled' && c.next_run_at && getLocalDateStr(c.next_run_at) === selectedDate;
+      const isAgendado = c.status === 'scheduled' && c.next_run_at && getBrasiliaDateStr(c.next_run_at) === selectedDate;
       const dateToCompare = c.next_run_at || c.created_at;
-      return getLocalDateStr(dateToCompare) === selectedDate && !isAgendado;
+      return getBrasiliaDateStr(dateToCompare) === selectedDate && !isAgendado;
     });
   }, [campaigns, selectedDate]);
 
@@ -563,13 +577,16 @@ export default function AdminPush() {
         {/* ============================================================== */}
         {/* BARRA DE CONTROLE & ABAS MINIMALISTA                          */}
         {/* ============================================================== */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-1.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 backdrop-blur-md">
+        {/* ============================================================== */}
+        {/* BARRA DE CONTROLE & ABAS ULTRA-MINIMALISTA                     */}
+        {/* ============================================================== */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-1 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 backdrop-blur-md">
           {/* Segmented Control / Abas */}
-          <div className="flex items-center gap-1 bg-zinc-950/60 p-1 rounded-xl border border-white/5">
+          <div className="flex items-center gap-1 bg-zinc-950/60 p-1 rounded-xl border border-white/5 w-full sm:w-auto">
             <button
               type="button"
-              onClick={() => setTab('grade2h')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+              onClick={() => { haptic.selection(); setTab('grade2h'); }}
+              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                 tab === 'grade2h'
                   ? 'bg-red-600 text-white shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
@@ -580,8 +597,8 @@ export default function AdminPush() {
             </button>
             <button
               type="button"
-              onClick={() => setTab('dashboard')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+              onClick={() => { haptic.selection(); setTab('dashboard'); }}
+              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                 tab === 'dashboard'
                   ? 'bg-red-600 text-white shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
@@ -592,30 +609,30 @@ export default function AdminPush() {
             </button>
             <button
               type="button"
-              onClick={() => setTab('manual')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+              onClick={() => { haptic.selection(); setTab('manual'); }}
+              className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                 tab === 'manual'
                   ? 'bg-red-600 text-white shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
               }`}
             >
               <Send className="w-3.5 h-3.5" />
-              <span>Criar Manual</span>
+              <span>Manual</span>
             </button>
           </div>
 
           {/* Ações Rápidas Minimalistas */}
-          <div className="flex items-center gap-2 self-end sm:self-auto px-1 sm:px-0">
+          <div className="flex items-center gap-2 px-1 sm:px-0 justify-end">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={handleTestOnAdminDevice}
-              className="h-8 px-2.5 rounded-lg border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-medium cursor-pointer"
+              className="h-8 px-3 rounded-xl border-zinc-800 bg-zinc-950 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-medium cursor-pointer"
               title="Testar entrega do push no aparelho admin"
             >
               <Smartphone className="w-3.5 h-3.5 mr-1.5 text-sky-400" />
-              <span>Testar no Celular</span>
+              <span>Testar Celular</span>
             </Button>
 
             <Button
@@ -623,7 +640,7 @@ export default function AdminPush() {
               size="sm"
               onClick={handleRegenerate2HourSchedule}
               disabled={plannerLoading}
-              className="h-8 px-3 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+              className="h-8 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
               title="Reprogramar agenda de 10 pushes diários para os próximos 7 dias"
             >
               {plannerLoading ? (
@@ -680,7 +697,7 @@ export default function AdminPush() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {GRADE_2_HORAS.map((slot) => {
                 const status = slotStatusMap.get(slot.hora);
                 const isNext = status?.isNextImmediate;
@@ -688,111 +705,91 @@ export default function AdminPush() {
                 return (
                   <div 
                     key={slot.hora}
-                    className={`p-4 rounded-2xl transition-all flex flex-col justify-between gap-3 shadow-lg ${
+                    className={`p-3.5 rounded-2xl transition-all flex flex-col justify-between gap-2.5 ${
                       isNext
-                        ? 'bg-red-950/25 border-2 border-red-500/80 ring-2 ring-red-500/30 shadow-xl shadow-red-950/50'
-                        : 'bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700'
+                        ? 'bg-red-950/20 border border-red-500/60 shadow-lg shadow-red-950/30'
+                        : 'bg-zinc-900/35 border border-zinc-800/60 hover:border-zinc-700/80'
                     }`}
                   >
-                    <div className="flex items-start gap-3.5">
-                      <div className={`w-11 h-11 rounded-xl border flex flex-col items-center justify-center shrink-0 ${
-                        isNext ? 'bg-red-900/40 border-red-500/40' : 'bg-zinc-800/80 border-white/5'
-                      }`}>
-                        <span className="text-base leading-none">{slot.emoji}</span>
-                        <span className={`text-[10px] font-mono font-bold mt-1 ${isNext ? 'text-red-300' : 'text-red-400'}`}>
-                          {slot.hora}
+                    {/* Linha Superior: Horário + Título + Ações Rápidas */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-mono font-bold text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md shrink-0 flex items-center gap-1">
+                          <span>{slot.emoji}</span>
+                          <span>{slot.hora}</span>
                         </span>
+                        <h4 className="font-bold text-xs sm:text-sm text-white truncate">
+                          {slot.titulo}
+                        </h4>
                       </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-sm font-bold text-white tracking-wide truncate">
-                            {slot.titulo}
-                          </span>
-                          <span className="text-[9.5px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 shrink-0">
-                            {slot.tag}
-                          </span>
-                        </div>
-                        <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2">
-                          {slot.desc}
-                        </p>
+                      {/* Botões de Ação Minimalistas (Compactos) */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleDispararSlotAgora(slot)}
+                          disabled={disparandoSlotHora === slot.hora}
+                          className="h-7 px-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[10.5px] font-bold flex items-center gap-1 transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                          title="Disparar push imediatamente"
+                        >
+                          {disparandoSlotHora === slot.hora ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Send className="w-3 h-3" />
+                          )}
+                          <span>Disparar</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleTestarSlotNoAparelho(slot)}
+                          disabled={testandoSlotHora === slot.hora}
+                          className="h-7 w-7 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 border border-white/5 text-zinc-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50"
+                          title="Testar no celular"
+                        >
+                          {testandoSlotHora === slot.hora ? (
+                            <Loader2 className="w-3 h-3 animate-spin text-sky-400" />
+                          ) : (
+                            <Smartphone className="w-3.5 h-3.5 text-sky-400" />
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleAbrirEditarSlot(slot)}
+                          className="h-7 w-7 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                          title="Editar slot"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
 
-                    {/* STATUS DE DISPARO E ROTA DE REDIRECIONAMENTO */}
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2 flex-wrap text-xs">
+                    {/* Descrição */}
+                    <p className="text-[11.5px] text-zinc-400 leading-relaxed line-clamp-2">
+                      {slot.desc}
+                    </p>
+
+                    {/* Linha Inferior: Status + Destino */}
+                    <div className="flex items-center justify-between text-[10.5px] pt-1.5 border-t border-white/[0.04] text-zinc-500 font-mono">
                       {isNext ? (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          Próximo às {slot.hora} ({status.countdownLabel})
+                        <span className="inline-flex items-center gap-1 text-emerald-400 font-medium font-sans">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Próximo ({status.countdownLabel})
                         </span>
                       ) : status ? (
-                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="text-emerald-400 font-medium">
                           Agendado ({status.countdownLabel})
                         </span>
                       ) : (
-                        <span className="text-[10px] text-zinc-400 flex items-center gap-1 font-medium">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Ativo na Grade
+                        <span className="text-zinc-400 flex items-center gap-1 font-sans">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400/80" /> Ativo
                         </span>
                       )}
 
-                      <span className="text-[10.5px] text-zinc-400 flex items-center gap-1 font-mono shrink-0">
-                        <ExternalLink className="w-3 h-3 text-red-400" />
-                        <span className="text-zinc-500">Destino:</span>
-                        <code className="text-zinc-200 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-white/5 text-[10px]">
-                          {slot.rota}
-                        </code>
+                      <span className="text-zinc-500 hover:text-zinc-300 transition-colors">
+                        {slot.rota}
                       </span>
-                    </div>
-
-                    {/* BARRA DE AÇÕES OPERACIONAIS 100% FUNCIONAIS */}
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5 flex-wrap">
-                      <div className="flex items-center gap-1.5">
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={() => handleDispararSlotAgora(slot)}
-                          disabled={disparandoSlotHora === slot.hora}
-                          className="h-7 px-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[10.5px] font-bold shadow-sm cursor-pointer"
-                          title="Disparar push imediatamente para todos os alunos"
-                        >
-                          {disparandoSlotHora === slot.hora ? (
-                            <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                          ) : (
-                            <Send className="w-3 h-3 mr-1" />
-                          )}
-                          <span>Disparar Agora</span>
-                        </Button>
-
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleTestarSlotNoAparelho(slot)}
-                          disabled={testandoSlotHora === slot.hora}
-                          className="h-7 px-2 rounded-lg bg-zinc-800/80 border-white/10 text-[10.5px] text-zinc-300 hover:text-white hover:bg-zinc-700/60 cursor-pointer"
-                          title="Testar entrega da notificação no seu aparelho"
-                        >
-                          {testandoSlotHora === slot.hora ? (
-                            <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                          ) : (
-                            <Smartphone className="w-3 h-3 mr-1 text-sky-400" />
-                          )}
-                          <span>Testar</span>
-                        </Button>
-
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleAbrirEditarSlot(slot)}
-                          className="h-7 px-2 rounded-lg text-[10.5px] text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
-                          title="Editar texto e rota deste horário"
-                        >
-                          <Pencil className="w-3 h-3 mr-1 text-zinc-400" />
-                          <span>Editar</span>
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 );
@@ -893,7 +890,7 @@ export default function AdminPush() {
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-bold text-red-400 font-mono flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5" />
-                          {new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date(runDate))}
+                          {new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(runDate))}
                         </span>
                         <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border ${

@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { VAPID_PUBLIC_KEY, urlBase64ToUint8Array } from '@/lib/vapid';
 import { Capacitor } from '@capacitor/core';
+import { enableWebPush } from '@/lib/webPush';
 
 const SW_PATH = '/push-sw.js';
 
@@ -75,6 +76,7 @@ export function useWebPush() {
         { onConflict: 'endpoint' }
       );
       setSubscribed(true);
+      void enableWebPush().catch(() => {});
       return true;
     } catch (e) {
       console.warn('[useWebPush] subscribe error', e);

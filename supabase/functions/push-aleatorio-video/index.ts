@@ -16,6 +16,20 @@ Deno.serve(async (req) => {
   try {
     const automation_key = "push-aleatorio-video";
     
+    // Anti-duplicidade / Cooldown: se já houve disparo recente nos últimos 45min (ex: boletim das 18h), não dispara videoaula no mesmo minuto
+    const fortyFiveMinAgo = new Date(Date.now() - 45 * 60 * 1000).toISOString();
+    const { data: recent } = await admin
+      .from("push_campaigns")
+      .select("id")
+      .gte("created_at", fortyFiveMinAgo)
+      .neq("automation_key", automation_key)
+      .limit(1);
+
+    if (recent && recent.length > 0) {
+      console.log("[push-aleatorio-video] Já houve outro push recente nos últimos 45min. Abortando para evitar duplicidade.");
+      return json({ ok: true, skipped: "cooldown_recente" });
+    }
+
     // Fallback if no specific video table is found
     const title = `📺 Fim de Tarde de Foco: Sua videoaula recomendada de hoje`;
     const body = `Assista agora a esta aula estratégica e garanta mais uma etapa vencida no dia.`;

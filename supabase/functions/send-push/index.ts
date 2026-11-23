@@ -176,13 +176,14 @@ Deno.serve(async (req) => {
         .is("invalidated_at", null)
         .order("updated_at", { ascending: false, nullsFirst: false });
 
-      // REGRA SUPREMA DE EXCLUSÃO DE ADMIN:
-      // Por padrão, NUNCA envia pushes gerais de usuários para aparelhos de administradores.
+      // SEGMENTAÇÃO DE ADMINS:
+      // Apenas filtra out admins se o público for explicitamente configurado como 'users_only'
       if (a.target === "admins_only") {
         q = q.eq("is_admin_device", true);
-      } else if (!a.include_admins && a.target !== "all") {
+      } else if (a.target === "users_only" || (a.include_admins === false && a.target !== "all" && !a.all)) {
         q = q.eq("is_admin_device", false);
       }
+      // Se a.all === true, a.target === 'all' ou include_admins === true, admins recebem normalmente.
       if (a.platforms?.length) q = q.in("platform", a.platforms);
       if (userIds.length) q = q.in("user_id", [...new Set(userIds)]);
       else if (premiumUserIds) q = q.in("user_id", premiumUserIds.length ? premiumUserIds : ["00000000-0000-0000-0000-000000000000"]);
