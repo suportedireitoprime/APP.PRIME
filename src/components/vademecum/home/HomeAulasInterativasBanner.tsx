@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef, useCallback } from 'react';
+import { memo, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, BookOpen, ArrowRight, type LucideIcon } from 'lucide-react';
@@ -16,7 +16,7 @@ export interface BannerDestaqueItem {
   to: string;
 }
 
-const BANNER_ITEMS: BannerDestaqueItem[] = [
+const BASE_BANNER_ITEMS: BannerDestaqueItem[] = [
   {
     id: 'aulas',
     tag: 'Aulas Interativas',
@@ -28,8 +28,8 @@ const BANNER_ITEMS: BannerDestaqueItem[] = [
   },
   {
     id: 'horus',
-    tag: 'Assistente Jurídico IA',
-    nome: 'Hórus IA',
+    tag: 'Assistente no WhatsApp',
+    nome: 'Hórus WhatsApp',
     subtitulo: 'Tire dúvidas em tempo real',
     color: '#EAB308', // Amarelo Dourado
     imageSrc: horusOwl, // Passarinho / Corujinha do Hórus
@@ -46,11 +46,23 @@ const BANNER_ITEMS: BannerDestaqueItem[] = [
   },
 ];
 
+function shuffleArray<T>(items: readonly T[]): T[] {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 const HomeAulasInterativasBanner = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Ordem aleatória a cada entrada no aplicativo
+  const bannerItems = useMemo(() => shuffleArray(BASE_BANNER_ITEMS), []);
 
   // Contador para disparar a animação de reflexo sempre que entrar ou voltar para o Início
   const [animKey, setAnimKey] = useState(0);
@@ -83,9 +95,9 @@ const HomeAulasInterativasBanner = () => {
     const width = el.clientWidth;
     if (width > 0) {
       const idx = Math.round(scrollLeft / width);
-      setActiveIndex(Math.max(0, Math.min(BANNER_ITEMS.length - 1, idx)));
+      setActiveIndex(Math.max(0, Math.min(bannerItems.length - 1, idx)));
     }
-  }, []);
+  }, [bannerItems.length]);
 
   const scrollToIndex = useCallback((index: number) => {
     const el = scrollerRef.current;
@@ -111,7 +123,7 @@ const HomeAulasInterativasBanner = () => {
         onScroll={handleScroll}
         className="w-full flex overflow-x-auto snap-x snap-mandatory gap-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        {BANNER_ITEMS.map((item, idx) => {
+        {bannerItems.map((item, idx) => {
           const Icon = item.icon;
           const isActive = idx === activeIndex;
 
@@ -257,7 +269,7 @@ const HomeAulasInterativasBanner = () => {
 
       {/* Indicadores de Paginação do Carrossel (Dots temáticos) */}
       <div className="flex items-center justify-center gap-1.5 pt-0.5">
-        {BANNER_ITEMS.map((item, idx) => {
+        {bannerItems.map((item, idx) => {
           const isActive = idx === activeIndex;
           return (
             <button
