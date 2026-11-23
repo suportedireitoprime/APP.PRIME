@@ -147,8 +147,8 @@ const LembreteSheet = ({ open, onClose, reminderId, livroId, livroArea, livroTit
         setId(data.id);
       }
 
-      // Local (Capacitor)
-      if (savedId && canais.includes('local')) {
+      // Local nativo prioritário (Local-First Híbrido)
+      if (savedId) {
         await scheduleLocalReminder({
           reminderId: savedId,
           title: previewMsg.title,
@@ -156,8 +156,6 @@ const LembreteSheet = ({ open, onClose, reminderId, livroId, livroArea, livroTit
           timeHHMM: hora,
           daysOfWeek: dias,
         });
-      } else if (savedId) {
-        await cancelLocalReminder(savedId);
       }
 
       toast.success('Lembrete salvo!');

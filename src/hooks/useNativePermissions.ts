@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ensureNativePushListeners, flushPendingNativePushToken, registerNativePushToken } from '@/lib/nativePush';
 import { seedFirstOpen, maybeRequestOnSecondOpen } from '@/lib/inAppReview';
 import { checkForAppUpdate } from '@/lib/appUpdate';
+import { sincronizarTodosLembretesLocais } from '@/lib/nativo/sincronizadorLembretesLocais';
 
 /**
  * Sets up native-only behaviors on app boot:
@@ -70,8 +71,12 @@ export function useNativePermissions() {
             FirebaseMessaging.checkPermissions().then((p) => {
               if (isMounted && p.receive === 'granted') registerNativePushToken();
             });
+            // Re-sincroniza lembretes locais nativos com a conta atual
+            sincronizarTodosLembretesLocais();
           }, 250);
         }).data;
+        // Sincronização inicial no boot
+        void sincronizarTodosLembretesLocais();
       } catch (e) { console.warn('PushNotifications setup skipped', e); }
       if (!isMounted) return;
 

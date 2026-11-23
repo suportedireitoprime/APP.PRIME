@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Bell, BookOpen, Lock, MessageCircle, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LivroSnapshot } from '@/lib/bibliotecaTracking';
+import { sincronizarTodosLembretesLocais } from '@/lib/nativo/sincronizadorLembretesLocais';
 
 type Channel = 'push' | 'horus';
 
@@ -159,6 +160,7 @@ export default function LembreteLivroSheet({
       const { error } = await supabase.from('reading_reminders').insert(rows as any);
       if (error) throw error;
 
+      void sincronizarTodosLembretesLocais(user.id);
       toast.success('Lembrete salvo! Você será avisado no(s) horário(s) escolhido(s).');
       onChanged?.();
       onOpenChange(false);
@@ -179,6 +181,7 @@ export default function LembreteLivroSheet({
         .delete()
         .eq('user_id', user.id)
         .eq('livro_id', String(livro.id));
+      void sincronizarTodosLembretesLocais(user.id);
       toast.success('Lembretes deste livro desativados.');
       onChanged?.();
       onOpenChange(false);
