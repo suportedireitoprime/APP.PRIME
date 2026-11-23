@@ -57,7 +57,14 @@ export const handler = (async (req) => {
 
       try {
         await admin.functions.invoke("send-push", {
-          body: { title, body, url, audience: { user_ids: [c.user_id] } },
+          body: {
+            title,
+            body,
+            url,
+            user_id: c.user_id,
+            audience: { user_ids: [c.user_id], all: false, target: "users_only" },
+            mirror_canal: false,
+          },
         });
         await admin.from("horus_outbound_log").insert({
           user_id: c.user_id,

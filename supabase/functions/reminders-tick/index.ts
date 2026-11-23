@@ -285,9 +285,14 @@ Deno.serve(async (req) => {
       if (shouldPush) {
         const body = aiText || `${nome ? `${nome}, ` : ''}${base.body}`;
         const res = await sendPushWithRetry({
-          user_id: r.user_id, title: base.title, body,
+          user_id: r.user_id,
+          audience: { user_ids: [r.user_id], all: false, target: 'users_only' },
+          title: base.title,
+          body,
           url: r.livro_id ? `/biblioteca?livro=${encodeURIComponent(r.livro_id)}` : '/biblioteca',
           tag: `lembrete-${r.id}`,
+          mirror_canal: false,
+          personalize: false,
         });
         await logDispatch({
           reminder_id: r.id, user_id: r.user_id, canal: 'push',
@@ -388,7 +393,13 @@ Deno.serve(async (req) => {
       const shouldPush = (wantsPush || (horusAvailable && !horusOk)) && !horusOk;
       if (shouldPush) {
         const res = await sendPushAudienceWithRetry({
-          audience: { user_ids: [r.user_id] }, title, body, tag: `article-reminder-${r.id}`,
+          user_id: r.user_id,
+          audience: { user_ids: [r.user_id], all: false, target: 'users_only' },
+          title,
+          body,
+          tag: `article-reminder-${r.id}`,
+          mirror_canal: false,
+          personalize: false,
         });
         await logDispatch({
           reminder_id: r.id, user_id: r.user_id, canal: 'push',
@@ -478,11 +489,14 @@ Deno.serve(async (req) => {
             const shouldPush = (wantsPush || (wantsHorus && !horusOk)) && !horusOk;
             if (shouldPush) {
               const res = await sendPushAudienceWithRetry({
-                audience: { user_ids: [r.user_id] },
+                user_id: r.user_id,
+                audience: { user_ids: [r.user_id], all: false, target: 'users_only' },
                 title: `📍 ${r.label}`,
                 body: r.message,
                 url: r.target_route || (r.artigo_ref ? `/lei?ref=${encodeURIComponent(r.artigo_ref)}` : '/lembretes-local'),
                 tag: `location-reminder-${r.id}`,
+                mirror_canal: false,
+                personalize: false,
               });
               await logDispatch({
                 reminder_id: r.id, user_id: r.user_id, canal: 'push',
@@ -548,11 +562,14 @@ Deno.serve(async (req) => {
 
         const meta = r.meta_questoes || 10;
         const res = await sendPushAudienceWithRetry({
-          audience: { user_ids: [r.user_id] },
+          user_id: r.user_id,
+          audience: { user_ids: [r.user_id], all: false, target: 'users_only' },
           title: '🎯 Hora de praticar questões',
           body: `Bora resolver ${meta} questões agora?`,
           url: '/questoes/praticar',
           tag: `questoes-lembrete-${r.id}`,
+          mirror_canal: false,
+          personalize: false,
         });
         await logDispatch({
           reminder_id: r.id, user_id: r.user_id, canal: 'push',

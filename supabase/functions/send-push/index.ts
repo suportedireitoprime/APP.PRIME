@@ -46,7 +46,8 @@ interface PushPayload {
   audience?: Audience;
   tokens?: string[];
   user_ids?: string[]; // compat legado
-  /** Desliga o espelhamento no canal do WhatsApp (default: ligado). */
+  user_id?: string; // envio individual para um único usuário
+  /** Desliga o espelhamento no canal do WhatsApp (default: ligado para campanhas gerais; desligado para usuários específicos). */
   mirror_canal?: boolean;
   /** Se true, prefixa "{primeiro_nome}, " no título e substitui placeholders. */
   personalize?: boolean;
@@ -147,9 +148,24 @@ Deno.serve(async (req) => {
       const known = new Set(rows.map((r) => r.token));
       for (const t of payload.tokens) if (!known.has(t)) rows.push({ token: t, user_id: "", platform: "unknown" });
     } else {
-      const a: Audience = payload.audience ?? { all: true };
-      let userIds = a.user_ids ?? [];
-      if (payload.user_ids?.length) userIds = userIds.concat(payload.user_ids);
+      const rawUserIds: string[] = [];
+      if ((payload as any).user_id) rawUserIds.push(String((payload as any).user_id));
+      if (Array.isArray(payload.user_ids)) rawUserIds.push(...payload.user_ids);
+      if ((payload.audience as any)?.user_id) rawUserIds.push(String((payload.audience as any).user_id));
+      if (Array.isArray(payload.audience?.user_ids)) rawUserIds.push(...payload.audience!.user_ids!);
+
+      // Se passou user_id específico ou lista de e-mails, É UM ENVIO DIRECIONADO (all = false)
+      const hasSpecificUsers = rawUserIds.length > 0 || Boolean(payload.audience?.emails?.length);
+      const a: Audience = payload.audience ?? (hasSpecificUsers ? { all: false } : { all: true });
+      if (hasSpecificUsers) {
+        a.all = false;
+        // Notificações e lembretes individuais de usuários NUNCA espelham no canal público do WhatsApp
+        if (payload.mirror_canal === undefined) {
+          payload.mirror_canal = false;
+        }
+      }
+
+      let userIds = Array.from(new Set(rawUserIds.map((u) => String(u).trim()).filter(Boolean)));
 
       // resolve emails -> user_ids
       if (a.emails?.length) {
@@ -159,7 +175,14 @@ Deno.serve(async (req) => {
         const matched = (uList?.users ?? [])
           .filter((u) => u.email && emails.includes(u.email.toLowerCase()))
           .map((u) => u.id);
-        userIds = userIds.concat(matched);
+        userIds = Array.from(new Set([...userIds, ...matched]));
+      }
+
+      // Se o push foi direcionado a usuários específicos mas nenhum ID foi encontrado,
+      // interrompe IMEDIATAMENTE retornando 0 enviados (NUNCA faz broadcast para todos!)
+      if (hasSpecificUsers && !userIds.length) {
+        return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "Nenhum usuário alvo encontrado" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       // premium filter
@@ -176,23 +199,35 @@ Deno.serve(async (req) => {
         .is("invalidated_at", null)
         .order("updated_at", { ascending: false, nullsFirst: false });
 
-      // SEGMENTAÇÃO DE ADMINS:
-      // Apenas filtra out admins se o público for explicitamente configurado como 'users_only'
-      if (a.target === "admins_only") {
-        q = q.eq("is_admin_device", true);
-      } else if (a.target === "users_only" || (a.include_admins === false && a.target !== "all" && !a.all)) {
-        q = q.eq("is_admin_device", false);
+      if (userIds.length) {
+        // SEGURANÇA MÁXIMA & ISOLAMENTO:
+        // Filtra ESTRITAMENTE os tokens pertencentes a esses user_ids.
+        // O token de nenhum outro usuário (inclusive o do admin) pode ser retornado aqui.
+        q = q.in("user_id", userIds);
+      } else {
+        // SEGMENTAÇÃO DE ADMINS APENAS EM CAMPANHAS GERAIS:
+        if (a.target === "admins_only") {
+          q = q.eq("is_admin_device", true);
+        } else if (a.target === "users_only" || (a.include_admins === false && a.target !== "all" && !a.all)) {
+          q = q.eq("is_admin_device", false);
+        }
+        if (premiumUserIds) {
+          q = q.in("user_id", premiumUserIds.length ? premiumUserIds : ["00000000-0000-0000-0000-000000000000"]);
+        }
       }
-      // Se a.all === true, a.target === 'all' ou include_admins === true, admins recebem normalmente.
+
       if (a.platforms?.length) q = q.in("platform", a.platforms);
-      if (userIds.length) q = q.in("user_id", [...new Set(userIds)]);
-      else if (premiumUserIds) q = q.in("user_id", premiumUserIds.length ? premiumUserIds : ["00000000-0000-0000-0000-000000000000"]);
-      // se all=true e sem filtros de user, envia para todos
+
       const { data, error } = await q.limit(50000);
       if (error) throw error;
       rows = (data ?? []) as Row[];
 
-      if (premiumUserIds && !userIds.length) {
+      // BARREIRA DE PROTEÇÃO ADICIONAL EM MEMÓRIA:
+      // Garante 100% que nenhum token fora do conjunto autorizado passe.
+      if (userIds.length) {
+        const allowedSet = new Set(userIds);
+        rows = rows.filter((r) => allowedSet.has(r.user_id));
+      } else if (premiumUserIds && !userIds.length) {
         const set = new Set(premiumUserIds);
         rows = rows.filter((r) => set.has(r.user_id));
       }
