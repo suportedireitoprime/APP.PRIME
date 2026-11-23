@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Loader2, ChevronRight, Play } from 'lucide-react';
+import { Search, X, Loader2, ChevronRight, Play, ArrowLeft } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
 import { type VideoaulasHeroTab } from './VideoaulasActionShortcuts';
 import { VideoaulasContinuarCard } from './VideoaulasContinuarCard';
 import { VideoaulasIniciantesCarousel } from './VideoaulasIniciantesCarousel';
-import { VideoaulasAreaChips } from './VideoaulasAreaChips';
 import { VideoaulasAreaCard, type VideoaulaAreaItem } from './VideoaulasAreaCard';
 import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
@@ -203,12 +202,12 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
           )}
 
           {/* Seção Catálogo de Videoaulas */}
-          <section className="pt-3 sm:pt-4 space-y-4">
+          <section className="pt-3 sm:pt-4 space-y-3.5">
             <div className="flex items-start justify-between px-1 gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-5 rounded-full bg-red-500" />
-                  <h2 className="font-sans text-lg sm:text-xl font-black text-white uppercase tracking-wider leading-tight">
+                  <span className="w-1 h-4 rounded-full bg-red-500/80 shrink-0" />
+                  <h2 className="font-sans text-[15px] sm:text-[17px] font-normal text-white/95 uppercase tracking-widest leading-tight">
                     {heroTab === 'favoritos'
                       ? 'Matérias Favoritas'
                       : heroTab === 'emalta'
@@ -217,76 +216,67 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                       ? 'Matérias Recentes'
                       : heroTab === 'playlist'
                       ? 'Playlists de Aulas'
-                      : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
-                      ? `Matéria: ${activeChipTab}`
+                      : selectedArea
+                      ? selectedArea.displayArea
                       : 'Todas as Matérias'}
                   </h2>
                 </div>
-                <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 ml-3.5 leading-snug">
-                  {heroTab === 'favoritos'
+                <p className="text-[11.5px] sm:text-xs text-zinc-400/80 font-light mt-1 ml-3 leading-snug">
+                  {selectedArea
+                    ? `${selectedArea.displayArea} · Videoaulas completas`
+                    : heroTab === 'favoritos'
                     ? 'Suas áreas jurídicas salvas para estudo contínuo.'
-                    : activeChipTab !== 'Todos' && activeChipTab !== 'Em Andamento'
-                    ? 'Toque na matéria para abrir os módulos e aulas completas.'
-                    : 'Toque em qualquer matéria para abrir os módulos e aulas completas.'}
+                    : 'Toque em qualquer matéria para abrir as videoaulas.'}
                 </p>
               </div>
 
-              {(heroTab !== 'todos' || activeChipTab !== 'Todos') && (
+              {(heroTab !== 'todos' || selectedArea) && (
                 <button
                   onClick={() => {
                     haptic.selection();
                     setHeroTab('todos');
                     setActiveChipTab('Todos');
                   }}
-                  className="shrink-0 flex items-center justify-center gap-1.5 h-[34px] px-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-md shadow-red-600/30 transition-all active:scale-95"
+                  className="shrink-0 flex items-center justify-center gap-1 h-7 sm:h-8 px-2.5 sm:px-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-white/70 hover:text-white text-[11px] sm:text-xs font-light transition-all active:scale-95 border border-white/[0.08]"
                 >
                   <span>Ver todas</span>
-                  <ChevronRight className="w-4 h-4 stroke-[2.6]" />
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[1.6]" />
                 </button>
               )}
             </div>
 
-            {/* Campo de Busca Rápida Ergonômico */}
+            {/* Campo de Busca Rápida Ergonômico e Minimalista */}
             <div className="relative">
-              <Search className="w-5 h-5 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none stroke-[1.6]" />
               <input
                 id="busca-videoaulas-input"
                 type="text"
                 value={q}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Buscar matéria, assunto ou videoaula…"
-                className="w-full pl-11 pr-11 h-12 sm:h-13 text-sm sm:text-base rounded-2xl bg-zinc-900/90 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500/50 transition-colors shadow-sm font-sans"
+                className="w-full pl-10 pr-10 h-10 sm:h-11 text-xs sm:text-[13px] rounded-xl bg-zinc-950/60 border border-white/[0.07] text-white/90 placeholder-zinc-500 focus:outline-none focus:border-white/20 transition-colors shadow-inner font-sans font-light"
               />
               {q && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer active:scale-95"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer active:scale-95"
                   aria-label="Limpar busca"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5 stroke-[1.6]" />
                 </button>
               )}
             </div>
 
-            {/* Menu de Alternância de Áreas & Matérias */}
-            <VideoaulasAreaChips
-              areas={areasItens}
-              activeTab={activeChipTab}
-              onSelectTab={setActiveChipTab}
-              onOpenArea={handleAreaClick}
-              emAndamentoCount={state.emAndamentoCount}
-            />
-
             {/* Listagem de Matérias ou Resultados */}
             {q.trim() && state.loading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2 text-zinc-400">
-                <Loader2 className="w-6 h-6 animate-spin text-red-500" />
-                <p className="text-xs font-sans">Buscando aulas e matérias…</p>
+                <Loader2 className="w-5 h-5 animate-spin text-white/50" />
+                <p className="text-xs font-sans font-light text-white/40">Buscando aulas e matérias…</p>
               </div>
             ) : q.trim() && state.aulasFiltradas.length > 0 ? (
-              <div className="space-y-3 pt-1">
-                <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-sans">
+              <div className="space-y-2.5 pt-0.5">
+                <p className="text-[11px] font-light uppercase tracking-wider text-zinc-400 font-sans">
                   {state.aulasFiltradas.length} {state.aulasFiltradas.length === 1 ? 'aula encontrada' : 'aulas encontradas'}
                 </p>
                 <div className="space-y-2">
@@ -296,47 +286,33 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                 </div>
               </div>
             ) : selectedArea ? (
-              <div className="space-y-3.5 pt-1">
-                {/* Cabeçalho da Matéria com Capa Oficial das Aulas Interativas */}
-                <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/95 border border-rose-500/30 text-rose-200 shadow-lg">
-                  <div className="flex items-center gap-3.5 min-w-0 pr-2">
-                    <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-md bg-black relative">
-                      <img
-                        src={getCapaDaArea(selectedArea.area)}
-                        alt={selectedArea.displayArea}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-sans font-bold text-base sm:text-lg text-white truncate">
-                        {selectedArea.displayArea}
-                      </h3>
-                      <p className="font-sans text-xs sm:text-[13px] text-zinc-400 mt-0.5">
-                        {loadingAulasMateria
-                          ? 'Carregando videoaulas...'
-                          : `${aulasDaMateria.length || selectedArea.total} videoaulas disponíveis`}
-                      </p>
-                    </div>
-                  </div>
+              <div className="space-y-2.5 pt-0.5">
+                {/* Barra de Navegação Superior Minimalista da Matéria */}
+                <div className="flex items-center justify-between gap-3 pb-2 pt-0.5 border-b border-white/[0.06]">
                   <button
                     type="button"
-                    onClick={() => handleAreaClick(selectedArea.slug)}
-                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-rose-950/50 transition-all active:scale-95 cursor-pointer shrink-0"
+                    onClick={() => {
+                      haptic.selection();
+                      setActiveChipTab('Todos');
+                    }}
+                    className="inline-flex items-center gap-1.5 py-1 px-2 -ml-1 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.05] active:scale-95 transition-all text-xs font-light cursor-pointer"
                   >
-                    <span>Ver Módulos</span>
-                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                    <ArrowLeft className="w-3.5 h-3.5 stroke-[1.6]" />
+                    <span>Todas as matérias</span>
                   </button>
+                  <span className="text-[11.5px] text-white/40 font-light truncate">
+                    {loadingAulasMateria ? 'Carregando...' : `${aulasDaMateria.length || selectedArea.total} videoaulas`}
+                  </span>
                 </div>
 
                 {/* Lista Completa de Aulas da Matéria */}
                 {loadingAulasMateria ? (
                   <div className="flex flex-col items-center justify-center py-10 gap-2 text-zinc-400">
-                    <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
-                    <p className="text-xs font-sans">Carregando aulas de {selectedArea.displayArea}...</p>
+                    <Loader2 className="w-5 h-5 animate-spin text-white/50" />
+                    <p className="text-xs font-light font-sans text-white/40">Carregando aulas de {selectedArea.displayArea}...</p>
                   </div>
                 ) : aulasDaMateria.length > 0 ? (
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {aulasDaMateria.map((aula) => {
                       const hit: AulaHit = {
                         videoId: aula.video_id,
@@ -349,13 +325,13 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-8 rounded-2xl bg-zinc-900/40 border border-white/5 p-6 text-zinc-400 text-xs">
+                  <div className="text-center py-8 rounded-xl bg-zinc-950/40 border border-white/[0.05] p-6 text-zinc-400 text-xs font-light">
                     Nenhuma aula encontrada para esta matéria.
                   </div>
                 )}
               </div>
             ) : filteredAreas.length > 0 ? (
-              <div className="space-y-3 pt-1">
+              <div className="space-y-2 pt-0.5">
                 {filteredAreas.map((area) => (
                   <VideoaulasAreaCard
                     key={area.slug}

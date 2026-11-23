@@ -22,9 +22,9 @@ export const VideoaulasAulaResultCard: React.FC<VideoaulasAulaResultCardProps> =
         haptic.selection();
         navigate(`/videoaulas/${aula.catalogoId}/${aula.slugArea || 'aulas'}/${aula.videoId}`);
       }}
-      className="w-full flex items-center gap-3.5 p-3 sm:p-4 min-h-[88px] text-left hover:bg-white/[0.04] active:scale-[0.985] transition-all rounded-2xl bg-[#141416]/90 border border-white/10 hover:border-rose-500/40 shadow-md group overflow-hidden relative cursor-pointer"
+      className="w-full flex items-center gap-3 p-2.5 sm:p-3 min-h-[74px] text-left hover:bg-white/[0.04] active:scale-[0.99] transition-all rounded-xl sm:rounded-2xl bg-zinc-950/50 hover:bg-zinc-900/60 border border-white/[0.06] hover:border-white/15 shadow-sm group overflow-hidden relative cursor-pointer backdrop-blur-sm"
     >
-      <div className="w-[58px] h-[78px] sm:w-[64px] sm:h-[84px] shrink-0 rounded-xl overflow-hidden bg-black/40 border border-white/10 shadow-lg relative flex items-center justify-center">
+      <div className="w-[52px] h-[70px] sm:w-[58px] sm:h-[76px] shrink-0 rounded-lg sm:rounded-xl overflow-hidden bg-black/50 border border-white/[0.08] shadow relative flex items-center justify-center">
         <img
           src={coverUrl}
           alt={tituloLimpo}
@@ -34,25 +34,25 @@ export const VideoaulasAulaResultCard: React.FC<VideoaulasAulaResultCardProps> =
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-6 h-6 rounded-full bg-rose-600/90 text-white flex items-center justify-center shadow">
-            <Play className="w-3 h-3 fill-white ml-0.5" />
+          <div className="w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center shadow backdrop-blur-xs border border-white/20">
+            <Play className="w-2.5 h-2.5 fill-white ml-0.5" />
           </div>
         </div>
       </div>
 
       <div className="flex-1 min-w-0 pr-1">
-        <h4 className="font-sans font-bold text-base sm:text-[17px] text-white group-hover:text-rose-300 transition-colors leading-snug line-clamp-2">
+        <h4 className="font-sans font-normal text-[13.5px] sm:text-[14.5px] text-white/90 group-hover:text-white transition-colors leading-snug line-clamp-2 tracking-normal">
           {tituloLimpo}
         </h4>
-        <p className="font-sans text-xs sm:text-[13px] text-white/50 leading-tight mt-1.5 flex items-center gap-1.5 truncate">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+        <p className="font-sans font-light text-[11px] sm:text-[11.5px] text-white/40 leading-tight mt-1 flex items-center gap-1.5 truncate">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500/80 shrink-0" />
           <span className="truncate">{aula.area}</span>
         </p>
       </div>
 
-      {/* Seta com Fundo Vermelho Carmesim */}
-      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-600 text-white border border-rose-500/50 shadow-md shadow-rose-950/50 group-hover:bg-rose-500 flex items-center justify-center shrink-0 transition-all duration-200">
-        <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+      {/* Seta Minimalista e Elegante */}
+      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/[0.03] text-white/35 group-hover:text-white group-hover:bg-white/[0.08] flex items-center justify-center shrink-0 transition-all duration-200">
+        <ChevronRight className="w-4 h-4 stroke-[1.6]" />
       </div>
     </button>
   );

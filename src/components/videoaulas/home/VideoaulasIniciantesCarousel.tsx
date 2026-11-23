@@ -96,18 +96,18 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-4.5 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 shrink-0 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-              <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-black uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1 h-4 rounded-full bg-amber-500/80 shrink-0" />
+              <h3 className="font-sans text-white text-[14.5px] sm:text-[15.5px] font-normal uppercase tracking-widest flex items-center gap-1.5">
                 <span>Para Iniciantes</span>
                 {totalConcluidas > 0 && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-light bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 flex items-center gap-1">
                     <CheckCircle2 className="w-2.5 h-2.5" />
                     {totalConcluidas} concluídas
                   </span>
                 )}
               </h3>
             </div>
-            <p className="text-zinc-400 text-xs sm:text-[13px] leading-tight ml-3.5 mt-0.5 font-sans whitespace-nowrap overflow-visible">
+            <p className="text-zinc-400/80 text-[11.5px] sm:text-xs leading-tight ml-3 mt-0.5 font-sans font-light whitespace-nowrap overflow-visible">
               Fundamentos do Direito do zero
             </p>
           </div>
@@ -118,10 +118,10 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
               haptic.selection();
               navigate('/videoaulas/iniciante');
             }}
-            className="shrink-0 flex items-center justify-center gap-1.5 h-[32px] px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold whitespace-nowrap shadow-sm shadow-rose-950/50 active:scale-95 transition-all"
+            className="shrink-0 flex items-center justify-center gap-1 h-7 sm:h-8 px-2.5 sm:px-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-white/70 hover:text-white text-[11px] sm:text-xs font-light whitespace-nowrap active:scale-95 transition-all border border-white/[0.08]"
           >
             <span>Ver todas</span>
-            <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            <ChevronRight className="w-3.5 h-3.5 stroke-[1.6]" />
           </button>
         </div>
 
@@ -202,21 +202,21 @@ export const VideoaulasIniciantesCarousel: React.FC<VideoaulasIniciantesCarousel
                 </div>
 
                 {/* Detalhes da Aula: Título Curto + Descrição Curta e Objetiva */}
-                <div className="mt-2.5 px-0.5 space-y-1">
-                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-amber-400 transition-colors leading-snug line-clamp-1">
+                <div className="mt-2.5 px-0.5 space-y-0.5">
+                  <p className="font-sans font-normal text-xs sm:text-[13px] text-white/90 group-hover:text-amber-300 transition-colors leading-snug line-clamp-1">
                     {curado.titulo}
                   </p>
-                  <p className="font-sans text-[11px] text-zinc-400 font-normal leading-snug line-clamp-1">
+                  <p className="font-sans text-[11px] text-zinc-400/70 font-light leading-snug line-clamp-1">
                     {curado.descricao}
                   </p>
-                  <p className="text-[10.5px] text-zinc-500 font-medium leading-none flex items-center justify-between pt-0.5">
+                  <p className="text-[10px] text-zinc-500 font-light leading-none flex items-center justify-between pt-0.5">
                     <span className="truncate max-w-[130px]">{item.canal}</span>
                     {concluida ? (
-                      <span className="text-emerald-400 font-semibold text-[10.5px]">Assistida</span>
+                      <span className="text-emerald-400 font-light text-[10px]">Assistida</span>
                     ) : pct > 0 ? (
-                      <span className="text-amber-400 font-semibold text-[10.5px]">{pct}% visto</span>
+                      <span className="text-amber-400 font-light text-[10px]">{pct}% visto</span>
                     ) : (
-                      <span className="text-zinc-500 text-[10px]">Não iniciada</span>
+                      <span className="text-zinc-500/70 text-[9.5px]">Não iniciada</span>
                     )}
                   </p>
                 </div>

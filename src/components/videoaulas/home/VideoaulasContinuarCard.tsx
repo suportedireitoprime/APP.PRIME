@@ -108,10 +108,10 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
       transition={{ duration: 0.25 }}
       onClick={handleClick}
       style={{ touchAction: 'pan-y' }}
-      className="w-full flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-zinc-900/90 border border-white/10 hover:border-white/20 text-left active:scale-[0.985] transition-all overflow-hidden relative shadow-lg group cursor-pointer touch-pan-y backdrop-blur-xl"
+      className="w-full flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-zinc-950/60 border border-white/[0.07] hover:border-white/15 text-left active:scale-[0.99] transition-all overflow-hidden relative shadow-sm group cursor-pointer touch-pan-y backdrop-blur-md"
     >
       {/* Capa Oficial da Matéria Interativa à esquerda */}
-      <div className="relative w-14 sm:w-16 aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300">
+      <div className="relative w-12 sm:w-14 aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden border border-white/10 bg-black shrink-0 shadow group-hover:scale-105 transition-transform duration-300">
         <img
           src={coverUrl}
           alt={titulo}
@@ -121,42 +121,42 @@ export const VideoaulasContinuarCard: React.FC = memo(function VideoaulasContinu
           draggable={false}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-        <span className="absolute bottom-1 left-1 right-1 text-center py-0.5 rounded bg-black/75 backdrop-blur-md text-[8px] font-black uppercase text-white border border-white/10 font-sans">
+        <span className="absolute bottom-1 left-1 right-1 text-center py-0.5 rounded bg-black/75 backdrop-blur-md text-[8px] font-medium uppercase text-white border border-white/10 font-sans">
           {percentual > 0 ? `${percentual}%` : 'Aula'}
         </span>
       </div>
 
       {/* Conteúdo Central: Apenas Título Sem Negrito + Porcentagem de Quanto Já Viu */}
       <div className="flex-1 min-w-0 pr-1">
-        <div className="flex items-center gap-1.5 mb-1.5">
+        <div className="flex items-center gap-1.5 mb-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
-          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 font-sans">
+          <p className="text-[10px] sm:text-[10.5px] font-light uppercase tracking-wider text-zinc-400 font-sans">
             Continuar Assistindo
           </p>
         </div>
 
-        {/* Título sem negrito (font-normal) */}
-        <h3 className="font-sans text-sm sm:text-base font-normal text-white group-hover:text-zinc-200 transition-colors leading-snug break-words">
+        {/* Título com tipografia fina e elegante */}
+        <h3 className="font-sans text-[13.5px] sm:text-[14.5px] font-normal text-white/95 group-hover:text-white transition-colors leading-snug line-clamp-2">
           {titulo}
         </h3>
 
         {/* Porcentagem de quanto a pessoa já viu */}
-        <div className="flex items-center gap-2 mt-2">
-          <div className="flex-1 max-w-[140px] bg-white/10 h-1.5 rounded-full overflow-hidden">
+        <div className="flex items-center gap-2 mt-1.5">
+          <div className="flex-1 max-w-[130px] bg-white/10 h-1 rounded-full overflow-hidden">
             <div
               className="bg-emerald-400 h-full rounded-full transition-all duration-500"
               style={{ width: `${percentual}%` }}
             />
           </div>
-          <span className="font-sans text-xs text-emerald-400 font-semibold leading-none">
+          <span className="font-sans text-[11px] text-emerald-400 font-light leading-none">
             {percentual}% concluído
           </span>
         </div>
       </div>
 
-      {/* Botão Play Tátil Circular Vermelho Transparente */}
-      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-rose-600/20 border border-rose-500/40 text-[#FF4D6D] group-hover:bg-rose-600/35 group-hover:text-white flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(244,63,94,0.25)] transition-all duration-200">
-        <Play className="w-5 h-5 fill-current ml-0.5" />
+      {/* Botão Play Minimalista */}
+      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/60 group-hover:bg-rose-600/80 group-hover:text-white group-hover:border-rose-500/40 flex items-center justify-center shrink-0 transition-all duration-200">
+        <Play className="w-4 h-4 fill-current ml-0.5" />
       </div>
     </motion.button>
   );
