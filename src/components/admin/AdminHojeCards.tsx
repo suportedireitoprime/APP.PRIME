@@ -566,7 +566,6 @@ export function AdminHojeCards() {
                 'checkout_etapa1_concluida', 
                 'checkout_pix_gerado', 
                 'checkout_pix_pago', 
-                'purchase', 
                 'checkout_cc_enviado', 
                 'checkout_cc_recusado', 
                 'checkout_cc_aprovado'
@@ -851,12 +850,6 @@ export function AdminHojeCards() {
           if (isAdminUser(e.user_id, em)) return;
           const uid = e.user_id || em;
           if (!uid) return;
-          // Ignora eventos purchase de telemetria sem valor financeiro real
-          if (e.event_name === 'purchase') {
-            const meta = e.metadata || {};
-            const val = typeof meta.value === 'number' ? meta.value : 0;
-            if (val <= 0 && !meta.payment_id) return;
-          }
           if (!checkoutUserEvents.has(uid)) {
             checkoutUserEvents.set(uid, []);
           }
@@ -1510,7 +1503,6 @@ export function AdminHojeCards() {
               'checkout_etapa1_concluida', 
               'checkout_pix_gerado', 
               'checkout_pix_pago', 
-              'purchase', 
               'checkout_cc_enviado', 
               'checkout_cc_recusado', 
               'checkout_cc_aprovado'
@@ -1567,12 +1559,6 @@ export function AdminHojeCards() {
             if (isAdminUser(e.user_id, em)) return;
             const uid = e.user_id || em;
             if (!uid) return;
-            // Ignora eventos purchase de telemetria sem valor financeiro real
-            if (e.event_name === 'purchase') {
-              const meta = e.metadata || {};
-              const val = typeof meta.value === 'number' ? meta.value : 0;
-              if (val <= 0 && !meta.payment_id) return;
-            }
             if (!userEventsMap.has(uid)) {
               userEventsMap.set(uid, {
                 ...e,
@@ -1800,7 +1786,7 @@ export function AdminHojeCards() {
         setNovosKeys(new Set());
       }
       const ids = Array.from(new Set(list.map((r) => r.userId).filter(Boolean))) as string[];
-      if (ids.length) {
+      if (ids.length && id !== 'viu_planos') {
         const minD = new Date(datas[datas.length - 1]);
         minD.setHours(0, 0, 0, 0);
         const maxD = new Date(datas[0]);
