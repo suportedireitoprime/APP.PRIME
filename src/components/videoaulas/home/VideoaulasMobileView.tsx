@@ -11,6 +11,7 @@ import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
 import { simplificarNomeArea, getCapaDaArea } from '@/lib/videoaulasCatalogos';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { getCachedAulasDaArea, loadAulasDaArea, type AulaCache } from '@/lib/videoaulasStore';
 import type { AulaHit } from '@/types/videoaula';
 import { haptic } from '@/lib/nativeHaptics';
@@ -287,23 +288,30 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
               </div>
             ) : selectedArea ? (
               <div className="space-y-2.5 pt-0.5">
-                {/* Barra de Navegação Superior Minimalista da Matéria */}
-                <div className="flex items-center justify-between gap-3 pb-2 pt-0.5 border-b border-white/[0.06]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      setActiveChipTab('Todos');
-                    }}
-                    className="inline-flex items-center gap-1.5 py-1 px-2 -ml-1 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.05] active:scale-95 transition-all text-xs font-light cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5 stroke-[1.6]" />
-                    <span>Todas as matérias</span>
-                  </button>
-                  <span className="text-[11.5px] text-white/40 font-light truncate">
-                    {loadingAulasMateria ? 'Carregando...' : `${aulasDaMateria.length || selectedArea.total} videoaulas`}
-                  </span>
-                </div>
+                {(() => {
+                  const { Icon: AreaIcon, color: areaColor } = areaIconFor(selectedArea.slug || selectedArea.area);
+                  return (
+                    <div
+                      className="flex items-center justify-between gap-3 p-3 rounded-2xl border border-white/5 bg-[#252528] hover:bg-[#2F2F33] transition-all shadow-sm"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setActiveChipTab('Todos');
+                        }}
+                        className="inline-flex items-center gap-1.5 py-1 px-2.5 -ml-1 rounded-lg text-white/85 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all text-xs font-light cursor-pointer"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5 stroke-[1.8]" style={{ color: areaColor }} />
+                        <span>Todas as matérias</span>
+                      </button>
+                      <div className="flex items-center gap-1.5 text-[11.5px] font-light truncate text-zinc-300">
+                        <AreaIcon className="w-3.5 h-3.5" style={{ color: areaColor }} />
+                        <span>{loadingAulasMateria ? 'Carregando...' : `${aulasDaMateria.length || selectedArea.total} videoaulas`}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Lista Completa de Aulas da Matéria */}
                 {loadingAulasMateria ? (
