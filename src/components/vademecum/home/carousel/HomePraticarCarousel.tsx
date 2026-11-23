@@ -74,44 +74,81 @@ const HomePraticarCarousel = () => {
   // Sorteia a ordem aleatória ao acessar a tela (sem passar sozinho)
   const randomizedItems = useMemo(() => shuffleArray(PRATICAR_ITEMS), []);
 
-  // 2 cópias (8 itens) para permitir rolagem fluida e confortável sem inchar o DOM
+  // 4 cópias para permitir navegação infinita manual suave em ambas as direções
   const loopedItems = useMemo(() => {
     if (randomizedItems.length === 0) return [];
-    return [...randomizedItems, ...randomizedItems];
+    return [...randomizedItems, ...randomizedItems, ...randomizedItems, ...randomizedItems];
   }, [randomizedItems]);
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const el = scrollerRef.current;
     if (!el) return;
-    const itemWidth = 166; // 154px width + 12px gap
-    const target = idx * itemWidth;
+    const child = el.children[idx] as HTMLElement | undefined;
+    if (!child) return;
+    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
     el.scrollTo({ left: target, behavior });
-    setActiveIndex(idx);
   }, []);
 
   useEffect(() => {
-    setIsReady(true);
-  }, []);
+    if (randomizedItems.length > 0 && !isReady) {
+      const initialIndex = randomizedItems.length;
+      setActiveIndex(initialIndex);
+      setTimeout(() => {
+        scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
+        setIsReady(true);
+      }, 50);
+    }
+  }, [randomizedItems.length, isReady, scrollToIndex]);
 
-  // Detector de scroll com cálculo O(1) puro — zero layout thrashing (sem ler offsetLeft/clientWidth de filhos em loop)
+  // Detector de scroll com salto infinito transparente nas bordas
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const itemWidth = 166;
-    const idx = Math.round(el.scrollLeft / itemWidth);
-    const safeIdx = Math.max(0, Math.min(loopedItems.length - 1, idx));
-    if (safeIdx !== activeIndex) {
-      setActiveIndex(safeIdx);
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const child = el.children[i] as HTMLElement;
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
     }
-  }, [activeIndex, loopedItems.length]);
+
+    const N = randomizedItems.length;
+    if (N > 0) {
+      if (best <= 1) {
+        const jumpTo = best + N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedItems.length - 2) {
+        const jumpTo = best - N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      }
+    }
+
+    setActiveIndex(best);
+  }, [randomizedItems.length, loopedItems.length]);
 
   const handleCardClick = useCallback(
     (item: PraticarItem, index: number) => {
       haptic.selection();
       setActiveIndex(index);
+      scrollToIndex(index, 'smooth');
       navigate(item.path);
     },
-    [navigate]
+    [navigate, scrollToIndex]
   );
 
   return (
@@ -129,11 +166,11 @@ const HomePraticarCarousel = () => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal Manual (idêntica a Leis em Alta) */}
+      {/* Faixa Carrossel Horizontal Manual Infinita */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        className="-mx-4 sm:-mx-6 md:mx-auto md:max-w-4xl px-[calc(50%-74px)] sm:px-6 md:px-2 flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
