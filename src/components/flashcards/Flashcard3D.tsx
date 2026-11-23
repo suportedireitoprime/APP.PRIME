@@ -2,7 +2,7 @@ import { memo, useRef, useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight, Scale, RotateCcw, CheckCircle2, Lightbulb, BookOpen,
-  ListOrdered, XCircle, Mic, AlertTriangle, Edit3, HelpCircle, Undo2,
+  ListOrdered, XCircle, AlertTriangle, Edit3, HelpCircle, Undo2,
   ChevronDown, Sparkles, Maximize2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -229,7 +229,6 @@ const Flashcard3D = memo(function Flashcard3D({
     if (raw.toLowerCase().includes('verdadeiro') || raw.toLowerCase().includes('v/f')) return 'Verdadeiro ou Falso';
     if (raw.toLowerCase().includes('lacuna')) return 'Completar Lacunas';
     if (raw.toLowerCase().includes('erro')) return 'Ache o Erro';
-    if (raw.toLowerCase().includes('ditado') || raw.toLowerCase().includes('fala')) return 'Ditado';
     if (raw.toLowerCase().includes('pegadinha')) return 'Pegadinha';
     return 'Pergunta e Resposta';
   }, [atual.tipo, atual.resumo_ia]);
@@ -316,11 +315,6 @@ const Flashcard3D = memo(function Flashcard3D({
     return p;
   }, [atual.pergunta, tipoCard, lacunasPreenchidas]);
 
-  // Estados do Ditado / Voz
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const recognitionRef = useRef<any>(null);
-
   // Limpa estados ao trocar de card
   useEffect(() => {
     setSelectedOption(null);
@@ -329,13 +323,8 @@ const Flashcard3D = memo(function Flashcard3D({
     setLacunasPreenchidas([]);
     setLacunaStatus('idle');
     setSelectedWord(null);
-    setIsListening(false);
-    setTranscript('');
     setAprofundar(false);
     setModalAprofundarOpen(false);
-    if (recognitionRef.current) {
-      try { recognitionRef.current.abort(); } catch {}
-    }
   }, [atual.id, idx]);
 
   // Fecha aprofundamento ao desvirar o card
@@ -358,66 +347,6 @@ const Flashcard3D = memo(function Flashcard3D({
         );
       }
     });
-  };
-
-  // Reconhecimento de Voz (Ditado)
-  const toggleSpeechRecognition = () => {
-    const SpeechRec = typeof window !== 'undefined'
-      ? ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
-      : null;
-
-    if (!SpeechRec) {
-      toast.info('Reconhecimento de voz não suportado neste navegador. Toque para conferir a resposta.');
-      return;
-    }
-
-    if (isListening) {
-      try { recognitionRef.current?.stop(); } catch {}
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRec();
-      recognition.lang = 'pt-BR';
-      recognition.interimResults = true;
-      recognition.continuous = false;
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        haptic.selection?.();
-      };
-
-      recognition.onresult = (event: any) => {
-        let text = '';
-        for (let i = 0; i < event.results.length; i++) {
-          text += event.results[i][0].transcript;
-        }
-        setTranscript(text);
-      };
-
-      recognition.onerror = (event: any) => {
-        setIsListening(false);
-        if (event.error === 'not-allowed') {
-          toast.error('Permissão de microfone negada no navegador.');
-        }
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-        haptic.success?.();
-        toast.success('Fala capturada! Virando card para conferir a resposta...', { duration: 1500 });
-        playFlipSound();
-        setTimeout(() => {
-          onVirar();
-        }, 800);
-      };
-
-      recognitionRef.current = recognition;
-      recognition.start();
-    } catch {
-      setIsListening(false);
-    }
   };
 
   // Preenchimento de Lacuna Única (4 opções)
@@ -445,7 +374,6 @@ const Flashcard3D = memo(function Flashcard3D({
   const isInteractiveRendered = useMemo(() => {
     if (tipoCard === 'Múltipla Escolha') return Boolean(parsedData?.alternativas);
     if (tipoCard === 'Verdadeiro ou Falso') return true;
-    if (tipoCard === 'Ditado') return true;
     if (tipoCard === 'Pegadinha') return true;
     if (tipoCard === 'Completar Lacunas') return palavrasCorretas.length > 0;
     if (tipoCard === 'Ache o Erro') return true;
@@ -485,7 +413,6 @@ const Flashcard3D = memo(function Flashcard3D({
         'Múltipla Escolha': 'Selecione uma das alternativas abaixo para responder.',
         'Verdadeiro ou Falso': 'Escolha Verdadeiro ou Falso abaixo para responder.',
         'Ache o Erro': 'Identifique o termo com erro nas opções abaixo.',
-        'Ditado': 'Toque no microfone abaixo para ditar sua resposta.',
         'Pegadinha': 'Avalie se há pegadinha nas opções abaixo.',
       };
       toast.info(dicasInterativas[tipoCard] || 'Selecione uma resposta abaixo para virar o card.', {
@@ -542,10 +469,10 @@ const Flashcard3D = memo(function Flashcard3D({
             <div
               ref={cardContainerRef}
               data-flashcard="true"
-              className="relative h-full w-full transition-transform duration-[800ms] [transform-style:preserve-3d] contain-layout"
+              className="relative h-full w-full transition-transform duration-300 [transform-style:preserve-3d] contain-layout"
               style={{
                 transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
+                transitionTimingFunction: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
               }}
             >
               {/* Frente da Carta — Dark Glassmorphism Padrão Questões */}
@@ -574,13 +501,11 @@ const Flashcard3D = memo(function Flashcard3D({
                       tipoCard === 'Múltipla Escolha' && 'bg-cyan-950/70 border-cyan-500/40 text-cyan-200',
                       tipoCard === 'Verdadeiro ou Falso' && 'bg-teal-950/70 border-teal-500/40 text-teal-200',
                       tipoCard === 'Ache o Erro' && 'bg-rose-950/70 border-rose-500/40 text-rose-200',
-                      tipoCard === 'Ditado' && 'bg-amber-950/70 border-amber-500/40 text-amber-200',
                       tipoCard === 'Pegadinha' && 'bg-yellow-950/70 border-yellow-500/40 text-yellow-200'
                     )}
                   >
                     {tipoCard === 'Múltipla Escolha' && <ListOrdered className="h-3 w-3 text-cyan-400" />}
                     {tipoCard === 'Verdadeiro ou Falso' && <CheckCircle2 className="h-3 w-3 text-teal-400" />}
-                    {tipoCard === 'Ditado' && <Mic className="h-3 w-3 text-amber-400 animate-pulse" />}
                     {tipoCard === 'Pegadinha' && <AlertTriangle className="h-3 w-3 text-yellow-400" />}
                     {tipoCard === 'Completar Lacunas' && <Edit3 className="h-3 w-3 text-violet-400" />}
                     {tipoCard === 'Ache o Erro' && <XCircle className="h-3 w-3 text-rose-400" />}
@@ -621,12 +546,12 @@ const Flashcard3D = memo(function Flashcard3D({
                 </div>
                 
                 {/* Pergunta (com interpolação dinâmica de lacunas preenchidas) */}
-                <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 py-2">
+                <div className="relative z-10 flex-1 flex items-center justify-center text-center px-2 py-2 overflow-y-auto scrollbar-hide max-h-full">
                   <motion.div 
                     initial={{ opacity: 0, y: 6 }} 
                     animate={{ opacity: 1, y: 0 }} 
                     transition={{ delay: 0.1, duration: 0.3 }} 
-                    className="prose prose-invert max-w-none text-lg md:text-2xl leading-relaxed font-semibold text-zinc-100 prose-p:my-1 prose-strong:text-blue-400 prose-strong:underline prose-strong:underline-offset-4 prose-em:text-zinc-300" 
+                    className="prose prose-invert max-w-none text-lg md:text-2xl leading-relaxed font-semibold text-zinc-100 prose-p:my-1 prose-strong:text-blue-400 prose-strong:underline prose-strong:underline-offset-4 prose-em:text-zinc-300 w-full" 
                     style={{ 
                       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     }}
@@ -661,11 +586,6 @@ const Flashcard3D = memo(function Flashcard3D({
                     <>
                       <XCircle className="h-3.5 w-3.5 text-rose-300" />
                       <span>Identifique o termo com erro nas opções abaixo</span>
-                    </>
-                  ) : tipoCard === 'Ditado' ? (
-                    <>
-                      <Mic className="h-3.5 w-3.5 text-amber-300" />
-                      <span>Grave sua fala no microfone abaixo para responder</span>
                     </>
                   ) : tipoCard === 'Pegadinha' ? (
                     <>
@@ -729,7 +649,7 @@ const Flashcard3D = memo(function Flashcard3D({
                   </div>
 
                   <div
-                    className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4 cursor-pointer"
+                    className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4 cursor-pointer overflow-y-auto scrollbar-hide max-h-full"
                   >
                     <div className={`prose prose-invert max-w-prose text-center flex-1 flex flex-col justify-center ${
                       atual.resposta.length < 40 ? 'text-2xl sm:text-3xl prose-p:text-2xl sm:prose-p:text-3xl' :
@@ -931,56 +851,6 @@ const Flashcard3D = memo(function Flashcard3D({
                 >
                   <XCircle className="h-5 w-5 text-rose-400" />
                   <span>Falso</span>
-                </button>
-              </div>
-            )}
-
-            {/* 3. DITADO (ÁUDIO / VOZ) */}
-            {tipoCard === 'Ditado' && (
-              <div className="flex flex-col items-center gap-3 bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-4 shadow-lg">
-                <div className="flex items-center gap-3 w-full justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
-                      <Mic className={cn('h-5 w-5', isListening && 'animate-bounce text-amber-300')} />
-                    </span>
-                    <div>
-                      <p className="text-[14px] font-bold text-zinc-100">Treino por Voz</p>
-                      <p className="text-[12px] text-zinc-400">
-                        {isListening ? 'Ouvindo... Fale a resposta agora' : 'Fale a resposta no microfone'}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleSpeechRecognition();
-                    }}
-                    className={cn(
-                      'rounded-xl px-4 font-black transition-all shadow-md',
-                      isListening ? 'bg-rose-500 hover:bg-rose-600 text-white animate-pulse' : 'bg-amber-500 hover:bg-amber-600 text-black'
-                    )}
-                  >
-                    {isListening ? 'Parar Fala' : 'Falar Agora'}
-                  </Button>
-                </div>
-
-                {transcript && (
-                  <div className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl p-2.5 text-xs text-zinc-300 italic">
-                    "{transcript}"
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    playFlipSound();
-                    onVirar();
-                  }}
-                  className="w-full text-center text-[12px] font-semibold text-zinc-400 hover:text-white pt-1 transition-colors"
-                >
-                  Prefiro ler sem áudio ➔ Ver Resposta
                 </button>
               </div>
             )}

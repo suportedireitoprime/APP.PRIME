@@ -49,8 +49,8 @@ export function useFlashcardsEngine() {
   const temasList = rawTemas && cleanTemas ? Array.from(new Set([...rawTemas, ...cleanTemas])) : rawTemas;
 
   const parsedTipos = parseList(tiposParam);
-  // Se 'todos' estiver na lista ou vazio ou cobrir todos os 7 tipos padrão, passa null para a RPC liberar todos os cards
-  const tiposList = (!parsedTipos || parsedTipos.length === 0 || parsedTipos.some(t => t.toLowerCase() === 'todos') || parsedTipos.length >= 7)
+  // Se 'todos' estiver na lista ou vazio ou cobrir todos os 6 tipos padrão, passa null para a RPC liberar todos os cards
+  const tiposList = (!parsedTipos || parsedTipos.length === 0 || parsedTipos.some(t => t.toLowerCase() === 'todos') || parsedTipos.length >= 6)
     ? null
     : parsedTipos;
 

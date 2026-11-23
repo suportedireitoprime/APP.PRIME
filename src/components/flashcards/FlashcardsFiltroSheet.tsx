@@ -36,7 +36,6 @@ export const TIPOS_FLASHCARDS = [
   { id: 'Verdadeiro ou Falso', label: 'Verdadeiro ou Falso', desc: 'Julgamento rápido de afirmações jurídicas' },
   { id: 'Completar Lacunas', label: 'Completar Lacunas', desc: 'Preenchimento de termos e lacunas de leis' },
   { id: 'Ache o Erro', label: 'Ache o Erro', desc: 'Identificação de inversões sutis na frase' },
-  { id: 'Ditado', label: 'Ditado (Áudio / Voz)', desc: 'Treino de fala com reconhecimento de voz' },
   { id: 'Pegadinha', label: 'Pegadinha', desc: 'Análise de armadilhas de provas e bancas' },
 ];
 
@@ -569,7 +568,7 @@ const FlashcardsFiltroSheet = ({
                     ? f.tipos[0]
                     : f.tipos.length > 1
                       ? `${f.tipos.length} tipos selecionados`
-                      : 'Todos os tipos (Múltipla escolha, V/F, Ditado...)'
+                      : 'Todos os tipos (Múltipla escolha, V/F, Lacunas...)'
                 }
                 done={!!f.tipos.length}
                 badge={f.tipos.length || undefined}
