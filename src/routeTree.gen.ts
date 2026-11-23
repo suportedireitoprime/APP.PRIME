@@ -52,6 +52,7 @@ import { Route as PilulasRouteImport } from './routes/pilulas'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as QuestoesRouteImport } from './routes/questoes'
 import { Route as QuestoesAnimadasRouteImport } from './routes/questoes-animadas'
+import { Route as QuestoesAnimadasAlfredoRouteImport } from './routes/questoes-animadas-alfredo'
 import { Route as Radar360RouteImport } from './routes/radar-360'
 import { Route as RadaresRouteImport } from './routes/radares'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -378,6 +379,11 @@ const QuestoesRoute = QuestoesRouteImport.update({
 const QuestoesAnimadasRoute = QuestoesAnimadasRouteImport.update({
   id: '/questoes-animadas',
   path: '/questoes-animadas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestoesAnimadasAlfredoRoute = QuestoesAnimadasAlfredoRouteImport.update({
+  id: '/questoes-animadas-alfredo',
+  path: '/questoes-animadas-alfredo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Radar360Route = Radar360RouteImport.update({
@@ -1007,6 +1013,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/questoes-animadas': typeof QuestoesAnimadasRoute
+  '/questoes-animadas-alfredo': typeof QuestoesAnimadasAlfredoRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1164,6 +1171,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/questoes-animadas': typeof QuestoesAnimadasRoute
+  '/questoes-animadas-alfredo': typeof QuestoesAnimadasAlfredoRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1322,6 +1330,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/questoes': typeof QuestoesRouteWithChildren
   '/questoes-animadas': typeof QuestoesAnimadasRoute
+  '/questoes-animadas-alfredo': typeof QuestoesAnimadasAlfredoRoute
   '/radar-360': typeof Radar360Route
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1481,6 +1490,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/questoes-animadas'
+    | '/questoes-animadas-alfredo'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1638,6 +1648,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/questoes-animadas'
+    | '/questoes-animadas-alfredo'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1795,6 +1806,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/questoes'
     | '/questoes-animadas'
+    | '/questoes-animadas-alfredo'
     | '/radar-360'
     | '/radares'
     | '/reset-password'
@@ -1953,6 +1965,7 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   QuestoesRoute: typeof QuestoesRouteWithChildren
   QuestoesAnimadasRoute: typeof QuestoesAnimadasRoute
+  QuestoesAnimadasAlfredoRoute: typeof QuestoesAnimadasAlfredoRoute
   Radar360Route: typeof Radar360Route
   RadaresRoute: typeof RadaresRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -2282,6 +2295,13 @@ declare module '@tanstack/react-router' {
       path: '/questoes-animadas'
       fullPath: '/questoes-animadas'
       preLoaderRoute: typeof QuestoesAnimadasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/questoes-animadas-alfredo': {
+      id: '/questoes-animadas-alfredo'
+      path: '/questoes-animadas-alfredo'
+      fullPath: '/questoes-animadas-alfredo'
+      preLoaderRoute: typeof QuestoesAnimadasAlfredoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/radar-360': {
@@ -3591,6 +3611,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   QuestoesRoute: QuestoesRouteWithChildren,
   QuestoesAnimadasRoute: QuestoesAnimadasRoute,
+  QuestoesAnimadasAlfredoRoute: QuestoesAnimadasAlfredoRoute,
   Radar360Route: Radar360Route,
   RadaresRoute: RadaresRoute,
   ResetPasswordRoute: ResetPasswordRoute,

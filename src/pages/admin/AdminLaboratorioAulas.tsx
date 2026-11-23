@@ -24,6 +24,7 @@ import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
 import { QuestoesAnimadasPlayer } from '@/pages/laboratorio/QuestoesAnimadasPlayer';
+import { QuestoesAnimadasAlfredoPlayer } from '@/pages/laboratorio/QuestoesAnimadasAlfredoPlayer';
 import { AssinaturaVitaliciaView } from '@/components/assinatura/AssinaturaVitaliciaView';
 import { getSubscriptionLayout, setSubscriptionLayout, type SubscriptionLayoutType } from '@/lib/subscriptionLayoutStore';
 import { toast } from 'sonner';
@@ -47,6 +48,7 @@ export default function AdminLaboratorioAulas() {
   const [telaPosTrialAtiva, setTelaPosTrialAtiva] = useState(false);
   const [testadorIconeAtivo, setTestadorIconeAtivo] = useState(false);
   const [questaoAnimadaAtiva, setQuestaoAnimadaAtiva] = useState(false);
+  const [questaoAlfredoAtiva, setQuestaoAlfredoAtiva] = useState(false);
   const [activeSubLayout, setActiveSubLayout] = useState<SubscriptionLayoutType>(() => getSubscriptionLayout());
   const [previewSubLayout, setPreviewSubLayout] = useState<'padrao' | 'vitalicio' | null>(null);
 
@@ -86,6 +88,15 @@ export default function AdminLaboratorioAulas() {
     return (
       <QuestoesAnimadasPlayer
         onVoltar={() => setQuestaoAnimadaAtiva(false)}
+      />
+    );
+  }
+
+  // ── SEÇÃO NOVO: QUESTÃO ANIMADA OAB XLII Q60 (ALFREDO E RECEPTAÇÃO) ──
+  if (questaoAlfredoAtiva) {
+    return (
+      <QuestoesAnimadasAlfredoPlayer
+        onVoltar={() => setQuestaoAlfredoAtiva(false)}
       />
     );
   }
@@ -293,6 +304,59 @@ export default function AdminLaboratorioAulas() {
                     >
                       <Play className="w-3 h-3 fill-current" />
                       <span>Abrir Questão</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── 1.2. QUESTÃO ANIMADA 2D: ALFREDO E RECEPTAÇÃO (OAB XLII · Q60) ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'questoes') && (
+            <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-4 transition-all hover:bg-zinc-900/60 hover:border-white/10 group">
+              <div className="flex items-start gap-3.5">
+                {/* Miniatura com Ícone de Carro / Blitz */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-amber-500/30 relative bg-[#0a1120] shadow-sm flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-blue-950/40 to-black/80" />
+                  <Film className="w-7 h-7 text-amber-400 relative z-10" />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none z-10">
+                    <div className="w-7 h-7 rounded-full bg-amber-400 text-zinc-950 flex items-center justify-center shadow-md">
+                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Conteúdo */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
+                      ANIMAÇÃO 2D · OAB XLII
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      FGV · XLII · Q60 · Penal
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Alfredo e a Receptação Sem Dolo
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  </h3>
+
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Motorista de escolta é parado em blitz com veículo funcional roubado · Ausência de dolo, elemento subjetivo e tese de exclusão da tipicidade (Gabarito C).
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('heavy'); } catch {}
+                        setQuestaoAlfredoAtiva(true);
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Abrir Questão (OAB XLII)</span>
                     </button>
                   </div>
                 </div>

@@ -1,0 +1,3568 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>OAB XLII Q60: Receptação sem dolo</title>
+    <style>
+      :root{
+        --bg:#e9eef5; --panel:#ffffff; --ink:#14213a; --ink2:#4a5a75;
+        --line:#c9d4e4; --accent:#ffb400; --accent-ink:#14213a;
+        --green:#1d9e63; --red:#d92b3a; --navy:#12294d;
+        --chip:#dfe8f4; --shadow:0 10px 30px rgba(10,25,55,.18);
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0a1120; --panel:#131f38; --ink:#eef3fb; --ink2:#a7b6cf;
+          --line:#2a3c5e; --chip:#1d2c49; --shadow:0 10px 30px rgba(0,0,0,.5);
+        }
+      }
+      *{ box-sizing:border-box; }
+      html,body{ margin:0; padding:0; }
+      body{
+        background:
+          radial-gradient(1100px 500px at 50% -120px, rgba(255,180,0,.14), rgba(255,180,0,0) 60%),
+          var(--bg);
+        color:var(--ink);
+        font-family:"Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing:antialiased;
+      }
+      button{ font:inherit; cursor:pointer; min-height:44px; }
+      button:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+      .wrap{
+        max-width:460px; margin:0 auto; padding:12px 10px 30px;
+        display:flex; flex-direction:column; gap:12px;
+      }
+      .stagebox{
+        position:relative; width:100%; aspect-ratio:9/16;
+        max-height:min(78dvh, 760px); margin:0 auto;
+        border-radius:20px; overflow:hidden; background:#1b2b52;
+        box-shadow:var(--shadow), 0 2px 0 rgba(255,255,255,.35) inset, 0 0 0 1px rgba(10,25,55,.25);
+        border:3px solid var(--navy);
+        touch-action:manipulation;
+      }
+      @media (min-aspect-ratio: 9/16){
+        .stagebox{ width:auto; height:min(78dvh,760px); }
+      }
+      canvas#stage{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+      .bigplay{
+        position:absolute; inset:0; display:flex; flex-direction:column; gap:14px;
+        align-items:center; justify-content:center; border:0; cursor:pointer;
+        background:rgba(10,22,44,.45); color:#fff; z-index:5;
+      }
+      .bigplay .circ{
+        width:96px; height:96px; border-radius:50%; background:var(--accent);
+        display:flex; align-items:center; justify-content:center;
+        box-shadow:0 8px 0 #b97e00, 0 14px 28px rgba(0,0,0,.4);
+        animation:pulse 2.2s ease-in-out infinite;
+      }
+      @keyframes pulse{
+        0%,100%{ transform:scale(1); box-shadow:0 8px 0 #b97e00, 0 14px 28px rgba(0,0,0,.4), 0 0 0 0 rgba(255,180,0,.45); }
+        50%{ transform:scale(1.045); box-shadow:0 8px 0 #b97e00, 0 14px 28px rgba(0,0,0,.4), 0 0 0 20px rgba(255,180,0,0); }
+      }
+      .bigplay:active .circ{ transform:translateY(4px); box-shadow:0 4px 0 #b97e00, 0 10px 20px rgba(0,0,0,.4); }
+      .bigplay .circ svg{ width:44px; height:44px; margin-left:6px; }
+      .pausebadge{
+        position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:5;
+        background:rgba(9,20,40,.82); color:#fff; border:2px solid rgba(255,255,255,.35);
+        border-radius:99px; padding:7px 16px; font-size:13.5px; font-weight:800;
+        letter-spacing:.4px; pointer-events:none; white-space:nowrap;
+        animation:fadein .25s ease-out;
+      }
+      .pausebadge[hidden]{ display:none; }
+      @keyframes fadein{ from{ opacity:0; transform:translateX(-50%) translateY(-6px);} to{ opacity:1; transform:translateX(-50%) translateY(0);} }
+      .bigplay .lbl{ font-weight:900; font-size:22px; letter-spacing:.4px; text-shadow:0 2px 8px rgba(0,0,0,.6); }
+      .bigplay .sub{ font-size:14px; font-weight:600; opacity:.92; text-shadow:0 1px 6px rgba(0,0,0,.6); padding:0 30px; text-align:center;}
+      .bigplay[hidden]{ display:none; }
+      .endcard{
+        position:absolute; inset:auto 12px 12px 12px; z-index:7;
+        background:var(--panel); color:var(--ink); border:3px solid var(--navy);
+        border-radius:16px; padding:16px; box-shadow:var(--shadow);
+        animation:endin .45s cubic-bezier(.2,1.3,.4,1) both;
+      }
+      @keyframes endin{ from{ opacity:0; transform:translateY(22px) scale(.97);} to{ opacity:1; transform:none;} }
+      .endcard[hidden]{ display:none; }
+      .endcard h2{ margin:0 0 6px; font-size:20px; }
+      .endcard p{ margin:0 0 12px; color:var(--ink2); font-size:15px; line-height:1.45; }
+      .endcard .row{ display:flex; gap:8px; flex-wrap:wrap; }
+      .caption{
+        background:var(--panel); border:2px solid var(--line); border-radius:14px;
+        padding:12px 14px; min-height:74px; box-shadow:var(--shadow);
+        font-size:18px; line-height:1.5; font-weight:600;
+      }
+      .caption .w{ color:var(--ink2); transition:color .05s; }
+      .caption .w.on{ color:var(--ink); }
+      .caption .w.hot{ color:#c07f00; }
+      @media (prefers-color-scheme: dark){ .caption .w.hot{ color:#ffd21f; } }
+      .caption .who{
+        display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.8px;
+        color:var(--accent-ink); background:var(--accent); text-transform:uppercase;
+        border-radius:99px; padding:3px 10px; margin-bottom:7px;
+      }
+      /* Legenda DOM escondida (como no Tapa): a legenda vigente é a
+         do palco, no meio da tela, conforme 05. O cartão abaixo do
+         palco some; buildCaption/syncCaption continuam existindo
+         porque a sincronia do brilho/seta usa a mesma legenda. */
+      .caption{ display:none; }
+      .timeline{
+        position:sticky; top:8px; z-index:30;
+        background:var(--panel); border:1.5px solid var(--line); border-radius:14px;
+        padding:10px 12px 11px; box-shadow:0 8px 22px rgba(10,25,55,.13);
+        display:flex; flex-direction:column; gap:8px;
+      }
+      .tl-head{ display:flex; align-items:baseline; gap:10px; }
+      .tl-kicker{ flex:none; font-size:11px; font-weight:900; letter-spacing:1.1px; text-transform:uppercase; color:#9a6a00; }
+      @media (prefers-color-scheme: dark){ .tl-kicker{ color:var(--accent); } }
+      .tl-name{ flex:1; font-size:14.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .tl-time{ flex:none; font-size:12.5px; font-weight:800; color:var(--ink2); font-variant-numeric:tabular-nums; }
+      .tl-track{ display:flex; gap:3px; }
+      .tl-seg{ flex:1; height:9px; border-radius:99px; background:var(--chip); border:1px solid var(--line); overflow:hidden; }
+      .tl-fill{ height:100%; width:0%; background:linear-gradient(90deg,#ffb400,#ffcf3f); border-radius:99px; }
+      .chapslabel{
+        font-size:11px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
+        color:var(--ink2); margin-top:1px;
+      }
+      /* CARROSSEL DE MOMENTOS NO TOPO (pedido do Timothy, 22/11/2026):
+         os capítulos viraram um carrossel horizontal junto da linha
+         do tempo, no topo: ele rola sozinho conforme a cena anda,
+         com o momento atual destacado no centro. A lista de baixo
+         do palco saiu. */
+      .chaps{
+        display:flex; gap:6px; overflow-x:auto; overflow-y:hidden;
+        padding:2px 1px 5px; scroll-snap-type:x proximity;
+        scrollbar-width:none; -webkit-overflow-scrolling:touch;
+      }
+      .chaps::-webkit-scrollbar{ display:none; }
+      .chap{
+        flex:0 0 auto; scroll-snap-align:center; white-space:nowrap;
+        border:1.5px solid var(--line); background:var(--chip); color:var(--ink);
+        border-radius:99px; padding:7px 12px 7px 8px; font-size:13px; font-weight:750; min-height:40px;
+        display:flex; align-items:center; gap:8px; text-align:left;
+        transition:background .15s, transform .08s;
+      }
+      .chap:hover{ filter:brightness(1.05); }
+      .chap:active{ transform:scale(.98); }
+      .chap.cur{ background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 10px rgba(10,25,55,.3); }
+      .chap .n{ flex:none; background:var(--accent); color:#14213a; border-radius:50%; width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; }
+      .controls{
+        background:var(--panel); border:2px solid var(--line); border-radius:14px;
+        padding:10px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+      }
+      .btnrow{ display:flex; gap:8px; }
+      .btn{
+        border:2px solid var(--line); background:var(--chip); color:var(--ink);
+        border-radius:12px; padding:8px 14px; font-weight:800; font-size:15px;
+        display:inline-flex; align-items:center; gap:8px; justify-content:center;
+        transition:transform .08s, filter .15s, background .15s;
+      }
+      .btn:hover{ filter:brightness(1.05); }
+      .btn:active{ transform:translateY(1px) scale(.985); }
+      .btn svg{ width:20px; height:20px; flex:none; }
+      .btn.primary{ background:var(--accent); border-color:#8a5f00; color:var(--accent-ink); flex:1; font-size:17px; box-shadow:0 3px 0 #b97e00; }
+      .btn.primary:active{ box-shadow:0 1px 0 #b97e00; }
+      .btn[aria-pressed="false"] .onI{ display:none; }
+      .btn[aria-pressed="true"] .offI{ display:none; }
+      .progress{ height:12px; background:var(--chip); border-radius:99px; overflow:hidden; border:1px solid var(--line); box-shadow:inset 0 1px 3px rgba(10,25,55,.18); }
+      .progress > div{ height:100%; width:0%; background:linear-gradient(90deg,#ffb400,#ffcf3f); transition:width .2s linear; border-radius:99px; }
+      .ptime{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink2); font-weight:700; }
+
+      .note{ font-size:13px; color:var(--ink2); line-height:1.5; margin:2px 2px 0; }
+      .note b{ color:var(--ink); }
+      @media (prefers-reduced-motion: reduce){
+        .bigplay .circ, .endcard, .pausebadge{ animation:none; }
+        .btn, .chap{ transition:none; }
+      }
+
+      /* ===== Camada do final interativo (questão): conteúdo deste episódio ===== */
+      .quiz{
+        --qnavy:#0d1b2e; --qnavy2:#12263f; --qgold:#ffb400; --qgold2:#ffcf4d;
+        --qink:#f2f5f9; --qink2:#aebdd0; --qcard:#132a45; --qline:#274a6e;
+        --qgreen:#1d9e63; --qred:#d92b3a;
+        position:absolute; inset:0; background:#0e2138; color:var(--qink); z-index:30;
+        transform:translateY(103%); transition:transform .65s cubic-bezier(.22,.9,.3,1);
+        display:flex; flex-direction:column; padding:6px 9px 4px; overflow-y:auto;
+      }
+      .quiz.show{ transform:translateY(0); }
+      .quiz[hidden]{ display:none; }
+      .quiz.arming .qalt{ opacity:.45; pointer-events:none; }
+      .quiz-origin{
+        background:var(--qnavy2); border:2px solid var(--qgold); border-radius:14px; padding:5px 9px; margin-bottom:4px; text-align:center;
+      }
+      .quiz-origin .org-oab{
+        display:inline-block; background:var(--qgold); color:#231a00; font-weight:900; letter-spacing:1.5px;
+        font-size:12.5px; padding:2px 10px; border-radius:8px; margin-bottom:4px;
+      }
+      .quiz-origin .org-main{ font-size:13px; font-weight:800; line-height:1.28; }
+      .quiz-origin .org-meta{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:4px; }
+      .quiz-origin .org-meta span{ background:#1d3a5c; border:1px solid var(--qline); color:var(--qink); font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; }
+      .quiz-origin .org-meta span.org-q{ background:#fff; color:var(--qnavy); }
+      .quiz-k{ font-size:10.5px; font-weight:800; letter-spacing:1px; color:var(--qink2); text-align:center; margin-bottom:3px; }
+      .quiz-en{ font-size:11.6px; line-height:1.28; font-weight:600; margin:0 0 4px; }
+      .qalt{
+        display:flex; gap:9px; align-items:flex-start; width:100%; text-align:left; cursor:pointer;
+        background:#16304e; border:2px solid var(--qline); color:var(--qink); border-radius:12px;
+        padding:6px 9px; margin:0 0 4px; font-size:11.4px; line-height:1.25; font-weight:600; min-height:44px;
+      }
+      .qalt .let{
+        flex:none; width:24px; height:24px; border-radius:50%; background:#1d3a5c; color:var(--qgold2);
+        display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12.5px; margin-top:1px;
+      }
+      .qalt:active{ transform:translateY(1px); }
+      .qalt.picked-ok{ border-color:var(--qgreen); background:rgba(29,158,99,.22); }
+      .qalt.picked-no{ border-color:var(--qred); background:rgba(217,43,58,.18); }
+      .qalt.reveal-ok{ border-color:var(--qgreen); }
+      .quiz-status{ font-size:11px; color:var(--qink2); font-weight:700; text-align:center; margin:0 0 3px; line-height:1.32; }
+      .quiz-listen{
+        display:flex; align-items:center; gap:9px; justify-content:center; width:100%;
+        background:var(--qcard); border:1.5px solid var(--qline); color:var(--qink); border-radius:12px;
+        padding:6px; font-size:12px; font-weight:800; cursor:pointer; min-height:38px; margin-top:0;
+      }
+      .quiz-listen svg{ width:20px; height:20px; flex:none; }
+      .quiz-fb{ border-radius:12px; padding:7px 11px; font-weight:800; font-size:13px; line-height:1.35; margin:4px 0 2px; }
+      .quiz-fb.ok{ background:rgba(29,158,99,.18); color:#7dffb0; border:2px solid var(--qgreen); }
+      .quiz-fb.no{ background:rgba(217,43,58,.15); color:#ff9d9d; border:2px solid var(--qred); }
+      .quiz-fb[hidden]{ display:none; }
+      .quiz-hint{ font-size:10.5px; color:var(--qink2); font-weight:600; text-align:center; margin:3px 0 0; line-height:1.4; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="timeline" id="timeline">
+        <div class="tl-head">
+          <span class="tl-kicker">Linha do tempo</span>
+          <span class="tl-name" id="tlName">A capa</span>
+          <span class="tl-time" id="tlTime">0:00 / 2:40</span>
+        </div>
+        <div class="tl-track" id="tlTrack" aria-hidden="true"></div>
+        <div class="chapslabel" id="chapslabel">Cenas da história · toque para pular</div>
+        <div class="chaps" id="chaps" role="group" aria-label="Momentos da história em carrossel"></div>
+      </div>
+
+      <div class="stagebox" id="stagebox">
+        <canvas id="stage" width="720" height="1280" aria-label="Animação: Alfredo, motorista da empresa de segurança Guardião, dirige o carro da empresa sem saber que era roubado; parado numa blitz, é preso em flagrante por receptação dolosa; a advogada explica por que não há dolo e por que a tese certa é a exclusão da tipicidade"></canvas>
+
+        <button class="bigplay" id="bigplay" type="button">
+          <span class="circ" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#14213a"><path d="M6 3.8v16.4c0 .9 1 1.5 1.8 1L21 13a1.2 1.2 0 0 0 0-2L7.8 2.9C7 2.4 6 3 6 3.8z"/></svg></span>
+          <span class="lbl">ASSISTIR AO FILME</span>
+          <span class="sub">RECEPTAÇÃO SEM DOLO · DIREITO PENAL. Alfredo dirigia o carro da empresa sem saber que era roubado. Toque para assistir: no fim, a questão sobe cobrindo a tela e espera o seu toque.</span>
+        </button>
+
+        <div class="pausebadge" id="pausebadge" hidden>PAUSADO · toque no palco para continuar</div>
+
+        <div class="quiz" id="quiz" hidden role="dialog" aria-modal="true" aria-label="Questão: OAB, XLII Exame, Direito Penal, questão 60, receptação sem dolo. Responda tocando numa alternativa">
+          <div class="quiz-origin" aria-label="Origem da questão: OAB, XLII Exame, 2024, Direito Penal, questão 60">
+            <span class="org-oab">OAB</span>
+            <div class="org-main">Direito Penal · Receptação sem dolo</div>
+            <div class="org-meta"><span>XLII Exame · 2024</span><span>Direito Penal</span><span class="org-q">Questão 60</span></div>
+          </div>
+          <div class="quiz-k">RESPONDA PARA MIM · TOQUE NA ALTERNATIVA</div>
+          <p class="quiz-en">Alfredo, motorista da sociedade empresária Guardião Ltda., pessoa jurídica de direito privado que presta serviços de segurança, é subordinado ao gerente Marcos. No dia 10/3/2023, Marcos ordenou que Alfredo fizesse a escolta de um cliente. No trajeto de volta, Alfredo foi parado em uma blitz, ocasião em que foi constatado que o veículo funcional que conduzia era proveniente de roubo. A despeito de não ter ciência do crime antecedente, até mesmo por não ser o responsável pelas compras da empregadora, Alfredo foi preso em flagrante por suposta prática do crime de receptação dolosa. Assinale a opção que apresenta, corretamente, a tese de mérito que pode ser invocada em defesa de Alfredo.</p>
+          <p class="quiz-status" id="quizstatus">A narradora vai ler o enunciado em voz alta. Ouça e, quando estiver pronto, toque na alternativa.</p>
+          <div id="quizalts"></div>
+          <button class="quiz-listen" id="btnListen" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.4 5.6a9 9 0 0 1 0 12.8"/></svg>
+            Ouvir o enunciado de novo
+          </button>
+          <div class="quiz-fb" id="quizfb" hidden></div>
+          <p class="quiz-hint">A questão espera o seu toque: nunca responde sozinha.</p>
+        </div>
+
+
+        <div class="endcard" id="endcard" hidden>
+          <h2 id="endtitle">AGORA VOCÊ JÁ SABE</h2>
+          <p id="endtext"></p>
+          <div class="row">
+            <button class="btn primary" id="btnAgain" type="button">Ver de novo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="caption" aria-live="polite">
+        <span class="who" id="capwho">Narração</span>
+        <span id="captext">Toque em Assistir para começar.</span>
+      </div>
+
+      <section class="controls" aria-label="Controles da animação">
+        <div class="btnrow">
+          <button class="btn primary" id="btnPlay" type="button">
+            <svg id="icoPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3.8v16.4c0 .9 1 1.5 1.8 1L21 13a1.2 1.2 0 0 0 0-2L7.8 2.9C7 2.4 6 3 6 3.8z"/></svg>
+            <svg id="icoPause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            <span id="playLbl">Assistir</span>
+          </button>
+          <button class="btn" id="btnSound" type="button" aria-pressed="true" aria-label="Som ligado ou desligado">
+            <svg class="onI" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a3.5 3.5 0 0 0-2-3.15v6.3a3.5 3.5 0 0 0 2-3.15zm-2-7.6v2.1a5.5 5.5 0 0 1 0 11v2.1a7.5 7.5 0 0 0 0-15.2z"/></svg>
+            <svg class="offI" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9H3zm14.6 3 2.2-2.2-1.4-1.4-2.2 2.2-2.2-2.2-1.4 1.4 2.2 2.2-2.2 2.2 1.4 1.4 2.2-2.2 2.2 2.2 1.4-1.4-2.2-2.2z"/></svg>
+            Som
+          </button>
+          <button class="btn" id="btnRestart" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L6 7l6 6V9a6 6 0 1 1-6 6H4a8 8 0 1 0 8-10z"/></svg>
+            Início
+          </button>
+        </div>
+        <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+        <div class="ptime"><span id="tcur">Momento 1 de 13</span><span id="ttot">≈ 2min40s de história</span></div>
+      </section>
+
+      <p class="note"><b>O episódio:</b> o motorista <b>Alfredo</b>, da empresa de segurança <b>Guardião</b>, recebe do gerente <b>Marcos</b> a ordem de escoltar um cliente. No trajeto de volta, uma <b>blitz</b> para o carro: o veículo funcional era <b>produto de roubo</b>, e o Alfredo não sabia de nada, nem comprava os carros da empresa. Preso em flagrante por <b>receptação dolosa</b>. No fim, a narradora diz “agora responda para mim”, a questão sobe cobrindo a tela toda e espera o seu toque; depois da resposta, o filme rebobina como um relógio voltando no tempo e explica cada alternativa.</p>
+    </main>
+
+    <audio id="narr" preload="auto" src="assets/narracao-completa.mp3?v=aria2" playsinline></audio>
+    <audio id="enunc" preload="auto" src="assets/enunciado.mp3?v=aria2" playsinline></audio>
+    <audio id="fbA" preload="auto" src="assets/feedback-a.mp3?v=aria2" playsinline></audio>
+    <audio id="fbB" preload="auto" src="assets/feedback-b.mp3?v=aria2" playsinline></audio>
+    <audio id="fbC" preload="auto" src="assets/feedback-c.mp3?v=aria2" playsinline></audio>
+    <audio id="fbD" preload="auto" src="assets/feedback-d.mp3?v=aria2" playsinline></audio>
+
+<script>
+"use strict";
+/* ============================================================
+   STORYTELLING — uma história só, do começo ao fim:
+   "Receptação sem dolo" (OAB, XLII Exame, 2024, Direito Penal,
+   questão 60, gabarito C).
+   Alfredo, motorista da empresa de segurança Guardião Ltda.,
+   recebe do gerente Marcos a ordem de escoltar um cliente.
+   No trajeto de volta, uma blitz para o carro: o veículo
+   funcional era produto de roubo, e o Alfredo não sabia de
+   nada, nem comprava os carros da empresa. Preso em flagrante
+   por receptação dolosa, ele se defende com a tese certa: a
+   exclusão da tipicidade, por ausência de elemento subjetivo
+   do tipo. Quem explica é a Dra. Helena, a advogada, no
+   escritório dela, com o Código Penal na mão.
+   MOTOR 1829 — TRANSPLANTE LITERAL do filme
+   cc-art-1-829-a-fila-da-heranca. As funções do motor abaixo
+   são CÓPIAS das do canônico, função por função, incluindo o
+   drawPerson de 24.474 caracteres, byte a byte. Troca-se só o
+   conteúdo: elenco, lugares, cenas, áudios e marcos.
+   NARRAÇÃO ÚNICA por fase: assets/narracao-completa.mp3
+   (fase 1, 159.482s) e assets/revisao-completa.mp3 (fase 2,
+   69.878s), a narradora Aria (avocado_v2:MAI_01, pt_BR, speed 100),
+   que NAO muda: e a Aria sempre, como ela narra. Tom que cativa:
+   abertura que prende, tensao na blitz e na prisao, curiosidade na
+   descoberta, calma na explicacao, alivio no fecho.
+   normalizada a -16 LUFS; os diálogos rápidos estão gravados
+   DENTRO do mesmo áudio, cada personagem com a sua voz
+   brasileira do catálogo (accent=Brazilian, conferido no catálogo e no
+   retorno do CLI): Alfredo = Devoted Bowl (vd2_tender_keepsake), Marcos =
+   Genial Custard (vd2_r82_rep5k_2498_v068_28k_g5k), Policial = Merry
+   Treetop (vd3_vd2_r82_rep5k_1903_v068_28k_g5k), Dra. Helena = Modest
+   Seashell (vd2_r82_rep5k_2302_v068_28k_g5k). A regra de voz brasileira
+   vale para os PERSONAGENS; a narradora e a Aria, sempre. Enunciado em áudio
+   próprio (assets/enunciado.mp3) e feedback falado por
+   alternativa (assets/feedback-a..d.mp3).
+   REGRAS HERDADAS (não regredir):
+   - Texto sempre DENTRO, com margem (fitFont mede e reduz).
+   - Câmera FIXA (z=1, sem zoom). Nenhuma cena parada:
+     repertório de micro-ações (repBuild) que nunca repete
+     o mesmo ato duas vezes seguidas.
+   - Termo citado aparece na tela na hora (termCard, faixa
+     de baixo); nome e papel discretos abaixo dos pés.
+   - Nenhum card na frente de personagem: painéis só nas
+     faixas seguras (parede acima das cabeças ou chão).
+   - Figurino da profissão, completo: motorista de uniforme
+     cinza com boné da Guardião, gerente de terno com pasta,
+     policial de uniforme completo com boné, advogada de
+     terno, cabelo comprido, com o CP na mão.
+   - Sons imersivos pequenos na hora certa: porta da sede,
+     passos, motor do carro, sirene da blitz, carimbo do
+     documento, relógio do rewind.
+   - Abertura ultra-curta: só área, tema e OAB. Teoria em
+     subcenas de recortes, sem legenda em canvas, com pop e
+     fade. Final interativo com a questão subindo e o rewind
+     como relógio, gabarito C no fim.
+   ============================================================ */
+var W = 720, H = 1280, GROUND = 1050;
+var cv = document.getElementById('stage');
+var ctx = cv.getContext('2d');
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function ease(t){ return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function easeOut(t){ return 1-Math.pow(1-t,3); }
+function seg(t,a,b){ return clamp((t-a)/(b-a),0,1); }
+function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+function circle(c,x,y,r){ c.beginPath(); c.arc(x,y,r,0,Math.PI*2); }
+var INK = '#1b2432';
+/* Mede a largura renderizada do texto e reduz a fonte até caber
+   em maxW — a garantia de que nenhuma linha sai do seu elemento */
+function fitFont(c, text, maxW, startSize, weight, family){
+  var size = startSize;
+  var fam = family || '"Segoe UI", system-ui, sans-serif';
+  c.font = (weight||900)+' '+size+'px '+fam;
+  while(c.measureText(text).width > maxW && size > 12){
+    size -= 2;
+    c.font = (weight||900)+' '+size+'px '+fam;
+  }
+  return size;
+}
+
+/* ---------------- Áudio: narração + efeitos (WebAudio) ---------------- */
+var narr = document.getElementById('narr');
+var AC = null, master = null, soundOn = true;
+function audioInit(){
+  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  try{
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    master = AC.createGain(); master.gain.value = soundOn ? 1 : 0;
+    master.connect(AC.destination);
+  }catch(e){ AC = null; }
+}
+/* Toca a narração tratando a recusa do navegador do celular:
+   se o play() for bloqueado, tenta de novo no 'canplay' e, se
+   mesmo assim não tocar, devolve o botão grande TOQUE PARA
+   OUVIR para um toque novo destravar o som. */
+function playNarr(){
+  narr.muted = !soundOn;
+  try{ narr.volume = 1; }catch(e){}
+  var pr = narr.play();
+  if(!pr || !pr.catch) return;
+  pr.catch(function(){
+    var retried=false;
+    function retry(){
+      if(retried) return; retried=true;
+      narr.removeEventListener('canplay', retry);
+      if(state!=='playing') return;
+      var p2 = narr.play();
+      if(p2 && p2.catch) p2.catch(function(){ showTapToPlay(); });
+    }
+    if(narr.readyState < 3){
+      narr.addEventListener('canplay', retry);
+      setTimeout(function(){
+        if(!retried && narr.paused && state==='playing') showTapToPlay();
+      }, 2500);
+    } else {
+      showTapToPlay();
+    }
+  });
+}
+function showTapToPlay(){
+  state='paused';
+  var lbl=bigplay.querySelector('.lbl'), sub=bigplay.querySelector('.sub');
+  if(lbl && !bigplay.getAttribute('data-lbl0')) bigplay.setAttribute('data-lbl0', lbl.textContent);
+  if(sub && !bigplay.getAttribute('data-sub0')) bigplay.setAttribute('data-sub0', sub.textContent);
+  if(lbl) lbl.textContent='TOQUE PARA OUVIR';
+  if(sub) sub.textContent='O aparelho bloqueou o som da narração. Toque aqui para destravar e continuar a história.';
+  bigplay.hidden=false;
+  setPlayUI();
+  pausebadge.hidden=true;
+}
+function tone(f0,f1,dur,type,vol,when){
+  if(!AC || !soundOn) return;
+  var t0 = AC.currentTime + (when||0);
+  var o = AC.createOscillator(), g = AC.createGain();
+  o.type = type||'sine'; o.frequency.setValueAtTime(f0,t0);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f1,1), t0+dur);
+  g.gain.setValueAtTime(0.0001,t0);
+  g.gain.exponentialRampToValueAtTime(vol||0.15, t0+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(master); o.start(t0); o.stop(t0+dur+0.05);
+}
+function noiseBurst(dur, vol, freq, when){
+  if(!AC || !soundOn) return;
+  var t0 = AC.currentTime + (when||0);
+  var len = Math.max(1, Math.floor(AC.sampleRate*dur));
+  var buf = AC.createBuffer(1, len, AC.sampleRate);
+  var d = buf.getChannelData(0);
+  for(var i=0;i<len;i++) d[i] = (Math.random()*2-1) * (1 - i/len);
+  var src = AC.createBufferSource(); src.buffer = buf;
+  var f = AC.createBiquadFilter(); f.type='bandpass'; f.frequency.value = freq||900; f.Q.value = 0.8;
+  var g = AC.createGain(); g.gain.value = vol||0.2;
+  src.connect(f); f.connect(g); g.connect(master); src.start(t0);
+}
+function sfxGavel(){ tone(180,60,0.14,'square',0.4,0); noiseBurst(0.08,0.4,500,0); tone(180,60,0.14,'square',0.35,0.22); noiseBurst(0.08,0.35,500,0.22); shakeT=Math.max(shakeT,0.12); }
+function sfxThud(){ tone(120,40,0.22,'sine',0.5,0); noiseBurst(0.12,0.25,240,0); }
+function sfxDing(){ tone(880,880,0.16,'sine',0.18,0); tone(1318,1318,0.3,'sine',0.16,0.1); }
+function sfxBuzz(){ tone(160,110,0.3,'square',0.14,0); }
+function sfxPop(){ tone(500,900,0.08,'sine',0.14,0); }
+function sfxWhoosh(){ noiseBurst(0.28,0.16,1600,0); }
+function sfxPage(){ noiseBurst(0.16,0.12,2400,0); }
+/* IMERSÃO (pedido do Timothy, 21/11/2026): sons pequenos e reais,
+   na hora exata da ação — a sirene da ambulância MAIS ALTA e
+   contínua no trajeto, o hospital ao entrar (porta, rodas da maca,
+   bip do monitor, passos no corredor), a grade batendo com eco,
+   a chave girando, a corrente da bola de ferro arrastando no chão
+   da cela e os pássaros do amanhecer. Volume sob a narração:
+   presente, sem cobrir a voz da Aria. */
+function sfxClang(when){ var w0=when||0; tone(620,300,0.3,'square',0.16,w0); noiseBurst(0.22,0.26,1800,w0); tone(520,240,0.24,'square',0.07,w0+0.16); noiseBurst(0.18,0.10,1500,w0+0.16); }
+function sfxGate(){ tone(90,55,0.8,'sawtooth',0.20,0); noiseBurst(0.7,0.20,300,0); tone(70,48,0.6,'sawtooth',0.12,0.25); }
+function sfxGateSlam(){ sfxClang(0); sfxClang(0.55); tone(80,40,0.5,'sine',0.42,0); noiseBurst(0.3,0.3,220,0); shakeT=Math.max(shakeT,0.16); }
+function sfxKey(){ noiseBurst(0.05,0.22,2600,0); tone(1900,1500,0.06,'square',0.10,0.07); noiseBurst(0.05,0.22,2200,0.16); tone(1500,1100,0.08,'square',0.12,0.24); sfxClang(0.38); }
+function sfxChain(){ for(var ci=0; ci<5; ci++){ tone(1400+((ci*37)%500),900,0.05,'square',0.055,ci*0.24); noiseBurst(0.045,0.075,1900,ci*0.24); } noiseBurst(0.5,0.05,420,0); }
+function sfxDoor(){ noiseBurst(0.34,0.20,900,0); tone(300,520,0.3,'sine',0.05,0); noiseBurst(0.2,0.10,1400,0.3); }
+function sfxWheels(){ for(var wi=0; wi<7; wi++){ noiseBurst(0.07,0.085,620,wi*0.19); } }
+function sfxBirds(){ var bt=[0,0.34,0.62,1.15,1.5]; for(var bi=0; bi<bt.length; bi++){ tone(2400,3200,0.09,'sine',0.055,bt[bi]); tone(2800,3400,0.07,'sine',0.045,bt[bi]+0.11); } }
+function sfxChalk(){ noiseBurst(0.1,0.05,3000,0); }
+function sfxSteps(){ for(var st=0; st<6; st++){ noiseBurst(0.05,0.10,700,st*0.21); tone(140,90,0.05,'sine',0.05,st*0.21); } }
+function sfxStepsCorridor(){ for(var sc2=0; sc2<6; sc2++){ noiseBurst(0.05,0.13,880,sc2*0.23); tone(150,95,0.05,'sine',0.06,sc2*0.23); noiseBurst(0.16,0.03,880,sc2*0.23+0.05); } }
+function sfxShot(){ noiseBurst(0.16,0.5,700,0); tone(300,50,0.28,'sawtooth',0.4,0); noiseBurst(0.3,0.2,300,0.03); shakeT=Math.max(shakeT,0.22); }
+function sfxSiren(when){ tone(660,990,0.32,'triangle',0.20,when||0); tone(990,660,0.32,'triangle',0.20,(when||0)+0.34); }
+function sfxSirenLong(){ for(var sw=0; sw<3; sw++) sfxSiren(sw*0.72); }
+function sfxEngine(){ tone(64,88,3.4,'sawtooth',0.075,0); tone(96,128,3.4,'square',0.035,0); noiseBurst(3.2,0.028,300,0); }
+function sfxBeep(when){ tone(990,990,0.09,'sine',0.15,when||0); }
+function sfxFlat(){ tone(990,985,1.3,'sine',0.13,0); }
+function sfxMoto(){ noiseBurst(0.5,0.10,500,0); tone(90,160,0.5,'sawtooth',0.05,0); }
+
+/* ---------------- REPERTÓRIO DE MOVIMENTO ----------------
+   repBuild(seed, acts) devolve pose(t): percorre os atos do
+   repertório numa ordem embaralhada por semente; a cada volta
+   completa, embaralha de novo (e nunca abre a volta com o ato
+   que fechou a anterior). Cada ato tem duração própria e os
+   valores contínuos (lean, lookX, lookY, dx) interpolam entre
+   o ato atual e o próximo — a sequência nunca vira um loop
+   curto idêntico. moving=true enquanto o personagem se
+   desloca entre duas posições (passos de verdade). */
+function repBuild(seed, acts){
+  var cache = {};
+  function orderFor(k){
+    if(cache[k]) return cache[k];
+    var idx = [], j;
+    for(j=0;j<acts.length;j++) idx.push(j);
+    var s = ((seed*7919 + k*104729) % 233280 + 233280) % 233280 + 1;
+    for(j=idx.length-1;j>0;j--){
+      s = (s*9301+49297) % 233280;
+      var m = Math.floor((s/233280)*(j+1));
+      var tmp = idx[j]; idx[j] = idx[m]; idx[m] = tmp;
+    }
+    if(k>0 && idx.length>1){
+      var prev = orderFor(k-1);
+      if(idx[0] === prev[prev.length-1]){ var t2 = idx[0]; idx[0] = idx[1]; idx[1] = t2; }
+    }
+    cache[k] = idx; return idx;
+  }
+  function durOf(o){ var s2=0; for(var j=0;j<o.length;j++) s2 += acts[o[j]].dur||2.8; return s2; }
+  return function(t){
+    var k=0, tt=t, o=orderFor(0), cd=durOf(o), guard=0;
+    while(tt>=cd && cd>0 && guard<40){ tt-=cd; k++; o=orderFor(k); cd=durOf(o); guard++; }
+    var acc=0;
+    for(var j=0;j<o.length;j++){
+      var a = acts[o[j]], d = a.dur||2.8;
+      if(tt < acc+d || j===o.length-1){
+        var local = clamp((tt-acc)/d, 0, 1);
+        var nxt = acts[o[(j+1)%o.length]];
+        var bl = local>0.7 ? (local-0.7)/0.3 : 0; bl = bl*bl*(3-2*bl);
+        function L(u,v){ return (u||0) + ((v||0)-(u||0))*bl; }
+        return {
+          armR: a.armR||'down', armL: a.armL||'down', expr: a.expr||'normal',
+          lean: L(a.lean, nxt.lean), lookX: L(a.lookX, nxt.lookX), lookY: L(a.lookY, nxt.lookY),
+          dx: L(a.dx, nxt.dx),
+          moving: (Math.abs((nxt.dx||0)-(a.dx||0))>16 && local>0.7)
+        };
+      }
+      acc += d;
+    }
+    return { armR:'down', armL:'down', expr:'normal', lean:0, lookX:0, lookY:0, dx:0, moving:false };
+  };
+}
+</script>
+
+<script>
+"use strict";
+/* ---------------- Sons novos desta história ---------------- */
+function sfxBell(){ tone(660,640,1.4,'sine',0.10,0); tone(990,970,1.1,'sine',0.05,0.02); tone(660,635,1.6,'sine',0.08,1.5); tone(990,965,1.2,'sine',0.04,1.52); }
+function sfxKnock(){ noiseBurst(0.06,0.30,800,0); noiseBurst(0.06,0.30,800,0.22); noiseBurst(0.06,0.24,760,0.44); }
+function sfxStamp(){ tone(150,55,0.16,'sine',0.5,0); noiseBurst(0.07,0.4,600,0); noiseBurst(0.05,0.2,2400,0.02); }
+function sfxCoins(){ for(var ci=0; ci<4; ci++){ tone(1900+ci*220,1500,0.07,'square',0.06,ci*0.09); } }
+
+/* ---------------- Cenários novos ---------------- */
+/* O retrato do Seu Antônio, na parede da sala: moldura dourada,
+   o busto dele de terno e gravata, e a fitinha preta de luto no
+   canto da moldura. Na varanda, ganha uma flor ao lado. */
+function drawPortrait(c, cx, cy, w, h, flower){
+  c.save(); c.translate(cx,cy);
+  c.fillStyle='rgba(0,0,0,0.22)'; rr(c,-w/2+7,-h/2+9,w,h,8); c.fill();
+  c.fillStyle='#8a6a24'; rr(c,-w/2,-h/2,w,h,8); c.fill();
+  c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c9a227'; rr(c,-w/2+9,-h/2+9,w-18,h-18,5); c.fill();
+  c.fillStyle='#2c3444'; rr(c,-w/2+15,-h/2+15,w-30,h-30,4); c.fill();
+  var hy = -h/2 + h*0.38, hr = w*0.21;
+  c.fillStyle='#31456e'; c.beginPath();
+  c.moveTo(-w*0.30,h/2-15); c.quadraticCurveTo(-w*0.28,hy+hr*0.9,0,hy+hr*0.8);
+  c.quadraticCurveTo(w*0.28,hy+hr*0.9,w*0.30,h/2-15); c.closePath(); c.fill();
+  c.fillStyle='#f4f1e6'; c.beginPath(); c.moveTo(-w*0.075,hy+hr*0.95); c.lineTo(w*0.075,hy+hr*0.95); c.lineTo(0,hy+hr*1.7); c.closePath(); c.fill();
+  c.fillStyle='#8e2434'; c.beginPath(); c.moveTo(-w*0.028,hy+hr*1.12); c.lineTo(w*0.028,hy+hr*1.12); c.lineTo(w*0.045,h/2-22); c.lineTo(0,h/2-14); c.lineTo(-w*0.045,h/2-22); c.closePath(); c.fill();
+  c.fillStyle='#e8b48c'; circle(c,0,hy,hr); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#cfcfcf'; c.beginPath(); c.arc(0,hy-hr*0.14,hr*1.02,Math.PI*0.92,Math.PI*2.08); c.fill(); c.stroke();
+  c.fillStyle=INK; circle(c,-hr*0.34,hy,2.4); c.fill(); circle(c,hr*0.34,hy,2.4); c.fill();
+  c.strokeStyle=INK; c.lineWidth=2.6; c.lineCap='round';
+  c.beginPath(); c.arc(0,hy+hr*0.28,hr*0.42,0.25*Math.PI,0.75*Math.PI); c.stroke();
+  // a fitinha preta de luto, no canto superior da moldura
+  c.save(); c.translate(w/2-16,-h/2+16); c.rotate(0.6);
+  c.fillStyle='#15161c'; c.fillRect(-5,-20,10,40);
+  c.restore();
+  if(flower){ // a flor que a família colocou ao lado do retrato
+    c.strokeStyle='#2e7d46'; c.lineWidth=3.4; c.lineCap='round';
+    c.beginPath(); c.moveTo(w/2+16,h/2-6); c.quadraticCurveTo(w/2+12,h/2-44,w/2+20,h/2-72); c.stroke();
+    c.fillStyle='#37a05a'; c.beginPath(); c.ellipse(w/2+10,h/2-38,10,4.6,0.6,0,Math.PI*2); c.fill();
+    c.fillStyle='#e2543e';
+    for(var fp=0; fp<5; fp++){ var fa=fp/5*Math.PI*2;
+      c.beginPath(); c.ellipse(w/2+20+Math.cos(fa)*8, h/2-78+Math.sin(fa)*8, 7,4.6,fa,0,Math.PI*2); c.fill(); }
+    c.fillStyle='#ffd21f'; circle(c,w/2+20,h/2-78,4.6); c.fill();
+    c.lineWidth=2; c.strokeStyle=INK; c.stroke();
+  }
+  c.restore();
+}
+/* Poeira dourada flutuando na luz — o ar da cena se mexe, como
+   num documentário filmado dentro da casa: partículas lentas,
+   determinísticas, sempre atrás dos personagens e dos cards. */
+function drawDust(c, now, seedN, x0, x1, y0, y1){
+  c.save(); c.fillStyle='rgba(255,236,180,0.5)';
+  for(var dm=0; dm<12; dm++){
+    var dmx = x0 + ((dm*83+seedN*37) % Math.max(40,(x1-x0))) + Math.sin(now*0.35+dm*1.9+seedN)*14;
+    var dmy = y0 + ((dm*61 + now*9 + seedN*23) % Math.max(40,(y1-y0)));
+    var tw2 = 0.35+0.65*Math.abs(Math.sin(now*0.8+dm*2.3));
+    c.globalAlpha = 0.16*tw2;
+    circle(c,dmx,dmy,1.6+(dm%3)*0.7); c.fill();
+  }
+  c.restore();
+}
+/* ============ CENARIOS DESTE EPISODIO (conteudo) ============
+   Substituem as funcoes de lugar do canonico (drawSala,
+   drawCartorio, drawEscada, drawHospitalRoom, etc.). Usam so
+   os primitivos do motor: rr, circle, clamp, lerp, seg,
+   easeOut, fitFont, shadow, INK, W, H, GROUND. Paleta fechada:
+   azul petroleo #1f4e5f, cinza #6e7a86, amarelo #f5b301,
+   branco, preto, dourado #ffb400, navy #12294d. Uma fonte de
+   luz por cena; moveis sempre no chao, com sombra de contato. */
+
+/* ---- sede da Guardiao Ltda.: recepcao com balcao ---- */
+function drawSede(c, now){
+  var g=c.createLinearGradient(0,0,0,1050);
+  g.addColorStop(0,'#dce8ec'); g.addColorStop(0.7,'#c3d5db'); g.addColorStop(1,'#aec3cb');
+  c.fillStyle=g; c.fillRect(0,0,W,1050);
+  c.fillStyle='#9c8a6d'; c.fillRect(0,1050,W,230);
+  c.strokeStyle='rgba(60,40,20,0.35)'; c.lineWidth=2;
+  for(var py=1080; py<1280; py+=42){ c.beginPath(); c.moveTo(0,py); c.lineTo(W,py); c.stroke(); }
+  /* luz do teto */
+  c.fillStyle='#fff8d6'; rr(c,300,18,120,26,8); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='rgba(255,244,180,0.20)';
+  c.beginPath(); c.moveTo(310,44); c.lineTo(410,44); c.lineTo(520,420); c.lineTo(200,420); c.closePath(); c.fill();
+  /* letreiro GUARDIAO na parede */
+  c.fillStyle='#12294d'; rr(c,150,170,420,86,12); c.fill();
+  c.lineWidth=4; c.strokeStyle='#ffb400'; c.stroke();
+  c.fillStyle='#ffb400'; c.textAlign='center';
+  fitFont(c,'GUARDIÃO',380,44,900); c.fillText('GUARDIÃO',360,212);
+  c.fillStyle='#fff'; fitFont(c,'SEGURANÇA PATRIMONIAL',380,20,800); c.fillText('SEGURANÇA PATRIMONIAL',360,240);
+  /* relogio de parede */
+  c.fillStyle='#fdfdf8'; circle(c,620,160,34); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle=INK; c.lineWidth=3; c.lineCap='round';
+  var ha=(now*0.02)%(Math.PI*2);
+  c.beginPath(); c.moveTo(620,160); c.lineTo(620+Math.sin(ha)*16,160-Math.cos(ha)*16); c.stroke();
+  c.beginPath(); c.moveTo(620,160); c.lineTo(620+Math.sin(ha*3)*24,160-Math.cos(ha*3)*24); c.stroke();
+  /* cofre de chaves na parede */
+  c.fillStyle='#37414f'; rr(c,560,300,130,150,8); c.fill(); c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c9a227'; rr(c,570,310,110,26,4); c.fill();
+  c.fillStyle='#12294d'; c.font='800 15px "Segoe UI", system-ui, sans-serif'; c.fillText('CHAVES',625,328);
+  c.strokeStyle='#8a94a0'; c.lineWidth=2;
+  for(var ki=0;ki<6;ki++){ var kx=580+ (ki%3)*40, ky=360+Math.floor(ki/3)*44;
+    c.beginPath(); c.moveTo(kx,ky); c.lineTo(kx+8,ky+22); c.stroke();
+    c.fillStyle='#e8b93b'; circle(c,kx+8,ky+26,5); c.fill(); }
+  /* certificados emoldurados */
+  for(var ci=0;ci<3;ci++){ var cx2=60+ci*86;
+    c.fillStyle='#fdfdf8'; rr(c,cx2,300,74,96,4); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#12294d'; c.fillRect(cx2+10,314,54,10);
+    c.fillStyle='rgba(27,36,50,0.5)'; c.fillRect(cx2+10,332,54,5); c.fillRect(cx2+10,342,40,5); c.fillRect(cx2+10,352,54,5);
+    c.fillStyle='#c9a227'; circle(c,cx2+37,378,7); c.fill(); }
+  /* (o quadro com o escudo da Guardião saiu daqui: a legenda do
+     meio da tela cruzava o pôster e o balão de diálogo o cobria.) */
+  /* porta de vidro a direita */
+  c.fillStyle='#2c3a4a'; rr(c,640,420,80,630,6); c.fill();
+  c.fillStyle='rgba(174,220,247,0.85)'; rr(c,648,430,64,540,4); c.fill();
+  c.fillStyle='#c9a227'; circle(c,652,760,6); c.fill();
+  /* planta no chao, a esquerda */
+  c.fillStyle='#b0562f'; rr(c,52,980,64,70,8); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  shadow(c,84,1052,44);
+  c.strokeStyle='#2e7d46'; c.lineWidth=5; c.lineCap='round';
+  for(var li=0;li<5;li++){ c.beginPath(); c.moveTo(84,982); c.quadraticCurveTo(84+(li-2)*22, 900+((li*13)%30), 84+(li-2)*34, 862+((li*7)%20)); c.stroke(); }
+  /* balcao de recepcao, apoiado no chao */
+  shadow(c,360,1052,300);
+  c.fillStyle='#5a4632'; rr(c,90,880,540,170,10); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#8a6a44'; rr(c,90,880,540,26,10); c.fill(); c.stroke();
+  c.fillStyle='#12294d'; rr(c,240,940,240,44,8); c.fill();
+  c.fillStyle='#ffb400'; c.textAlign='center'; fitFont(c,'RECEPÇÃO',220,22,900); c.fillText('RECEPÇÃO',360,970);
+  /* radio comunicador sobre o balcao */
+  c.fillStyle='#26262e'; rr(c,140,838,44,44,6); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle='#26262e'; c.lineWidth=3; c.beginPath(); c.moveTo(172,838); c.lineTo(186,796); c.stroke();
+  c.fillStyle='#7dffb0'; circle(c,162,856,5); c.fill();
+  /* papéis e telefone sobre o balcao */
+  c.fillStyle='#fdfdf8'; rr(c,500,846,70,34,3); c.fill(); c.lineWidth=2.4; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle='rgba(27,36,50,0.5)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(508,856); c.lineTo(562,856); c.moveTo(508,866); c.lineTo(552,866); c.stroke();
+  c.fillStyle='#37414f'; rr(c,586,840,34,40,6); c.fill(); c.strokeStyle=INK; c.lineWidth=2.4; c.stroke();
+  c.fillStyle='#7dffb0'; rr(c,592,848,22,12,3); c.fill();
+}
+
+/* ---- rua com predios, calcada e asfalto ---- */
+function drawRua(c, now){
+  drawSkyDay(c, now);
+  /* predios ao fundo */
+  var bcols=['#c98a5a','#8a9aa8','#b56a6a','#7a8a9a'];
+  for(var bi=0; bi<4; bi++){
+    var bx=20+bi*178, bw=150, bh=420+((bi*67)%160);
+    c.fillStyle=bcols[bi]; c.fillRect(bx,860-bh,bw,bh);
+    c.lineWidth=3; c.strokeStyle='rgba(27,36,50,0.5)'; c.strokeRect(bx,860-bh,bw,bh);
+    c.fillStyle='rgba(255,244,180,0.9)';
+    for(var wy=0; wy<4; wy++) for(var wx=0; wx<3; wx++){
+      if((wx+wy+bi)%3!==0) c.fillRect(bx+18+wx*46, 880-bh+24+wy*86, 26, 34); }
+  }
+  /* calcada */
+  c.fillStyle='#c9c2b4'; c.fillRect(0,860,W,190);
+  c.strokeStyle='rgba(27,36,50,0.3)'; c.lineWidth=2;
+  for(var sx=0; sx<W; sx+=90){ c.beginPath(); c.moveTo(sx,860); c.lineTo(sx,1050); c.stroke(); }
+  c.beginPath(); c.moveTo(0,960); c.lineTo(W,960); c.stroke();
+  /* asfalto */
+  c.fillStyle='#3a3f47'; c.fillRect(0,1050,W,230);
+  c.fillStyle='#f5f5f0'; c.fillRect(0,1050,W,8);
+  c.fillStyle='#ffd21f';
+  for(var dx=20; dx<W; dx+=90) c.fillRect(dx,1158,52,10);
+  /* arvores e postes na calcada */
+  for(var ti=0; ti<2; ti++){
+    var tx=90+ti*520;
+    c.fillStyle='#6b4a2a'; c.fillRect(tx-8,930,16,120);
+    c.fillStyle='#2e7d46'; circle(c,tx,900,52); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#3f9a55'; circle(c,tx-30,920,30); c.fill(); circle(c,tx+30,920,30); c.fill();
+    shadow(c,tx,1052,46);
+    c.strokeStyle='#37414f'; c.lineWidth=6; c.lineCap='round';
+    c.beginPath(); c.moveTo(tx+120,1050); c.lineTo(tx+120,880); c.stroke();
+    c.beginPath(); c.moveTo(tx+120,880); c.lineTo(tx+152,880); c.stroke();
+    c.fillStyle='#ffd93b'; circle(c,tx+152,892,12); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  }
+  /* hidrante e lixeira */
+  c.fillStyle='#c22f3d'; rr(c,640,990,30,60,6); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c22f3d'; circle(c,655,982,14); c.fill(); c.stroke();
+  shadow(c,655,1052,26);
+  c.fillStyle='#37474f'; rr(c,30,996,44,54,6); c.fill(); c.stroke();
+}
+
+/* ---- carro da empresa: base (corpo, rodas, interior) ---- */
+function drawCarroBase(c, cx, cy, s, dir, now, moving){
+  var bob = moving? Math.sin(now*9)*2 : 0;
+  c.save(); c.translate(cx, cy+bob); c.scale(dir*s, s);
+  shadow(c,0,6,190);
+  /* rodas */
+  var rot = moving? now*7 : 0.6;
+  for(var wi=-1; wi<=1; wi+=2){
+    c.fillStyle='#1b1b22'; circle(c,wi*96,-34,34); c.fill();
+    c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#c9d4e4'; circle(c,wi*96,-34,16); c.fill(); c.lineWidth=3; c.stroke();
+    c.strokeStyle='#37414f'; c.lineWidth=3;
+    c.beginPath(); c.moveTo(wi*96-12,-34); c.lineTo(wi*96+12,-34); c.stroke();
+    c.beginPath(); c.moveTo(wi*96+Math.cos(rot)*12,-34+Math.sin(rot)*12);
+    c.lineTo(wi*96-Math.cos(rot)*12,-34-Math.sin(rot)*12); c.stroke();
+  }
+  /* corpo */
+  c.fillStyle='#1f4e5f'; rr(c,-160,-118,320,84,22); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  /* cabine */
+  c.fillStyle='#1f4e5f';
+  c.beginPath(); c.moveTo(-104,-118); c.lineTo(-78,-186); c.lineTo(66,-186); c.lineTo(104,-118); c.closePath(); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  /* janelas: interior escuro, onde os passageiros aparecem */
+  c.fillStyle='#22303e';
+  rr(c,-92,-178,84,56,8); c.fill();
+  rr(c,4,-178,56,56,8); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.strokeRect(-92,-178,84,56); c.strokeRect(4,-178,56,56);
+  /* faixa dourada e adesivo */
+  c.fillStyle='#ffb400'; c.fillRect(-160,-84,320,10);
+  c.fillStyle='#ffd21f'; c.textAlign='center';
+  fitFont(c,'GUARDIÃO',200,26,900); c.fillText('GUARDIÃO',-58,-92);
+  /* farol e lanterna */
+  c.fillStyle='#ffd93b'; c.beginPath(); c.ellipse(152,-96,14,9,0,0,Math.PI*2); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c22f3d'; rr(c,-164,-104,10,18,3); c.fill(); c.stroke();
+  /* macaneta e retrovisor */
+  c.fillStyle='#c9d4e4'; rr(c,-8,-72,26,7,3); c.fill();
+  c.fillStyle='#1b2432'; rr(c,108,-168,18,12,4); c.fill();
+  c.restore();
+  return {wx0:cx-92*dir*s, wx1:cx-8*dir*s, wx2:cx+4*dir*s, wx3:cx+60*dir*s, wy0:cy-178*s+bob, wy1:cy-122*s+bob};
+}
+/* ---- passageiro recortado pela janela do carro ---- */
+function drawPersonInWindow(c, preset, x, y, s, wx0, wy0, wx1, wy1, opts){
+  c.save();
+  c.beginPath(); c.rect(Math.min(wx0,wx1), wy0, Math.abs(wx1-wx0), wy1-wy0); c.clip();
+  drawPerson(c, P(preset, {x:x, y:y, s:s, dir:opts.dir||1, phase:opts.now*1.4,
+    expr:opts.expr||'normal', lookX:opts.lookX||0, lookY:opts.lookY||0,
+    armR:opts.armR||'down', armL:opts.armL||'down', label:'', sitting:true,
+    mouthOpen:opts.mouth||0, talking:opts.talking||false}));
+  c.restore();
+}
+/* ---- vidro e moldura por cima dos passageiros ---- */
+function drawCarroGlass(c, cx, cy, s, dir, now){
+  c.save(); c.translate(cx, cy); c.scale(dir*s, s);
+  c.fillStyle='rgba(255,255,255,0.14)';
+  rr(c,-92,-178,84,56,8); c.fill();
+  rr(c,4,-178,56,56,8); c.fill();
+  c.strokeStyle='rgba(255,255,255,0.55)'; c.lineWidth=2.5;
+  c.beginPath(); c.moveTo(-92,-150); c.lineTo(-8,-150); c.stroke();
+  c.beginPath(); c.moveTo(4,-150); c.lineTo(60,-150); c.stroke();
+  c.strokeStyle=INK; c.lineWidth=3.4;
+  c.beginPath(); c.moveTo(-8,-186); c.lineTo(-8,-118); c.stroke();
+  c.restore();
+}
+
+/* ---- cone de transito ---- */
+function drawCone(c, x, y, s){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  shadow(c,0,4,26);
+  c.fillStyle='#f5b301';
+  c.beginPath(); c.moveTo(-16,0); c.lineTo(0,-58); c.lineTo(16,0); c.closePath(); c.fill();
+  c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#fff'; c.beginPath(); c.moveTo(-11,-22); c.lineTo(11,-22); c.lineTo(7,-34); c.lineTo(-7,-34); c.closePath(); c.fill();
+  c.fillStyle='#f5b301'; rr(c,-24,-2,48,8,3); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.restore();
+}
+/* ---- distintivo e cinto do policial: o figurino fica completo ---- */
+function drawPolicialKit(c,x){
+  c.fillStyle='#c9a227'; circle(c,x-12,888,8); c.fill(); c.lineWidth=2.6; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#ffd21f'; circle(c,x-12,888,3.4); c.fill();
+  c.fillStyle='#26262e'; rr(c,x-27,926,54,13,5); c.fill(); c.lineWidth=2.6; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c9a227'; rr(c,x-7,928,14,9,2); c.fill(); c.lineWidth=2; c.strokeStyle=INK; c.stroke();
+}
+/* ---- viatura da blitz ---- */
+function drawViatura(c, x, y, s, now){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  shadow(c,0,6,180);
+  for(var wi=-1; wi<=1; wi+=2){
+    c.fillStyle='#1b1b22'; circle(c,wi*88,-32,32); c.fill();
+    c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#c9d4e4'; circle(c,wi*88,-32,14); c.fill(); c.lineWidth=3; c.stroke();
+  }
+  c.fillStyle='#f2f5f9'; rr(c,-150,-112,300,80,20); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#f2f5f9';
+  c.beginPath(); c.moveTo(-96,-112); c.lineTo(-72,-176); c.lineTo(60,-176); c.lineTo(96,-112); c.closePath(); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#22303e'; rr(c,-84,-168,76,52,8); c.fill(); rr(c,4,-168,50,52,8); c.fill();
+  c.fillStyle='#12294d'; c.fillRect(-150,-78,300,16);
+  c.fillStyle='#12294d'; c.textAlign='center';
+  fitFont(c,'POLÍCIA',200,24,900); c.fillText('POLÍCIA',0,-84);
+  /* giroflex piscando: vermelho e azul alternados */
+  var on = Math.floor(now*2)%2===0;
+  c.fillStyle= on? '#d92b3a' : '#2b50c8';
+  rr(c,-26,-196,52,18,6); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle= on? 'rgba(217,43,58,0.35)' : 'rgba(43,80,200,0.35)';
+  circle(c,0,-187,44); c.fill();
+  c.fillStyle='#ffd93b'; c.beginPath(); c.ellipse(142,-90,12,8,0,0,Math.PI*2); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.restore();
+}
+/* ---- rua da blitz: cones, viatura, placa ---- */
+function drawBlitz(c, now){
+  drawRua(c, now);
+  /* placa BLITZ */
+  c.fillStyle='#37414f'; c.fillRect(636,760,10,290);
+  c.fillStyle='#ffb400'; rr(c,576,690,130,70,8); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#12294d'; c.textAlign='center'; fitFont(c,'BLITZ',110,30,900); c.fillText('BLITZ',641,736);
+  /* cones atravessando a pista */
+  drawCone(c,150,1180,1.05); drawCone(c,300,1196,1.05); drawCone(c,450,1180,1.05); drawCone(c,600,1196,1.05);
+  drawViatura(c,590,1010,0.85,now);
+}
+
+/* ---- escritorio da advogada ---- */
+function drawEscritorio(c, now){
+  var g=c.createLinearGradient(0,0,0,1050);
+  g.addColorStop(0,'#f2e8d5'); g.addColorStop(0.7,'#e6d9bd'); g.addColorStop(1,'#d8c8a4');
+  c.fillStyle=g; c.fillRect(0,0,W,1050);
+  c.fillStyle='#8a6a44'; c.fillRect(0,1050,W,230);
+  c.strokeStyle='rgba(60,40,20,0.3)'; c.lineWidth=2;
+  for(var py=1080; py<1280; py+=46){ c.beginPath(); c.moveTo(0,py); c.lineTo(W,py); c.stroke(); }
+  /* janela com luz do dia */
+  c.fillStyle='#fdfdf8'; rr(c,60,150,190,260,8); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#a5dcf7'; rr(c,72,162,166,236,4); c.fill();
+  c.fillStyle='#ffd93b'; circle(c,196,210,26); c.fill();
+  c.fillStyle='rgba(255,255,255,0.92)'; cloud(c,110,300,0.55); cloud(c,180,340,0.4);
+  c.strokeStyle=INK; c.lineWidth=3;
+  c.beginPath(); c.moveTo(155,162); c.lineTo(155,398); c.moveTo(72,280); c.lineTo(238,280); c.stroke();
+  /* estante de livros, apoiada no chao */
+  shadow(c,600,1052,110);
+  c.fillStyle='#5a4632'; rr(c,520,420,170,630,8); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  var bcols2=['#a03b46','#33507a','#2e7d46','#b56a2a','#6e4a8a'];
+  for(var sh=0; sh<4; sh++) for(var bk=0; bk<5; bk++){
+    c.fillStyle=bcols2[(sh+bk)%5];
+    c.fillRect(532+bk*32, 440+sh*150, 24, 108);
+    c.fillStyle='rgba(255,255,255,0.75)'; c.fillRect(532+bk*32, 470+sh*150, 24, 6);
+  }
+  /* diploma emoldurado */
+  c.fillStyle='#fdfdf8'; rr(c,300,180,150,104,6); c.fill(); c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#c9a227'; c.textAlign='center'; fitFont(c,'OAB',120,30,900); c.fillText('OAB',375,224);
+  c.fillStyle='rgba(27,36,50,0.6)'; c.fillRect(322,238,106,5); c.fillRect(322,250,80,5);
+  /* relogio */
+  c.fillStyle='#fdfdf8'; circle(c,620,240,30); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle=INK; c.lineWidth=3;
+  c.beginPath(); c.moveTo(620,240); c.lineTo(620,218); c.moveTo(620,240); c.lineTo(638,240); c.stroke();
+  /* mesa, apoiada no chao */
+  shadow(c,360,1052,260);
+  c.fillStyle='#6b4a2a'; rr(c,150,900,420,34,8); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#4a2c14'; c.fillRect(170,934,26,116); c.fillRect(524,934,26,116);
+  /* luminaria acesa sobre a mesa */
+  c.fillStyle='#37414f'; rr(c,500,840,16,60,4); c.fill();
+  c.fillStyle='#ffb400'; c.beginPath(); c.moveTo(486,842); c.lineTo(530,842); c.lineTo(522,812); c.lineTo(494,812); c.closePath(); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='rgba(255,210,80,0.25)';
+  c.beginPath(); c.moveTo(492,842); c.lineTo(524,842); c.lineTo(560,900); c.lineTo(456,900); c.closePath(); c.fill();
+  /* papéis, caneta e telefone sobre a mesa */
+  c.fillStyle='#fdfdf8'; rr(c,200,862,120,38,3); c.fill(); c.lineWidth=2.4; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle='rgba(27,36,50,0.5)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(210,874); c.lineTo(310,874); c.moveTo(210,886); c.lineTo(300,886); c.stroke();
+  c.fillStyle='#c22f3d'; rr(c,340,872,60,10,3); c.fill();
+  c.fillStyle='#37414f'; rr(c,440,862,40,38,6); c.fill(); c.strokeStyle=INK; c.lineWidth=2.4; c.stroke();
+  /* cadeira da frente, apoiada no chao */
+  c.fillStyle='#7a4a26'; rr(c,240,960,90,14,6); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#7a4a26'; c.fillRect(252,974,10,76); c.fillRect(308,974,10,76);
+  c.fillStyle='#7a4a26'; rr(c,240,900,90,60,8); c.fill(); c.stroke();
+  /* planta */
+  c.fillStyle='#b0562f'; rr(c,660,980,54,70,8); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  shadow(c,687,1052,40);
+  c.strokeStyle='#2e7d46'; c.lineWidth=5; c.lineCap='round';
+  for(var li2=0;li2<4;li2++){ c.beginPath(); c.moveTo(687,982); c.quadraticCurveTo(687+(li2-2)*18, 910, 687+(li2-2)*28, 880); c.stroke(); }
+  /* tapete */
+  c.fillStyle='#a03b46'; rr(c,150,1064,420,150,10); c.fill();
+  c.lineWidth=3; c.strokeStyle='#ffd21f'; c.stroke();
+}
+
+/* ---- fundo de recorte teorico ---- */
+function drawRecorte(c, now){
+  var g=c.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0e2138'); g.addColorStop(0.6,'#12294d'); g.addColorStop(1,'#0a1826');
+  c.fillStyle=g; c.fillRect(0,0,W,H);
+  drawDust(c, now, 7, 40, 680, 120, 1200);
+  /* folha grande de papel ao centro */
+  c.fillStyle='rgba(0,0,0,0.3)'; rr(c,66,196,600,880,18); c.fill();
+  c.fillStyle='#fffdf2'; rr(c,56,186,600,880,18); c.fill();
+  c.lineWidth=5; c.strokeStyle='#c9a227'; c.stroke();
+  c.lineWidth=2; c.strokeStyle='rgba(27,36,50,0.3)';
+  rr(c,70,200,572,852,12); c.stroke();
+  /* canto dobrado */
+  c.fillStyle='#e8e0c8'; c.beginPath(); c.moveTo(656,186); c.lineTo(616,186); c.lineTo(656,226); c.closePath(); c.fill();
+  c.lineWidth=2; c.strokeStyle=INK; c.stroke();
+  /* furinhos de fichario na lateral */
+  c.fillStyle='rgba(27,36,50,0.25)';
+  for(var fh=0; fh<5; fh++){ circle(c,86,300+fh*180,7); c.fill(); }
+}
+
+/* ---- cartao de titulo da capa ---- */
+function drawTitleCard(c, pop){
+  var p=clamp(pop,0,1); if(p<=0) return;
+  c.save(); c.globalAlpha=p;
+  var sc=0.94+0.06*p; c.translate(360,430); c.scale(sc,sc); c.translate(-360,-430);
+  /* selo CAIU NA OAB */
+  c.fillStyle='#ffb400'; rr(c,250,150,220,44,22); c.fill();
+  c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#12294d'; c.textAlign='center'; fitFont(c,'CAIU NA OAB',200,24,900); c.fillText('CAIU NA OAB',360,180);
+  bigText(c,'RECEPTAÇÃO',360,330,84,'#fff',1);
+  bigText(c,'SEM DOLO',360,420,84,'#ffd21f',1);
+  c.fillStyle='#ffb400'; c.fillRect(230,452,260,6);
+  c.fillStyle='#fff'; c.textAlign='center';
+  fitFont(c,'DIREITO PENAL',500,34,900); c.fillText('DIREITO PENAL',360,510);
+  fitFont(c,'XLII EXAME · 2024 · QUESTÃO 60',500,26,800); c.fillText('XLII EXAME · 2024 · QUESTÃO 60',360,552);
+  c.restore();
+}
+
+/* ---- relogio do rewind, ponteiros girando para tras ---- */
+function drawRewindClock(c, x, y, r, now){
+  c.save(); c.translate(x,y);
+  c.fillStyle='rgba(0,0,0,0.3)'; circle(c,6,8,r+6); c.fill();
+  c.fillStyle='#fffdf2'; circle(c,0,0,r); c.fill();
+  c.lineWidth=6; c.strokeStyle='#c9a227'; c.stroke();
+  c.lineWidth=3; c.strokeStyle=INK; circle(c,0,0,r); c.stroke();
+  for(var h=0; h<12; h++){
+    var a=h/12*Math.PI*2;
+    c.strokeStyle=INK; c.lineWidth=h%3===0?4:2;
+    c.beginPath(); c.moveTo(Math.sin(a)*(r-14),-Math.cos(a)*(r-14));
+    c.lineTo(Math.sin(a)*(r-4),-Math.cos(a)*(r-4)); c.stroke();
+  }
+  var back=-now*1.4;
+  c.strokeStyle=INK; c.lineWidth=7; c.lineCap='round';
+  c.beginPath(); c.moveTo(0,0); c.lineTo(Math.sin(back)*(r-52),-Math.cos(back)*(r-52)); c.stroke();
+  c.lineWidth=5;
+  c.beginPath(); c.moveTo(0,0); c.lineTo(Math.sin(back*0.7+1)*(r-36),-Math.cos(back*0.7+1)*(r-36)); c.stroke();
+  c.fillStyle='#c22f3d'; circle(c,0,0,9); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.restore();
+}
+
+/* ---- algemas nos pulsos ---- */
+function drawCuffs(c, x, gy, s){
+  var hy=gy-88*s;
+  c.save(); c.translate(x,0); c.scale(s,s);
+  c.strokeStyle='#8a94a0'; c.lineWidth=7; c.lineCap='round';
+  c.beginPath(); c.moveTo(-34,hy); c.quadraticCurveTo(0,hy+26,34,hy); c.stroke();
+  c.strokeStyle=INK; c.lineWidth=2.4;
+  c.beginPath(); c.moveTo(-34,hy); c.quadraticCurveTo(0,hy+26,34,hy); c.stroke();
+  for(var ci2=-1; ci2<=1; ci2+=2){
+    c.fillStyle='#c9d4e4'; circle(c,ci2*34,hy,13); c.fill();
+    c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#37414f'; circle(c,ci2*34,hy,5); c.fill();
+  }
+  c.restore();
+}
+/* ---- documento com carimbo ROUBADO ---- */
+function drawDocRoubado(c, x, y, pop){
+  var p=clamp(pop,0,1); if(p<=0) return;
+  c.save(); c.translate(x,y); c.scale(0.92+0.08*p,0.92+0.08*p); c.rotate(-0.06); c.globalAlpha=p;
+  c.fillStyle='rgba(0,0,0,0.3)'; rr(c,4,6,190,120,8); c.fill();
+  c.fillStyle='#fdfdf8'; rr(c,0,0,190,120,8); c.fill();
+  c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#12294d'; c.textAlign='center'; fitFont(c,'DOCUMENTO DO CARRO',170,17,900); c.fillText('DOCUMENTO DO CARRO',95,26);
+  c.fillStyle='rgba(27,36,50,0.55)';
+  c.fillRect(16,40,158,6); c.fillRect(16,54,120,6); c.fillRect(16,68,140,6);
+  c.save(); c.translate(95,98); c.rotate(-0.12);
+  c.strokeStyle='#c22f3d'; c.lineWidth=4; rr(c,-62,-16,124,32,6); c.stroke();
+  c.fillStyle='#c22f3d'; fitFont(c,'ROUBADO',112,22,900); c.fillText('ROUBADO',0,7);
+  c.restore(); c.restore();
+}
+/* ---- certo (verde) ou errado (vermelho) ---- */
+function drawCheck(c, x, y, s, ok){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  c.fillStyle= ok? '#1d9e63' : '#d92b3a';
+  circle(c,0,0,34); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.strokeStyle='#fff'; c.lineWidth=7; c.lineCap='round'; c.lineJoin='round';
+  c.beginPath();
+  if(ok){ c.moveTo(-14,0); c.lineTo(-4,10); c.lineTo(16,-10); }
+  else { c.moveTo(-11,-11); c.lineTo(11,11); c.moveTo(11,-11); c.lineTo(-11,11); }
+  c.stroke(); c.restore();
+}
+
+/* ---- ambiente: um loop suave por cena ---- */
+var ambTimer=null, ambName=null;
+function ambStart(name){
+  if(ambName===name) return;
+  ambStop(); ambName=name;
+  var step=0;
+  ambTimer=setInterval(function(){
+    if(!AC || !soundOn || state==='idle') return;
+    step++;
+    try{
+      if(name==='rua'){ if(step%3===1) noiseBurst(0.9,0.03,300,0); if(step%5===2) tone(2400,3200,0.09,'sine',0.02,0); }
+      else if(name==='blitz'){ if(step%4===1){ tone(660,990,0.32,'triangle',0.05,0); tone(990,660,0.32,'triangle',0.05,0.34); } if(step%6===3) noiseBurst(0.5,0.03,500,0); }
+      else if(name==='sede'){ if(step%4===2) noiseBurst(0.4,0.025,900,0); if(step%7===3) tone(300,520,0.3,'sine',0.02,0); }
+      else if(name==='escritorio'){ if(step%2===1) tone(1200,1200,0.05,'sine',0.015,0); if(step%6===4) noiseBurst(0.16,0.03,2400,0); }
+      else if(name==='recorte'){ if(step%4===1) noiseBurst(0.12,0.03,3000,0); if(step%6===2) tone(500,900,0.06,'sine',0.02,0); }
+      else if(name==='capa'){ if(step%3===1) tone(440,660,0.8,'sine',0.02,0); }
+    }catch(e){}
+  }, 1800);
+}
+function ambStop(){ if(ambTimer){ clearInterval(ambTimer); ambTimer=null; } ambName=null; }
+function ambFn(name){ return function(){ ambStart(name); }; }
+/* ---- rewind: relogio voltando ---- */
+function sfxRewind(){
+  noiseBurst(0.5,0.16,1600,0);
+  tone(900,280,0.7,'sine',0.18,0);
+  tone(1200,1200,0.07,'sine',0.1,0.1); tone(1200,1200,0.07,'sine',0.1,0.3); tone(1200,1200,0.07,'sine',0.1,0.5);
+}
+
+
+/* A ESCADA DA HERANÇA, de verdade, na PONTINHA DO LADO DIREITO
+   do cartório (pedido do Timothy, 21/11/2026): encostada na
+   parede da direita, para NÃO cobrir o nome de ninguém — nem o
+   nome escrito na frente dos degraus, nem a etiqueta dos pés de
+   quem está no chão, à esquerda dela. Cada degrau tem o nome
+   escrito na frente — medido para caber — e ACENDE (verde) na
+   hora em que a narração chega nele. stepTopY(i) devolve a
+   altura do piso de cada degrau, para os personagens ficarem
+   EM PÉ sobre ele. */
+var ESC_X = 252, ESC_W = 436, ESC_H = 46;
+function stepTopY(i){ return GROUND - (i+1)*ESC_H; }
+/* ============================================================
+   DESTAQUE DE QUEM ESTÁ NA VEZ + QUADRO DA BASE LEGAL
+   (pedido do Timothy, 21/11/2026: "quando o tabelião estiver
+   narrando e falando tal coisa, coloca um brilho na pessoa da
+   família que se encaixa ali, uma setinha apontando pra pessoa,
+   e na hora que ele estiver narrando pode vir um quadro
+   mostrando o texto da base legal").
+   - drawFocusGlow: halo dourado pulsante ao redor do corpo,
+     anel de luz nos pés e estrelinhas cintilando — a pessoa
+     citada BRILHA enquanto a narração fala dela.
+   - drawFocusArrow: seta dourada que quica devagar ACIMA da
+     cabeça, apontando para baixo, para a pessoa — o olho de
+     quem assiste vai direto para quem importa naquela hora.
+   - drawLawFrame: o QUADRO DA BASE LEGAL — um documento que
+     desliza para a parede (faixa livre acima das cabeças, sem
+     cobrir nenhum personagem) com o texto do inciso do
+     art. 1.829 que está sendo narrado naquele instante.
+   As janelas de tempo de cada destaque e de cada quadro ficam
+   declaradas nas próprias cenas (propriedades focus e law de
+   cada momento) e são desenhadas pelo motor, sobre a cena —
+   sincronizadas com os marcos reais da narração. */
+function drawFocusGlow(c, x, gy, s, now, alpha){
+  if(alpha<=0) return;
+  s = s||1;
+  var pulse = REDUCED? 0.5 : 0.5+0.5*Math.sin(now*2.6 + x*0.013);
+  c.save(); c.globalAlpha = alpha;
+  // o feixe de luz suave sobre a pessoa inteira
+  var cy = gy-128*s;
+  var grd = c.createRadialGradient(x,cy,10, x,cy,150*s);
+  grd.addColorStop(0,'rgba(255,214,80,0.30)');
+  grd.addColorStop(0.55,'rgba(255,190,40,0.14)');
+  grd.addColorStop(1,'rgba(255,190,40,0)');
+  c.fillStyle = grd;
+  c.beginPath(); c.ellipse(x,cy,118*s,152*s,0,0,Math.PI*2); c.fill();
+  // o contorno de luz ao redor do corpo, pulsando
+  c.strokeStyle = 'rgba(255,196,0,'+(0.50+0.38*pulse).toFixed(3)+')';
+  c.lineWidth = 4+2.5*pulse;
+  c.beginPath(); c.ellipse(x,cy,64*s,140*s,0,0,Math.PI*2); c.stroke();
+  c.strokeStyle = 'rgba(255,220,110,0.35)';
+  c.lineWidth = 10;
+  c.setLineDash([12,10]); c.lineDashOffset = REDUCED? 0 : -now*26;
+  c.beginPath(); c.ellipse(x,cy,74*s,150*s,0,0,Math.PI*2); c.stroke();
+  c.setLineDash([]);
+  // o anel de luz nos pés, expandindo em ondas
+  for(var ri=0; ri<2; ri++){
+    var rp2 = REDUCED? 0.4 : ((now*0.55 + ri*0.5 + x*0.001) % 1);
+    c.strokeStyle = 'rgba(255,196,0,'+(0.55*(1-rp2)).toFixed(3)+')';
+    c.lineWidth = 3.5;
+    c.beginPath(); c.ellipse(x, gy+9, (52+rp2*30)*s, (12+rp2*7)*s, 0, 0, Math.PI*2); c.stroke();
+  }
+  // estrelinhas cintilando ao redor dos ombros e da cabeça
+  c.fillStyle = '#ffd94d';
+  for(var si=0; si<6; si++){
+    var sa = si/6*Math.PI*2 + (REDUCED? 0 : now*0.7);
+    var sx3 = x + Math.cos(sa)*76*s, sy3 = cy + Math.sin(sa)*118*s;
+    var tw = 0.4+0.6*Math.abs(Math.sin(now*3.1+si*1.7));
+    c.globalAlpha = alpha*tw;
+    var r3 = 3.2*s;
+    c.beginPath();
+    c.moveTo(sx3,sy3-r3*1.9); c.lineTo(sx3+r3*0.55,sy3-r3*0.55); c.lineTo(sx3+r3*1.9,sy3);
+    c.lineTo(sx3+r3*0.55,sy3+r3*0.55); c.lineTo(sx3,sy3+r3*1.9); c.lineTo(sx3-r3*0.55,sy3+r3*0.55);
+    c.lineTo(sx3-r3*1.9,sy3); c.lineTo(sx3-r3*0.55,sy3-r3*0.55); c.closePath(); c.fill();
+  }
+  c.restore();
+}
+function drawFocusArrow(c, x, gy, s, now, alpha, pop){
+  if(alpha<=0) return;
+  s = (s||1) * (1 + 0.38*(pop||0));
+  var bounce = REDUCED? 0 : Math.sin(now*3.4)*7;
+  var tipY = gy - 274*s + bounce;
+  c.save(); c.globalAlpha = alpha;
+  c.lineJoin='round';
+  // a haste da seta
+  c.fillStyle = '#ffb400';
+  rr(c, x-8*s, tipY-54*s, 16*s, 30*s, 4*s); c.fill();
+  c.lineWidth = 3*s; c.strokeStyle = INK; c.stroke();
+  // a ponta, apontando para a cabeça de quem está na vez
+  c.beginPath();
+  c.moveTo(x-20*s, tipY-26*s); c.lineTo(x+20*s, tipY-26*s); c.lineTo(x, tipY+2*s);
+  c.closePath(); c.fill(); c.stroke();
+  c.restore();
+}
+/* O quadro da base legal: documento em papel creme, faixa
+   azul-marinho no topo com o nome da base, e o texto do inciso
+   enrolado em linhas MEDIDAS para caber dentro do quadro.
+   Nasce deslizando de cima e assentando na parede. */
+function lawFrameH(c, w, text){
+  var fs = 23;
+  function wrapLines(fz){
+    c.font = '800 '+fz+'px "Segoe UI", system-ui, sans-serif';
+    var words = text.split(' '), lines = [], line = '';
+    for(var i=0;i<words.length;i++){ var t2 = line? line+' '+words[i] : words[i];
+      if(c.measureText(t2).width > w-52 && line){ lines.push(line); line = words[i]; } else line = t2; }
+    if(line) lines.push(line);
+    return lines;
+  }
+  var lines = wrapLines(fs);
+  while(lines.length*30 > 168 && fs > 16){ fs -= 2; lines = wrapLines(fs); }
+  return 58 + lines.length*30 + 22;
+}
+
+function drawLawFrame(c, cx, cy, w, kicker, text, pop){
+  if(pop<=0) return;
+  // mede e quebra o texto antes de saber a altura do quadro
+  var fs = 23;
+  function wrapLines(fz){
+    c.font = '800 '+fz+'px "Segoe UI", system-ui, sans-serif';
+    var words = text.split(' '), lines = [], line = '';
+    for(var i=0;i<words.length;i++){ var t2 = line? line+' '+words[i] : words[i];
+      if(c.measureText(t2).width > w-52 && line){ lines.push(line); line = words[i]; } else line = t2; }
+    if(line) lines.push(line);
+    return lines;
+  }
+  var lines = wrapLines(fs);
+  while(lines.length*30 > 168 && fs > 16){ fs -= 2; lines = wrapLines(fs); }
+  var h = 58 + lines.length*30 + 22;
+  c.save();
+  c.globalAlpha = clamp(pop,0,1);
+  c.translate(cx, cy + (1-pop)*26);
+  var sc = 0.97+0.03*pop; c.scale(sc,sc);
+  c.translate(-w/2, -h/2);
+  // a sombra e o papel
+  c.fillStyle = 'rgba(0,0,0,0.30)'; rr(c, 9, 11, w, h, 14); c.fill();
+  c.fillStyle = '#fffdf2'; rr(c, 0, 0, w, h, 14); c.fill();
+  c.lineWidth = 5; c.strokeStyle = '#c9a227'; c.stroke();
+  c.lineWidth = 2; c.strokeStyle = 'rgba(27,36,50,0.35)';
+  rr(c, 8, 8, w-16, h-16, 10); c.stroke();
+  // a faixa do topo, com o nome da base legal
+  c.fillStyle = '#12294d'; rr(c, 0, 0, w, 46, 14); c.fill(); c.fillRect(0, 30, w, 16);
+  c.lineWidth = 3; c.strokeStyle = '#c9a227';
+  c.beginPath(); c.moveTo(0,46); c.lineTo(w,46); c.stroke();
+  c.fillStyle = '#ffd94d'; c.textAlign = 'center';
+  fitFont(c, 'BASE LEGAL · '+kicker, w-36, 21, 900);
+  c.fillText('BASE LEGAL · '+kicker, w/2, 30);
+  // o texto do inciso, linha por linha, dentro do papel
+  c.fillStyle = '#1b2432';
+  c.font = '800 '+fs+'px "Segoe UI", system-ui, sans-serif';
+  for(var l=0; l<lines.length; l++) c.fillText(lines[l], w/2, 58+30+l*30);
+  c.restore();
+}
+</script>
+
+
+<script>
+"use strict";
+/* ---------------- Cenários ---------------- */
+function cloud(c,x,y,s){
+  c.save(); c.translate(x,y); c.scale(s,s);
+  c.beginPath();
+  c.arc(0,0,34,0,Math.PI*2); c.arc(38,-10,42,0,Math.PI*2); c.arc(80,0,32,0,Math.PI*2); c.arc(40,10,38,0,Math.PI*2);
+  c.fill(); c.restore();
+}
+function drawSkyDay(c, tNow){
+  var g = c.createLinearGradient(0,0,0,GROUND);
+  g.addColorStop(0,'#6ec1f2'); g.addColorStop(0.55,'#a5dcf7'); g.addColorStop(1,'#dff3fd');
+  c.fillStyle = g; c.fillRect(0,0,W,GROUND+4);
+  var sx=610, sy=130;
+  c.save(); c.globalAlpha=0.25; c.fillStyle='#fff3a0';
+  circle(c,sx,sy,86); c.fill(); c.restore();
+  c.fillStyle='#ffd93b'; circle(c,sx,sy,56); c.fill();
+  c.lineWidth=5; c.strokeStyle='#e8a90c'; c.stroke();
+  c.fillStyle='rgba(255,255,255,0.92)';
+  cloud(c, ((tNow*14) % 900) - 120, 120, 1.0);
+  cloud(c, ((tNow*9 + 380) % 900) - 120, 210, 0.7);
+  c.strokeStyle='rgba(27,36,50,0.55)'; c.lineWidth=3.4; c.lineCap='round';
+  for(var i=0;i<3;i++){
+    var bx = ((tNow*36 + i*210) % 860) - 70, by = 150 + i*44 + Math.sin(tNow*2+i)*8;
+    var f = Math.sin(tNow*7+i*2)*7;
+    c.beginPath(); c.moveTo(bx-13,by-f); c.quadraticCurveTo(bx-4,by+3,bx,by);
+    c.quadraticCurveTo(bx+4,by+3,bx+13,by-f); c.stroke();
+  }
+}
+/* A rua à noite: prédios com janelas acesas, o bar com o letreiro
+   de neon piscando, o poste com o cone de luz, a lua — e a vida:
+   uma moto que passa de tempos em tempos, o vizinho que aparece
+   na janela, a cortina que balança, a luz de uma janela que
+   apaga e acende. dawnP (0..1) clareia a cena para o fecho. */
+function drawNightStreet(c, now, dawnP){
+  var g = c.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#131c38'); g.addColorStop(0.55,'#1d2a52'); g.addColorStop(0.78,'#27355e');
+  g.addColorStop(0.79,'#3a3f52'); g.addColorStop(1,'#2c3040');
+  c.fillStyle = g; c.fillRect(0,0,W,H);
+  // estrelas (somem com o amanhecer)
+  c.fillStyle='rgba(255,255,255,'+(0.75*(1-dawnP)).toFixed(3)+')';
+  for(var st=0; st<36; st++){
+    var sx2=(st*173)%700+8, sy2=(st*97)%300+18;
+    var tw = 0.5+0.5*Math.sin(now*1.7+st*1.3);
+    circle(c,sx2,sy2,1.1+1.3*tw); c.fill();
+  }
+  // a lua, com o brilho suave
+  c.save(); c.globalAlpha=0.20*(1-dawnP*0.6); c.fillStyle='#fdf6d8';
+  circle(c,616,120,64); c.fill(); c.restore();
+  c.fillStyle='#fdf6d8'; circle(c,616,120,40); c.fill();
+  c.fillStyle='rgba(190,185,160,0.5)'; circle(c,602,108,8); c.fill(); circle(c,630,132,6); c.fill();
+  // prédios dos dois lados, com janelas acesas em ritmos diferentes
+  var cols=['#232c47','#1f2742','#26304e'];
+  for(var b=0;b<4;b++){
+    var bx=b*186-24, bh=430+((b*83)%110);
+    c.fillStyle=cols[b%3]; c.fillRect(bx,1010-bh,170,bh);
+    c.fillStyle='#171e33'; c.fillRect(bx-6,1010-bh-12,182,12);
+    for(var wy=0; wy<3; wy++) for(var wx=0; wx<2; wx++){
+      var lit = Math.sin(now*0.23 + b*2.7 + wy*1.9 + wx*3.1) > -0.55;
+      c.fillStyle = lit? 'rgba(255,214,120,0.92)' : 'rgba(120,140,180,0.30)';
+      rr(c,bx+28+wx*76, 1010-bh+34+wy*104, 44, 58, 4); c.fill();
+    }
+  }
+  // o vizinho que aparece na janela do prédio da esquerda
+  var nbCyc = now % 17;
+  if(nbCyc>9 && nbCyc<14.5){
+    var nbx=88, nby=724;
+    c.fillStyle='rgba(255,224,150,0.95)'; rr(c,nbx-26,nby-34,52,66,4); c.fill();
+    c.fillStyle='#8a5a34'; circle(c,nbx,nby-8,11); c.fill();
+    c.fillStyle='#31456e'; rr(c,nbx-13,nby+2,26,30,5); c.fill();
+    c.strokeStyle='rgba(240,240,240,0.5)'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(nbx-26,nby-34); c.lineTo(nbx-26+Math.sin(now*2.2)*3,nby+30); c.stroke();
+  }
+  // o bar, à direita: porta aberta com luz quente e o letreiro de neon
+  c.fillStyle='#2c2138'; rr(c,486,690,208,320,8); c.fill(); c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  var neonOn = Math.sin(now*7.3)>-0.82 && Math.sin(now*1.1)>-0.97;
+  c.save();
+  if(neonOn){ c.shadowColor='#ff5d8f'; c.shadowBlur=18; }
+  c.fillStyle= neonOn? '#ff8fb5' : 'rgba(255,143,181,0.35)';
+  c.textAlign='center'; fitFont(c,'BAR',120,44,900); c.fillText('BAR',590,650);
+  c.restore();
+  c.strokeStyle= neonOn? '#ff5d8f':'rgba(255,93,143,0.4)'; c.lineWidth=3;
+  rr(c,516,606,148,58,10); c.stroke();
+  c.fillStyle='rgba(255,196,110,0.9)'; rr(c,512,790,74,220,6); c.fill(); c.lineWidth=3.4; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='rgba(90,50,20,0.55)'; c.fillRect(522,806,54,8); c.fillRect(522,836,54,8);
+  c.fillStyle='#4a3320'; rr(c,606,806,64,204,6); c.fill(); c.stroke();
+  c.fillStyle='#ffd98a'; circle(c,618,912,4.5); c.fill();
+  // o poste e o cone de luz, com mosquitinhos dançando no feixe
+  c.fillStyle='#39424f'; c.fillRect(52,520,13,490);
+  c.fillStyle='#39424f'; rr(c,52,506,86,15,7); c.fill();
+  c.fillStyle='#ffe98a'; circle(c,138,514,11); c.fill(); c.lineWidth=2.6; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='rgba(255,232,150,0.13)';
+  c.beginPath(); c.moveTo(128,524); c.lineTo(150,524); c.lineTo(238,1010); c.lineTo(40,1010); c.closePath(); c.fill();
+  c.fillStyle='rgba(255,246,190,0.8)';
+  for(var mq=0; mq<5; mq++){
+    var mqx=138+Math.sin(now*3.1+mq*2.4)*22, mqy=540+((mq*47)%70)+Math.cos(now*2.3+mq)*9;
+    circle(c,mqx,mqy,1.6); c.fill();
+  }
+  // a rua e a calçada, com a faixa e o bueiro
+  c.fillStyle='#333947'; c.fillRect(0,1010,W,270);
+  c.fillStyle='#454b5c'; c.fillRect(0,1010,W,16);
+  c.strokeStyle='rgba(255,255,255,0.35)'; c.lineWidth=5; c.setLineDash([36,30]); c.lineDashOffset=0;
+  c.beginPath(); c.moveTo(0,1170); c.lineTo(W,1170); c.stroke(); c.setLineDash([]);
+  c.fillStyle='#272c38'; c.beginPath(); c.ellipse(330,1240,44,11,0,0,Math.PI*2); c.fill();
+  c.strokeStyle='rgba(160,175,200,0.4)'; c.lineWidth=2.6;
+  c.beginPath(); c.ellipse(330,1240,44,11,0,0,Math.PI*2); c.stroke();
+  // a moto que atravessa a rua de tempos em tempos, com o farol aceso
+  var motoCyc = now % 13;
+  if(motoCyc < 2.6){
+    var mp = motoCyc/2.6, mx = lerp(-120, 860, mp), my=1128;
+    c.save(); c.translate(mx,my);
+    c.fillStyle='rgba(255,240,180,0.20)';
+    c.beginPath(); c.moveTo(38,-24); c.lineTo(150,-8); c.lineTo(150,16); c.lineTo(38,-2); c.closePath(); c.fill();
+    c.fillStyle='#1c1f26'; circle(c,-30,26,17); c.fill(); circle(c,34,26,17); c.fill();
+    c.fillStyle='#8f979e'; circle(c,-30,26,7); c.fill(); circle(c,34,26,7); c.fill();
+    c.strokeStyle='#c22f3d'; c.lineWidth=7; c.lineCap='round';
+    c.beginPath(); c.moveTo(-30,22); c.lineTo(-6,-8); c.lineTo(26,-4); c.lineTo(34,22); c.stroke();
+    c.fillStyle='#f2c094'; circle(c,-2,-30,10); c.fill(); c.lineWidth=2.4; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#26355c'; rr(c,-13,-22,22,26,6); c.fill(); c.stroke();
+    c.fillStyle='#ffe98a'; circle(c,40,-8,6); c.fill();
+    c.restore();
+  }
+  if(dawnP>0) drawDawn(c, dawnP);
+}
+/* Amanhecer: sol subindo e céu clareando */
+function drawDawn(c,p){
+  if(p<=0) return;
+  c.save(); c.globalAlpha=p;
+  var g=c.createLinearGradient(0,200,0,1010);
+  g.addColorStop(0,'rgba(140,180,240,0.55)'); g.addColorStop(0.7,'rgba(255,150,80,0.5)'); g.addColorStop(1,'rgba(255,190,90,0.75)');
+  c.fillStyle=g; c.fillRect(0,200,W,810);
+  var sy=lerp(990,760,p);
+  c.globalAlpha=p*0.3; c.fillStyle='#fff3a0'; circle(c,600,sy,120); c.fill();
+  c.globalAlpha=p; c.fillStyle='#ffd93b'; circle(c,600,sy,58); c.fill();
+  c.lineWidth=5; c.strokeStyle='#e8a90c'; c.stroke();
+  c.restore();
+}
+var PEDRO_L = { shirt:'#a03b46', pants:'#33507a', skin:'#f2c094', hair:'#14161c', beanie:'#20606e', beanieHi:'#e8b93b' };
+</script>
+
+<script>
+"use strict";
+</script>
+
+<script>
+"use strict";
+/* ---------------- Personagens ---------------- */
+var shakeT = 0;
+var NOWS = 0;
+function shadow(c,x,y,w){
+  c.fillStyle='rgba(10,20,40,0.22)';
+  c.beginPath(); c.ellipse(x,y,w,w*0.24,0,0,Math.PI*2); c.fill();
+}
+/* Nome e papel do personagem, DISCRETOS, no chão, logo abaixo dos
+   pés (pedido do Timothy, 21/11/2026): letrinha pequena sobre uma
+   pílula escura semitransparente — identifica quem é quem sem
+   cobrir o personagem nem atrapalhar a cena. */
+/* Enquanto um cartão de TERMO está na tela (faixa do rodapé),
+   as etiquetas dos pés somem: um gráfico por vez na faixa, como
+   num documentário — nada de um card por cima do outro. */
+var TERM_ON = false;
+function drawFootLabel(c, x, gy, text){
+  if(TERM_ON) return;
+  c.save();
+  c.font='800 15px "Segoe UI", system-ui, sans-serif';
+  var wdt = c.measureText(text).width + 20;
+  var cx2 = clamp(x, wdt/2+8, W-wdt/2-8);
+  c.fillStyle='rgba(10,22,44,0.55)';
+  rr(c, cx2-wdt/2, gy+20, wdt, 25, 12); c.fill();
+  c.fillStyle='rgba(255,255,255,0.88)'; c.textAlign='center';
+  c.fillText(text, cx2, gy+37.5);
+  c.restore();
+}
+/* Pessoa: o = {x,y,s,dir,shirt,stripes,pants,skin,hair,hairStyle,cap,robe,tie,expr,
+   walk, phase, armR, armL, paper, paperText, lean, sitting, briefcase, carryBox, gun, flash} */
+function drawPerson(c,o){
+  var s=o.s||1, dir=o.dir||1;
+  var x=o.x, gy=o.y;
+  shadow(c,x,gy+6,52*s);
+  var ph=o.phase||0, wk=o.walk||0;
+  var swing = wk===0?0:Math.sin(ph)*(wk===2?0.62:0.4);
+  var bob = wk===0?Math.sin(ph*0.5)*1.5:Math.abs(Math.sin(ph))*(wk===2?7:4);
+  var hipY = gy-118*s+bob*0.4, shY = gy-196*s-bob;
+  var lean = (o.lean||0) + (wk===2?0.13*dir:0);
+  c.save(); c.translate(x,0); c.scale(dir,1);
+  c.lineCap='round'; c.lineJoin='round';
+  function leg(sw, back){
+    if(o.sitting){
+      var kx3=(back?24:33)*s, ky3=hipY+(back?20:15)*s;
+      var fx3=(back?32:43)*s, fy3=gy-2*s;
+      // a CALÇA com o contorno de linha preta, igual ao resto do
+      // desenho: primeiro o traço preto mais largo por baixo,
+      // depois a cor da calça por cima — a borda preta aparece
+      // dos dois lados da perna, contínua, sem falhar
+      c.strokeStyle=INK; c.lineWidth=22.5*s;
+      c.beginPath(); c.moveTo(0,hipY); c.lineTo(kx3,ky3); c.lineTo(fx3,fy3-6*s); c.stroke();
+      c.strokeStyle=o.pants; c.lineWidth=17*s;
+      c.beginPath(); c.moveTo(0,hipY); c.lineTo(kx3,ky3); c.lineTo(fx3,fy3-6*s); c.stroke();
+      c.fillStyle='#2c2c34';
+      c.beginPath(); c.ellipse(fx3+6*s,fy3-3*s,14*s,6.5*s,0,0,Math.PI*2); c.fill();
+      c.lineWidth=2.6*s; c.strokeStyle=INK; c.stroke();
+      return;
+    }
+    var hx=0, hy=hipY;
+    var kx=sw*46*s, ky=hipY+52*s - Math.max(0,sw)*(wk? 16*s:0);
+    var fx=sw*62*s, fy=gy - Math.max(0,-sw)*(wk?10*s:0) - Math.max(0,sw)*(wk?4*s:0);
+    if(!wk){ fx= (back?-13:13)*s; fy=gy; kx=(back?-5:5)*s; ky=hipY+54*s; }
+    // idem: contorno preto da calça por baixo, cor por cima
+    c.strokeStyle=INK; c.lineWidth=22.5*s;
+    c.beginPath(); c.moveTo(hx,hy); c.lineTo(kx,ky); c.lineTo(fx,fy-6*s); c.stroke();
+    c.strokeStyle=o.pants; c.lineWidth=17*s;
+    c.beginPath(); c.moveTo(hx,hy); c.lineTo(kx,ky); c.lineTo(fx,fy-6*s); c.stroke();
+    c.fillStyle='#2c2c34';
+    c.beginPath(); c.ellipse(fx+6*s,fy-3*s,14*s,6.5*s,0,0,Math.PI*2); c.fill();
+    c.lineWidth=2.6*s; c.strokeStyle=INK; c.stroke();
+  }
+  leg(-swing,true); leg(swing,false);
+  if(o.ballChain){
+    // A BOLA DE FERRO no tornozelo do preso (pedido do Timothy):
+    // o grilhão no tornozelo da frente, a corrente com a barriga
+    // arrastando no chão e a bola pesada atrás — ela balança e
+    // atrasa um passo quando ele anda, com sombra própria no chão
+    var bcx = -44*s - (wk? Math.sin(ph-0.7)*6*s : 0), bcy = gy-14*s;
+    c.fillStyle='rgba(10,20,40,0.28)';
+    c.beginPath(); c.ellipse(bcx,gy+4*s,21*s,5.5*s,0,0,Math.PI*2); c.fill();
+    var ax0=11*s, ay0=gy-9*s, cxp=-18*s, cyp=gy+3*s;
+    for(var li=1; li<=7; li++){
+      var lu=li/8, lx2=(1-lu)*(1-lu)*ax0 + 2*(1-lu)*lu*cxp + lu*lu*(bcx+12*s);
+      var ly2=(1-lu)*(1-lu)*ay0 + 2*(1-lu)*lu*cyp + lu*lu*(bcy-2*s);
+      c.strokeStyle='#26262e'; c.lineWidth=2.6*s;
+      c.beginPath(); c.ellipse(lx2,ly2,4.6*s,3.2*s,lu*1.2,0,Math.PI*2); c.stroke();
+    }
+    c.strokeStyle='#26262e'; c.lineWidth=5.5*s; c.lineCap='round';
+    c.beginPath(); c.arc(13*s,gy-8*s,8.5*s,0.4,Math.PI*1.75); c.stroke();
+    c.fillStyle='#26262e'; circle(c,bcx,bcy,15.5*s); c.fill();
+    c.lineWidth=3*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='rgba(255,255,255,0.35)'; circle(c,bcx-5*s,bcy-5.5*s,4.2*s); c.fill();
+    c.fillStyle='#3c3f47'; circle(c,bcx+11*s,bcy-9*s,3.4*s); c.fill(); c.lineWidth=2*s; c.stroke();
+  }
+  if(o.hairStyle==='long'){
+    // o cabelo comprido, atrás dos ombros: uma massa ESTREITA, com as
+    // pontas onduladas na altura das costas. Cabelo de mulher — não
+    // uma capa amarela cobrindo o corpo como se fosse roupa
+    var bHx=lean*30*s, bHy=shY-34*s-bob*0.3;
+    c.fillStyle=o.hair;
+    c.beginPath();
+    c.moveTo(bHx-27*s,bHy-16*s);
+    c.quadraticCurveTo(bHx-36*s,bHy+30*s,bHx-31*s,shY+58*s);
+    c.quadraticCurveTo(bHx-29*s,shY+80*s,bHx-24*s,shY+94*s);
+    c.quadraticCurveTo(bHx-15*s,shY+84*s,bHx-8*s,shY+97*s);
+    c.quadraticCurveTo(bHx-1*s,shY+86*s,bHx+7*s,shY+97*s);
+    c.quadraticCurveTo(bHx+14*s,shY+85*s,bHx+22*s,shY+95*s);
+    c.quadraticCurveTo(bHx+28*s,shY+78*s,bHx+30*s,shY+54*s);
+    c.quadraticCurveTo(bHx+35*s,bHy+28*s,bHx+27*s,bHy-16*s);
+    c.quadraticCurveTo(bHx,bHy-36*s,bHx-27*s,bHy-16*s);
+    c.closePath(); c.fill();
+    c.lineWidth=3.4*s; c.strokeStyle=INK; c.stroke();
+    c.strokeStyle=(o.hairLo||'rgba(0,0,0,0.25)'); c.lineWidth=2.4*s;
+    c.beginPath(); c.moveTo(bHx-20*s,bHy+26*s); c.quadraticCurveTo(bHx-24*s,shY+52*s,bHx-19*s,shY+82*s); c.stroke();
+    c.beginPath(); c.moveTo(bHx+20*s,bHy+26*s); c.quadraticCurveTo(bHx+24*s,shY+52*s,bHx+19*s,shY+82*s); c.stroke();
+    c.beginPath(); c.moveTo(bHx-9*s,bHy+30*s); c.quadraticCurveTo(bHx-11*s,shY+56*s,bHx-8*s,shY+84*s); c.stroke();
+    c.beginPath(); c.moveTo(bHx+9*s,bHy+30*s); c.quadraticCurveTo(bHx+11*s,shY+56*s,bHx+8*s,shY+84*s); c.stroke();
+    if(o.hairHi){ // as mechas claras que dão volume ao loiro
+      c.strokeStyle=o.hairHi; c.lineWidth=2.2*s;
+      c.beginPath(); c.moveTo(bHx-15*s,bHy+20*s); c.quadraticCurveTo(bHx-18*s,shY+50*s,bHx-14*s,shY+78*s); c.stroke();
+      c.beginPath(); c.moveTo(bHx+15*s,bHy+20*s); c.quadraticCurveTo(bHx+18*s,shY+50*s,bHx+14*s,shY+78*s); c.stroke();
+      c.beginPath(); c.moveTo(bHx,bHy+14*s); c.quadraticCurveTo(bHx-2*s,shY+46*s,bHx,shY+74*s); c.stroke();
+    }
+  }
+  // tronco
+  c.save(); c.translate(0,shY); c.rotate(lean);
+  c.fillStyle=o.shirt; rr(c,-27*s,0,54*s,(hipY-shY)+8*s,14*s); c.fill();
+  c.lineWidth=3.6*s; c.strokeStyle=INK; c.stroke();
+  if(o.stripes){ c.save(); rr(c,-27*s,0,54*s,(hipY-shY)+8*s,14*s); c.clip();
+    c.fillStyle='rgba(30,34,44,0.75)';
+    for(var st=10; st<110; st+=22) c.fillRect(-27*s, st*s, 54*s, 10*s);
+    c.restore(); rr(c,-27*s,0,54*s,(hipY-shY)+8*s,14*s); c.lineWidth=3.6*s; c.strokeStyle=INK; c.stroke(); }
+  if(o.robe){
+    c.fillStyle='#f4f1e6'; c.beginPath(); c.moveTo(-8*s,2*s); c.lineTo(8*s,2*s); c.lineTo(0,40*s); c.closePath(); c.fill();
+    c.lineWidth=2.2*s; c.strokeStyle=INK; c.stroke();
+    // o colar dourado discreto da juíza, sobre a toga bem cortada
+    c.strokeStyle='#c9a227'; c.lineWidth=2.2*s; c.lineCap='round';
+    c.beginPath(); c.moveTo(-7*s,4*s); c.quadraticCurveTo(0,23*s,7*s,4*s); c.stroke();
+    c.fillStyle='#c9a227'; circle(c,0,22*s,3.2*s); c.fill(); c.lineWidth=1.6*s; c.strokeStyle=INK; c.stroke();
+    // o fecho dourado da toga, na altura do peito
+    c.fillStyle='#c9a227'; circle(c,0,52*s,3*s); c.fill(); c.lineWidth=1.6*s; c.strokeStyle=INK; c.stroke();
+  }
+  if(o.tie){
+    c.fillStyle='#f4f1e6'; c.beginPath(); c.moveTo(-8*s,2*s); c.lineTo(8*s,2*s); c.lineTo(0,20*s); c.closePath(); c.fill();
+    c.fillStyle=o.tie; c.beginPath(); c.moveTo(-4.5*s,14*s); c.lineTo(4.5*s,14*s); c.lineTo(6.5*s,58*s); c.lineTo(0,70*s); c.lineTo(-6.5*s,58*s); c.closePath(); c.fill();
+    c.lineWidth=2*s; c.strokeStyle=INK; c.stroke();
+  }
+  if(o.suit){
+    c.fillStyle='rgba(8,12,24,0.38)';
+    c.beginPath(); c.moveTo(-25*s,2*s); c.lineTo(-7*s,2*s); c.lineTo(-13*s,44*s); c.lineTo(-25*s,31*s); c.closePath(); c.fill();
+    c.beginPath(); c.moveTo(25*s,2*s); c.lineTo(7*s,2*s); c.lineTo(13*s,44*s); c.lineTo(25*s,31*s); c.closePath(); c.fill();
+    c.fillStyle='#fdfdf8'; rr(c,14*s,46*s,10*s,8*s,2*s); c.fill(); c.lineWidth=1.8*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='rgba(240,244,252,0.9)';
+    circle(c,10*s,84*s,2.6*s); c.fill(); circle(c,10*s,100*s,2.6*s); c.fill();
+  }
+  if(o.crossBadge){ // o crachá com a cruz do médico / do enfermeiro
+    c.fillStyle='#fff'; rr(c,12*s,20*s,15*s,15*s,3*s); c.fill(); c.lineWidth=1.8*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#d92b3a'; c.fillRect(17.8*s,23*s,3.4*s,9*s); c.fillRect(15*s,25.8*s,9*s,3.4*s);
+  }
+  c.restore();
+  // braços
+  function arm(side, mode){
+    var sx=side*22*s, sy=shY+12*s;
+    var ex=sx, ey=sy+52*s, hx2=sx, hy2=sy+96*s;
+    var asw = wk? -swing*side*0.8 : 0;
+    if(mode==='point'){ ex=sx+side*30*s; ey=sy+6*s; hx2=sx+side*74*s; hy2=sy+2*s; }
+    else if(mode==='up'){ ex=sx+side*16*s; ey=sy-26*s; hx2=sx+side*22*s; hy2=sy-70*s; }
+    else if(mode==='hold'){ ex=sx+side*26*s; ey=sy+34*s; hx2=sx+side*10*s; hy2=sy+62*s; }
+    else if(mode==='carry'){ ex=sx+side*28*s; ey=sy+40*s; hx2=sx+side*6*s; hy2=sy+66*s; }
+    else if(mode==='protect'){ ex=sx+side*34*s; ey=sy+22*s; hx2=sx+side*66*s; hy2=sy+40*s; }
+    else if(mode==='shrug'){ ex=sx+side*34*s; ey=sy+18*s; hx2=sx+side*52*s; hy2=sy-16*s; }
+    else if(mode==='cross'){ ex=sx+side*10*s; ey=sy+44*s; hx2=sx-side*16*s; hy2=sy+58*s; }
+    else if(mode==='face'){ ex=sx+side*20*s; ey=sy+6*s; hx2=sx+side*4*s; hy2=sy-24*s; }
+    else if(mode==='gavel'){ ex=sx+side*30*s; ey=sy-8*s; hx2=sx+side*58*s; hy2=sy-34*s; }
+    else { ex=sx+asw*30*s; ey=sy+52*s; hx2=sx+asw*44*s; hy2=sy+94*s; }
+    c.strokeStyle=o.shirt; c.lineWidth=14.5*s;
+    c.beginPath(); c.moveTo(sx,sy); c.lineTo(ex,ey); c.stroke();
+    c.strokeStyle=o.skin; c.beginPath(); c.moveTo(ex,ey); c.lineTo(hx2,hy2); c.stroke();
+    c.fillStyle=o.skin; circle(c,hx2,hy2,8.6*s); c.fill(); c.lineWidth=2.4*s; c.strokeStyle=INK; c.stroke();
+    c.strokeStyle=o.skin; c.lineWidth=3.4*s;
+    for(var fd=-1;fd<=1;fd++){ c.beginPath(); c.moveTo(hx2,hy2); c.lineTo(hx2+(fd*4+ (mode==='point'?7:2))*s, hy2+(mode==='point'? fd*3 : 7)*s); c.stroke(); }
+    return {hx:hx2, hy:hy2};
+  }
+  var handL = arm(-1, o.armL||'down');
+  var handR = arm(1, o.armR||'down');
+  if(o.paper){
+    c.save(); c.translate(handL.hx-6*s, handL.hy-58*s); c.rotate(-0.08); c.scale(dir,1);
+    c.fillStyle='#fdfdf8'; rr(c,-32*s,0,64*s,80*s,4*s); c.fill();
+    c.lineWidth=3*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#c22f3d'; c.textAlign='center';
+    fitFont(c, o.paperText||'LEI', 56*s, 13.5*s, 900);
+    c.fillText(o.paperText||'LEI',0,21*s);
+    c.fillStyle='rgba(27,36,50,0.55)';
+    for(var pl=0; pl<3; pl++) c.fillRect(-22*s,(36+pl*13)*s,44*s,5*s);
+    c.restore();
+  }
+  if(o.carryBox){
+    c.save(); c.translate(4*s, shY+116*s); c.scale(dir,1);
+    drawBox(c, 0, 0, 104*s, 78*s, o.carryBox);
+    c.restore();
+  }
+  if(o.briefcase){
+    var bsw = Math.sin(ph*1.0 + 1.2) * (wk? 0.10 : 0.03);
+    c.save(); c.translate(handR.hx, handR.hy); c.rotate(bsw);
+    c.strokeStyle='#4a2c14'; c.lineWidth=4.4*s; c.lineCap='round';
+    c.beginPath(); c.moveTo(-13*s,4*s); c.quadraticCurveTo(0,-11*s,13*s,4*s); c.stroke();
+    c.fillStyle='#7a4a26'; rr(c,-34*s,5*s,68*s,50*s,7*s); c.fill();
+    c.lineWidth=3.4*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#5f3a1e'; rr(c,-34*s,5*s,68*s,16*s,7*s); c.fill(); c.lineWidth=2.6*s; c.stroke();
+    c.fillStyle='#c9a227'; rr(c,-17*s,16*s,10*s,13*s,2*s); c.fill(); c.stroke();
+    rr(c,7*s,16*s,10*s,13*s,2*s); c.fill(); c.stroke();
+    c.fillStyle='rgba(255,255,255,0.18)'; rr(c,-29*s,40*s,58*s,5*s,2*s); c.fill();
+    c.restore();
+  }
+  if(o.gun){ // a arma do João, na mão direita, apontada para a frente
+    c.save(); c.translate(handR.hx+4*s, handR.hy-3*s);
+    c.fillStyle='#26262e'; rr(c,-6*s,-6*s,34*s,11*s,3*s); c.fill();
+    c.lineWidth=2.4*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#26262e'; rr(c,-8*s,2*s,11*s,16*s,3*s); c.fill(); c.stroke();
+    c.fillStyle='#3c3f47'; c.fillRect(24*s,-4*s,7*s,4*s);
+    c.restore();
+    if(o.flash){ // o clarão do tiro
+      c.save(); c.translate(handR.hx+44*s, handR.hy-3*s);
+      c.fillStyle='rgba(255,190,60,0.95)';
+      c.beginPath();
+      for(var fp=0; fp<8; fp++){ var fa=fp/8*Math.PI*2, fr2=(fp%2? 12:30)*s;
+        c.lineTo(Math.cos(fa)*fr2, Math.sin(fa)*fr2); }
+      c.closePath(); c.fill();
+      c.fillStyle='#fff3c4'; circle(c,0,0,9*s); c.fill();
+      c.restore();
+    }
+  }
+  if(o.gavel){ drawGavel(c, x + dir*(handR.hx+16*s), handR.hy-30*s, (o.gavelAng||0) - (dir<0?0.5:0)); }
+  if(o.stampProp){ // o carimbo do tabelião, na mão direita: cabo de madeira e base
+    c.save(); c.translate(handR.hx+2*s, handR.hy-2*s); c.rotate((o.stampAng||0) + Math.sin(ph*0.9)*0.05);
+    c.fillStyle='#8a5a2b'; rr(c,-5*s,-24*s,10*s,18*s,4*s); c.fill(); c.lineWidth=2.4*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle='#5f3f24'; circle(c,0,-27*s,6.5*s); c.fill(); c.stroke();
+    c.fillStyle='#37414f'; rr(c,-13*s,-7*s,26*s,9*s,3*s); c.fill(); c.stroke();
+    c.fillStyle='#c22f3d'; rr(c,-13*s,0*s,26*s,4.5*s,2*s); c.fill(); c.lineWidth=1.8*s; c.stroke();
+    c.restore();
+  }
+  // cabeça
+  var hx0=lean*30*s, hy0=shY-34*s-bob*0.3;
+  c.fillStyle=o.skin; circle(c,hx0,hy0,27*s); c.fill();
+  c.lineWidth=3.6*s; c.strokeStyle=INK; c.stroke();
+  c.fillStyle=o.skin; circle(c,hx0-24*s,hy0+2*s,7*s); c.fill(); c.stroke();
+  if(o.cowboy){ // o chapéu de cowboy do guarda: copa vincada, faixa e aba larga
+    c.fillStyle=o.hair; c.beginPath(); c.arc(hx0,hy0-5*s,27.5*s,Math.PI*0.92,Math.PI*2.08); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=o.cowboy; c.beginPath(); c.arc(hx0,hy0-13*s,23*s,Math.PI*0.98,Math.PI*2.02); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.strokeStyle='rgba(0,0,0,0.30)'; c.lineWidth=2.2*s; c.lineCap='round';
+    c.beginPath(); c.moveTo(hx0-11*s,hy0-33*s); c.quadraticCurveTo(hx0,hy0-27*s,hx0+11*s,hy0-33*s); c.stroke();
+    c.fillStyle='#4a2c14'; rr(c,hx0-23*s,hy0-17*s,46*s,6*s,2*s); c.fill();
+    c.fillStyle=o.cowboy; c.beginPath(); c.ellipse(hx0+2*s,hy0-9*s,45*s,10*s,-0.04,0,Math.PI*2); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.strokeStyle='rgba(0,0,0,0.22)'; c.lineWidth=2*s;
+    c.beginPath(); c.ellipse(hx0+2*s,hy0-9*s,45*s,10*s,-0.04,0,Math.PI*2); c.stroke();
+  } else if(o.beanie){ // a touca de lã do Pedro: copa, faixa canelada e pompom
+    c.fillStyle=o.hair; c.beginPath(); c.arc(hx0,hy0-5*s,27.5*s,Math.PI*0.92,Math.PI*2.08); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=o.beanie; c.beginPath(); c.arc(hx0,hy0-6*s,28.5*s,Math.PI*0.98,Math.PI*2.02); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=o.beanie; rr(c,hx0-29*s,hy0-13*s,58*s,11*s,5*s); c.fill(); c.stroke();
+    c.strokeStyle='rgba(0,0,0,0.28)'; c.lineWidth=1.8*s;
+    for(var rb=-2;rb<=2;rb++){ c.beginPath(); c.moveTo(hx0+rb*11*s,hy0-12*s); c.lineTo(hx0+rb*11*s,hy0-3.5*s); c.stroke(); }
+    c.strokeStyle='rgba(255,255,255,0.30)'; c.lineWidth=1.8*s;
+    c.beginPath(); c.moveTo(hx0-18*s,hy0-24*s); c.quadraticCurveTo(hx0-8*s,hy0-30*s,hx0+2*s,hy0-31*s); c.stroke();
+    c.fillStyle=o.beanieHi||'#f4ecd9'; circle(c,hx0,hy0-36*s,7*s); c.fill(); c.lineWidth=2.4*s; c.strokeStyle=INK; c.stroke();
+  } else if(o.cap){
+    c.fillStyle=o.cap; c.beginPath(); c.arc(hx0,hy0-4*s,27.5*s,Math.PI*1.02,Math.PI*1.98); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=o.cap; rr(c,hx0+2*s,hy0-12*s,40*s,9*s,4*s); c.fill(); c.stroke();
+    c.strokeStyle='rgba(0,0,0,0.30)'; c.lineWidth=2*s; c.lineCap='round';
+    c.beginPath(); c.moveTo(hx0-20*s,hy0-24*s); c.quadraticCurveTo(hx0,hy0-31*s,hx0+20*s,hy0-24*s); c.stroke();
+    c.fillStyle='#f4ecd9'; circle(c,hx0,hy0-30*s,3.4*s); c.fill(); c.lineWidth=1.8*s; c.strokeStyle=INK; c.stroke();
+  } else if(o.hairStyle==='long'){
+    c.fillStyle=o.hair; c.beginPath(); c.arc(hx0,hy0-5*s,28.5*s,Math.PI*0.9,Math.PI*2.1); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=o.hair;
+    // as mechas da frente: finas e onduladas, emoldurando o rosto até
+    // o peito — fio de cabelo, não um pano sobre a roupa
+    c.beginPath();
+    c.moveTo(hx0-26*s,hy0-18*s);
+    c.quadraticCurveTo(hx0-31*s,hy0+22*s,hx0-27*s,hy0+60*s);
+    c.quadraticCurveTo(hx0-25*s,hy0+75*s,hx0-21*s,hy0+79*s);
+    c.quadraticCurveTo(hx0-18*s,hy0+72*s,hx0-19*s,hy0+56*s);
+    c.quadraticCurveTo(hx0-21*s,hy0+20*s,hx0-17*s,hy0-14*s);
+    c.closePath(); c.fill(); c.stroke();
+    c.beginPath();
+    c.moveTo(hx0+25*s,hy0-20*s);
+    c.quadraticCurveTo(hx0+31*s,hy0+18*s,hx0+28*s,hy0+58*s);
+    c.quadraticCurveTo(hx0+26*s,hy0+74*s,hx0+22*s,hy0+78*s);
+    c.quadraticCurveTo(hx0+18*s,hy0+70*s,hx0+19*s,hy0+52*s);
+    c.quadraticCurveTo(hx0+20*s,hy0+16*s,hx0+15*s,hy0-16*s);
+    c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle=(o.hairHi||'rgba(255,235,200,0.5)'); c.lineWidth=2.6*s;
+    c.beginPath(); c.arc(hx0,hy0-7*s,22*s,Math.PI*1.15,Math.PI*1.55); c.stroke();
+    // a risca lateral do penteado, sobre a copa
+    c.strokeStyle=(o.hairLo||'rgba(0,0,0,0.25)'); c.lineWidth=2.2*s;
+    c.beginPath(); c.moveTo(hx0+4*s,hy0-31*s); c.quadraticCurveTo(hx0-7*s,hy0-25*s,hx0-13*s,hy0-13*s); c.stroke();
+    c.strokeStyle=(o.hairHi||'rgba(255,235,200,0.5)'); c.lineWidth=2.4*s;
+    c.beginPath(); c.moveTo(hx0-24*s,hy0+4*s); c.quadraticCurveTo(hx0-26*s,hy0+34*s,hx0-23*s,hy0+62*s); c.stroke();
+    c.fillStyle='#e8b93b'; circle(c,hx0-16*s,hy0+16*s,3.2*s); c.fill(); c.lineWidth=1.8*s; c.strokeStyle=INK; c.stroke();
+  } else {
+    c.fillStyle=o.hair; c.beginPath(); c.arc(hx0,hy0-5*s,27.5*s,Math.PI*0.92,Math.PI*2.08); c.fill();
+    c.lineWidth=3.2*s; c.strokeStyle=INK; c.stroke();
+  }
+  var ex=o.expr||'normal';
+  var lookX = (o.lookX!=null?o.lookX:6)*s, lookY=(o.lookY||0)*s;
+  var blink = ex!=='fear' && ex!=='surprise' && (((NOWS + (x%13)*0.37) % 3.9) < 0.11);
+  if(o.eyesClosed || blink){
+    c.strokeStyle=INK; c.lineWidth=2.6*s; c.lineCap='round';
+    c.beginPath();
+    c.moveTo(hx0+0.5*s,hy0-2*s+lookY); c.quadraticCurveTo(hx0+6*s,hy0+1.5*s+lookY,hx0+11.5*s,hy0-2*s+lookY);
+    c.moveTo(hx0+15.5*s,hy0-2*s+lookY); c.quadraticCurveTo(hx0+21*s,hy0+1.5*s+lookY,hx0+26.5*s,hy0-2*s+lookY);
+    c.stroke();
+  } else {
+  c.fillStyle='#fff';
+  circle(c,hx0+6*s+lookX*0.3,hy0-2*s+lookY,7.6*s); c.fill();
+  circle(c,hx0+21*s+lookX*0.3,hy0-2*s+lookY,7.6*s); c.fill();
+  c.lineWidth=2.2*s; c.strokeStyle=INK;
+  circle(c,hx0+6*s+lookX*0.3,hy0-2*s+lookY,7.6*s); c.stroke();
+  circle(c,hx0+21*s+lookX*0.3,hy0-2*s+lookY,7.6*s); c.stroke();
+  c.fillStyle=INK;
+  var pr = ex==='fear'?2.6:3.4;
+  circle(c,hx0+6*s+lookX,hy0-2*s+lookY,pr*s); c.fill();
+  circle(c,hx0+21*s+lookX,hy0-2*s+lookY,pr*s); c.fill();
+  }
+  c.strokeStyle=INK; c.lineWidth=3*s; c.lineCap='round';
+  c.beginPath();
+  if(ex==='fear'||ex==='surprise'){ c.moveTo(hx0-2*s,hy0-16*s); c.lineTo(hx0+12*s,hy0-20*s); c.moveTo(hx0+16*s,hy0-20*s); c.lineTo(hx0+29*s,hy0-16*s); }
+  else if(ex==='angry'||ex==='shout'){ c.moveTo(hx0-2*s,hy0-19*s); c.lineTo(hx0+12*s,hy0-14*s); c.moveTo(hx0+16*s,hy0-14*s); c.lineTo(hx0+29*s,hy0-19*s); }
+  else if(ex==='confused'){ c.moveTo(hx0-2*s,hy0-18*s); c.lineTo(hx0+12*s,hy0-13*s); c.moveTo(hx0+16*s,hy0-13*s); c.lineTo(hx0+29*s,hy0-18*s); }
+  else if(ex==='sad'){ c.moveTo(hx0-2*s,hy0-19*s); c.lineTo(hx0+12*s,hy0-15*s); c.moveTo(hx0+16*s,hy0-15*s); c.lineTo(hx0+29*s,hy0-19*s); }
+  else if(ex==='relief'){ c.moveTo(hx0-2*s,hy0-15*s); c.quadraticCurveTo(hx0+5*s,hy0-11*s,hx0+12*s,hy0-15*s); c.moveTo(hx0+16*s,hy0-15*s); c.quadraticCurveTo(hx0+22*s,hy0-11*s,hx0+29*s,hy0-15*s); }
+  else if(o.lady){ c.moveTo(hx0-2*s,hy0-14*s); c.quadraticCurveTo(hx0+5*s,hy0-19.5*s,hx0+12*s,hy0-15*s); c.moveTo(hx0+16*s,hy0-15*s); c.quadraticCurveTo(hx0+22*s,hy0-19.5*s,hx0+29*s,hy0-14*s); }
+  else { c.moveTo(hx0-1*s,hy0-15*s); c.lineTo(hx0+12*s,hy0-15*s); c.moveTo(hx0+16*s,hy0-15*s); c.lineTo(hx0+28*s,hy0-15*s); }
+  c.stroke();
+  if(o.glasses){ // os óculos do Seu Norberto: dois aros, a ponte e as hastes
+    c.strokeStyle=INK; c.lineWidth=2.6*s; c.lineCap='round';
+    circle(c,hx0+6*s+lookX*0.3,hy0-2*s+lookY,10.5*s); c.stroke();
+    circle(c,hx0+21*s+lookX*0.3,hy0-2*s+lookY,10.5*s); c.stroke();
+    c.beginPath(); c.moveTo(hx0+16.5*s,hy0-4*s+lookY); c.lineTo(hx0+10.5*s,hy0-4*s+lookY); c.stroke();
+    c.beginPath(); c.moveTo(hx0-4.5*s,hy0-4*s+lookY); c.lineTo(hx0-22*s,hy0-9*s); c.stroke();
+    c.fillStyle='rgba(200,230,245,0.20)';
+    circle(c,hx0+6*s+lookX*0.3,hy0-2*s+lookY,10.5*s); c.fill();
+    circle(c,hx0+21*s+lookX*0.3,hy0-2*s+lookY,10.5*s); c.fill();
+  }
+  // o nariz, discreto, de perfil três-quartos — dá proporção real ao rosto
+  c.strokeStyle='rgba(27,36,50,0.45)'; c.lineWidth=2.1*s; c.lineCap='round';
+  c.beginPath(); c.moveTo(hx0+22.5*s,hy0+0.5*s); c.quadraticCurveTo(hx0+25.5*s,hy0+4.5*s,hx0+22*s,hy0+8*s); c.stroke();
+  if(o.lady){
+    c.strokeStyle=INK; c.lineWidth=2.2*s; c.lineCap='round';
+    c.beginPath();
+    c.moveTo(hx0+11.5*s,hy0-6*s+lookY); c.lineTo(hx0+15.5*s,hy0-9.5*s+lookY);
+    c.moveTo(hx0+26.5*s,hy0-6*s+lookY); c.lineTo(hx0+30.5*s,hy0-9.5*s+lookY);
+    c.stroke();
+    c.fillStyle='rgba(238,120,130,0.32)';
+    c.beginPath(); c.ellipse(hx0+1*s,hy0+9*s,5.4*s,3.4*s,-0.2,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(hx0+25*s,hy0+9*s,5.4*s,3.4*s,0.2,0,Math.PI*2); c.fill();
+  }
+  var mo=clamp(o.mouthOpen||0,0,1);
+  c.fillStyle='#7a2e22';
+  if(o.talking){ /* FALANDO: a boca segue a fala (mouthOpen calculado
+     da frase em speechMouth) — abre por sílaba, fecha nas pausas.
+     Abertura grande desenha o interior com dentes em cima e a
+     língua embaixo; abertura pequena é só uma fendinha; zero é a
+     boca fechada. Nas personagens (lady), o contorno é o batom. */
+    var mcx=hx0+13*s, mcy=hy0+14*s;
+    var mw=(o.lady? 7.6:6.8)*s, mh=(0.9+mo*7.6)*s;
+    if(mo<0.06){
+      c.strokeStyle=INK; c.lineWidth=2.8*s; c.lineCap='round';
+      c.beginPath(); c.moveTo(mcx-mw,mcy); c.quadraticCurveTo(mcx,mcy+1.6*s,mcx+mw,mcy); c.stroke();
+      if(o.lady){ c.strokeStyle='#a8434f'; c.lineWidth=2*s;
+        c.beginPath(); c.moveTo(mcx-mw,mcy-1.4*s); c.quadraticCurveTo(mcx,mcy+0.4*s,mcx+mw,mcy-1.4*s); c.stroke(); }
+    } else {
+      c.fillStyle= o.lady? '#a8434f' : '#7a2e22';
+      c.beginPath(); c.ellipse(mcx,mcy,mw,mh,0,0,Math.PI*2); c.fill();
+      c.lineWidth=2.2*s; c.strokeStyle=INK; c.stroke();
+      c.save();
+      c.beginPath(); c.ellipse(mcx,mcy,mw-1.2*s,mh-1*s,0,0,Math.PI*2); c.clip();
+      c.fillStyle='#6e2418'; c.fillRect(mcx-mw,mcy-mh, mw*2, mh*2);
+      if(mo>0.34){ c.fillStyle='#fdfdf8'; c.fillRect(mcx-mw*0.72, mcy-mh, mw*1.44, mh*0.62); }
+      if(mo>0.22){ c.fillStyle='#c86a6a';
+        c.beginPath(); c.ellipse(mcx, mcy+mh*0.78, mw*0.62, mh*0.42, 0, 0, Math.PI*2); c.fill(); }
+      c.restore();
+      c.beginPath(); c.ellipse(mcx,mcy,mw,mh,0,0,Math.PI*2);
+      c.lineWidth=2.2*s; c.strokeStyle=INK; c.stroke();
+    }
+  } else if(ex==='fear'||ex==='surprise'||ex==='shout'){
+    c.beginPath(); c.ellipse(hx0+13*s,hy0+14*s,6.5*s,(5+mo*6)*s,0,0,Math.PI*2); c.fill();
+    c.lineWidth=2.4*s; c.strokeStyle=INK; c.stroke();
+  } else if(ex==='angry'){
+    c.strokeStyle=INK; c.lineWidth=3*s;
+    c.beginPath(); c.moveTo(hx0+5*s,hy0+15*s); c.lineTo(hx0+21*s,hy0+15*s); c.stroke();
+    c.fillStyle='#fff'; c.fillRect(hx0+6*s,hy0+11.6*s,14*s,3.4*s);
+  } else if(ex==='sad'){
+    c.strokeStyle=INK; c.lineWidth=3*s;
+    c.beginPath(); c.arc(hx0+13*s,hy0+22*s,7*s,1.15*Math.PI,1.85*Math.PI); c.stroke();
+  } else if(ex==='confused'){
+    c.strokeStyle=INK; c.lineWidth=3*s;
+    c.beginPath(); c.moveTo(hx0+5*s,hy0+16*s); c.quadraticCurveTo(hx0+10*s,hy0+11*s,hx0+15*s,hy0+16*s); c.quadraticCurveTo(hx0+18*s,hy0+19*s,hx0+22*s,hy0+15*s); c.stroke();
+  } else if(ex==='relief'||ex==='happy'){
+    c.strokeStyle=INK; c.lineWidth=3*s;
+    c.beginPath(); c.arc(hx0+13*s,hy0+8*s,9*s,0.15*Math.PI,0.85*Math.PI); c.stroke();
+    if(mo>0.25){ c.fillStyle='#7a2e22'; c.beginPath(); c.ellipse(hx0+13*s,hy0+13*s,5*s,mo*4*s,0,0,Math.PI*2); c.fill(); }
+  } else if(o.lady){ // os lábios dela: batom discreto, a boca abre por dentro ao falar
+    c.fillStyle='#a8434f';
+    c.beginPath(); c.ellipse(hx0+13*s,hy0+13.5*s,7.5*s,(3+mo*4.5)*s,0,0,Math.PI*2); c.fill();
+    c.lineWidth=2*s; c.strokeStyle=INK; c.stroke();
+    if(mo>0.3){ c.fillStyle='#7a2e22'; c.beginPath(); c.ellipse(hx0+13*s,hy0+14*s,4.4*s,mo*3.4*s,0,0,Math.PI*2); c.fill(); }
+    c.strokeStyle='rgba(255,255,255,0.35)'; c.lineWidth=1.6*s; c.lineCap='round';
+    c.beginPath(); c.moveTo(hx0+8.5*s,hy0+11.6*s); c.quadraticCurveTo(hx0+13*s,hy0+10.4*s,hx0+17.5*s,hy0+11.6*s); c.stroke();
+  } else {
+    c.strokeStyle=INK; c.lineWidth=3*s;
+    c.beginPath(); c.moveTo(hx0+6*s,hy0+13*s); c.quadraticCurveTo(hx0+13*s,hy0+(13+mo*7)*s,hx0+20*s,hy0+13*s); c.stroke();
+    if(mo>0.3){ c.fillStyle='#7a2e22'; c.beginPath(); c.ellipse(hx0+13*s,hy0+14*s,4.6*s,mo*3.6*s,0,0,Math.PI*2); c.fill(); }
+  }
+  if(o.sweat){
+    c.fillStyle='#7ecdf2';
+    var sw1=(Math.sin(ph*2)*2);
+    c.beginPath(); c.ellipse(hx0-26*s+sw1,hy0+6*s,4*s,6.4*s,0.4,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(hx0+30*s-sw1,hy0-6*s,3.6*s,5.6*s,-0.4,0,Math.PI*2); c.fill();
+    c.lineWidth=1.8*s; c.strokeStyle=INK; c.stroke();
+  }
+  c.restore();
+  if(o.label) drawFootLabel(c, x, gy + (o.labelDy||0), o.label);
+  return {headX: x + dir*hx0, headY: hy0};
+}
+/* Martelo da juíza */
+function drawGavel(c,x,y,ang){
+  c.save(); c.translate(x,y); c.rotate(ang);
+  c.fillStyle='#5f3f24'; rr(c,-9,-52,18,44,6); c.fill(); c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#7d5330'; rr(c,-26,-16,52,16,5); c.fill(); c.stroke();
+  c.fillStyle='#8a5a2b'; rr(c,-5,0,10,44,4); c.fill(); c.lineWidth=2.6; c.stroke();
+  c.restore();
+  c.fillStyle='#4a3320'; c.beginPath(); c.ellipse(x+16,y+52,30,8,0,0,Math.PI*2); c.fill();
+  c.lineWidth=3; c.strokeStyle=INK; c.stroke();
+}
+/* Caixa de papelão com a etiqueta medida */
+function drawBox(c,x,y,w,h,label){
+  c.save(); c.translate(x,y);
+  c.fillStyle='#c49a68'; rr(c,-w/2,-h/2,w,h,5); c.fill();
+  c.lineWidth=3.2; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#a87f52'; c.fillRect(-w/2,-h/2,w,10);
+  c.strokeStyle='rgba(90,60,30,0.6)'; c.lineWidth=2.4;
+  c.beginPath(); c.moveTo(0,-h/2); c.lineTo(0,h/2); c.stroke();
+  if(label){
+    c.fillStyle='#f4ecd9'; rr(c,-w/2+10,-13,w-20,26,4); c.fill();
+    c.lineWidth=2; c.strokeStyle=INK; c.stroke();
+    c.fillStyle=INK; c.textAlign='center';
+    fitFont(c,label,w-30,17,900); c.fillText(label,0,6);
+  }
+  c.restore();
+}
+/* ---------------- Peças de texto em cena ----------------
+   Todas medem o texto (fitFont) antes de desenhar: nada sai do
+   seu elemento nem encosta na borda do palco. */
+function balloon(c,x,y,text,color,scaleP){
+  c.save(); c.translate(x,y); var sc=scaleP||1; c.scale(sc,sc);
+  var fs=fitFont(c,text,300,30,900);
+  var wdt=c.measureText(text).width+44;
+  c.fillStyle='#fff'; rr(c,-wdt/2,-34,wdt,58,16); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.beginPath(); c.moveTo(-8,24); c.lineTo(6,24); c.lineTo(-2,44); c.closePath();
+  c.fillStyle='#fff'; c.fill(); c.stroke();
+  c.fillStyle=color||INK; c.textAlign='center'; c.fillText(text,0,8);
+  c.restore();
+}
+function bigText(c,text,x,y,size,color,pop,align){
+  c.save(); c.translate(x,y); var p=pop||1; c.scale(p,p);
+  fitFont(c,text,660,size,900);
+  c.textAlign=align||'center'; c.lineJoin='round';
+  var cur=parseFloat((c.font.match(/(\d+(?:\.\d+)?)px/)||[0,size])[1]);
+  c.lineWidth=cur*0.22; c.strokeStyle=INK; c.strokeText(text,0,0);
+  c.fillStyle=color; c.fillText(text,0,0);
+  c.restore();
+}
+function lawCard(c,x,y,w,h,art,title,color,pop){
+  c.save(); c.translate(x,y); var p=pop||1; c.scale(p,p); c.translate(-w/2,-h/2);
+  c.fillStyle='rgba(0,0,0,0.25)'; rr(c,8,10,w,h,16); c.fill();
+  c.fillStyle='rgba(253,253,248,0.96)'; rr(c,0,0,w,h,16); c.fill();
+  c.lineWidth=5; c.strokeStyle=INK; c.stroke();
+  c.fillStyle=color; rr(c,0,0,w,64,16); c.fill(); c.fillRect(0,40,w,24);
+  c.lineWidth=5; c.strokeStyle=INK; c.stroke();
+  c.fillStyle='#fff'; c.textAlign='center';
+  fitFont(c,art,w-32,30,900); c.fillText(art, w/2, 43);
+  c.fillStyle=INK;
+  var fs=27;
+  function wrapLines(fz){
+    c.font='900 '+fz+'px "Segoe UI", system-ui, sans-serif';
+    var words=title.split(' '), lines=[], line='';
+    for(var i=0;i<words.length;i++){ var t2=line?line+' '+words[i]:words[i];
+      if(c.measureText(t2).width>w-36 && line){ lines.push(line); line=words[i]; } else line=t2; }
+    if(line) lines.push(line);
+    return lines;
+  }
+  var lines=wrapLines(fs);
+  while(lines.length*34 > h-84 && fs>16){ fs-=2; lines=wrapLines(fs); }
+  c.font='900 '+fs+'px "Segoe UI", system-ui, sans-serif';
+  for(var l=0;l<lines.length;l++) c.fillText(lines[l], w/2, 108+l*34);
+  c.restore();
+}
+/* O papel da lei, com o texto por extenso — cada linha medida */
+function lawPaper(c,x,y,w,lines,footer,pop){
+  var h = 84 + lines.length*38;
+  c.save(); c.translate(x,y); var p=pop||1; c.scale(p,p); c.translate(-w/2,-h/2);
+  c.fillStyle='rgba(0,0,0,0.28)'; rr(c,8,10,w,h,16); c.fill();
+  c.fillStyle='rgba(253,253,248,0.97)'; rr(c,0,0,w,h,16); c.fill();
+  c.lineWidth=5; c.strokeStyle=INK; c.stroke();
+  c.fillStyle=INK; c.textAlign='center';
+  var fs=26, fam='Georgia, "Times New Roman", serif';
+  c.font='italic 700 '+fs+'px '+fam;
+  var maxw=0; for(var m=0;m<lines.length;m++) maxw=Math.max(maxw,c.measureText(lines[m]).width);
+  while(maxw>w-44 && fs>15){ fs-=2; c.font='italic 700 '+fs+'px '+fam;
+    maxw=0; for(var m2=0;m2<lines.length;m2++) maxw=Math.max(maxw,c.measureText(lines[m2]).width); }
+  for(var i=0;i<lines.length;i++) c.fillText(lines[i],w/2,58+i*38);
+  c.fillStyle='#8a5a2b';
+  fitFont(c,footer,w-40,21,900); c.fillText(footer,w/2,h-24);
+  c.restore();
+}
+function stamp(c,x,y,text,color,pop,rot){
+  c.save(); c.translate(x,y); c.rotate(rot||-0.14); var p=pop||1; c.scale(p,p);
+  fitFont(c,text,470,44,900);
+  var wdt=c.measureText(text).width+52;
+  c.strokeStyle=color; c.lineWidth=7; rr(c,-wdt/2,-40,wdt,80,10); c.stroke();
+  c.lineWidth=2.6; rr(c,-wdt/2+9,-31,wdt-18,62,7); c.stroke();
+  c.fillStyle=color; c.textAlign='center'; c.fillText(text,0,16);
+  c.restore();
+}
+function burst(c,x,y,p,color){
+  if(p<=0||p>=1) return;
+  c.save(); c.translate(x,y); c.globalAlpha=1-p;
+  c.strokeStyle=color||'#ffd21f'; c.lineWidth=6; c.lineCap='round';
+  for(var i=0;i<8;i++){
+    var a=i/8*Math.PI*2+0.4, r0=10+p*22, r1=26+p*48;
+    c.beginPath(); c.moveTo(Math.cos(a)*r0,Math.sin(a)*r0); c.lineTo(Math.cos(a)*r1,Math.sin(a)*r1); c.stroke();
+  }
+  c.restore();
+}
+function nameTag(c,x,y,title,sub,color,pop){
+  c.save(); c.translate(x,y); var p=pop||1; c.scale(p,p);
+  c.font='900 24px "Segoe UI", system-ui, sans-serif';
+  var w1=c.measureText(title).width;
+  c.font='800 19px "Segoe UI", system-ui, sans-serif';
+  var w2=c.measureText(sub).width;
+  var wdt=Math.max(w1,w2)+36;
+  var cx2=clamp(x, wdt/2+14, W-wdt/2-14);
+  c.translate(cx2-x,0);
+  c.fillStyle='rgba(10,22,44,0.88)'; rr(c,-wdt/2,-34,wdt,72,12); c.fill();
+  c.lineWidth=3.4; c.strokeStyle=color||'#ffd21f'; c.stroke();
+  c.fillStyle='#ffd21f'; c.font='900 24px "Segoe UI", system-ui, sans-serif'; c.textAlign='center';
+  c.fillText(title,0,-4);
+  c.fillStyle='#fff'; c.font='800 19px "Segoe UI", system-ui, sans-serif';
+  c.fillText(sub,0,24);
+  c.restore();
+}
+/* PAINEL AZUL DE DESTAQUE (pedido do Timothy, 21/11/2026): nunca na
+   frente dos personagens. A faixa dos personagens vai de y≈770 (topo
+   da cabeça) a y≈1131 (etiqueta nos pés); o painel só pode ficar nas
+   faixas livres — acima das cabeças (parede do cenário, conforme a
+   cena) ou abaixo dos pés, na faixa do chão (centro ≈1195). */
+function explainPanel(c,x,y,w,title,sub,color,pop){
+  /* REGRA ANTI-SOBREPOSIÇÃO (pedido do Timothy, 21/11/2026):
+     um card por faixa, por vez. As faixas verticais do palco são
+     exclusivas: topo/documental (0–80), chip da cena (~90–150),
+     parede (170–760, acima das cabeças), ação (790–1060, só
+     personagens), etiquetas dos pés (1070–1160) e rodapé
+     (termo ~1135–1220 / linha de narração 1230–1280). Cada cena
+     agenda os seus cards em faixas OU em tempos diferentes —
+     nunca dois cards na mesma faixa ao mesmo tempo. O pop faz
+     o card nascer com um pulso curto de documentário (escala +
+     subida de 10 px), sem zoom de câmera. */
+  var p = (pop==null? 1 : clamp(pop,0,1));
+  if(p<=0) return;
+  c.save(); c.translate(x,y+(1-p)*10); c.globalAlpha=p;
+  var sc=0.94+0.06*p; c.scale(sc,sc);
+  c.fillStyle='rgba(13,26,51,0.92)'; rr(c,-w/2,-58,w,116,14); c.fill();
+  c.lineWidth=4; c.strokeStyle=color; c.stroke();
+  c.textAlign='center';
+  c.fillStyle=color; fitFont(c,title,w-36,29,900); c.fillText(title,0,-14);
+  c.fillStyle='#fff'; fitFont(c,sub,w-36,23,800); c.fillText(sub,0,28);
+  c.restore();
+}
+/* TERMO NA TELA (pedido do Timothy, 21/11/2026): toda vez que a
+   narradora cita um termo da lei, ele aparece na hora, como um
+   cartão discreto na faixa segura indicada pela cena (topo ou
+   rodapé do palco), fica alguns segundos e some — para a pessoa
+   aprender o termo vendo e ouvindo ao mesmo tempo. O texto é
+   medido e a fonte reduz até caber, com margem dos dois lados. */
+function termCard(c,x,y,title,sub,pop){
+  /* Altura 82 e centro em y=1176 nas cenas: o cartão ocupa
+     1135–1217 — abaixo das etiquetas dos pés (que terminam em
+     1159 no nível mais baixo, mas são OCULTADAS enquanto o termo
+     está na tela, ver TERM_ON) e acima da linha de narração
+     (1230–1280). Nenhum card por cima do outro. */
+  c.save(); c.translate(x,y); var p=pop||1; c.scale(p,p);
+  c.font='900 28px "Segoe UI", system-ui, sans-serif';
+  var w1=c.measureText(title).width;
+  c.font='800 19px "Segoe UI", system-ui, sans-serif';
+  var w2=c.measureText(sub).width;
+  var wdt=Math.min(640, Math.max(w1,w2)+44);
+  var cx2=clamp(x, wdt/2+12, W-wdt/2-12);
+  c.translate(cx2-x,0);
+  c.fillStyle='rgba(0,0,0,0.25)'; rr(c,-wdt/2+6,-41+8,wdt,82,14); c.fill();
+  c.fillStyle='rgba(13,26,51,0.94)'; rr(c,-wdt/2,-41,wdt,82,14); c.fill();
+  c.lineWidth=3.6; c.strokeStyle='#ffd21f'; c.stroke();
+  c.fillStyle='#ffd21f'; c.textAlign='center';
+  var fs1=fitFont(c,title,wdt-36,28,900); c.fillText(title,0,-7);
+  c.fillStyle='#fff';
+  var fs2=fitFont(c,sub,wdt-36,19,800); c.fillText(sub,0,24);
+  c.restore();
+}
+function dateChip(c,x,y,text,color){
+  c.save(); c.translate(x,y);
+  fitFont(c,text,420,26,900);
+  var wdt=c.measureText(text).width+44;
+  var cx2=clamp(x, wdt/2+12, W-wdt/2-12);
+  c.translate(cx2-x,0);
+  c.fillStyle='rgba(10,22,44,0.88)'; rr(c,-wdt/2,-30,wdt,56,27); c.fill();
+  c.lineWidth=3; c.strokeStyle=color||'rgba(255,255,255,0.45)'; c.stroke();
+  c.fillStyle='#fff'; c.textAlign='center'; c.fillText(text,0,8);
+  c.restore();
+}
+/* ---------------- Elenco ---------------- */
+var ALFREDO  = { shirt:'#6e7a86', pants:'#37414f', skin:'#c98a5a', hair:'#14161c', cap:'#1f4e5f', paper:true, paperText:'ORDEM', label:'ALFREDO · O MOTORISTA' };
+var MARCOS   = { shirt:'#2c3e50', pants:'#22303e', skin:'#e8b48c', hair:'#1c1410', suit:true, tie:'#8a1f2d', briefcase:true, label:'MARCOS · O GERENTE' };
+var POLICIAL = { shirt:'#1d2f4a', pants:'#16233a', skin:'#8a5a34', hair:'#14161c', cap:'#16233a', label:'POLICIAL · DA BLITZ' };
+var HELENA   = { shirt:'#f7f7f2', pants:'#37414f', skin:'#f2c094', hair:'#2a1608', hairHi:'rgba(255,214,170,0.5)', hairLo:'rgba(20,8,2,0.45)', hairStyle:'long', lady:true, suit:true, paper:true, paperText:'CP', label:'DRA. HELENA · A ADVOGADA' };
+var CLIENTE  = { shirt:'#33507a', pants:'#2c333e', skin:'#f2c094', hair:'#8f8f8f', suit:true, tie:'#37414f', label:'O CLIENTE' };
+function P(base, extra){ var o={}, k; for(k in base) o[k]=base[k]; if(extra) for(k in extra) o[k]=extra[k]; return o; }
+function jawPulse(t, freq, amp){ var v=Math.max(0,Math.sin(t*freq)); return Math.pow(v,3)*amp; }
+/* -------- BOCA QUE MEXE CONFORME A FALA (pedido do Timothy,
+   21/11/2026: "quando eles falarem os personagens, faça a boca
+   deles mexer — conforme a fala também") --------
+   Antes a boca só pulsava num ritmo fixo e decorativo
+   (jawPulse, seno a 6,4 Hz, amplitude 0,5), igual para qualquer
+   frase. Agora a abertura é CALCULADA DA PRÓPRIA FALA:
+   - o texto do balão é dividido em palavras; cada palavra ocupa
+     um tempo proporcional ao seu tamanho, com uma PAUSA curta
+     entre palavras — na pausa, a boca FECHA;
+   - dentro da palavra, a boca abre e fecha UMA VEZ POR SÍLABA
+     (sílabas estimadas pelos grupos de vogais do texto, com
+     acentos), em forma de sino: abre, chega ao pico e fecha;
+   - a AMPLITUDE muda de sílaba para sílaba (hash determinístico
+     do índice da sílaba): vogal forte abre bem (até 1), consoante
+     fraca abre pouco — nada de abrir sempre do mesmo tamanho;
+   - no fim da frase, a boca fecha de vez (os últimos 4%).
+   Quem NÃO está falando fica com mouthOpen = 0 e talking =
+   false: boca parada, na expressão normal da cena. A narradora
+   (Aria) não tem personagem em cena, então ninguém mexe a boca
+   durante a narração — só mexe quem está falando naquele
+   instante, exatamente enquanto o balão dele está na tela. */
+function hashN(n){ var x=Math.sin(n*127.1+311.7)*43758.5453; return x-Math.floor(x); }
+function syllCount(word){
+  var w=(' '+word.toLowerCase()+' '), n=0, prev=false;
+  var V='aeiouáéíóúâêôãõàü';
+  for(var i=0;i<w.length;i++){ var isV=V.indexOf(w.charAt(i))>=0; if(isV&&!prev) n++; prev=isV; }
+  return Math.max(1,n);
+}
+function speechMouth(text, lt, segDur){
+  if(segDur<=0 || lt<0 || lt>segDur) return 0;
+  if(lt>segDur*0.96) return 0; /* o fim da frase: boca fechada */
+  var words=text.split(/\s+/).filter(function(w){ return w.length>0; });
+  if(!words.length) return 0;
+  var total=0, i; for(i=0;i<words.length;i++) total+=words[i].length;
+  if(total<=0) return 0;
+  var pauseShare=0.14; /* 14% do tempo da fala são pausas entre palavras */
+  var acc=0, gSyl=0;
+  for(i=0;i<words.length;i++){
+    var wDur=segDur*(1-pauseShare)*(words[i].length/total);
+    var pDur=(i<words.length-1)? segDur*pauseShare/(words.length-1 || 1) : 0;
+    if(lt < acc+wDur){
+      var inW=lt-acc, nSyl=syllCount(words[i]), sylDur=wDur/nSyl;
+      var sIdx=Math.min(nSyl-1, Math.floor(inW/sylDur));
+      var ph=(inW-sIdx*sylDur)/sylDur;
+      var bell=Math.sin(Math.PI*clamp(ph,0,1)); bell=Math.pow(bell,0.75);
+      var amp=0.45+0.55*hashN(gSyl+sIdx*7+words[i].length*13);
+      var dip=1-0.22*Math.max(0,Math.sin(ph*Math.PI*2+hashN(gSyl+sIdx)*4))*hashN(gSyl+sIdx+31);
+      return clamp(bell*amp*dip,0,1);
+    }
+    gSyl+=syllCount(words[i]);
+    if(lt < acc+wDur+pDur) return 0; /* pausa entre palavras: boca fechada */
+    acc+=wDur+pDur;
+  }
+  return 0;
+}
+/* -------- Balões FALADOS dos personagens --------
+   A narradora é a espinha dorsal; os personagens só têm os
+   diálogos rápidos e necessários: cada fala é gravada com a
+   voz brasileira do próprio personagem DENTRO do áudio único,
+   e o balão aparece exatamente na fração f0..f1 da cena —
+   medida da duração real de cada trecho gravado — com a boca
+   de quem fala mexendo CONFORME ESSA FALA (speechMouth, acima).
+   Os balões silent do chamado na escada ("SOBE ALI…") também
+   são fala VISÍVEL do Norberto na tela: a boca dele mexe junto
+   com o balão, no mesmo cálculo, para não ficar um balão de
+   fala com a boca parada. */
+var DLG_COLORS={ marcos:'#2c3e50', alfredo:'#4a5a68', policial:'#1d2f4a', helena:'#7a3a5a' };
+function dlgActive(who,t,dur){
+  var sc=SCENES[sceneIdx]; if(!sc||!sc.dlg) return null;
+  for(var i=0;i<sc.dlg.length;i++){ var e=sc.dlg[i];
+    if(e.who===who && t>=e.f0*dur && t<=e.f1*dur) return e; }
+  return null;
+}
+function talkActive(who,t,dur){ return !!dlgActive(who,t,dur); }
+function spk(who,t,dur){
+  var e=dlgActive(who,t,dur); if(!e) return 0;
+  return speechMouth(e.text, t-e.f0*dur, (e.f1-e.f0)*dur);
+}
+var BALLOON_AVOID=[];
+function balloonWrap(c,x,y,text,color,pop,rise){
+  /* Balão RESPONSIVO e ELEGANTE (pedido do Timothy, 21/11/2026):
+     a largura se ajusta ao texto (quebra em linhas medidas e
+     nunca sai do palco) e o balão SOBE — nasce um pouco abaixo
+     e desliza para cima, assentando sobre quem fala. rise é o
+     deslocamento vertical restante, calculado em drawDlg. */
+  c.save(); c.translate(x,y+(rise||0)); var p=pop||1; c.scale(p,p);
+  c.font='900 24px "Segoe UI", system-ui, sans-serif';
+  var words=text.split(' '), lines=[], line='';
+  for(var i=0;i<words.length;i++){ var t2=line?line+' '+words[i]:words[i];
+    if(c.measureText(t2).width>252 && line){ lines.push(line); line=words[i]; } else line=t2; }
+  if(line) lines.push(line);
+  var wdt=0; for(var l=0;l<lines.length;l++) wdt=Math.max(wdt,c.measureText(lines[l]).width);
+  wdt+=40; var hgt=lines.length*30+26;
+  var halfW=(wdt/2)*p, halfH=(hgt/2+22)*p;
+  var dx=clamp(x, halfW+12, W-halfW-12)-x, dy=clamp(y, halfH+12, H-halfH-12)-y;
+  /* NUNCA POR BAIXO DO CARD (regra do Timothy, 22/11/2026): se um
+     card de informação (o quadro da base legal) está ativo numa
+     faixa que o balão ocuparia, o balão desce até sair de trás
+     dele, com margem de 14 px; se não couber embaixo, sobe.
+     Balão e card sempre em faixas diferentes, sem sobrepor. */
+  if(BALLOON_AVOID && BALLOON_AVOID.length){
+    var bcx=x+dx, bcy=y+(rise||0)+dy, bhw=(wdt/2)*p, bhh=(hgt/2)*p;
+    for(var av=0; av<BALLOON_AVOID.length; av++){ var R=BALLOON_AVOID[av];
+      var bTop=bcy-bhh, bBot=bcy+bhh+20*p;
+      if(bcx+bhw>R.x0 && bcx-bhw<R.x1 && bBot>R.y0 && bTop<R.y1){
+        var shDown=(R.y1+14)-bTop;
+        if(bBot+shDown<=H-96){ dy+=shDown; bcy+=shDown; }
+        else { var shUp=bBot-(R.y0-14); dy-=shUp; bcy-=shUp; }
+      }
+    }
+  }
+  c.translate(dx,dy);
+  c.fillStyle='#fff'; rr(c,-wdt/2,-hgt/2,wdt,hgt,16); c.fill();
+  c.lineWidth=4; c.strokeStyle=INK; c.stroke();
+  c.beginPath(); c.moveTo(-8,hgt/2-2); c.lineTo(8,hgt/2-2); c.lineTo(0,hgt/2+20); c.closePath();
+  c.fillStyle='#fff'; c.fill(); c.stroke();
+  c.fillStyle=color||INK; c.textAlign='center';
+  for(var l2=0;l2<lines.length;l2++) c.fillText(lines[l2],0,-hgt/2+32+l2*30);
+  c.restore();
+}
+function drawDlg(c,t,dur){
+  var sc=SCENES[sceneIdx]; if(!sc||!sc.dlg||dur<=0) return;
+  var f=t/dur;
+  for(var i=0;i<sc.dlg.length;i++){ var e=sc.dlg[i];
+    if(f>=e.f0 && f<=e.f1){
+      var p=easeOut(seg(f,e.f0,e.f0+0.015));
+      /* a subida elegante: o balão nasce 38 px abaixo e sobe com
+         easeOut até assentar — sem pulo, sem zoom de câmera */
+      var rise=(1-easeOut(seg(f,e.f0,e.f0+0.030)))*38;
+      balloonWrap(c,e.x,e.y,e.text,DLG_COLORS[e.who]||INK,0.65+0.35*p,rise);
+    } }
+}
+</script>
+
+<script>
+"use strict";
+/* ---------------- Repertórios de movimento ----------------
+   Um repertório DIFERENTE por personagem em cada cena: nada de
+   gesto único em loop. O sequenciador (repBuild) embaralha a
+   ordem a cada volta e interpola olhar, inclinação e posição. */
+var REP = {
+  alfredoAnda: repBuild(11, [
+    {armR:'down', armL:'hold', expr:'normal', lean:0.03, lookX:7, dur:2.6},
+    {armR:'up', armL:'down', expr:'normal', lean:-0.02, lookX:8, dur:2.2},
+    {armR:'hold', armL:'hold', expr:'normal', lean:0, lookX:6, dur:2.4},
+    {armR:'down', armL:'down', expr:'normal', lean:0.04, lookX:8, dur:2.8},
+    {armR:'point', armL:'down', expr:'normal', lean:0, lookX:7, dur:2.2}
+  ]),
+  marcosFala: repBuild(23, [
+    {armR:'point', armL:'down', expr:'normal', lean:0.04, lookX:-6, dur:2.4},
+    {armR:'hold', armL:'hold', expr:'normal', lean:0, lookX:-7, dur:2.8},
+    {armR:'down', armL:'down', expr:'normal', lean:0.02, lookX:-6, dur:2.6},
+    {armR:'up', armL:'down', expr:'normal', lean:-0.02, lookX:-8, dur:2.2},
+    {armR:'shrug', armL:'shrug', expr:'normal', lean:0, lookX:-6, dur:2.4}
+  ]),
+  marcosOuve: repBuild(29, [
+    {armR:'cross', armL:'cross', expr:'normal', lean:0.03, lookX:-6, dur:2.8},
+    {armR:'down', armL:'down', expr:'relief', lean:0, lookX:-6, lookY:2, dur:2.6},
+    {armR:'hold', armL:'hold', expr:'relief', lean:0, lookX:-5, dur:2.4},
+    {armR:'point', armL:'down', expr:'normal', lean:0.02, lookX:-7, dur:2.2}
+  ]),
+  policialBlitz: repBuild(31, [
+    {armR:'up', armL:'down', expr:'normal', lean:0.02, lookX:-6, dur:2.6},
+    {armR:'point', armL:'down', expr:'normal', lean:0.03, lookX:-7, dur:2.4},
+    {armR:'down', armL:'hold', expr:'normal', lean:0, lookX:-6, lookY:2, dur:2.8},
+    {armR:'hold', armL:'hold', expr:'normal', lean:-0.02, lookX:-6, dur:2.6},
+    {armR:'cross', armL:'cross', expr:'normal', lean:0.03, lookX:-6, dur:2.8}
+  ]),
+  alfredoTriste: repBuild(37, [
+    {armR:'down', armL:'down', expr:'sad', lean:0.05, lookX:4, lookY:2, dur:2.8},
+    {armR:'face', armL:'down', expr:'sad', lean:0.06, lookX:3, lookY:3, dur:2.4},
+    {armR:'shrug', armL:'shrug', expr:'confused', lean:0, lookX:5, dur:2.4},
+    {armR:'down', armL:'down', expr:'confused', lean:0.03, lookX:6, dur:2.6},
+    {armR:'protect', armL:'down', expr:'fear', lean:-0.04, lookX:5, dur:2.2}
+  ]),
+  alfredoOuve: repBuild(41, [
+    {armR:'down', armL:'down', expr:'sad', lean:0.04, lookX:7, lookY:2, dur:2.8},
+    {armR:'hold', armL:'hold', expr:'confused', lean:0, lookX:8, dur:2.6},
+    {armR:'cross', armL:'cross', expr:'sad', lean:0.03, lookX:7, dur:2.6},
+    {armR:'down', armL:'down', expr:'normal', lean:0, lookX:8, dur:2.4}
+  ]),
+  helenaExplica: repBuild(43, [
+    {armR:'point', armL:'hold', expr:'normal', lean:0.03, lookX:-6, lookY:-2, dur:2.6},
+    {armR:'hold', armL:'hold', expr:'normal', lean:0, lookX:-6, lookY:2, dur:2.8},
+    {armR:'down', armL:'down', expr:'normal', lean:0, lookX:-5, dur:2.6},
+    {armR:'up', armL:'hold', expr:'normal', lean:-0.02, lookX:-7, lookY:-2, dur:2.2},
+    {armR:'shrug', armL:'down', expr:'normal', lean:0, lookX:-6, dur:2.4}
+  ]),
+  helenaFecho: repBuild(47, [
+    {armR:'hold', armL:'hold', expr:'relief', lean:0, lookX:-6, lookY:2, dur:2.8},
+    {armR:'point', armL:'down', expr:'relief', lean:0.02, lookX:-7, dur:2.4},
+    {armR:'down', armL:'down', expr:'happy', lean:0, lookX:-5, dur:2.6},
+    {armR:'up', armL:'down', expr:'relief', lean:-0.02, lookX:-6, dur:2.2}
+  ]),
+  alfredoFecho: repBuild(53, [
+    {armR:'down', armL:'down', expr:'relief', lean:0, lookX:6, lookY:2, dur:2.8},
+    {armR:'hold', armL:'hold', expr:'relief', lean:0.02, lookX:7, dur:2.6},
+    {armR:'point', armL:'down', expr:'happy', lean:0.03, lookX:8, dur:2.4},
+    {armR:'shrug', armL:'shrug', expr:'relief', lean:0, lookX:6, dur:2.4}
+  ])
+};
+
+/* ---------------- A história (8 momentos) ---------------- */
+var fadeA = 0;
+var camSnap = true;
+
+/* ============ FASE 1: 13 cenas (conteudo) ============
+   Duracoes reais medidas por ffprobe (manifesto.json).
+   Fase 1 total: 159.482s. Legenda no meio do palco (drawNarrLine
+   do Tapa, conforme 05): some na capa, nos recortes (theory:true)
+   e durante fala de personagem; a supressao vive dentro dela.
+   Seta com arrow:true so na primeira citacao de
+   cada personagem no filme inteiro; depois, so o brilho. */
+var SCENES1=[
+{ name:'A capa', dur:7.298, ts:1, noNarrLine:true,
+  caption:'Direito Penal. Receptação sem dolo. Uma questão da OAB, do exame número quarenta e dois.',
+  hot:['Receptação sem dolo','Direito Penal'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('capa')}, {at:0.399, fn:function(){ sfxPop(); }}, {at:1.6, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    var g=c.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#0e2138'); g.addColorStop(0.6,'#12294d'); g.addColorStop(1,'#0a1826');
+    c.fillStyle=g; c.fillRect(0,0,W,H);
+    drawDust(c, now, 3, 40, 680, 100, 1200);
+    drawTitleCard(c, easeOut(seg(t,0.3,1.2)));
+    var ap=clamp((t-1.6)/0.6,0,1);
+    if(ap>0){
+      c.save(); c.globalAlpha=ap;
+      drawCarroBase(c,360,1020,0.55,1,now,false);
+      drawCarroGlass(c,360,1020,0.55,1,now);
+      drawPerson(c,P(ALFREDO,{x:150,y:GROUND,s:1,dir:1,phase:now*1.5,expr:'normal',armR:'down',armL:'down'}));
+      drawPerson(c,P(MARCOS,{x:570,y:GROUND,s:1,dir:-1,phase:now*1.5,expr:'normal',armR:'down',armL:'down'}));
+      c.restore();
+    }
+  } },
+
+{ name:'A Guardião Ltda.', dur:16.682, ts:1,
+  caption:'Na sede da Guardião, empresa de segurança, o gerente Marcos entrega a ordem de serviço ao motorista Alfredo. Alfredo pega a chave do carro e sai para a escolta. Marcos: Alfredo, faça a escolta do cliente. O carro está pronto.',
+  hot:['o gerente Marcos','ao motorista Alfredo','ordem de serviço'],
+  dlg:[ {who:'marcos', f0:0.738, f1:1.0013, x:500, y:636, text:'ALFREDO, FAÇA A ESCOLTA DO CLIENTE. O CARRO ESTÁ PRONTO.'} ],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  terms:[ {at:2.047, until:5.63, y:1176, title:'GUARDIÃO LTDA.', sub:'empresa privada de segurança'} ],
+  focus:[
+    {say:'o gerente Marcos', untilSay:'ao motorista Alfredo', targets:[{x:500, gy:1050, s:1.02}]},
+    {say:'ao motorista Alfredo', untilSay:'Alfredo pega', arrow:false, targets:[{x:210, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.051, fn:ambFn('sede')}, {at:0.409, fn:function(){ sfxDoor(); }}, {at:1.228, fn:function(){ sfxSteps(); }}, {at:5.118, fn:function(){ sfxPop(); }}, {at:12.311, fn:function(){ sfxPop(); }} ],
+  draw:function(c,t,dur,now){
+    drawSede(c,now);
+    dateChip(c,360,120,'SEDE DA GUARDIÃO · MANHÃ · 10/3/2023');
+    var ep=ease(seg(t,1.024,4.095));
+    var mv=(t>=1.024 && t<4.095)?1:0;
+    var rp=REP.alfredoAnda(t);
+    drawPerson(c,P(ALFREDO,{x:lerp(60,210,ep),y:GROUND,s:1,dir:1,phase:now*7.2,walk:mv,
+      expr:rp.expr, lean:rp.lean, lookX:7, lookY:0, armR:rp.armR, armL:rp.armL}));
+    var mp=REP.marcosFala(t);
+    var talking=talkActive('marcos',t,dur);
+    drawPerson(c,P(MARCOS,{x:500,y:GROUND,s:1.02,dir:-1,phase:now*1.6,
+      expr: talking? 'normal' : mp.expr, lean:mp.lean, lookX:-6, lookY:0,
+      armR: talking? 'point' : mp.armR, armL:mp.armL,
+      mouthOpen: spk('marcos',t,dur), talking: talking}));
+    if(t>=1.637 && t<6.142) nameTag(c,500,700,'MARCOS','o gerente da Guardião','#ffd21f', easeOut(seg(t,1.637,2.047)));
+    if(t>=6.551 && t<10.747) nameTag(c,210,700,'ALFREDO','o motorista','#7dffb0', easeOut(seg(t,6.551,6.96)));
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'A escolta', dur:13.658, ts:1,
+  caption:'Alfredo dirige o carro funcional, com o adesivo da Guardião na porta, escoltando o cliente pela rua. O rádio toca baixinho. Tudo corre bem na ida. Alfredo: A escolta acabou. Agora é só voltar.',
+  hot:['Alfredo dirige','escoltando o cliente','o carro funcional'],
+  dlg:[ {who:'alfredo', f0:0.7503, f1:1.0016, x:310, y:640, text:'A ESCOLTA ACABOU. AGORA É SÓ VOLTAR.'} ],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'Alfredo dirige', untilSay:'escoltando o cliente', arrow:false, targets:[{x:310, gy:1080, s:1}]},
+    {say:'escoltando o cliente', untilSay:'O rádio toca', arrow:false, targets:[{x:392, gy:1080, s:1}]}
+  ],
+  events:[ {at:0.049, fn:ambFn('rua')}, {at:0.099, fn:function(){ sfxEngine(); }}, {at:1.969, fn:function(){ sfxBirds(); }}, {at:10.248, fn:function(){ sfxPop(); }} ],
+  draw:function(c,t,dur,now){
+    drawRua(c,now);
+    dateChip(c,360,120,'A ESCOLTA · RUA · MANHÃ');
+    var win=drawCarroBase(c,360,1080,1,1,now,true);
+    var talking=talkActive('alfredo',t,dur);
+    drawPersonInWindow(c, ALFREDO, (win.wx0+win.wx1)/2, 1080+80, 1, win.wx0, win.wy0, win.wx1, win.wy1,
+      {now:now, dir:1, expr: talking? 'normal' : 'normal', lookX:6, armR:'hold', armL:'hold',
+       mouth: spk('alfredo',t,dur), talking: talking});
+    drawPersonInWindow(c, CLIENTE, (win.wx2+win.wx3)/2, 1080+80, 1, win.wx2, win.wy0, win.wx3, win.wy1,
+      {now:now, dir:-1, expr:'normal', lookX:-4, armR:'hold', armL:'hold'});
+    drawCarroGlass(c,360,1080,1,1,now);
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'A blitz', dur:12.89, ts:1,
+  caption:'No trajeto de volta, cones na pista e uma viatura parada. O policial levanta a mão e manda o carro encostar. Alfredo obedece na hora. Policial: Boa tarde. Documento do carro, por favor.',
+  hot:['cones na pista','uma viatura parada','O policial levanta a mão'],
+  dlg:[ {who:'policial', f0:0.7317, f1:1.0017, x:500, y:636, text:'BOA TARDE. DOCUMENTO DO CARRO, POR FAVOR.'} ],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'O policial levanta a mão', untilSay:'Alfredo obedece', targets:[{x:500, gy:1050, s:1}]},
+    {say:'Alfredo obedece', sayEnd:'Alfredo obedece', arrow:false, targets:[{x:300, gy:1080, s:0.95}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('blitz')}, {at:0.101, fn:function(){ sfxEngine(); }}, {at:0.304, fn:function(){ sfxSirenLong(); }}, {at:5.572, fn:function(){ sfxBeep(0); }}, {at:9.432, fn:function(){ sfxPop(); }} ],
+  draw:function(c,t,dur,now){
+    drawBlitz(c,now);
+    dateChip(c,360,120,'A BLITZ · TRAJETO DE VOLTA');
+    var cxp=lerp(20,300,ease(seg(t,0,3.546)));
+    var win=drawCarroBase(c,cxp,1080,0.95,1,now,t<3.546);
+    drawPersonInWindow(c, ALFREDO, (win.wx0+win.wx1)/2, 1080+80*0.95, 0.95, win.wx0, win.wy0, win.wx1, win.wy1,
+      {now:now, dir:1, expr:'normal', lookX:6, armR:'hold', armL:'hold'});
+    drawCarroGlass(c,cxp,1080,0.95,1,now);
+    var talking=talkActive('policial',t,dur);
+    var pp=REP.policialBlitz(t);
+    drawPerson(c,P(POLICIAL,{x:500,y:GROUND,s:1,dir:-1,phase:now*1.6,
+      expr: talking? 'normal' : pp.expr, lean:pp.lean, lookX:-6, lookY:0,
+      armR: talking? 'point' : (t<6.078? 'up' : pp.armR), armL:pp.armL,
+      mouthOpen: spk('policial',t,dur), talking: talking}));
+    drawPolicialKit(c,500);
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'A descoberta', dur:15.914, ts:1,
+  caption:'O policial confere o documento e franze a testa. O carro é produto de roubo. Alfredo fica branco. Ele não sabia de nada. Não era ele quem comprava os carros da empresa. Policial: Este carro é produto de roubo. O senhor vai ter que me acompanhar.',
+  hot:['O policial confere o documento','produto de roubo','Ele não sabia de nada'],
+  dlg:[ {who:'policial', f0:0.7269, f1:1.0014, x:500, y:636, text:'ESTE CARRO É PRODUTO DE ROUBO. O SENHOR VAI TER QUE ME ACOMPANHAR.'} ],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  terms:[ {at:6.063, until:10.267, y:1176, title:'PRODUTO DE ROUBO', sub:'o veículo funcional era roubado'} ],
+  focus:[
+    {say:'O policial confere o documento', untilSay:'Alfredo fica branco', arrow:false, targets:[{x:500, gy:1050, s:1}]},
+    {say:'Alfredo fica branco', untilSay:'Ele não sabia', arrow:false, targets:[{x:200, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.048, fn:ambFn('blitz')}, {at:0.489, fn:function(){ sfxPage(); }}, {at:6.063, fn:function(){ sfxPop(); }}, {at:11.568, fn:function(){ sfxThud(); }} ],
+  draw:function(c,t,dur,now){
+    drawBlitz(c,now);
+    dateChip(c,360,120,'A DESCOBERTA · NA BLITZ');
+    var ap=REP.alfredoTriste(t);
+    drawPerson(c,P(ALFREDO,{x:200,y:GROUND,s:1,dir:1,phase:now*1.5,
+      expr: t>=5.868? 'fear' : ap.expr, lean:ap.lean, lookX:6, lookY:0,
+      armR: t>=5.868? 'face' : ap.armR, armL:ap.armL, sweat: t>=5.868}));
+    var talking=talkActive('policial',t,dur);
+    var pp=REP.policialBlitz(t);
+    drawPerson(c,P(POLICIAL,{x:500,y:GROUND,s:1,dir:-1,phase:now*1.6,
+      expr: talking? 'normal' : pp.expr, lean:pp.lean, lookX:-6, lookY:0,
+      armR: talking? 'point' : pp.armR, armL:'hold',
+      mouthOpen: spk('policial',t,dur), talking: talking}));
+    drawPolicialKit(c,500);
+    if(t>=6.063) drawDocRoubado(c, 480, 330, easeOut(seg(t,6.063,6.552)));
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'A prisão em flagrante', dur:10.49, ts:1,
+  caption:'Mesmo sem saber do crime, Alfredo é preso em flagrante, acusado de receptação dolosa. As algemas fecham. E agora, qual é a defesa dele?',
+  hot:['preso em flagrante','receptação dolosa','qual é a defesa dele'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  terms:[ {at:3, until:7.501, y:1176, title:'FLAGRANTE', sub:'preso na hora, com o carro roubado'} ],
+  focus:[
+    {say:'Alfredo é preso', untilSay:'acusado de receptação', arrow:false, targets:[{x:360, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('blitz')}, {at:0.5, fn:function(){ sfxClang(0); }}, {at:3, fn:function(){ sfxDoor(); }}, {at:6, fn:function(){ sfxSiren(0); }} ],
+  draw:function(c,t,dur,now){
+    drawBlitz(c,now);
+    c.fillStyle='rgba(10,16,34,0.22)'; c.fillRect(0,0,W,H);
+    dateChip(c,360,120,'A PRISÃO · FLAGRANTE');
+    var pp=REP.policialBlitz(t);
+    drawPerson(c,P(POLICIAL,{x:150,y:GROUND,s:1,dir:1,phase:now*1.6,
+      expr:pp.expr, lean:pp.lean, lookX:7, lookY:0, armR:'point', armL:'down'}));
+    drawPolicialKit(c,150);
+    var ap=REP.alfredoTriste(t);
+    drawPerson(c,P(ALFREDO,{x:360,y:GROUND,s:1,dir:-1,phase:now*1.4,
+      expr:'sad', lean:0.04, lookX:-5, lookY:2, armR:'down', armL:'down'}));
+    drawCuffs(c,360,1050,1);
+    if(t>=7.501) explainPanel(c,360,660,600,'E AGORA, QUAL É A DEFESA DELE?','preso sem saber de nada','#ffd21f', easeOut(seg(t,7.501,7.9)));
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'Recorte: o que é receptação', dur:10.106, ts:1, noNarrLine:true, theory:true,
+  caption:'O que é receptação dolosa? O artigo cento e oitenta do Código Penal pune quem recebe, transporta ou conduz coisa que sabe ser produto de crime.',
+  hot:['receptação dolosa','artigo cento e oitenta','sabe ser produto de crime'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  law:[
+    {at:1, until:10.1, y:330, w:608, kicker:'CP · ART. 180', text:'Adquirir, receber, transportar, conduzir ou ocultar coisa que sabe ser produto de crime.'}
+  ],
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:1, fn:function(){ sfxPage(); }}, {at:2.5, fn:function(){ sfxPop(); }}, {at:4.499, fn:function(){ sfxPop(); }}, {at:6.5, fn:function(){ sfxPop(); }}, {at:9, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    if(t>=2.5) explainPanel(c,360,480,560,'RECEBER','pegar a coisa roubada','#ffd21f', easeOut(seg(t,2.5,2.9)));
+    if(t>=4.499) explainPanel(c,360,610,560,'TRANSPORTAR','levar a coisa roubada','#ffd21f', easeOut(seg(t,4.499,4.899)));
+    if(t>=6.5) explainPanel(c,360,740,560,'CONDUZIR','dirigir com a coisa roubada','#ffd21f', easeOut(seg(t,6.5,6.9)));
+  } },
+
+{ name:'Recorte: os elementos', dur:11.45, ts:1, noNarrLine:true, theory:true,
+  caption:'Repare nos elementos, um por um. Receber. Transportar. Conduzir. E a palavra chave: saber. Saber que a coisa é produto de crime.',
+  hot:['um por um','palavra chave','saber'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.051, fn:ambFn('recorte')}, {at:1.501, fn:function(){ sfxPop(); }}, {at:3, fn:function(){ sfxPop(); }}, {at:4.5, fn:function(){ sfxPop(); }}, {at:6, fn:function(){ sfxPop(); }}, {at:7.5, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    if(t>=1.501) explainPanel(c,360,320,480,'RECEBER','o primeiro elemento','#ffd21f', easeOut(seg(t,1.501,1.9)));
+    if(t>=3) explainPanel(c,360,450,480,'TRANSPORTAR','o segundo elemento','#ffd21f', easeOut(seg(t,3,3.4)));
+    if(t>=4.5) explainPanel(c,360,580,480,'CONDUZIR','o terceiro elemento','#ffd21f', easeOut(seg(t,4.5,4.9)));
+    if(t>=6){
+      var p=easeOut(seg(t,6,6.501));
+      c.save(); c.globalAlpha=p;
+      bigText(c,'SABER',360,760,92,'#ffd21f',1);
+      c.strokeStyle='#ffb400'; c.lineWidth=6;
+      circle(c,360,730,120); c.stroke();
+      c.restore();
+      drawFocusArrow(c,360,860,1,now,clamp((t-6.0)/0.3,0,1)*clamp((9.5-t)/0.4,0,1),0);
+    }
+    if(t>=7.5) explainPanel(c,360,950,560,'SABER É A PALAVRA CHAVE','saber que a coisa é produto de crime','#7dffb0', easeOut(seg(t,7.5,7.9)));
+  } },
+
+{ name:'Recorte: o dolo', dur:12.386, ts:1, noNarrLine:true, theory:true,
+  caption:'Dolo é o elemento subjetivo do tipo. É a vontade de praticar o crime, sabendo o que se faz. Alfredo não sabia. Sem saber, não há dolo. Sem dolo, não há crime doloso.',
+  hot:['elemento subjetivo do tipo','Alfredo não sabia','Sem saber, não há dolo'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:2, fn:function(){ sfxPop(); }}, {at:4.5, fn:function(){ sfxPop(); }}, {at:7, fn:function(){ sfxThud(); }}, {at:8.499, fn:function(){ sfxPop(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    bigText(c,'DOLO',360,350,96,'#fff',easeOut(seg(t,0.4,1)));
+    if(t>=2) explainPanel(c,360,480,560,'ELEMENTO SUBJETIVO DO TIPO','o que vai na cabeça de quem age','#ffd21f', easeOut(seg(t,2,2.399)));
+    if(t>=4.5) explainPanel(c,360,610,560,'A VONTADE DE PRATICAR O CRIME','sabendo o que se faz','#ffd21f', easeOut(seg(t,4.5,4.9)));
+    if(t>=7){
+      var p=easeOut(seg(t,7,7.4));
+      c.save(); c.globalAlpha=p;
+      bigText(c,'SABER',360,790,72,'#fff',1);
+      c.strokeStyle='#d92b3a'; c.lineWidth=8; c.lineCap='round';
+      c.beginPath(); c.moveTo(280,740); c.lineTo(440,830); c.moveTo(440,740); c.lineTo(280,830); c.stroke();
+      c.restore();
+    }
+    if(t>=8.499) explainPanel(c,360,950,560,'SEM SABER, NÃO HÁ DOLO','e sem dolo, não há crime doloso','#7dffb0', easeOut(seg(t,8.499,8.9)));
+  } },
+
+{ name:'Recorte: guardem três coisas', dur:10.01, ts:1, noNarrLine:true, theory:true,
+  caption:'Guardem três coisas: o saber, a tipicidade e o dolo. Sem o saber, cai o dolo. Sem o dolo, cai a tipicidade.',
+  hot:['Guardem três coisas','o saber, a tipicidade e o dolo','cai a tipicidade'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  terms:[ {at:7.5, until:10, y:1176, title:'SEM O SABER, CAI O DOLO', sub:'sem o dolo, cai a tipicidade'} ],
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:1.5, fn:function(){ sfxPop(); }}, {at:3.5, fn:function(){ sfxPop(); }}, {at:5.499, fn:function(){ sfxPop(); }}, {at:8, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    if(t>=1.5) explainPanel(c,360,380,480,'1 · SABER','saber que é produto de crime','#ffd21f', easeOut(seg(t,1.5,1.9)));
+    if(t>=3.5) explainPanel(c,360,520,480,'2 · TIPICIDADE','o fato se encaixar no tipo','#ffd21f', easeOut(seg(t,3.5,3.9)));
+    if(t>=5.499) explainPanel(c,360,660,480,'3 · DOLO','o elemento subjetivo do tipo','#ffd21f', easeOut(seg(t,5.499,5.9)));
+    if(t>=5.499){
+      c.strokeStyle='#ffb400'; c.lineWidth=5; c.lineCap='round';
+      c.beginPath(); c.moveTo(360,438); c.lineTo(360,458); c.moveTo(360,578); c.lineTo(360,598); c.stroke();
+      c.fillStyle='#ffb400';
+      c.beginPath(); c.moveTo(352,458); c.lineTo(368,458); c.lineTo(360,470); c.closePath(); c.fill();
+      c.beginPath(); c.moveTo(352,598); c.lineTo(368,598); c.lineTo(360,610); c.closePath(); c.fill();
+    }
+  } },
+
+{ name:'A explicação da Dra. Helena', dur:14.186, ts:1,
+  caption:'No escritório, a advogada explica. A defesa de Alfredo é a exclusão da tipicidade, por ausência de elemento subjetivo do tipo. Helena: Ele não sabia que o carro era roubado. Sem dolo, o fato não é típico.',
+  hot:['a advogada explica','exclusão da tipicidade','ausência de elemento subjetivo'],
+  dlg:[ {who:'helena', f0:0.6429, f1:1.0016, x:520, y:636, text:'ELE NÃO SABIA QUE O CARRO ERA ROUBADO. SEM DOLO, O FATO NÃO É TÍPICO.'} ],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  terms:[ {at:4.837, until:8.706, y:1176, title:'EXCLUSÃO DA TIPICIDADE', sub:'sem elemento subjetivo, o fato não é típico'} ],
+  focus:[
+    {say:'a advogada explica', untilSay:'A defesa de Alfredo', targets:[{x:520, gy:1050, s:1}]},
+    {say:'A defesa de Alfredo', sayEnd:'A defesa de Alfredo', arrow:false, targets:[{x:285, gy:1050, s:1}]}
+  ],
+  law:[
+    {at:1.934, until:14.122, y:330, w:608, kicker:'CP · ART. 180 E ART. 18, I', text:'Receptação dolosa exige saber que a coisa é produto de crime. Dolo é o elemento subjetivo do tipo.'}
+  ],
+  events:[ {at:0.048, fn:ambFn('escritorio')}, {at:0.387, fn:function(){ sfxDoor(); }}, {at:1.934, fn:function(){ sfxPage(); }}, {at:9.12, fn:function(){ sfxPop(); }}, {at:13.058, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawEscritorio(c,now);
+    dateChip(c,360,120,'O ESCRITÓRIO DA ADVOGADA');
+    var ap=REP.alfredoOuve(t);
+    var talkingH=talkActive('helena',t,dur);
+    drawPerson(c,P(ALFREDO,{x:285,y:GROUND,s:1,dir:1,phase:now*1.4, sitting:true,
+      expr: t>=8.802? 'relief' : ap.expr, lean:ap.lean, lookX: talkingH? 8 : ap.lookX, lookY:0, armR:ap.armR, armL:ap.armL}));
+    var hp=REP.helenaExplica(t);
+    drawPerson(c,P(HELENA,{x:520,y:GROUND,s:1,dir:-1,phase:now*1.6,
+      expr: talkingH? 'normal' : hp.expr, lean:hp.lean, lookX:-6, lookY:0,
+      armR: talkingH? 'point' : hp.armR, armL:hp.armL,
+      mouthOpen: spk('helena',t,dur), talking: talkingH}));
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'O resumo da defesa', dur:13.346, ts:1,
+  caption:'Vamos recapitular. Alfredo dirigia o carro da empresa, a mando do gerente, sem saber que era roubado. Ele nem comprava os carros. A defesa dele nasce daí: da falta do saber.',
+  hot:['Vamos recapitular','sem saber que era roubado','da falta do saber'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'Alfredo dirigia o carro', untilSay:'A defesa dele nasce', arrow:false, targets:[{x:250, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('sede')}, {at:0.4, fn:function(){ sfxDoor(); }}, {at:1, fn:function(){ sfxSteps(); }}, {at:11, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawSede(c,now);
+    dateChip(c,360,120,'SEDE DA GUARDIÃO · DEPOIS DA BLITZ');
+    var ap=REP.alfredoFecho(t);
+    drawPerson(c,P(ALFREDO,{x:250,y:GROUND,s:1,dir:1,phase:now*1.5,
+      expr:'relief', lean:ap.lean, lookX:6, lookY:0, armR:ap.armR, armL:ap.armL}));
+    var mp=REP.marcosOuve(t);
+    drawPerson(c,P(MARCOS,{x:500,y:GROUND,s:1.02,dir:-1,phase:now*1.5,
+      expr:'relief', lean:mp.lean, lookX:-6, lookY:0, armR:mp.armR, armL:mp.armL}));
+    drawDlg(c,t,dur);
+  } },
+
+{ name:'O fecho', dur:11.066, ts:1,
+  caption:'Sem saber, não há dolo. Sem dolo, não há tipicidade. A tese certa protege o Alfredo. Pense no que você aprendeu. Agora responda para mim.',
+  hot:['Sem saber, não há dolo','Sem dolo, não há tipicidade','Agora responda para mim'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'A tese certa protege o Alfredo', untilSay:'Pense no que você aprendeu', arrow:false, targets:[{x:250, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:8.5, fn:function(){ sfxDing(); }}, {at:10.5, fn:function(){ sfxWhoosh(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    var ap=REP.alfredoFecho(t);
+    drawPerson(c,P(ALFREDO,{x:250,y:GROUND,s:1,dir:1,phase:now*1.5,
+      expr:'relief', lean:ap.lean, lookX:6, lookY:0, armR:ap.armR, armL:ap.armL}));
+    var hp=REP.helenaFecho(t);
+    drawPerson(c,P(HELENA,{x:470,y:GROUND,s:1,dir:-1,phase:now*1.5,
+      expr:'relief', lean:hp.lean, lookX:-6, lookY:0, armR:hp.armR, armL:hp.armL}));
+    if(t>=8.5) explainPanel(c,360,660,600,'AGORA RESPONDA PARA MIM','a questão já vai subir','#ffd21f', easeOut(seg(t,8.5,8.9)));
+  } }
+];
+
+/* ============ FASE 2: revisao, 7 cenas (conteudo) ============
+   Duracoes reais medidas por ffprobe (manifesto.json).
+   Fase 2 total: 69.878s. O relogio gira para tras em todas as
+   cenas; cada alternativa e explicada com cartao e marca de
+   certo ou errado. Fecha com o gabarito C. */
+var SCENES2=[
+{ name:'O tempo volta', dur:7.706, ts:1,
+  caption:'O tempo volta. Vamos rever tudo, passo a passo, e descobrir por que cada resposta acerta ou erra.',
+  hot:['O tempo volta','passo a passo'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:0.2, fn:function(){ sfxRewind(); }}, {at:1, fn:function(){ sfxPop(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,360,300,130,now);
+    if(t>=1) explainPanel(c,360,800,600,'O TEMPO VOLTA','vamos rever tudo, passo a passo','#ffd21f', easeOut(seg(t,1,1.4)));
+  } },
+
+{ name:'O fato', dur:10.418, ts:1,
+  caption:'Alfredo dirigia o carro da empresa sem saber que era roubado. O policial prendeu ele em flagrante por receptação dolosa. Mas ele não sabia de nada.',
+  hot:['sem saber que era roubado','preso em flagrante','não sabia de nada'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'Alfredo dirigia o carro', untilSay:'O policial prendeu', arrow:false, targets:[{x:220, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('blitz')}, {at:1, fn:function(){ sfxPop(); }}, {at:6, fn:function(){ sfxClang(0); }} ],
+  draw:function(c,t,dur,now){
+    drawBlitz(c,now);
+    dateChip(c,360,120,'REVISÃO · O FATO');
+    drawRewindClock(c,620,170,46,now);
+    var ap=REP.alfredoTriste(t);
+    drawPerson(c,P(ALFREDO,{x:220,y:GROUND,s:1,dir:1,phase:now*1.4,
+      expr:'sad', lean:ap.lean, lookX:6, lookY:0, armR:'down', armL:'down'}));
+    drawCuffs(c,220,1050,1);
+    var pp=REP.policialBlitz(t);
+    drawPerson(c,P(POLICIAL,{x:480,y:GROUND,s:1,dir:-1,phase:now*1.5,
+      expr:pp.expr, lean:pp.lean, lookX:-6, lookY:0, armR:'point', armL:'down'}));
+    drawPolicialKit(c,480);
+  } },
+
+{ name:'A regra', dur:10.61, ts:1,
+  caption:'A receptação dolosa exige saber que a coisa é produto de crime. É o artigo cento e oitenta. Sem o saber, não há dolo. Sem dolo, não há tipicidade.',
+  hot:['exige saber','artigo cento e oitenta','não há tipicidade'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  law:[
+    {at:0.999, until:10.6, y:330, w:608, kicker:'CP · ART. 180', text:'Adquirir, receber, transportar, conduzir ou ocultar coisa que sabe ser produto de crime.'}
+  ],
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:0.999, fn:function(){ sfxPage(); }}, {at:4.999, fn:function(){ sfxPop(); }}, {at:8.5, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,620,170,46,now);
+    if(t>=4.999) explainPanel(c,360,640,560,'SEM O SABER, NÃO HÁ DOLO','o dolo é o elemento subjetivo','#ffd21f', easeOut(seg(t,4.999,5.399)));
+    if(t>=6.999) explainPanel(c,360,790,560,'SEM DOLO, NÃO HÁ TIPICIDADE','o fato não é típico como doloso','#7dffb0', easeOut(seg(t,6.999,7.399)));
+  } },
+
+{ name:'A primeira opção erra', dur:9.05, ts:1,
+  caption:'A primeira opção falava em exercício regular do direito. Dirigir um carro roubado não é exercer um direito. Por isso ela está errada.',
+  hot:['exercício regular do direito','não é exercer um direito','está errada'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:1, fn:function(){ sfxPop(); }}, {at:4, fn:function(){ sfxBuzz(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,620,170,46,now);
+    if(t>=1) explainPanel(c,360,420,600,'A · EXERCÍCIO REGULAR DO DIREITO','a primeira opção','#ffd21f', easeOut(seg(t,1,1.4)));
+    if(t>=4) drawCheck(c,360,620,1,false);
+    if(t>=5) explainPanel(c,360,800,600,'DIRIGIR UM CARRO ROUBADO','não é exercer um direito','#ff9d9d', easeOut(seg(t,5,5.4)));
+  } },
+
+{ name:'A segunda opção erra', dur:9.098, ts:1,
+  caption:'A segunda opção falava em cumprimento de dever legal. A escolta não era um dever previsto em lei para esse caso. Por isso ela está errada.',
+  hot:['cumprimento de dever legal','não era um dever','está errada'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:0.999, fn:function(){ sfxPop(); }}, {at:4, fn:function(){ sfxBuzz(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,620,170,46,now);
+    if(t>=0.999) explainPanel(c,360,420,600,'B · ESTRITO CUMPRIMENTO','DO DEVER LEGAL','#ffd21f', easeOut(seg(t,0.999,1.4)));
+    if(t>=4) drawCheck(c,360,620,1,false);
+    if(t>=5) explainPanel(c,360,800,600,'A ESCOLTA NÃO ERA UM DEVER','previsto em lei para esse caso','#ff9d9d', easeOut(seg(t,5,5.4)));
+  } },
+
+{ name:'A última opção erra', dur:10.058, ts:1,
+  caption:'A última opção falava em obediência hierárquica. A questão não é a ordem do gerente. A questão é a falta de dolo. Por isso ela está errada.',
+  hot:['obediência hierárquica','não é a ordem do gerente','a falta de dolo'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:1, fn:function(){ sfxPop(); }}, {at:4, fn:function(){ sfxBuzz(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,620,170,46,now);
+    if(t>=1) explainPanel(c,360,420,600,'D · OBEDIÊNCIA HIERÁRQUICA','a última opção','#ffd21f', easeOut(seg(t,1,1.401)));
+    if(t>=4) drawCheck(c,360,620,1,false);
+    if(t>=5) explainPanel(c,360,800,600,'A QUESTÃO É A FALTA DE DOLO','não é a ordem do gerente','#ff9d9d', easeOut(seg(t,5,5.4)));
+  } },
+
+{ name:'A opção certa', dur:12.938, ts:1,
+  caption:'A opção certa é a letra C: exclusão da tipicidade, por ausência de elemento subjetivo do tipo. Alfredo não sabia. Sem dolo, não há crime. Agora você já sabe.',
+  hot:['letra C','exclusão da tipicidade','Agora você já sabe'],
+  dlg:[],
+  cam:function(t,dur){ return {z:1, fx:360, fy:640, rot:0}; },
+  focus:[
+    {say:'Alfredo não sabia', untilSay:'Sem dolo, não há crime', arrow:false, targets:[{x:220, gy:1050, s:1}]}
+  ],
+  events:[ {at:0.05, fn:ambFn('recorte')}, {at:0.999, fn:function(){ sfxPop(); }}, {at:2.999, fn:function(){ sfxDing(); }}, {at:10.5, fn:function(){ sfxDing(); }} ],
+  draw:function(c,t,dur,now){
+    drawRecorte(c,now);
+    drawRewindClock(c,620,170,46,now);
+    if(t>=0.999) explainPanel(c,360,420,600,'C · EXCLUSÃO DA TIPICIDADE','por ausência de elemento subjetivo','#7dffb0', easeOut(seg(t,0.999,1.4)));
+    if(t>=2.999) drawCheck(c,360,620,1.15,true);
+    var ap=REP.alfredoFecho(t);
+    drawPerson(c,P(ALFREDO,{x:220,y:GROUND,s:1,dir:1,phase:now*1.5,
+      expr:'relief', lean:ap.lean, lookX:6, lookY:0, armR:ap.armR, armL:ap.armL}));
+    if(t>=8) explainPanel(c,360,800,600,'GABARITO: LETRA C','Alfredo não sabia. Sem dolo, não há crime.','#ffd21f', easeOut(seg(t,8,8.4)));
+  } }
+];
+
+var PHASE=1, SCENES=SCENES1;
+</script>
+
+
+
+<script>
+"use strict";
+/* ---------------- Motor de reprodução ----------------
+   Estado: idle → playing ⇄ paused → done.
+   UM áudio só: a cena troca quando o relógio do áudio único
+   cruza o marco de tempo do momento seguinte (STARTS). */
+var $ = function(id){ return document.getElementById(id); };
+var bigplay=$('bigplay'), btnPlay=$('btnPlay'), playLbl=$('playLbl'),
+    icoPlay=$('icoPlay'), icoPause=$('icoPause'), btnSound=$('btnSound'),
+    bar=$('bar'), tcur=$('tcur'), ttot=$('ttot'), captext=$('captext'), capwho=$('capwho'),
+    endcard=$('endcard'), chapsEl=$('chaps'), pausebadge=$('pausebadge');
+var quiz=$('quiz'), quizfb=$('quizfb'), quizstatus=$('quizstatus');
+var enunc=$('enunc');
+
+var state='idle', sceneIdx=0, evFired={};
+var LAST_IDX = SCENES.length-1;
+var DURTOT = SCENES.reduce(function(a,s){return a+s.dur;},0);
+/* NARRAÇÃO ÚNICA (pedido do Timothy, 21/11/2026): UM áudio só,
+   assets/narracao-completa.mp3, com a narração inteira da Aria,
+   do começo ao fim, sem troca de arquivo entre cenas. As cenas
+   são MARCOS DE TEMPO dentro desse áudio: STARTS[i] é o segundo
+   em que o momento i começa, medido da duração real de cada
+   trecho da gravação original. A cena troca quando o relógio do
+   áudio único cruza o marco — nunca por timer estimado. Os
+   diálogos rápidos dos personagens estão gravados DENTRO
+   desse mesmo arquivo, cada um na sua voz brasileira, nos
+   marcos reais de cada cena — sem corte de arquivo. */
+var STARTS=[];
+function computeStarts(){ STARTS=[]; var a=0; SCENES.forEach(function(s){ STARTS.push(a); a+=s.dur; }); DURTOT=a; LAST_IDX=SCENES.length-1; }
+computeStarts();
+var timeScale=1, audioBroken=false, fbT=0, lastFrameMs=0;
+narr.addEventListener('loadedmetadata', function(){
+  if(narr.duration>10) timeScale=clamp(narr.duration/DURTOT, 0.97, 1.03);
+});
+function startOf(i){ return STARTS[i]*timeScale; }
+function localTime(){
+  if(audioBroken) return clamp(fbT, 0, SCENES[sceneIdx].dur);
+  if(!narr.duration) return 0;
+  return clamp(narr.currentTime/timeScale - STARTS[sceneIdx], 0, SCENES[sceneIdx].dur);
+}
+
+/* ============================================================
+   SINCRONIA DA SETINHA COM A FALA — NA HORA EXATA
+   (pedido do Timothy, 21/11/2026: "quando for selecionar a
+   setinha, deve ser sincronizado conforme a narradora fala,
+   na hora exata").
+   Antes, as janelas de destaque (focus) eram tempos redondos
+   estimados à mão — e a seta chegava SEGUNDOS antes ou depois
+   da citação (na abertura, ela apontava para a Dona Marta aos
+   0,6s, mas a narração só diz o nome dela aos ~6,9s).
+   Agora cada destaque declara a FRASE que a narração está
+   falando (say / untilSay / sayEnd) e esta função resolve a
+   janela a partir da própria legenda do momento, com o MESMO
+   relógio proporcional por palavra que acende a legenda
+   palavra por palavra (buildCaption/syncCaption): o início
+   da janela é o início da primeira palavra da frase, e o fim
+   é o início da frase seguinte (untilSay) ou o fim da frase
+   (sayEnd). Resultado: a setinha e o brilho aparecem no mesmo
+   quadro em que a palavra da pessoa acende na legenda — nem
+   um quadro antes, nem um depois. As janelas dos diálogos e
+   dos chamados da escada continuam nos marcos reais já
+   medidos (frações f0/f1 dos diálogos), que já eram exatos. */
+function normWord(w){
+  return (w||'').toLowerCase().replace(/[.,;:!?"""'()«»—–-]/g,'');
+}
+function sayRange(s, phrase, occ){
+  var words = s.caption.split(' ');
+  var pw = phrase.split(' ').map(normWord).filter(function(w){ return w.length>0; });
+  if(!pw.length) return null;
+  var total = 0, cum = [0], i, j;
+  for(i=0;i<words.length;i++){ total += words[i].length+1; cum.push(total); }
+  var seen = 0;
+  for(i=0;i+pw.length<=words.length;i++){
+    var ok = true;
+    for(j=0;j<pw.length;j++){ if(normWord(words[i+j]) !== pw[j]){ ok=false; break; } }
+    if(ok){
+      if(seen === (occ||0))
+        return { a: cum[i]/total*s.dur, b: cum[i+pw.length]/total*s.dur };
+      seen++;
+    }
+  }
+  return null;
+}
+function syncFocusToSpeech(){
+  SCENES.forEach(function(s){
+    if(!s.focus) return;
+    s.focus.forEach(function(fc){
+      var r;
+      if(fc.say){ r = sayRange(s, fc.say, fc.sayOcc||0); if(r) fc.at = r.a; }
+      if(fc.untilSay){ r = sayRange(s, fc.untilSay, fc.untilOcc||0); if(r) fc.until = r.a; }
+      if(fc.sayEnd){ r = sayRange(s, fc.sayEnd, fc.sayEndOcc||0); if(r) fc.until = r.b; }
+    });
+  });
+}
+
+var chapBtns=[];
+function buildChaps(){
+  chapsEl.innerHTML=''; chapBtns=[];
+  SCENES.forEach(function(s,i){
+    var b=document.createElement('button');
+    b.type='button'; b.className='chap';
+    b.innerHTML='<span class="n">'+(i+1)+'</span> '+s.name;
+    b.addEventListener('click',function(){ if(state==='quiz'||answering) return; audioInit(); bigplay.hidden=true; goScene(i,true); });
+    chapsEl.appendChild(b); chapBtns.push(b);
+  });
+}
+function setupPhase(n){
+  PHASE=n;
+  SCENES = n===2? SCENES2 : SCENES1;
+  computeStarts();
+  syncFocusToSpeech();
+  buildChaps();
+  if(typeof buildTimeline==='function') buildTimeline();
+  var cl=document.getElementById('chapslabel');
+  if(cl) cl.textContent = (n===2)? 'Revisão · cenas da explicação · toque para pular' : 'Cenas da história · toque para pular';
+}
+
+function setPlayUI(){
+  var playing = state==='playing';
+  icoPlay.style.display = playing? 'none':'block';
+  icoPause.style.display = playing? 'block':'none';
+  playLbl.textContent = state==='idle' ? 'Assistir' : (playing? 'Pausar':'Continuar');
+  pausebadge.hidden = state!=='paused';
+}
+function fmtT(sec){
+  sec=Math.max(0,Math.round(sec));
+  return Math.floor(sec/60)+':'+('0'+(sec%60)).slice(-2);
+}
+function markChapters(){
+  chapBtns.forEach(function(b,i){ b.classList.toggle('cur', i===sceneIdx); });
+  tcur.textContent = 'Momento '+(sceneIdx+1)+' de '+SCENES.length+' · '+SCENES[sceneIdx].name;
+  /* o carrossel de momentos rola sozinho: o capítulo atual vai
+     para o centro da faixa, destacado, conforme a cena anda */
+  var curB = chapBtns[sceneIdx];
+  if(curB && chapsEl && chapsEl.clientWidth){
+    var targetL = curB.offsetLeft - (chapsEl.clientWidth - curB.offsetWidth)/2;
+    targetL = Math.max(0, targetL);
+    try{ chapsEl.scrollTo({ left: targetL, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    catch(e){ chapsEl.scrollLeft = targetL; }
+  }
+}
+/* Legenda palavra por palavra, sincronizada ao áudio real */
+var capWords=[];
+function buildCaption(){
+  var s=SCENES[sceneIdx];
+  capwho.textContent = 'Momento '+(sceneIdx+1)+' · '+s.name;
+  captext.innerHTML='';
+  capWords = s.caption.split(' ').map(function(w){
+    var sp=document.createElement('span'); sp.className='w'; sp.textContent=w;
+    var hot = s.hot.some(function(h){ return h.toLowerCase().indexOf(w.toLowerCase().replace(/[.!?,;:]/g,''))>=0 && w.length>2; });
+    if(hot) sp.classList.add('hot');
+    captext.appendChild(sp); captext.appendChild(document.createTextNode(' '));
+    return {el:sp, len:w.length+1};
+  });
+}
+function syncCaption(){
+  if(!capWords.length) return;
+  var s=SCENES[sceneIdx];
+  var lbl='Momento '+(sceneIdx+1)+' · '+s.name;
+  if(capwho.textContent!==lbl) capwho.textContent=lbl;
+  var total=capWords.reduce(function(a,w){return a+w.len;},0);
+  var pos=(sceneTime()/s.dur) * total, acc=0;
+  capWords.forEach(function(w){
+    acc+=w.len;
+    w.el.classList.toggle('on', acc<=pos+w.len);
+  });
+}
+function refreshScene(){
+  evFired={};
+  buildCaption(); markChapters();
+}
+function goScene(i, autoplay){
+  sceneIdx=i;
+  endcard.hidden=true;
+  camSnap=true;
+  if(autoplay && !REDUCED) fadeA=0.5;
+  if(autoplay) try{ sfxWhoosh(); }catch(e){}
+  fbT=0;
+  if(!audioBroken){ try{ narr.currentTime = startOf(i); }catch(e){} }
+  refreshScene();
+  if(autoplay){
+    state='playing';
+    playNarr();
+  } else state='paused';
+  setPlayUI();
+}
+/* A cena troca quando o relógio do ÁUDIO ÚNICO cruza o marco do
+   momento seguinte — o arquivo continua o mesmo, sem corte. */
+function advanceScene(){
+  if(sceneIdx>=LAST_IDX){
+    if(PHASE===1){ openQuiz(); return; }
+    state='done'; showEnd(); setPlayUI(); return;
+  }
+  sceneIdx++;
+  camSnap=true;
+  if(!REDUCED) fadeA=0.5;
+  try{ sfxWhoosh(); }catch(e){}
+  fbT=0;
+  refreshScene();
+  state='playing';
+  setPlayUI();
+}
+narr.addEventListener('ended', function(){
+  if(state!=='playing') return;
+  if(sceneIdx>=LAST_IDX){
+    if(PHASE===1){ openQuiz(); }
+    else { state='done'; showEnd(); setPlayUI(); }
+  }
+  else advanceScene();
+});
+narr.addEventListener('playing', function(){
+  bigplay.hidden=true;
+  var l0=bigplay.getAttribute('data-lbl0'), s0=bigplay.getAttribute('data-sub0');
+  if(l0){ var lbl=bigplay.querySelector('.lbl'), sub=bigplay.querySelector('.sub');
+    if(lbl) lbl.textContent=l0; if(sub && s0) sub.textContent=s0; }
+});
+narr.addEventListener('error', function(){ audioBroken=true; }, true);
+
+function showEnd(){
+  ambStop();
+  endcard.hidden=false;
+  var t=$('endtitle'), x=$('endtext');
+  t.textContent='AGORA VOCÊ JÁ SABE';
+  x.textContent='Gabarito: letra C. CP, art. 180, caput: a receptação dolosa exige saber que a coisa é produto de crime. CP, art. 18, I: dolo é o elemento subjetivo do tipo. Alfredo não sabia que o carro era roubado. Sem dolo, não há tipicidade: a tese certa é a exclusão da tipicidade, por ausência de elemento subjetivo do tipo.';
+}
+/* Controles */
+function startPlayback(){
+  audioInit();
+  bigplay.hidden=true;
+  if(state==='idle'){ goScene(0,true); }
+  else if(state==='done'){ backToStart(); }
+  else { state='playing'; playNarr(); }
+  setPlayUI();
+}
+bigplay.addEventListener('click', startPlayback);
+btnPlay.addEventListener('click', function(){
+  if(state==='quiz'||answering) return;
+  audioInit();
+  if(state==='playing'){
+    if(narr.paused){ playNarr(); setPlayUI(); }
+    else { narr.pause(); state='paused'; setPlayUI(); }
+    return;
+  }
+  if(state==='paused'){ state='playing'; bigplay.hidden=true; playNarr(); setPlayUI(); return; }
+  startPlayback();
+});
+$('btnRestart').addEventListener('click', function(){
+  if(state==='quiz'||answering) return;
+  if(PHASE!==1 || state==='done'){ backToStart(); return; }
+  audioInit(); bigplay.hidden=true; goScene(0,true);
+});
+$('btnAgain').addEventListener('click', function(){
+  backToStart();
+});
+btnSound.addEventListener('click', function(){
+  soundOn=!soundOn;
+  btnSound.setAttribute('aria-pressed', soundOn?'true':'false');
+  narr.muted=!soundOn;
+  if(master) master.gain.value = soundOn?1:0;
+  if(soundOn) audioInit();
+  if(!soundOn) ambStop();
+});
+/* Toque no palco: pausar/continuar */
+cv.addEventListener('click', function(){
+  if(state==='playing'){
+    if(narr.paused){ audioInit(); playNarr(); }
+    else { narr.pause(); state='paused'; }
+  }
+  else if(state==='paused'){ audioInit(); state='playing'; playNarr(); }
+  setPlayUI();
+});
+
+/* ---------------- Loop de desenho ---------------- */
+/* A LEGENDA NO MEIO DO PALCO, UM POUQUINHO ACIMA DO CENTRO,
+   COM DESIGN E ANIMAÇÃO DE VERDADE (pedido do Timothy,
+   22/11/2026): nada de texto simples solto — mas continua SEM
+   cartão/fundo atrás (regra anterior dele). O desenho vem da
+   tipografia e do movimento: fonte ALTA e condensada DO
+   SISTEMA (sem baixar nada de fora — ver CAPFONT), grande de
+   altura, que cabe mais por linha e lê
+   muito melhor; karaokê com a palavra falada AGORA em dourado
+   e com pop elástico; etiquetinha NARRAÇÃO com filetes e
+   losangos dourados; e um sublinhado de progresso que se
+   enche de dourado conforme a frase é falada. É UMA LINHA SÓ,
+   nunca uma linha e meia: a frase CRESCE palavra por palavra,
+   no ritmo da fala, SEMPRE na fonte cheia e SEM esticar nem
+   apertar a letra: se a frase não couber na margem, ela é
+   DIVIDIDA em outro trecho de legenda (regra do Timothy,
+   22/11/2026 — ver a divisão em chunks mais abaixo). A legenda SÓ APARECE
+   DEPOIS DA CAPA (na cena 0, nada), SOME enquanto um
+   PERSONAGEM está falando (janela dlg da cena): nessa hora
+   quem aparece é só o balão de fala dele — e SOME TAMBÉM nas
+   cenas da TEÓRICA em recortes (theory:true), em que os
+   elementos vão sendo colocados um a um no quadro: lá a
+   legenda atrapalharia os recortes. Com
+   prefers-reduced-motion, sem pop, sem subida nem fade. */
+function drawNarrLine(c, s, t, dur){
+  if(state==='idle' || !s || !(dur>0)) return;
+  /* a legenda só aparece DEPOIS da capa (pedido do Timothy):
+     na cena da capa da fase 1 (índice 0), nenhuma legenda no
+     palco; na revisão (fase 2) a primeira cena não é capa e
+     a legenda segue normal */
+  if(sceneIdx===0 && (typeof PHASE==='undefined' || PHASE===1)) return;
+  /* SEM LEGENDA NA CENA DA TEÓRICA (pedido do Timothy,
+     22/11/2026): nas cenas de teoria em recortes (theory:true),
+     em que a narradora vai COLOCANDO OS ELEMENTOS um a um no
+     quadro, a legenda do palco NÃO aparece — ela atrapalharia
+     os elementos que vão surgindo. A narração segue no áudio
+     e os recortes falam por si; a legenda volta sozinha na
+     cena seguinte. */
+  if(s.theory) return;
+  /* SEM LEGENDA DURANTE A FALA DOS PERSONAGENS (pedido do
+     Timothy, 22/11/2026 — reforçado por ele no mesmo dia:
+     "não deve sair a legenda da narração para os
+     personagens"): enquanto um personagem está falando
+     (janela dlg da cena — Júlio, Jacinto, Dona Sônia, Seu
+     Otávio), a legenda da narradora SOME do palco inteiro:
+     nessa hora, só o balão de fala dele. A legenda volta
+     sozinha quando a fala dele termina e a narradora retoma.
+     A janela tem FOLGA dos dois lados (0,35s antes, 0,3s
+     depois), e mais abaixo há uma SEGUNDA trava, palavra por
+     palavra: o trecho da legenda que É a fala do personagem
+     nunca é desenhado, mesmo se os relógios desencontrarem. */
+  if(s.dlg){
+    for(var di=0; di<s.dlg.length; di++){
+      var de = s.dlg[di];
+      if(t >= de.f0*dur - 0.35 && t <= de.f1*dur + 0.3) return;
+    }
+  }
+  var parts = s.caption.match(/[^.!?]+[.!?]+["']?/g) || [s.caption];
+  var clean = [];
+  for(var pi=0; pi<parts.length; pi++){
+    var pt = (parts[pi]||'').replace(/\s+/g,' ').trim();
+    if(pt) clean.push(pt);
+  }
+  if(!clean.length) return;
+  /* REGRA DA MARGEM (pedido do Timothy, 22/11/2026): a legenda
+     NÃO ESTICA nem aperta a letra para caber, e a fonte NÃO
+     encolhe frase após frase. A frase é medida na fonte cheia
+     (52px) dentro da margem (maxWCap = palco menos 20px de
+     cada lado). Se a frase NÃO COUBER inteira numa linha, ela
+     é DIVIDIDA em outro trecho de legenda: primeiro nas
+     pausas naturais (vírgula, ponto e vírgula, dois-pontos,
+     travessão); se uma pausa ainda não couber, divide por
+     palavras. Cada trecho vira uma legenda própria, com a
+     sua janela de tempo proporcional ao tamanho — a frase
+     seguinte da tela é sempre a continuação, nunca a mesma
+     frase deformada. */
+  var CAPFONT = '"Arial Narrow", "Liberation Sans Narrow", "Roboto Condensed", "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Helvetica Neue Condensed Bold", sans-serif-condensed, "Segoe UI", system-ui, sans-serif';
+  var CAP_FS = 52;
+  var maxWCap = W-40;
+  c.font = '600 '+CAP_FS+'px '+CAPFONT;
+  function fitsCap(str){ return c.measureText(str).width <= maxWCap; }
+  var chunks = [];
+  for(var ci2=0; ci2<clean.length; ci2++){
+    var sent = clean[ci2];
+    if(fitsCap(sent)){ chunks.push(sent); continue; }
+    var clauses = sent.match(/[^,;:—]+[,;:—]?["']?\s*/g) || [sent];
+    var pieces = [];
+    for(var cj=0; cj<clauses.length; cj++){
+      var cl = (clauses[cj]||'').replace(/\s+/g,' ').trim();
+      if(cl) pieces.push(cl);
+    }
+    var curChunk = '';
+    function pushChunk(){ if(curChunk){ chunks.push(curChunk); curChunk=''; } }
+    for(var ck=0; ck<pieces.length; ck++){
+      var piece = pieces[ck];
+      var joined = curChunk ? curChunk+' '+piece : piece;
+      if(fitsCap(joined)){ curChunk = joined; continue; }
+      pushChunk();
+      if(fitsCap(piece)){ curChunk = piece; continue; }
+      /* nem a pausa coube inteira: divide a pausa por palavras */
+      var pwords = piece.split(' ');
+      var wchunk = '';
+      for(var cw=0; cw<pwords.length; cw++){
+        var wjoin = wchunk ? wchunk+' '+pwords[cw] : pwords[cw];
+        if(fitsCap(wjoin) || !wchunk){ wchunk = wjoin; }
+        else { chunks.push(wchunk); wchunk = pwords[cw]; }
+      }
+      curChunk = wchunk;
+    }
+    pushChunk();
+  }
+  if(!chunks.length) return;
+  /* janelas de tempo proporcionais ao tamanho de cada trecho */
+  var totalChars = 0, pi2;
+  for(pi2=0; pi2<chunks.length; pi2++) totalChars += chunks[pi2].length+1;
+  var acc = 0, idx = chunks.length-1, startT = 0, endT = dur;
+  for(pi2=0; pi2<chunks.length; pi2++){
+    var st = acc/totalChars*dur;
+    var en = (acc + chunks[pi2].length+1)/totalChars*dur;
+    if(t >= st && t < en){ idx = pi2; startT = st; endT = en; break; }
+    if(pi2 === chunks.length-1){ idx = pi2; startT = st; endT = en; }
+    acc += chunks[pi2].length+1;
+  }
+  var text = chunks[idx];
+  if(!text) return;
+  /* SEGUNDA TRAVA DA FALA DOS PERSONAGENS (pedido do Timothy,
+     22/11/2026): cada fala de personagem (o texto do dlg) é
+     procurada PALAVRA POR PALAVRA dentro da legenda da cena,
+     e o trecho escolhido para exibição é medido contra esse
+     intervalo de palavras: se METADE ou mais das palavras do
+     trecho pertence à fala de um personagem, o trecho é a
+     fala dele — e a legenda da narração NÃO sai para ele:
+     nada é desenhado nesse trecho, só o balão de fala dele
+     (drawDlg). É o que impede a frase do personagem de
+     aparecer com a etiquetinha NARRAÇÃO, como ele viu no
+     print da discussão ("Eu não vou aturar isso!"). */
+  if(s.dlg && s.dlg.length){
+    var capWordsArr = s.caption.split(' ');
+    var spRanges = [];
+    for(var dwi=0; dwi<s.dlg.length; dwi++){
+      var pw2 = s.dlg[dwi].text.split(' ').map(normWord).filter(function(w){ return w.length>0; });
+      if(!pw2.length) continue;
+      for(var wi0=0; wi0+pw2.length<=capWordsArr.length; wi0++){
+        var okm = true;
+        for(var wj0=0; wj0<pw2.length; wj0++){
+          if(normWord(capWordsArr[wi0+wj0]) !== pw2[wj0]){ okm = false; break; }
+        }
+        if(okm){ spRanges.push([wi0, wi0+pw2.length]); break; }
+      }
+    }
+    if(spRanges.length){
+      var cwStart = 0, cwi;
+      for(cwi=0; cwi<idx; cwi++) cwStart += chunks[cwi].split(' ').length;
+      var cwEnd = cwStart + text.split(' ').length;
+      for(var sri=0; sri<spRanges.length; sri++){
+        var ovTx = Math.min(cwEnd, spRanges[sri][1]) - Math.max(cwStart, spRanges[sri][0]);
+        if(ovTx > 0 && ovTx*2 >= (cwEnd - cwStart)) return;
+      }
+    }
+  }
+  /* O DESENHO DA LEGENDA (pedido do Timothy, 22/11/2026):
+     continua SEM fundo/cartão atrás do texto — o design vem
+     da tipografia alta, do karaokê dourado e dos ornamentos:
+     (1) a etiquetinha NARRAÇÃO em dourado, com filetes e
+     losangos, nasce com cada frase acima do texto; (2) cada
+     palavra entra com pop elástico, subindo e assentando, e a
+     palavra falada AGORA fica DOURADA com brilho — as já
+     faladas, brancas; (3) sob a frase, um sublinhado fino se
+     enche de dourado no ritmo da fala, com a ponta brilhando.
+     A linha NUNCA quebra em duas e NUNCA estica: cada trecho
+     exibido já foi dividido (acima) para caber inteiro numa
+     linha só, na fonte cheia, com margem dos dois lados. */
+  var words = text.split(' ');
+  var span = Math.max(endT-startT, 0.01);
+  var p = clamp((t-startT)/span, 0, 1);
+  var totalW = 0, wi;
+  for(wi=0; wi<words.length; wi++) totalW += words[wi].length+1;
+  var target = p*totalW;
+  var startsW = [], lensW = [], accW = 0, shown = 0;
+  for(wi=0; wi<words.length; wi++){
+    startsW.push(accW); lensW.push(words[wi].length+1); accW += words[wi].length+1;
+  }
+  for(wi=0; wi<words.length; wi++){
+    if(target >= startsW[wi]) shown = wi+1; else break;
+  }
+  if(shown < 1) shown = 1;
+  if(p >= 0.999) shown = words.length;
+  var shownWords = words.slice(0, shown);
+  var shownText = shownWords.join(' ');
+  /* FONTE GRANDE DE ALTURA (pedido do Timothy): letra ALTA e
+     estreita, SÓ DO SISTEMA — nenhuma fonte baixada de fora,
+     0 requisições externas (o motor proíbe CDN). A pilha pede
+     primeiro a condensada que o próprio aparelho já tem
+     (Arial Narrow / Liberation Sans Narrow no computador,
+     Roboto Condensed e sans-serif-condensed no Android,
+     Avenir Next Condensed / Helvetica Neue condensada no
+     iPhone e no Mac) e só cai para a fonte de sistema comum
+     se nenhuma condensada existir. Peso 600, 52px de altura
+     FIXOS: a fonte não encolhe e a letra não é apertada nem
+     esticada na horizontal — quem garante a margem é a
+     divisão da frase em trechos (acima). O laço abaixo é só
+     a rede de segurança de UMA palavra sozinha mais larga
+     que a margem inteira, caso que a divisão por palavras
+     não resolve; para a frase normal ele nunca roda. */
+  var maxW = maxWCap, fs = CAP_FS;
+  c.font = '600 '+fs+'px '+CAPFONT;
+  while(c.measureText(shownText).width > maxW && fs > 30){
+    fs -= 2;
+    c.font = '600 '+fs+'px '+CAPFONT;
+  }
+  /* posição: meio do palco, um pouquinho mais para cima */
+  var cy = 536, cx = W/2;
+  /* entrada da FRASE: fade, subida suave e uma respirada de
+     escala; saída com fade quando a frase seguinte entra */
+  var local = t - startT, remain = endT - t;
+  var popIn = REDUCED ? 1 : easeOut(seg(local, 0, 0.4));
+  var fadeOut = REDUCED ? 1 : clamp(remain/0.25, 0, 1);
+  var alpha = clamp(popIn * fadeOut, 0, 1);
+  if(alpha <= 0.01) return;
+  var yOff = REDUCED ? 0 : (1-popIn)*16;
+  var lineScale = REDUCED ? 1 : 0.965 + 0.035*popIn;
+  /* larguras reais de cada palavra, já na fonte escolhida */
+  var wordW = [], spaceW = c.measureText(' ').width, fullW = 0, wj;
+  for(wj=0; wj<shownWords.length; wj++){
+    wordW.push(c.measureText(shownWords[wj]).width);
+    fullW += wordW[wj] + (wj>0 ? spaceW : 0);
+  }
+  var startX = cx - fullW/2, yy = cy + yOff;
+  c.save();
+  /* escala UNIFORME da entrada, o mesmo fator nos dois eixos:
+     a letra NUNCA é esticada nem apertada na horizontal
+     (regra do Timothy: não coube na margem, divide em outro
+     trecho de legenda — nunca deforma a frase) */
+  c.translate(cx, yy); c.scale(lineScale, lineScale); c.translate(-cx, -yy);
+  /* --- (1) a assinatura da legenda: NARRAÇÃO, filetes e
+     losangos dourados, nascendo com a frase --- */
+  var tagY = yy - fs*0.95;
+  c.save();
+  c.globalAlpha = alpha * (REDUCED ? 1 : seg(local, 0.05, 0.45));
+  c.font = '700 17px '+CAPFONT;
+  try{ c.letterSpacing = '5px'; }catch(e){}
+  var tagTxt = 'NARRAÇÃO';
+  var tagW = c.measureText(tagTxt).width;
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.lineJoin = 'round';
+  c.strokeStyle = 'rgba(5,10,22,0.85)'; c.lineWidth = 4;
+  c.strokeText(tagTxt, cx, tagY);
+  c.fillStyle = '#ffcf3f';
+  c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 6;
+  c.fillText(tagTxt, cx, tagY);
+  c.shadowBlur = 0;
+  var ruleW = 40 * (REDUCED ? 1 : seg(local, 0.05, 0.5));
+  var gapT = tagW/2 + 14;
+  c.strokeStyle = 'rgba(255,207,63,0.9)'; c.lineWidth = 2.4; c.lineCap = 'round';
+  c.beginPath();
+  c.moveTo(cx-gapT-ruleW, tagY); c.lineTo(cx-gapT, tagY);
+  c.moveTo(cx+gapT, tagY); c.lineTo(cx+gapT+ruleW, tagY);
+  c.stroke();
+  c.save(); c.translate(cx-gapT-ruleW-11, tagY); c.rotate(Math.PI/4);
+  c.fillStyle = '#ffcf3f'; c.fillRect(-3.6,-3.6,7.2,7.2); c.restore();
+  c.save(); c.translate(cx+gapT+ruleW+11, tagY); c.rotate(Math.PI/4);
+  c.fillStyle = '#ffcf3f'; c.fillRect(-3.6,-3.6,7.2,7.2); c.restore();
+  c.restore();
+  try{ c.letterSpacing = '0px'; }catch(e){}
+  /* --- (2) as palavras: pop elástico + dourado na palavra
+     que está sendo falada agora; brancas as já faladas.
+     Legibilidade sem fundo: contorno escuro e sombra no
+     próprio texto, como já era. --- */
+  c.font = '600 '+fs+'px '+CAPFONT;
+  c.textBaseline = 'middle'; c.textAlign = 'center';
+  c.lineJoin = 'round';
+  var curX = startX;
+  for(wj=0; wj<shownWords.length; wj++){
+    var wp = REDUCED ? 1 : clamp((target - startsW[wj]) / lensW[wj], 0, 1);
+    var isCur = (wj === shownWords.length-1) && p < 0.999;
+    var ent = REDUCED ? 1 : easeOut(seg(wp, 0, 0.55));
+    var popS = 1;
+    if(!REDUCED){
+      var bk = clamp(wp/0.55, 0, 1), bc1 = 1.70158, bc3 = bc1+1, bbt = bk-1;
+      var fbk = 1 + bc3*bbt*bbt*bbt + bc1*bbt*bbt; /* easeOutBack */
+      popS = 0.6 + 0.4*fbk;
+    }
+    var wAlpha = alpha * (REDUCED ? 1 : clamp(wp*2.4, 0.06, 1));
+    var wY = yy + (REDUCED ? 0 : (1-ent)*13);
+    var wcx = curX + wordW[wj]/2;
+    c.save();
+    c.globalAlpha = wAlpha;
+    c.translate(wcx, wY); c.scale(popS, popS); c.translate(-wcx, -wY);
+    c.strokeStyle = 'rgba(5,10,22,0.9)';
+    c.lineWidth = Math.max(5, fs*0.21);
+    c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 10; c.shadowOffsetY = 2;
+    c.strokeText(shownWords[wj], wcx, wY);
+    c.fillStyle = isCur ? '#ffd21f' : '#ffffff';
+    if(isCur){ c.shadowColor = 'rgba(255,180,0,0.65)'; c.shadowBlur = 16; }
+    c.fillText(shownWords[wj], wcx, wY);
+    c.restore();
+    curX += wordW[wj] + spaceW;
+  }
+  /* --- (3) o sublinhado de progresso da frase: a trilha
+     clara e o dourado enchendo no ritmo da fala, com a
+     pontinha brilhando --- */
+  var ulY = yy + fs*0.68;
+  c.save();
+  c.globalAlpha = alpha;
+  c.lineCap = 'round';
+  c.strokeStyle = 'rgba(255,255,255,0.30)'; c.lineWidth = 3.4;
+  c.beginPath(); c.moveTo(startX, ulY); c.lineTo(startX+fullW, ulY); c.stroke();
+  var progW = fullW * p;
+  if(progW > 2){
+    c.strokeStyle = '#ffb400'; c.lineWidth = 4.2;
+    c.shadowColor = 'rgba(255,180,0,0.7)'; c.shadowBlur = 8;
+    c.beginPath(); c.moveTo(startX, ulY); c.lineTo(startX+progW, ulY); c.stroke();
+    c.fillStyle = '#ffd21f';
+    c.beginPath(); c.arc(startX+progW, ulY, 4.4, 0, Math.PI*2); c.fill();
+  }
+  c.restore();
+  c.restore();
+}
+/* CABEÇALHO DE SÉRIE DOCUMENTAL (liberdade criativa pedida
+   pelo Timothy, 21/11/2026): no topo do quadro, FORA de todas
+   as outras faixas — a barra de progresso do episódio, dividida
+   nas 13 cenas e preenchendo conforme a história anda; à
+   esquerda, a assinatura da série; à direita, o timecode real
+   do episódio. É o que dá o ar de "série informativa": quem
+   assiste sempre sabe onde está na história. Some no idle. */
+function drawDocHeader(c){
+  if(state==='idle') return;
+  var s=SCENES[sceneIdx];
+  var elapsed = STARTS[sceneIdx] + Math.min(sceneTime(), s.dur);
+  var prog = clamp(elapsed/DURTOT, 0, 1);
+  var n=SCENES.length, mx=14, gap=5, sw=(W-mx*2-gap*(n-1))/n;
+  for(var i=0;i<n;i++){
+    var fillP = clamp(prog*n - i, 0, 1);
+    c.fillStyle='rgba(20,30,50,0.20)';
+    rr(c, mx+i*(sw+gap), 10, sw, 6, 3); c.fill();
+    if(fillP>0){
+      c.fillStyle='#ffb400';
+      rr(c, mx+i*(sw+gap), 10, Math.max(6, sw*fillP), 6, 3); c.fill();
+    }
+  }
+  /* assinatura e timecode sobre pílulas escuras: legíveis em
+     qualquer cenário, do céu claro da mata à sala escura.
+     O timecode é o de RELÓGIO (gravação em velocidade natural). */
+  var tsTxt = fmtT(elapsed*timeScale)+' / '+fmtT(DURTOT*timeScale);
+  c.font='800 15px "Segoe UI", system-ui, sans-serif';
+  var sigW = c.measureText('SÉRIE · OAB EM CENA').width;
+  var tsW = c.measureText(tsTxt).width;
+  c.fillStyle='rgba(9,18,36,0.62)';
+  rr(c, 10, 24, sigW+20, 26, 13); c.fill();
+  rr(c, W-10-tsW-20, 24, tsW+20, 26, 13); c.fill();
+  c.fillStyle='#ffd21f'; c.textAlign='left';
+  c.fillText('SÉRIE · OAB EM CENA', 20, 42);
+  c.fillStyle='#ffffff'; c.textAlign='right';
+  c.fillText(tsTxt, W-20, 42);
+  c.textAlign='center';
+}
+function dlgOnNow(s,t){
+  if(!s||!s.dlg||!(s.dur>0)) return false;
+  var f=t/s.dur;
+  for(var di=0;di<s.dlg.length;di++){ if(f>=s.dlg[di].f0 && f<=s.dlg[di].f1) return true; }
+  return false;
+}
+var camCur={z:1,fx:360,fy:700};
+function sceneTime(){
+  if(state==='idle') return 0;
+  return localTime();
+}
+function frame(nowMs){
+  var now=nowMs/1000;
+  NOWS=now;
+  var dtMs = lastFrameMs? (nowMs-lastFrameMs) : 16;
+  lastFrameMs = nowMs;
+  if(audioBroken && state==='playing') fbT += dtMs/1000;
+  var s=SCENES[sceneIdx];
+  var t=sceneTime();
+  if(state==='playing' && t >= s.dur-0.03){
+    advanceScene();
+    s=SCENES[sceneIdx];
+    t=sceneTime();
+  }
+  if(state==='playing'){
+    s.events.forEach(function(ev,i){
+      if(!evFired[i] && t>=ev.at/(s.ts||1)){ evFired[i]=true; try{ ev.fn(); }catch(e){} }
+    });
+  }
+  var camT = s.cam? s.cam(t, s.dur) : {z:1,fx:360,fy:640};
+  if(camSnap || REDUCED){ camCur={z:camT.z,fx:camT.fx,fy:camT.fy,rot:camT.rot||0}; camSnap=false; }
+  else {
+    var ck=0.14;
+    camCur.z=lerp(camCur.z,camT.z,ck);
+    camCur.fx=lerp(camCur.fx,camT.fx,ck);
+    camCur.fy=lerp(camCur.fy,camT.fy,ck);
+    camCur.rot=lerp(camCur.rot||0,camT.rot||0,ck);
+  }
+  var cam=camCur;
+  // ENQUADRAMENTO FECHADO: a vista da câmera nunca passa da borda
+  // do cenário — sem rebarba nas laterais nem embaixo
+  (function(){
+    var rot=cam.rot||0, hw=(W/2)/cam.z, hh=(H/2)/cam.z;
+    var co=Math.abs(Math.cos(rot)), si=Math.abs(Math.sin(rot));
+    var ew=hw*co+hh*si, eh=hw*si+hh*co;
+    cam.fx = ew>=W/2 ? W/2 : clamp(cam.fx, ew, W-ew);
+    cam.fy = eh>=H/2 ? H/2 : clamp(cam.fy, eh, H-eh);
+  })();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+  if(shakeT>0 && !REDUCED){
+    var sh=shakeT*14;
+    ctx.translate((Math.random()-0.5)*sh,(Math.random()-0.5)*sh);
+    shakeT-=0.016;
+  }
+  ctx.translate(W/2,H/2); ctx.scale(cam.z,cam.z); if(cam.rot) ctx.rotate(cam.rot); ctx.translate(-cam.fx,-cam.fy);
+  /* Um gráfico por vez na faixa do rodapé: se um termo vai
+     aparecer neste instante, as etiquetas dos pés se recolhem
+     durante a cena (drawFootLabel consulta TERM_ON). */
+  TERM_ON = false;
+  if(state!=='idle' && s.terms){
+    var lt0 = t*(s.ts||1);
+    for(var tk0=0; tk0<s.terms.length; tk0++){ var tm0=s.terms[tk0];
+      if(lt0>=tm0.at && lt0<=tm0.until) TERM_ON = true; }
+  }
+  /* FAIXA RESERVADA DO CARD (regra do Timothy, 22/11/2026): com o
+     quadro da base legal ativo, a faixa dele fica reservada ANTES
+     de a cena desenhar, e os balões de conversa fogem dela — balão
+     nunca por baixo do card de informação. */
+  BALLOON_AVOID = [];
+  if(state!=='idle' && s.law){
+    var ltB = t*(s.ts||1);
+    for(var lb2=0; lb2<s.law.length; lb2++){ var lwB=s.law[lb2];
+      if(ltB>=lwB.at-0.5 && ltB<=lwB.until){
+        var lhB = lawFrameH(ctx, lwB.w||608, lwB.text), lcyB = lwB.y||368, lwW = lwB.w||608;
+        BALLOON_AVOID.push({x0:360-lwW/2-10, x1:360+lwW/2+10, y0:lcyB-lhB/2-10, y1:lcyB+lhB/2+12});
+      }
+    }
+  }
+  /* PÔSTER NO REPOUSO: antes do primeiro toque, a capa é
+     desenhada no instante 3,4s da própria cena — painel do
+     título montado, faixa do tema acesa, carimbo e elenco
+     formados — em vez do quadro vazio do tempo zero. A mata
+     segue viva porque o relógio de animação (now) continua. */
+  var tDraw = (state==='idle' && sceneIdx===0) ? 3.4 : t*(s.ts||1);
+  try{ s.draw(ctx, tDraw, s.dur*(s.ts||1), now); }catch(e){ /* cena segue */ }
+  /* DESTAQUE + QUADRO DA BASE LEGAL, sobre a cena (pedido do
+     Timothy, 21/11/2026): com o filme rodando, quem a narração
+     está citando BRILHA com a seta apontando — e o quadro com o
+     texto da base legal fica na parede enquanto o inciso é
+     narrado. Entrada suave, saída suave, sempre nos marcos
+     reais declarados em focus/law de cada momento. */
+  if(state!=='idle'){
+    var ltF = t*(s.ts||1), li2, fi2;
+    if(s.law) for(li2=0; li2<s.law.length; li2++){ var lw=s.law[li2];
+      if(ltF>=lw.at && ltF<=lw.until){
+        var lpop = easeOut(seg(ltF, lw.at, lw.at+0.45)) * (1-seg(ltF, lw.until-0.35, lw.until));
+        drawLawFrame(ctx, 360, lw.y||368, lw.w||608, lw.kicker, lw.text, lpop);
+      }
+    }
+    if(s.focus) for(fi2=0; fi2<s.focus.length; fi2++){ var fc=s.focus[fi2];
+      if(ltF>=fc.at && ltF<=fc.until){
+        /* SELEÇÃO NA HORA EXATA DA FALA (pedido do Timothy,
+           21/11/2026): a setinha NÃO desliza devagar até a pessoa —
+           ela APARECE no instante em que a narração começa a citar
+           aquela pessoa (a janela de cada destaque é resolvida da
+           própria frase falada, ver syncFocusToSpeech no motor):
+           a entrada é quase instantânea (0,09s) e a seta nasce com
+           um estalo de encaixe (pop) que assenta em 0,22s. */
+        var falpha = easeOut(seg(ltF, fc.at, fc.at+0.09)) * (1-seg(ltF, fc.until-0.3, fc.until));
+        var fpop = REDUCED? 0 : 1-seg(ltF, fc.at, fc.at+0.22);
+        if(falpha>0.01){
+          var tgs = (typeof fc.targets==='function')? fc.targets(ltF) : fc.targets;
+          for(var tg2=0; tg2<tgs.length; tg2++){
+            drawFocusGlow(ctx, tgs[tg2].x, tgs[tg2].gy, tgs[tg2].s||1, now, falpha);
+            if(fc.arrow!==false) drawFocusArrow(ctx, tgs[tg2].x, tgs[tg2].gy, tgs[tg2].s||1, now, falpha, fpop);
+          }
+        }
+      }
+    }
+  }
+  ctx.restore();
+  var vg=ctx.createLinearGradient(0,H-260,0,H);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.18)');
+  ctx.fillStyle=vg; ctx.fillRect(0,H-260,W,260);
+  /* GRADAÇÃO DE CINEMA: vinheta suave em todo quadro — o centro
+     fica limpo e as bordas ganham profundidade, sem escurecer
+     texto nem personagem. */
+  var rg=ctx.createRadialGradient(W/2,H*0.42,H*0.30, W/2,H*0.50,H*0.80);
+  rg.addColorStop(0,'rgba(4,8,18,0)'); rg.addColorStop(1,'rgba(4,8,18,0.20)');
+  ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+  if(fadeA>0.01){
+    ctx.fillStyle='rgba(6,10,20,'+fadeA.toFixed(3)+')';
+    ctx.fillRect(0,0,W,H);
+    fadeA*=0.86;
+  }
+  if(state!=='idle') drawDocHeader(ctx);
+  if(state!=='idle' && s.terms){
+    var lt2 = t*(s.ts||1);
+    for(var tk=0; tk<s.terms.length; tk++){ var tm=s.terms[tk];
+      if(lt2>=tm.at && lt2<=tm.until)
+        termCard(ctx, tm.x||360, tm.y||1176, tm.title, tm.sub, easeOut(seg(lt2,tm.at,tm.at+0.3)));
+    }
+  }
+  /* A legenda só desenha tocando ou pausado: no repouso e no fim
+     (endcard) ela não aparece — antes ela vazava cortada por
+     baixo do endcard, na faixa do rodapé. A supressão na capa,
+     nos recortes e durante a fala de personagem vive dentro de
+     drawNarrLine. */
+  if(state==='playing'||state==='paused') drawNarrLine(ctx, s, t*(s.ts||1), s.dur*(s.ts||1));
+  if(state!=='idle'){
+    var done=STARTS[sceneIdx];
+    var cur = Math.min(sceneTime(), s.dur);
+    bar.style.width = clamp((done+cur)/DURTOT*100,0,100)+'%';
+    ttot.textContent = fmtT(done+cur)+' / '+fmtT(DURTOT);
+    syncCaption();
+  }
+  updateTimeline();
+  requestAnimationFrame(frame);
+}
+var tlTrack=$('tlTrack'), tlName=$('tlName'), tlTime=$('tlTime'), tlFills=[];
+function buildTimeline(){
+  if(!tlTrack) return;
+  tlTrack.innerHTML=''; tlFills=[];
+  SCENES.forEach(function(){
+    var seg=document.createElement('div'); seg.className='tl-seg';
+    var f=document.createElement('div'); f.className='tl-fill';
+    seg.appendChild(f); tlTrack.appendChild(seg); tlFills.push(f);
+  });
+}
+function updateTimeline(){
+  if(!tlFills.length || !tlName) return;
+  var s=SCENES[sceneIdx]; if(!s) return;
+  var done=STARTS[sceneIdx] + Math.min(sceneTime(), s.dur);
+  var prog=clamp(done/DURTOT,0,1), n=SCENES.length, i;
+  for(i=0;i<tlFills.length;i++) tlFills[i].style.width=(clamp(prog*n-i,0,1)*100)+'%';
+  var nm=((typeof PHASE!=='undefined' && PHASE===2)?'Revisão · ':'')+s.name;
+  if(tlName.textContent!==nm) tlName.textContent=nm;
+  var tt=fmtT(done*timeScale)+' / '+fmtT(DURTOT*timeScale);
+  if(tlTime.textContent!==tt) tlTime.textContent=tt;
+}
+/* ============ AMBIENTE POR CENA + FINAL INTERATIVO ============
+   Extensao de duas fases (ref. 08): som ambiente sintetizado
+   por cena sobre o mesmo AudioContext do motor; a questao sobe
+   cobrindo o palco e espera o toque; o feedback e falado; a
+   revisao (fase 2) troca SCENES/STARTS/DURTOT e o src do audio,
+   sem recriar o motor. */
+
+/* ---- a questao ---- */
+var ALTS=[
+ {L:'A', text:'A de exclusão da ilicitude, por exercício regular do direito.'},
+ {L:'B', text:'A de exclusão da ilicitude, por estrito cumprimento do dever legal.'},
+ {L:'C', text:'A de exclusão da tipicidade, por ausência de elemento subjetivo do tipo.'},
+ {L:'D', text:'A de exclusão da culpabilidade por inexigibilidade de conduta diversa, consistente na obediência hierárquica.'}
+];
+var FB_DUR={A:10.68,B:10.32,C:10.68,D:11.11};
+var answered=false, answering=false, quizShown=false, quizArmedAt=0;
+function buildAlts(){
+  var box=$('quizalts'); box.innerHTML='';
+  ALTS.forEach(function(a){
+    var b=document.createElement('button'); b.type='button'; b.className='qalt';
+    b.setAttribute('data-letter', a.L);
+    b.innerHTML='<span class="let">'+a.L+'</span><span>'+a.text+'</span>';
+    b.addEventListener('click', function(){ pickAlt(a.L, b); });
+    box.appendChild(b);
+  });
+}
+function openQuiz(){
+  if(quizShown) return;
+  quizShown=true; state='quiz';
+  ambStop();
+  try{ narr.pause(); }catch(e){}
+  quiz.hidden=false;
+  void quiz.offsetWidth;
+  quiz.classList.add('show');
+  quiz.classList.add('arming');
+  quizArmedAt=performance.now();
+  setTimeout(function(){ quiz.classList.remove('arming'); }, 1150);
+  setTimeout(function(){
+    if(state==='quiz' && !answered && (quiz.hidden || !quiz.classList.contains('show'))){
+      quiz.hidden=false; quiz.classList.add('show');
+    }
+  }, 1300);
+  setPlayUI();
+  playEnunciado();
+}
+function playEnunciado(){
+  try{ enunc.currentTime=0; var p=enunc.play(); if(p&&p.catch) p.catch(function(){
+    quizstatus.textContent='Toque em “Ouvir o enunciado de novo” para ouvir a questão, ou responda tocando numa alternativa.';
+  }); }catch(e){}
+}
+$('btnListen').addEventListener('click', function(){
+  if(answered) return;
+  playEnunciado();
+});
+function pickAlt(letter, btn){
+  if(state!=='quiz' || answered) return;
+  if(performance.now()-quizArmedAt < 1100) return;   /* trava contra toque fantasma */
+  answered=true; answering=true;
+  try{ enunc.pause(); }catch(e){}
+  var ok = letter==='C';
+  var alts=quiz.querySelectorAll('.qalt');
+  alts.forEach(function(el){
+    var L=el.getAttribute('data-letter');
+    if(L===letter) el.classList.add(ok?'picked-ok':'picked-no');
+    if(L==='C' && !ok) el.classList.add('reveal-ok');
+    el.disabled=true;
+  });
+  quizfb.hidden=false;
+  quizfb.className='quiz-fb '+(ok?'ok':'no');
+  quizfb.textContent = ok? 'Você acertou! É a letra C: exclusão da tipicidade, por ausência de elemento subjetivo do tipo.' : 'Não foi dessa vez: você marcou a letra '+letter+'. A certa é a letra C, e a revisão já vai mostrar o porquê.';
+  quizstatus.textContent = ok? 'Resposta certa. Agora a revisão, voltando no tempo.' : 'Vamos rever juntos, voltando no tempo, por que a certa é a C.';
+  /* o feedback nasce abaixo do botão de ouvir: rola o painel até
+     ele, para a resposta aparecer sem o toque ter de rolar */
+  try{ quizfb.scrollIntoView({block:'nearest'}); }catch(e){}
+  if(ok) sfxDing(); else sfxBuzz();
+  var fb=$('fb'+letter);
+  var dur=FB_DUR[letter]+1.2;
+  var go=function(){ startPhase2(); };
+  if(fb){
+    fb.currentTime=0;
+    var p=fb.play();
+    if(p&&p.catch) p.catch(function(){ setTimeout(go, 900); });
+    var fired=false;
+    fb.addEventListener('ended', function(){ if(!fired){ fired=true; setTimeout(go, 350); } });
+    setTimeout(function(){ if(!fired){ fired=true; go(); } }, (dur+2.5)*1000);  /* rede de segurança acima da fala */
+  } else setTimeout(go, 900);
+}
+function startPhase2(){
+  if(PHASE!==1) return;
+  answering=false;
+  quiz.classList.remove('show');
+  setTimeout(function(){ quiz.hidden=true; }, 680);
+  setupPhase(2);
+  narr.src='assets/revisao-completa.mp3?v=aria2';
+  narr.load();
+  sfxRewind();
+  goScene(0,true);
+}
+function backToStart(){
+  try{ enunc.pause(); }catch(e){}
+  ['fbA','fbB','fbC','fbD'].forEach(function(id){ var a=$(id); try{ a.pause(); }catch(e){} });
+  answered=false; answering=false; quizShown=false;
+  quiz.classList.remove('show'); quiz.hidden=true; quizfb.hidden=true;
+  endcard.hidden=true;
+  if(PHASE!==1){ setupPhase(1); }
+  if(narr.getAttribute('src')!=='assets/narracao-completa.mp3?v=aria2'){ narr.src='assets/narracao-completa.mp3?v=aria2'; narr.load(); }
+  buildAlts();
+  audioInit(); bigplay.hidden=true; goScene(0,true);
+}
+
+buildAlts();
+setupPhase(1);
+buildTimeline();
+buildCaption(); markChapters(); setPlayUI();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
