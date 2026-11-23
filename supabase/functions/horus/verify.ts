@@ -88,10 +88,16 @@ export const handler = async (req: Request) => {
       const code = String(body.code || "").trim();
       if (!phone || code.length !== 6) return json({ error: "Dados inválidos" }, 400);
       const phoneDb = phone.replace(/^\+/, "");
+      const variants = [phoneDb];
+      if (phoneDb.startsWith("55") && phoneDb.length === 13) {
+        variants.push("55" + phoneDb.slice(2, 4) + phoneDb.slice(5));
+      } else if (phoneDb.startsWith("55") && phoneDb.length === 12) {
+        variants.push("55" + phoneDb.slice(2, 4) + "9" + phoneDb.slice(4));
+      }
 
       const { data: rows } = await admin.from("horus_verification_codes")
         .select("*")
-        .eq("user_id", userId).eq("phone_e164", phoneDb).is("consumed_at", null)
+        .eq("user_id", userId).in("phone_e164", variants).is("consumed_at", null)
         .gte("expires_at", new Date().toISOString())
         .order("created_at", { ascending: false }).limit(1);
       const row = rows?.[0];
@@ -120,6 +126,13 @@ export const handler = async (req: Request) => {
         return json({ error: "Falha ao vincular número. Tente novamente.", detail: msg }, 500);
       }
       console.log("[horus-verify] RPC ok", rpcData);
+
+      // Sincroniza garantidamente em profiles (whatsapp_number e telefone)
+      await admin.from("profiles").update({
+        whatsapp_number: phoneDb,
+        telefone: phoneDb,
+        updated_at: new Date().toISOString(),
+      }).eq("id", userId).catch((err: any) => console.warn("[horus-verify] profile sync fail", err));
 
       const transferred = Boolean((rpcData as any)?.transferred);
       const nome = String((rpcData as any)?.display_name || "").trim();

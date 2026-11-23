@@ -1,30 +1,8 @@
-// Runner de Poderes do Horus — detecta intenção por keywords e chama edge functions.
-// Retorna um bloco de texto que será injetado no systemPrompt.
-
-const FUNCTIONS_URL = `${Deno.env.get("SUPABASE_URL")}/functions/v1`;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// Runner de Poderes do Horus — detecta intenção por keywords e executa APIs públicas ou banco direto.
+// Retorna um bloco de texto enriquecido que é injetado no systemPrompt.
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 type PoderRow = { slug: string; ativo: boolean };
-
-async function callFn(name: string, body: unknown) {
-  const t0 = Date.now();
-  try {
-    const resp = await fetch(`${FUNCTIONS_URL}/${name}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${ANON}`,
-        apikey: ANON,
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(1000), // Timeout rígido de 1s para nunca travar a resposta do WhatsApp
-    });
-    const data = await resp.json().catch(() => ({}));
-    return { ok: resp.ok, data, latency: Date.now() - t0 };
-  } catch (e) {
-    return { ok: false, data: {}, latency: Date.now() - t0, error: String(e) };
-  }
-}
 
 function has(text: string, ...kws: string[]) {
   const t = text.toLowerCase();
@@ -33,12 +11,30 @@ function has(text: string, ...kws: string[]) {
 
 export type PoderesResult = { block: string; tools: string[]; latencyMs: number };
 
+// Helper rápido de fetch com timeout rígido
+async function safeFetchJson(url: string, timeoutMs = 1200, headers: Record<string, string> = {}) {
+  const t0 = Date.now();
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "HorusBot/2.0 (Estudos Juridicos)", ...headers },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!res.ok) return { ok: false, data: null, latency: Date.now() - t0, status: res.status };
+    const data = await res.json().catch(() => null);
+    return { ok: true, data, latency: Date.now() - t0 };
+  } catch (e) {
+    return { ok: false, data: null, latency: Date.now() - t0, error: String(e) };
+  }
+}
+
 export async function runPoderes(
   admin: any,
   userPhone: string,
   userMessage: string,
 ): Promise<PoderesResult> {
   const t0 = Date.now();
+  const phoneDigits = String(userPhone).replace(/\D/g, "");
+
   // 1) Carrega poderes ativos
   const { data: poderes } = await admin
     .from("horus_poderes")
@@ -50,87 +46,118 @@ export async function runPoderes(
   const blocks: string[] = [];
   const logs: Array<{ slug: string; ok: boolean; latency: number; error?: string }> = [];
 
-  // 2) MEM0 — recall silencioso inteligente (apenas para mensagens informativas ou pedidos de memória)
+  // 2) MEMÓRIA DO USUÁRIO (Mem0 / nativa horus_memoria)
   const isSmallTalk = /^(oi|olá|ola|bom dia|boa tarde|boa noite|valeu|obrigado|ok|beleza|sim|não|nao)\b/i.test(userMessage.trim());
-  if (active.has("mem0") && !isSmallTalk && userMessage.trim().length > 8) {
+  if (active.has("mem0") && !isSmallTalk && userMessage.trim().length > 6) {
+    const tMem = Date.now();
     try {
-      const r = await callFn("poder-tools", {
-        fn: "mem0",
-        action: "recall",
-        user_phone: userPhone,
-        query: userMessage,
-        top_k: 3,
-      });
-      logs.push({ slug: "mem0", ok: r.ok, latency: r.latency, error: r.ok ? undefined : JSON.stringify(r.data) });
-      const mems = (r.data?.memorias || []).filter((m: any) => (m.similarity ?? 0) > 0.6);
-      if (mems.length) {
+      const { data: mems, error: memErr } = await admin
+        .from("horus_memoria")
+        .select("texto, kind, created_at")
+        .or(`user_phone.eq.${userPhone},user_phone.eq.${phoneDigits}`)
+        .order("created_at", { ascending: false })
+        .limit(3);
+
+      const latency = Date.now() - tMem;
+      if (!memErr && mems && mems.length > 0) {
+        logs.push({ slug: "mem0", ok: true, latency });
         blocks.push(
-          "[MEMÓRIAS RELEVANTES DO USUÁRIO]\n" +
-            mems.map((m: any) => `- ${m.texto}`).join("\n"),
+          "[MEMÓRIAS E PREFERÊNCIAS ANTERIORES DO USUÁRIO]\n" +
+            mems.map((m: any) => `• ${m.texto}`).join("\n"),
         );
+      } else {
+        logs.push({ slug: "mem0", ok: true, latency });
       }
     } catch (e) {
-      logs.push({ slug: "mem0", ok: false, latency: 0, error: String(e) });
+      logs.push({ slug: "mem0", ok: false, latency: Date.now() - tMem, error: String(e) });
     }
   }
 
-  // 3) BCB — Selic, IPCA, câmbio
+  // 3) BCB — Selic, IPCA, Câmbio em tempo real
   if (active.has("bcb")) {
-    const tools: string[] = [];
-    if (has(userMessage, "selic", "taxa básica", "juros básico")) tools.push("selic");
-    if (has(userMessage, "ipca", "inflação")) tools.push("ipca");
-    if (has(userMessage, "dólar", "dolar", "câmbio", "cambio", "cotação", "cotacao")) tools.push("cambio");
-    for (const tool of tools) {
-      const r = await callFn("poder-bcb", { tool });
+    if (has(userMessage, "selic", "taxa básica", "juros básico")) {
+      const r = await safeFetchJson("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/1?formato=json");
       logs.push({ slug: "bcb", ok: r.ok, latency: r.latency });
-      if (r.ok) blocks.push(`[BCB - ${tool.toUpperCase()}]\n${JSON.stringify(r.data)}`);
+      if (r.ok && Array.isArray(r.data) && r.data[0]) {
+        blocks.push(`[BANCO CENTRAL DO BRASIL - TAXA SELIC ATUAL]\nValor: ${r.data[0].valor}% a.a. (Data de apuração: ${r.data[0].data})`);
+      }
     }
-  }
-
-  // 4) BrasilAPI — feriados/CEP/CNPJ
-  if (active.has("brasilapi")) {
-    if (has(userMessage, "feriado", "prazo processual", "dias úteis", "dias uteis")) {
-      const r = await callFn("poder-brasilapi", { tool: "feriados" });
-      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
-      if (r.ok) blocks.push(`[FERIADOS NACIONAIS ${new Date().getFullYear()}]\n${JSON.stringify(r.data?.data?.slice(0, 20))}`);
+    if (has(userMessage, "ipca", "inflação", "inflacao")) {
+      const r = await safeFetchJson("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/1?formato=json");
+      logs.push({ slug: "bcb", ok: r.ok, latency: r.latency });
+      if (r.ok && Array.isArray(r.data) && r.data[0]) {
+        blocks.push(`[BANCO CENTRAL DO BRASIL - IPCA (INFLAÇÃO) MENSAL]\nTaxa do mês: ${r.data[0].valor}% (Mês de referência: ${r.data[0].data})`);
+      }
     }
-    const cep = userMessage.match(/\b\d{5}-?\d{3}\b/);
-    if (cep) {
-      const r = await callFn("poder-brasilapi", { tool: "cep", cep: cep[0] });
-      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
-      if (r.ok) blocks.push(`[CEP ${cep[0]}]\n${JSON.stringify(r.data?.data)}`);
-    }
-    const cnpj = userMessage.match(/\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b/);
-    if (cnpj) {
-      const r = await callFn("poder-brasilapi", { tool: "cnpj", cnpj: cnpj[0] });
-      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
-      if (r.ok) blocks.push(`[CNPJ ${cnpj[0]}]\n${JSON.stringify(r.data?.data)}`);
-    }
-  }
-
-  // 5) Wikipedia — quando parece dúvida conceitual "quem é / o que é / o que significa"
-  if (active.has("wikipedia") && /^(quem (é|foi)|o que (é|significa|foram)|defina|conceito de|explique .{0,3}o que)/i.test(userMessage.trim())) {
-    const q = userMessage.replace(/^(quem (é|foi)|o que (é|significa|foram)|defina|conceito de|explique .{0,3}o que)\s+/i, "").replace(/\?$/, "");
-    if (q.length > 2) {
-      const r = await callFn("poder-tools", { fn: "wikipedia", query: q, sentences: 4 });
-      logs.push({ slug: "wikipedia", ok: r.ok, latency: r.latency });
-      if (r.ok && r.data?.found) {
-        blocks.push(`[WIKIPEDIA — ${r.data.title}]\n${r.data.resumo}\nFonte: ${r.data.url}`);
+    if (has(userMessage, "dólar", "dolar", "euro", "câmbio", "cambio", "cotação", "cotacao")) {
+      const r = await safeFetchJson("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL");
+      logs.push({ slug: "bcb", ok: r.ok, latency: r.latency });
+      if (r.ok && r.data) {
+        const usd = r.data.USDBRL ? `Dólar Comercial: R$ ${Number(r.data.USDBRL.bid).toFixed(2)}` : "";
+        const eur = r.data.EURBRL ? `Euro Comercial: R$ ${Number(r.data.EURBRL.bid).toFixed(2)}` : "";
+        blocks.push(`[COTAÇÃO DE MOEDAS EM TEMPO REAL]\n${[usd, eur].filter(Boolean).join(" | ")}`);
       }
     }
   }
 
-  // 6) Nager — feriados de outros anos ("feriados de 2027")
+  // 4) BrasilAPI — Feriados Nacionais, CEP, CNPJ
+  if (active.has("brasilapi")) {
+    if (has(userMessage, "feriado", "feriados", "prazo processual", "dias úteis", "dias uteis")) {
+      const year = new Date().getFullYear();
+      const r = await safeFetchJson(`https://brasilapi.com.br/api/feriados/v1/${year}`);
+      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
+      if (r.ok && Array.isArray(r.data)) {
+        const feriadosSummary = r.data.map((f: any) => `${f.date}: ${f.name}`).join("\n");
+        blocks.push(`[FERIADOS NACIONAIS BRASIL ${year} (BRASILAPI)]\n${feriadosSummary}`);
+      }
+    }
+    const cepMatch = userMessage.match(/\b\d{5}-?\d{3}\b/);
+    if (cepMatch) {
+      const cleanCep = cepMatch[0].replace(/\D/g, "");
+      const r = await safeFetchJson(`https://brasilapi.com.br/api/cep/v1/${cleanCep}`);
+      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
+      if (r.ok && r.data) {
+        blocks.push(`[CONSULTA CEP ${cepMatch[0]} (BRASILAPI)]\nLogradouro: ${r.data.street || "N/A"}\nBairro: ${r.data.neighborhood || "N/A"}\nCidade: ${r.data.city}/${r.data.state}`);
+      }
+    }
+    const cnpjMatch = userMessage.match(/\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b/);
+    if (cnpjMatch) {
+      const cleanCnpj = cnpjMatch[0].replace(/\D/g, "");
+      const r = await safeFetchJson(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
+      logs.push({ slug: "brasilapi", ok: r.ok, latency: r.latency });
+      if (r.ok && r.data) {
+        blocks.push(`[CONSULTA CNPJ ${cnpjMatch[0]} (BRASILAPI)]\nRazão Social: ${r.data.razao_social}\nNome Fantasia: ${r.data.nome_fantasia || "Não informado"}\nSituação: ${r.data.descricao_situacao_cadastral}`);
+      }
+    }
+  }
+
+  // 5) Wikipedia — Dúvida enciclopédica/conceitual
+  if (active.has("wikipedia") && /^(quem (é|foi)|o que (é|significa|foram)|defina|conceito de|explique .{0,3}o que)/i.test(userMessage.trim())) {
+    const q = userMessage.replace(/^(quem (é|foi)|o que (é|significa|foram)|defina|conceito de|explique .{0,3}o que)\s+/i, "").replace(/[?!.]+$/, "").trim();
+    if (q.length > 2) {
+      const r = await safeFetchJson(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`, 1500);
+      logs.push({ slug: "wikipedia", ok: r.ok, latency: r.latency });
+      if (r.ok && r.data?.extract) {
+        blocks.push(`[ENCICLOPÉDIA WIKIPEDIA — ${r.data.title}]\n${r.data.extract}\nFonte: ${r.data.content_urls?.desktop?.page || ""}`);
+      }
+    }
+  }
+
+  // 6) Nager.Date — Feriados de outros anos
   if (active.has("nager")) {
     const m = userMessage.match(/feriados?.{0,20}(20\d{2})/i);
     if (m) {
-      const r = await callFn("poder-tools", { fn: "nager", year: Number(m[1]), country: "BR" });
+      const yr = m[1];
+      const r = await safeFetchJson(`https://date.nager.at/api/v3/PublicHolidays/${yr}/BR`);
       logs.push({ slug: "nager", ok: r.ok, latency: r.latency });
-      if (r.ok) blocks.push(`[FERIADOS ${m[1]}]\n${JSON.stringify(r.data?.feriados?.slice(0, 20))}`);
+      if (r.ok && Array.isArray(r.data)) {
+        const sum = r.data.slice(0, 15).map((f: any) => `${f.date}: ${f.localName || f.name}`).join("\n");
+        blocks.push(`[FERIADOS NACIONAIS ${yr} (NAGER)]\n${sum}`);
+      }
     }
   }
 
-  // Log das chamadas
+  // Log assíncrono das chamadas para métricas do painel
   if (logs.length) {
     admin
       .from("horus_poderes_calls")
@@ -156,23 +183,22 @@ export async function runPoderes(
   };
 }
 
-// Salva memória depois de responder (fire-and-forget)
+// Salva memória factual após responder (fire-and-forget)
 export async function saveMemoryAsync(userPhone: string, userMessage: string, assistantReply: string) {
   try {
-    // heurística leve: só grava se a msg do usuário parece um fato pessoal
-    const isFact = /(estudo|estou estudando|trabalho|sou|moro|minha|meu|prefiro|gosto|não gosto|meu nome)/i.test(userMessage);
+    const isFact = /(estudo|estou estudando|trabalho|sou|moro|minha|meu|prefiro|gosto|não gosto|meu nome|oab|concurso)/i.test(userMessage);
     if (!isFact) return;
     const texto = userMessage.length > 240 ? userMessage.slice(0, 240) : userMessage;
-    await fetch(`${FUNCTIONS_URL}/poder-tools?fn=mem0`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${ANON}`,
-        apikey: ANON,
-      },
-      body: JSON.stringify({ action: "save", user_phone: userPhone, texto, kind: "fact" }),
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    await admin.from("horus_memoria").insert({
+      user_phone: userPhone.replace(/^\+/, ""),
+      texto,
+      kind: "fact",
     });
   } catch (e) {
-    console.warn("mem save fail", String(e));
+    console.warn("horus mem save fail", String(e));
   }
 }

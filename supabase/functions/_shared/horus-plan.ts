@@ -16,6 +16,7 @@ export const ADMIN_PHONE_DIGITS = [
 export interface ResolvedPlan {
   isPremium: boolean;
   plano: "pro" | "free";
+  planoNome: string; // "Vitalício", "Anual", "Mensal", "Administrador", "Gratuito"
   expiresAt: string | null;
   isAdmin: boolean;
   reason: string;
@@ -86,6 +87,7 @@ async function resolveUserPlanInternal(
     return {
       isPremium: true,
       plano: "pro",
+      planoNome: "Administrador (Acesso Ilimitado)",
       expiresAt: "2099-12-31T23:59:59.000Z",
       isAdmin: true,
       reason: "admin_phone",
@@ -97,6 +99,7 @@ async function resolveUserPlanInternal(
     return {
       isPremium: true,
       plano: "pro",
+      planoNome: "Administrador (Acesso Ilimitado)",
       expiresAt: "2099-12-31T23:59:59.000Z",
       isAdmin: true,
       reason: "admin_email",
@@ -105,7 +108,7 @@ async function resolveUserPlanInternal(
 
   let effectiveUserId = userId || null;
 
-  // Se não temos userId mas temos telefone, tenta buscar pelo profile
+  // Se não temos userId mas temos telefone, tenta buscar primeiro em horus_whatsapp_users e depois em profiles
   if (!effectiveUserId && phone) {
     const digits = String(phone).replace(/\D/g, "");
     if (digits) {
@@ -121,24 +124,20 @@ async function resolveUserPlanInternal(
       if (digits.length >= 11) variantsSet.add("55" + digits.slice(-11));
       // Variantes com/sem 9º dígito (celulares brasileiros)
       if (digits.startsWith("55") && digits.length === 13) {
-        // 55 + DDD(2) + 9 + número(8) → tira o 9
         variantsSet.add("55" + digits.slice(2, 4) + digits.slice(5));
         variantsSet.add(digits.slice(2, 4) + digits.slice(5));
       }
       if (digits.startsWith("55") && digits.length === 12) {
-        // 55 + DDD(2) + número(8) → adiciona o 9
         variantsSet.add("55" + digits.slice(2, 4) + "9" + digits.slice(4));
         variantsSet.add(digits.slice(2, 4) + "9" + digits.slice(4));
       }
       if (!digits.startsWith("55")) {
         if (digits.length === 11) {
-          // DDD(2) + 9 + número(8) → tira o 9
           variantsSet.add(digits.slice(0, 2) + digits.slice(3));
           variantsSet.add("55" + digits);
           variantsSet.add("55" + digits.slice(0, 2) + digits.slice(3));
         }
         if (digits.length === 10) {
-          // DDD(2) + número(8) → adiciona o 9
           variantsSet.add(digits.slice(0, 2) + "9" + digits.slice(2));
           variantsSet.add("55" + digits);
           variantsSet.add("55" + digits.slice(0, 2) + "9" + digits.slice(2));
@@ -146,32 +145,51 @@ async function resolveUserPlanInternal(
       }
       const variants = Array.from(variantsSet).filter(Boolean);
 
-      const { data: profiles } = await admin
-        .from("profiles")
-        .select("id, telefone, whatsapp_number, is_premium")
-        .or(variants.map((v) => `telefone.ilike.%${v}%,whatsapp_number.ilike.%${v}%`).join(","))
-        .limit(5);
+      // 2a. Busca direta no vínculo de WhatsApp (horus_whatsapp_users)
+      try {
+        const { data: hwUsers } = await admin
+          .from("horus_whatsapp_users")
+          .select("user_id, linked_user_id")
+          .or(variants.map((v) => `phone_e164.eq.${v}`).join(","))
+          .limit(5);
 
-      // Filtra match real com comparação numérica bidirecional
-      const bestProfile = (profiles || []).find((p: any) => {
-        const t = String(p.telefone || "").replace(/\D/g, "");
-        const w = String(p.whatsapp_number || "").replace(/\D/g, "");
-        return variants.some((v) =>
-          (t && (t === v || t.endsWith(v) || v.endsWith(t))) ||
-          (w && (w === v || w.endsWith(v) || v.endsWith(w)))
-        );
-      });
+        const matchedHw = (hwUsers || []).find((u: any) => u.linked_user_id || u.user_id);
+        if (matchedHw) {
+          effectiveUserId = matchedHw.linked_user_id || matchedHw.user_id;
+        }
+      } catch (e) {
+        console.warn("resolveUserPlan horus_whatsapp_users check fail", e);
+      }
 
-      if (bestProfile) {
-        effectiveUserId = bestProfile.id;
-        if (bestProfile.is_premium) {
-          return {
-            isPremium: true,
-            plano: "pro",
-            expiresAt: null,
-            isAdmin: false,
-            reason: "profile_is_premium_by_phone",
-          };
+      // 2b. Se ainda não achou, busca no cadastro de profiles
+      if (!effectiveUserId) {
+        const { data: profiles } = await admin
+          .from("profiles")
+          .select("id, telefone, whatsapp_number, is_premium")
+          .or(variants.map((v) => `telefone.ilike.%${v}%,whatsapp_number.ilike.%${v}%`).join(","))
+          .limit(5);
+
+        const bestProfile = (profiles || []).find((p: any) => {
+          const t = String(p.telefone || "").replace(/\D/g, "");
+          const w = String(p.whatsapp_number || "").replace(/\D/g, "");
+          return variants.some((v) =>
+            (t && (t === v || t.endsWith(v) || v.endsWith(t))) ||
+            (w && (w === v || w.endsWith(v) || v.endsWith(w)))
+          );
+        });
+
+        if (bestProfile) {
+          effectiveUserId = bestProfile.id;
+          if (bestProfile.is_premium) {
+            return {
+              isPremium: true,
+              plano: "pro",
+              planoNome: "Premium",
+              expiresAt: null,
+              isAdmin: false,
+              reason: "profile_is_premium_by_phone",
+            };
+          }
         }
       }
     }
@@ -182,6 +200,7 @@ async function resolveUserPlanInternal(
     return {
       isPremium: false,
       plano: "free",
+      planoNome: "Gratuito",
       expiresAt: null,
       isAdmin: false,
       reason: "user_not_identified",
@@ -195,6 +214,7 @@ async function resolveUserPlanInternal(
       return {
         isPremium: true,
         plano: "pro",
+        planoNome: "Administrador (Acesso Ilimitado)",
         expiresAt: "2099-12-31T23:59:59.000Z",
         isAdmin: true,
         reason: "is_admin_user_rpc",
@@ -208,11 +228,11 @@ async function resolveUserPlanInternal(
   try {
     const { data: isPremRpc } = await admin.rpc("is_premium_user", { _user_id: effectiveUserId });
     if (isPremRpc) {
-      // Busca a data de expiração mais relevante
       const exp = await getLatestExpiry(admin, effectiveUserId);
       return {
         isPremium: true,
         plano: "pro",
+        planoNome: "Premium",
         expiresAt: exp,
         isAdmin: false,
         reason: "is_premium_user_rpc",
@@ -234,12 +254,21 @@ async function resolveUserPlanInternal(
       .maybeSingle();
 
     if (asaas) {
-      // Adicionada tolerância de 7 dias para expiração caso o status continue ACTIVE mas o webhook de renovação tenha atrasado.
       const notExpired = !asaas.expires_at || new Date(asaas.expires_at).getTime() + (7 * 24 * 60 * 60 * 1000) > Date.now();
       if (notExpired) {
+        const rawPlano = String(asaas.plano || "").toLowerCase();
+        const planoNome = rawPlano.includes("vitalicio")
+          ? "Vitalício"
+          : rawPlano.includes("anual")
+          ? "Anual"
+          : rawPlano.includes("mensal")
+          ? "Mensal"
+          : "Premium";
+
         return {
           isPremium: true,
           plano: "pro",
+          planoNome,
           expiresAt: asaas.expires_at || null,
           isAdmin: false,
           reason: "asaas_active",
@@ -267,6 +296,7 @@ async function resolveUserPlanInternal(
         return {
           isPremium: true,
           plano: "pro",
+          planoNome: "Google Play",
           expiresAt: play.expires_at || null,
           isAdmin: false,
           reason: "play_active",
@@ -294,6 +324,7 @@ async function resolveUserPlanInternal(
         return {
           isPremium: true,
           plano: "pro",
+          planoNome: "Apple Store",
           expiresAt: apple.expires_at || null,
           isAdmin: false,
           reason: "apple_active",
@@ -316,6 +347,7 @@ async function resolveUserPlanInternal(
       return {
         isPremium: true,
         plano: "pro",
+        planoNome: "Premium",
         expiresAt: null,
         isAdmin: false,
         reason: "profile_is_premium",
@@ -341,6 +373,7 @@ async function resolveUserPlanInternal(
         return {
           isPremium: true,
           plano: "pro",
+          planoNome: "Vitalício (Legado)",
           expiresAt: leg.expires_at || null,
           isAdmin: false,
           reason: "legacy_active",
@@ -354,6 +387,7 @@ async function resolveUserPlanInternal(
   return {
     isPremium: false,
     plano: "free",
+    planoNome: "Gratuito",
     expiresAt: null,
     isAdmin: false,
     reason: "no_active_subscription",

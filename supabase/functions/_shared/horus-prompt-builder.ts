@@ -12,6 +12,13 @@ export type PromptContext = {
   stats: HorusUserStats | null;
   offTopicStreak: number;
   perfilPessoal?: Record<string, any> | null;
+  planInfo?: {
+    isPremium: boolean;
+    planoNome?: string;
+    expiresAt?: string | null;
+    isAdmin?: boolean;
+    isTrial?: boolean;
+  } | null;
 };
 
 function formatPerfilPessoal(p?: Record<string, any> | null): string {
@@ -44,6 +51,7 @@ const GUARDRAILS = [
   "• NUNCA fique repetindo o nome da pessoa em todas as mensagens. Aja como em um chat rápido do WhatsApp.",
   "• ALUCINAÇÃO JURÍDICA É PROIBIDA: NUNCA invente artigo de lei, número de súmula ou jurisprudência. Se a ferramenta de busca de leis não retornar o texto, seja humilde e diga que não encontrou o texto exato. Não tente adivinhar.",
   "• NUNCA dê parecer jurídico definitivo. Você é um assistente de estudos.",
+  "• ASSINATURA E STATUS DO PLANO: Se o usuário perguntar 'sou premium?', 'qual meu plano?', 'minha conta está ativa?', 'sou vip?' ou sobre sua assinatura, consulte o bloco [STATUS DA ASSINATURA E PLANO] no Contexto Dinâmico e responda diretamente com clareza, certeza e precisão factual. NUNCA diga que não tem acesso a essa informação.",
   "• Se o usuário mencionar uma imagem, foto, áudio ou documento (PDF), NUNCA diga que você não consegue ver mídias. As mídias enviadas já foram analisadas pelo sistema e o conteúdo delas consta no histórico.",
   "• SUPORTE TÉCNICO E BUGS (MUITO IMPORTANTE): Se o usuário reclamar de falha, erro, bug no app, tela preta, ou problemas na conta, NUNCA tente dar dicas de TI (como 'limpe o cache' ou 'reinstale o app'). Pare de responder como assistente jurídico e diga APENAS: 'Vou transferir você para a nossa equipe técnica humana dar uma olhada nisso, um momento!'",
   "• PLATAFORMAS: NUNCA diga que o Vade Mecum é 'apenas mobile'. O sistema funciona perfeitamente em Web/Desktop, Android e iOS.",
@@ -105,7 +113,7 @@ export function pickDisclaimer(seed?: string): string {
 }
 
 export function buildSystemPrompt(ctx: PromptContext): string {
-  const { agent, isLinked, displayName, contextSummary, stats, offTopicStreak, perfilPessoal } = ctx;
+  const { agent, isLinked, displayName, contextSummary, stats, offTopicStreak, perfilPessoal, planInfo } = ctx;
 
   const persona = String(agent?.prompt || "Você é o Horus, assistente jurídico no WhatsApp.").trim();
 
@@ -114,6 +122,28 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     : "SITUAÇÃO: número NÃO vinculado. NÃO execute tarefas jurídicas complexas — conduza gentilmente para baixar o app.";
 
   const nome = displayName ? `Nome da pessoa: ${displayName}.` : "";
+
+  // Bloco de status de plano/assinatura
+  let planBlock = "[STATUS DA ASSINATURA E PLANO NO APP]\n";
+  if (planInfo?.isAdmin) {
+    planBlock += "• Status: ADMINISTRADOR / ACESSO ILIMITADO VIP.\n• Acesso irrestrito a todas as funções do app e do Hórus sem limites.";
+  } else if (planInfo?.isPremium) {
+    const nomePlano = planInfo.planoNome || "Premium";
+    let dataVal = "Acesso Vitalício";
+    if (planInfo.expiresAt) {
+      try {
+        const d = new Date(planInfo.expiresAt);
+        if (!isNaN(d.getTime())) {
+          dataVal = `Válido até ${d.toLocaleDateString("pt-BR")}`;
+        }
+      } catch (_) {}
+    }
+    planBlock += `• Status: ASSINANTE PREMIUM ATIVO (${nomePlano}) - ${dataVal}.\n• O usuário é assinante pagante do app e possui acesso completo a todos os recursos. Se perguntar sobre o plano, confirme com entusiasmo e informe o nome do plano (${nomePlano}) e validade.`;
+  } else if (planInfo?.isTrial) {
+    planBlock += "• Status: PERÍODO DE TESTE GRATUITO (TRIAL 3 DIAS).\n• O usuário está no período de degustação gratuita. Se perguntar, informe que pode testar tudo à vontade durante o trial e assinar no app para manter o acesso.";
+  } else {
+    planBlock += "• Status: CONTA GRATUITA (FREE).\n• O usuário não possui assinatura Premium ativa. Se perguntar se é Premium ou sobre o plano, informe gentilmente que a conta dele está no plano gratuito, e que ele pode se tornar Premium diretamente pelo app para desbloquear questões, audioaulas, resumos e recursos exclusivos.";
+  }
 
   const statsBlock = agent?.usa_estatisticas !== false ? formatStatsBlock(stats) : "";
   const perfilBlock = formatPerfilPessoal(perfilPessoal);
@@ -138,6 +168,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     getBrazilTimeContext(),
     situacao,
     nome,
+    planBlock,
     perfilBlock,
     statsBlock,
     historico,

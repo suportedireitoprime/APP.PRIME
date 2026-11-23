@@ -846,6 +846,13 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     stats,
     offTopicStreak: nextStreak,
     perfilPessoal: (userRow as any)?.perfil_pessoal ?? null,
+    planInfo: {
+      isPremium: premium,
+      planoNome: resolvedPlan.planoNome,
+      expiresAt: resolvedPlan.expiresAt,
+      isAdmin: resolvedPlan.isAdmin,
+      isTrial,
+    },
   });
 
   // 5b) Poderes — injeta conhecimento em tempo real (Mem0, Wikipedia, BrasilAPI, BCB, Nager)
