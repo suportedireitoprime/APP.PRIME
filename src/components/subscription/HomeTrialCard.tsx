@@ -30,10 +30,13 @@ export const HomeTrialCard = memo(function HomeTrialCard() {
     }
     let dateStr = user?.created_at || sub.startedAt;
     const userTrialKey = user ? `direitoprime:trial_started:${user.id}` : 'direitoprime:trial_started:guest';
+    if (!dateStr && typeof localStorage !== 'undefined' && user?.id) {
+      dateStr = localStorage.getItem(`direitoprime:user_created_at:${user.id}`);
+    }
     if (!dateStr && typeof localStorage !== 'undefined') {
       dateStr = localStorage.getItem(userTrialKey) || localStorage.getItem('direitoprime:trial_started');
     }
-    if (!dateStr && typeof localStorage !== 'undefined') {
+    if (!dateStr && !user && typeof localStorage !== 'undefined') {
       const nowIso = new Date().toISOString();
       try {
         localStorage.setItem(userTrialKey, nowIso);

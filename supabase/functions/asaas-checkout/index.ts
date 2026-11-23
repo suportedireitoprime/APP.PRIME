@@ -203,7 +203,7 @@ Deno.serve(async (req) => {
 
     const VALID_PLANS = [
       'mensal', 'mensal_pix',
-      'vitalicio', 'vitalicio_pix', 'vitalicio_promocional_pix', 'vitalicio_89_pix',
+      'vitalicio', 'vitalicio_pix', 'vitalicio_promocional', 'vitalicio_promocional_pix', 'vitalicio_89_pix',
       'anual', 'anual_pix', 'anual_regular_pix',
       'promocao'
     ];
@@ -278,7 +278,7 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     const isCreditCard = !!creditCard;
-    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix';
+    const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'vitalicio_promocional' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix';
     const isPixPlan = plan === 'vitalicio_pix' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'mensal_pix' || plan === 'promocao';
     const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
     const isInstallment = installmentCount && installmentCount > 1;
@@ -292,9 +292,9 @@ Deno.serve(async (req) => {
       let maxInstallments = 1;
       let planDescription = 'Direito Prime Anual';
 
-      if (plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix') {
+      if (plan === 'vitalicio_promocional' || plan === 'vitalicio_promocional_pix' || plan === 'vitalicio_89_pix') {
         baseValue = 89.90;
-        maxInstallments = 1;
+        maxInstallments = (plan === 'vitalicio_promocional') ? 4 : 1;
         planDescription = 'Direito Prime Vitalício Promocional';
       } else if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
         baseValue = 149.90;

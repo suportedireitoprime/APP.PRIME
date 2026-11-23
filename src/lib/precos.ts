@@ -5,6 +5,7 @@ export const PRECO_VITALICIO = 149.9;
 export const PRECO_VITALICIO_PROMOCIONAL = 89.9;
 export const MAX_PARCELAS_ANUAL = 6;
 export const MAX_PARCELAS_VITALICIO = 6;
+export const MAX_PARCELAS_VITALICIO_PROMOCIONAL = 4;
 
 // Juros de parcelamento repassados ao cliente (taxa Asaas + antecipação), por nº de parcelas.
 export const JUROS_PARCELA: Record<number, number> = {
@@ -23,6 +24,7 @@ export type PlanoCheckout =
   | 'anual_regular_pix'
   | 'vitalicio'
   | 'vitalicio_pix'
+  | 'vitalicio_promocional'
   | 'vitalicio_promocional_pix'
   | 'vitalicio_89_pix';
 
@@ -33,22 +35,27 @@ export const PLANOS_VALIDOS: PlanoCheckout[] = [
   'anual_regular_pix',
   'vitalicio',
   'vitalicio_pix',
+  'vitalicio_promocional',
   'vitalicio_promocional_pix',
   'vitalicio_89_pix',
 ];
 
+export const isVitalicioPromocional = (p: string | null | undefined) =>
+  p === 'vitalicio_promocional' ||
+  p === 'vitalicio_promocional_pix' ||
+  p === 'vitalicio_89_pix';
+
 export const isVitalicio = (p: string | null | undefined) =>
   p === 'vitalicio' ||
   p === 'vitalicio_pix' ||
-  p === 'vitalicio_promocional_pix' ||
-  p === 'vitalicio_89_pix';
+  isVitalicioPromocional(p);
 
 export const isAnual = (p: string | null | undefined) => p === 'anual' || p === 'anual_regular_pix';
 export const isMensal = (p: string | null | undefined) => p === 'mensal' || p === 'mensal_pix';
 
 export function precoBase(plano: string): number {
   if (!PLANOS_VALIDOS.includes(plano as PlanoCheckout)) throw new Error('Plano inválido');
-  if (plano === 'vitalicio_promocional_pix' || plano === 'vitalicio_89_pix') return PRECO_VITALICIO_PROMOCIONAL;
+  if (isVitalicioPromocional(plano)) return PRECO_VITALICIO_PROMOCIONAL;
   if (isVitalicio(plano)) return PRECO_VITALICIO;
   if (isAnual(plano)) return PRECO_ANUAL;
   return PRECO_MENSAL;

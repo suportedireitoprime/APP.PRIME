@@ -10,15 +10,17 @@ interface TelaPosTrialViewProps {
   onVoltar?: () => void;
   isLabMode?: boolean;
   alunoNomeSimulado?: string;
+  canDismiss?: boolean;
 }
 
 export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
   onVoltar,
   isLabMode = false,
   alunoNomeSimulado,
+  canDismiss = false,
 }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const nomeAluno = alunoNomeSimulado || 
     user?.user_metadata?.full_name?.split(' ')[0] || 
@@ -27,17 +29,22 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
 
   const handleVerPlanos = () => {
     try { haptic.impact('medium'); } catch {}
-    if (onVoltar) {
-      onVoltar();
-    }
     navigate('/assinatura');
+  };
+
+  const handleSignOut = async () => {
+    try { haptic.selection(); } catch {}
+    try {
+      await signOut();
+    } catch {}
+    navigate('/auth');
   };
 
   return (
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto"
       onClick={(e) => {
-        if (e.target === e.currentTarget && onVoltar) {
+        if (canDismiss && e.target === e.currentTarget && onVoltar) {
           onVoltar();
         }
       }}
@@ -75,8 +82,8 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </div>
       )}
 
-      {/* ── BOTÃO DE FECHAR QUANDO NÃO FOR MODO LAB (COM SAFE AREA INSETS) ── */}
-      {onVoltar && !isLabMode && (
+      {/* ── BOTÃO DE FECHAR QUANDO NÃO FOR MODO LAB (SOMENTE SE CAN DISMISS) ── */}
+      {canDismiss && onVoltar && !isLabMode && (
         <button
           type="button"
           onClick={onVoltar}
@@ -124,7 +131,7 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
         </p>
 
         {/* Botão Ver Planos com Animação de Reflexo Contínuo */}
-        <div className="pt-2">
+        <div className="pt-2 flex flex-col items-center gap-3">
           <button
             type="button"
             onClick={handleVerPlanos}
@@ -141,6 +148,14 @@ export const TelaPosTrialView: React.FC<TelaPosTrialViewProps> = ({
                 animation: 'shimmer-reflect-loop 2.4s ease-out infinite'
               }}
             />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="text-xs text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer py-1"
+          >
+            Trocar de conta ou sair
           </button>
         </div>
 

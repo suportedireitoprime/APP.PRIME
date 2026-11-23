@@ -14,13 +14,28 @@ describe('preços de assinatura', () => {
     expect(PRECO_ANUAL).toBe(89.9);
   });
 
-  it('vitalício custa 149,90 no padrão e 89,90 na promoção Pix', () => {
+  it('vitalício custa 149,90 no padrão e 89,90 na promoção Pix ou Cartão', () => {
     expect(precoBase('vitalicio')).toBe(149.9);
     expect(precoBase('vitalicio_pix')).toBe(149.9);
     expect(PRECO_VITALICIO).toBe(149.9);
+    expect(precoBase('vitalicio_promocional')).toBe(89.9);
     expect(precoBase('vitalicio_promocional_pix')).toBe(89.9);
     expect(precoBase('vitalicio_89_pix')).toBe(89.9);
     expect(PRECO_VITALICIO_PROMOCIONAL).toBe(89.9);
+  });
+
+  it('vitalício promocional parcela em até 4x com juros', () => {
+    const p1 = parcelamento(1, PRECO_VITALICIO_PROMOCIONAL, 4);
+    expect(p1.parcelas).toBe(1);
+    expect(p1.total).toBe(89.9);
+
+    const p4 = parcelamento(4, PRECO_VITALICIO_PROMOCIONAL, 4);
+    expect(p4.parcelas).toBe(4);
+    expect(p4.total).toBe(99.61);
+    expect(p4.parcela).toBe(24.9);
+
+    // Limitado a 4x se passar número maior
+    expect(parcelamento(6, PRECO_VITALICIO_PROMOCIONAL, 4).parcelas).toBe(4);
   });
 
   it('promoções e planos inexistentes disparam erro', () => {

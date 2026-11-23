@@ -1736,6 +1736,9 @@ export function AdminHojeCards() {
           }
           if (!cur.avatar_url && r.avatar_url) cur.avatar_url = r.avatar_url;
           if (!cur.logsCheckout && r.logsCheckout) cur.logsCheckout = r.logsCheckout;
+          if (!cur.checkoutStatus && r.checkoutStatus) cur.checkoutStatus = r.checkoutStatus;
+          if (!cur.checkoutStatusLabel && r.checkoutStatusLabel) cur.checkoutStatusLabel = r.checkoutStatusLabel;
+          if (!cur.checkoutDetalhes && r.checkoutDetalhes) cur.checkoutDetalhes = r.checkoutDetalhes;
           if (r.is_premium) cur.is_premium = true;
           if (!cur.user_id && r.user_id) cur.user_id = r.user_id;
         }
@@ -1768,6 +1771,9 @@ export function AdminHojeCards() {
           created_at: r.created_at || cached?.created_at,
           faixaEtaria: r.faixa_etaria || cached?.faixaEtaria,
           logsCheckout: r.logsCheckout || cached?.logsCheckout,
+          checkoutStatus: r.checkoutStatus || cached?.checkoutStatus,
+          checkoutStatusLabel: r.checkoutStatusLabel || cached?.checkoutStatusLabel,
+          checkoutDetalhes: r.checkoutDetalhes || cached?.checkoutDetalhes,
         };
       }).filter((r) => {
         // NUNCA exibe administradores em nenhuma lista de usuários
@@ -2041,7 +2047,7 @@ export function AdminHojeCards() {
   const openCard = useCallback((id: CardId) => {
     setOpen(id);
     if (id === 'online' || id === 'online5m') {
-      setFiltroUser('todos');
+      setFiltroUser('gratuitos');
     }
     const hoje = getHojeBrasilia();
     // Ao abrir o card, limpa o indicador de novas notificações
@@ -2393,7 +2399,9 @@ export function AdminHojeCards() {
                         : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    {t === 'gratuitos' ? 'Gratuitos' : t === 'assinantes' ? 'Assinantes' : 'Todos'}
+                    {t === 'gratuitos' && `Gratuitos (${rows.filter(r => !r.isPremium && !r.isAdmin).length})`}
+                    {t === 'assinantes' && `Assinantes (${rows.filter(r => r.isPremium).length})`}
+                    {t === 'todos' && `Todos (${rows.length})`}
                   </button>
                 ))}
               </div>

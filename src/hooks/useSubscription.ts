@@ -175,13 +175,14 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         trialRemainingMs: 0,
       };
     }
-    const initialTrial = calcTrial(user?.created_at);
+    const cachedCreatedAt = user?.created_at || (user?.id && typeof localStorage !== 'undefined' ? localStorage.getItem(`direitoprime:user_created_at:${user.id}`) : null);
+    const initialTrial = calcTrial(cachedCreatedAt);
     return {
       isPremium: initialTrial.inTrial,
       loading: true,
       plano: initialTrial.inTrial ? 'trial_3dias' : null,
       expiresAt: initialTrial.trialExpiresAt,
-      startedAt: user?.created_at ?? null,
+      startedAt: cachedCreatedAt ?? null,
       source: null,
       status: initialTrial.inTrial ? 'TRIAL_ACTIVE' : (initialTrial.trialExpired ? 'TRIAL_EXPIRED' : null),
       isAdminOverride: false,
@@ -295,7 +296,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           supabase.from('play_subscriptions').select('product_id, status, expires_at, created_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time, created_at').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at, created_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE', 'CANCELED']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
-          supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle(),
+          supabase.from('profiles').select('is_premium, created_at').eq('id', user.id).maybeSingle(),
           supabase.from('legacy_subscribers' as any).select('tipo, expires_at, created_at').or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`).limit(1).maybeSingle(),
         ]);
         console.log(`[useSubscription] queries paralelas: ${(performance.now() - _t0).toFixed(0)}ms`);
@@ -380,6 +381,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         const userCreatedAt = user.created_at || (profileRes.data as any)?.created_at;
+        if (userCreatedAt && typeof localStorage !== 'undefined' && user?.id) {
+          try { localStorage.setItem(`direitoprime:user_created_at:${user.id}`, userCreatedAt); } catch {}
+        }
         const trial = calcTrial(userCreatedAt);
 
         // Usuário com cancelamento ativo
@@ -448,7 +452,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           loading: false,
           plano: null,
           expiresAt: null,
-          startedAt: null,
+          startedAt: userCreatedAt ?? null,
           source: null,
           status: trial.trialExpired ? 'TRIAL_EXPIRED' : null,
           isAdminOverride: false,

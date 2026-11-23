@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, PRECO_VITALICIO_PROMOCIONAL, MAX_PARCELAS_ANUAL, MAX_PARCELAS_VITALICIO, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, PRECO_VITALICIO_PROMOCIONAL, MAX_PARCELAS_ANUAL, MAX_PARCELAS_VITALICIO, MAX_PARCELAS_VITALICIO_PROMOCIONAL, parcelamento, brl, isAnual, isVitalicio, isVitalicioPromocional, type PlanoCheckout } from '@/lib/precos';
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -167,17 +167,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     activePlan === 'vitalicio_promocional_pix' ||
     activePlan === 'vitalicio_89_pix';
 
-  const isOnlyPix = activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix';
+  const isOnlyPix = false;
 
   useEffect(() => {
-    const max = isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
+    const max = isVitalicioPromocional(activePlan)
+      ? MAX_PARCELAS_VITALICIO_PROMOCIONAL
+      : isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
     if (installmentCount > max) setInstallmentCount(max);
   }, [installmentCount, activePlan]);
 
   const getInstallmentDetails = (num: number) => {
-    const precoBase = isVitalicio(activePlan) ? PRECO_VITALICIO : PRECO_ANUAL;
-    const max = isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
-    const { total, parcela, parcelas } = parcelamento(num, precoBase, max);
+    const preco = isVitalicioPromocional(activePlan)
+      ? PRECO_VITALICIO_PROMOCIONAL
+      : isVitalicio(activePlan) ? PRECO_VITALICIO : PRECO_ANUAL;
+    const max = isVitalicioPromocional(activePlan)
+      ? MAX_PARCELAS_VITALICIO_PROMOCIONAL
+      : isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL;
+    const { total, parcela, parcelas } = parcelamento(num, preco, max);
     return {
       total,
       installmentValue: parcela,
@@ -742,8 +748,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const getPlanInfo = () => {
-    if (activePlan === 'vitalicio_promocional_pix' || activePlan === 'vitalicio_89_pix') {
-      return { title: 'Plano Vitalício Promocional', price: brl(PRECO_VITALICIO_PROMOCIONAL), sub: 'pagamento único no PIX' };
+    if (isVitalicioPromocional(activePlan)) {
+      return {
+        title: 'Plano Vitalício Promocional',
+        price: brl(PRECO_VITALICIO_PROMOCIONAL),
+        sub: isPix ? 'pagamento único no PIX' : 'em até 4x no cartão'
+      };
     }
     if (activePlan === 'mensal' || activePlan === 'mensal_pix') return { title: 'Plano Mensal', price: brl(PRECO_MENSAL), sub: '/ mês' };
     if (isAnual(activePlan)) return { title: 'Plano Anual', price: brl(PRECO_ANUAL), sub: '/ ano' };
@@ -787,7 +797,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl text-center">
                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">
-                  {isPix ? 'PAGAMENTO VIA PIX (SEM CEP)' : ((activePlan.includes('anual') || activePlan.startsWith('vitalicio')) ? 'PARCELAMENTO EM ATÉ 6X NO CARTÃO' : 'ASSINATURA MENSAL')}
+                  {isPix
+                    ? 'PAGAMENTO VIA PIX (SEM CEP)'
+                    : (isVitalicioPromocional(activePlan)
+                        ? 'PARCELAMENTO EM ATÉ 4X NO CARTÃO'
+                        : ((activePlan.includes('anual') || activePlan.startsWith('vitalicio')) ? 'PARCELAMENTO EM ATÉ 6X NO CARTÃO' : 'ASSINATURA MENSAL'))}
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1 uppercase">
                   {planInfo.title}
@@ -816,7 +830,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <button
                     type="button"
                     onClick={() => {
-                      if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio_pix');
+                      if (isVitalicioPromocional(activePlan)) setActivePlan('vitalicio_promocional_pix');
+                      else if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio_pix');
                       else if (activePlan.includes('anual')) setActivePlan('anual_regular_pix');
                       else setActivePlan('mensal_pix');
                     }}
@@ -832,7 +847,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <button
                     type="button"
                     onClick={() => {
-                      if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio');
+                      if (isVitalicioPromocional(activePlan)) setActivePlan('vitalicio_promocional');
+                      else if (activePlan.startsWith('vitalicio')) setActivePlan('vitalicio');
                       else if (activePlan.includes('anual')) setActivePlan('anual');
                       else setActivePlan('mensal');
                     }}
@@ -912,7 +928,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={handleFocus}
                             className="w-full h-12 rounded-xl bg-black/80 border border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary font-black px-3.5 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer shadow-inner"
                           >
-                            {Array.from({ length: isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
+                            {Array.from({ length: isVitalicioPromocional(activePlan) ? MAX_PARCELAS_VITALICIO_PROMOCIONAL : (isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL) }, (_, idx) => idx + 1).map(num => {
                               const details = getInstallmentDetails(num);
                               return (
                                 <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
@@ -1155,7 +1171,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                             className="w-full h-12 rounded-xl bg-black/60 border border-white/20 focus:border-primary focus:ring-1 focus:ring-primary font-bold px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer"
                           >
-                          {Array.from({ length: isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL }, (_, idx) => idx + 1).map(num => {
+                          {Array.from({ length: isVitalicioPromocional(activePlan) ? MAX_PARCELAS_VITALICIO_PROMOCIONAL : (isVitalicio(activePlan) ? MAX_PARCELAS_VITALICIO : MAX_PARCELAS_ANUAL) }, (_, idx) => idx + 1).map(num => {
                             const details = getInstallmentDetails(num);
                             return (
                               <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">

@@ -195,7 +195,7 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
             </h1>
 
             <p className="text-xs sm:text-[13.5px] text-zinc-300/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
-              Pague apenas uma única vez no Pix. Tenha acesso completo e ilimitado para toda a vida, sem mensalidades.
+              No Pix à vista ou em até 4x no cartão. Tenha acesso completo e ilimitado para toda a vida, sem mensalidades.
             </p>
 
             {/* Aviso Sutil de Condição Promocional em Linha Única */}
@@ -245,7 +245,7 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
                     {brl(PRECO_VITALICIO_PROMOCIONAL)}
                   </span>
                   <span className="font-display text-xs sm:text-sm font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap">
-                    pagamento único no Pix
+                    no Pix ou até 4x no cartão
                   </span>
                 </div>
               </div>
@@ -270,7 +270,7 @@ export function AssinaturaVitaliciaView({ onSuccess, onVoltar }: AssinaturaVital
             </Button>
             <div className="flex items-center justify-center gap-1.5 text-xs text-zinc-400 font-medium pt-0.5">
               <ShieldCheck className="w-4 h-4 text-rose-500" />
-              <span>Liberação imediata</span>
+              <span>Liberação imediata • Pix ou até 4x no cartão</span>
             </div>
           </div>
         </div>
