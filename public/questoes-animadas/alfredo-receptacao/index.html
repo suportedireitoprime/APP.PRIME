@@ -20,7 +20,7 @@
         }
       }
       *{ box-sizing:border-box; }
-      html,body{ margin:0; padding:0; }
+      html,body{ margin:0; padding:0; width:100%; max-width:100%; overflow-x:hidden; background:#0a1120; }
       body{
         background:
           radial-gradient(1100px 500px at 50% -120px, rgba(255,180,0,.14), rgba(255,180,0,0) 60%),
@@ -29,37 +29,33 @@
         font-family:"Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing:antialiased;
       }
-      button{ font:inherit; cursor:pointer; min-height:48px; }
+      button{ font:inherit; cursor:pointer; min-height:44px; }
       button:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
 
-      /* Mobile First: expansão total 100% de ponta a ponta sem bordas grossas */
+      /* Mobile First: ZERO margens laterais, 100% largura e proporcionalidade perfeita (9:16) */
       .wrap{
         width:100%; max-width:100%; margin:0 auto; padding:0 0 calc(12px + env(safe-area-inset-bottom, 0px));
-        display:flex; flex-direction:column; gap:0; min-height:100dvh;
+        display:flex; flex-direction:column; gap:0; min-height:100%; overflow-x:hidden;
       }
       .stagebox{
-        position:relative; width:100%; aspect-ratio:9/16;
-        max-height:min(74dvh, calc(100dvh - 180px)); margin:0 auto;
-        border-radius:0; overflow:hidden; background:#101c34;
-        box-shadow:none; border:none;
+        position:relative; width:100% !important; max-width:100% !important;
+        aspect-ratio:9/16; margin:0 !important; padding:0;
+        border-radius:0; overflow:hidden; background:#0e2138;
+        box-shadow:none; border:none !important;
         touch-action:manipulation;
-      }
-      @media (min-aspect-ratio: 9/16){
-        .stagebox{ width:auto; height:min(74dvh, calc(100dvh - 180px)); }
       }
       @media (min-width: 641px){
         .wrap{
-          max-width:480px; margin:0 auto; padding:12px 12px 30px; gap:12px; min-height:auto;
+          max-width:440px; margin:0 auto; padding:12px 0 24px; gap:8px;
         }
         .stagebox{
-          border-radius:18px; border:2.5px solid var(--navy);
-          box-shadow:var(--shadow), 0 2px 0 rgba(255,255,255,.35) inset, 0 0 0 1px rgba(10,25,55,.25);
-          max-height:min(78dvh, 760px);
+          border-radius:18px !important; border:2px solid var(--navy) !important;
+          box-shadow:var(--shadow), 0 2px 0 rgba(255,255,255,.35) inset, 0 0 0 1px rgba(10,25,55,.25) !important;
         }
         .timeline{ border-radius:14px !important; border:1.5px solid var(--line) !important; }
         .controls{ border-radius:14px !important; border:2px solid var(--line) !important; margin-top:0 !important; }
       }
-      canvas#stage{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+      canvas#stage{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
       .bigplay{
         position:absolute; inset:0; display:flex; flex-direction:column; gap:14px;
         align-items:center; justify-content:center; border:0; cursor:pointer;
@@ -120,10 +116,10 @@
          porque a sincronia do brilho/seta usa a mesma legenda. */
       .caption{ display:none; }
       .timeline{
-        position:sticky; top:0; z-index:30;
+        position:sticky; top:0; z-index:30; width:100%; max-width:100%; box-sizing:border-box;
         background:var(--panel); border:none; border-bottom:1.5px solid var(--line); border-radius:0;
-        padding:8px 12px 8px; box-shadow:0 4px 18px rgba(10,25,55,.16);
-        display:flex; flex-direction:column; gap:6px;
+        padding:6px 10px 8px; box-shadow:0 4px 18px rgba(10,25,55,.16);
+        display:flex; flex-direction:column; gap:5px;
       }
       .tl-head{ display:flex; align-items:baseline; gap:10px; }
       .tl-kicker{ flex:none; font-size:11px; font-weight:900; letter-spacing:1.1px; text-transform:uppercase; color:#9a6a00; }
@@ -155,21 +151,23 @@
       .chap.cur{ background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 10px rgba(10,25,55,.3); }
       .chap .n{ flex:none; background:var(--accent); color:#14213a; border-radius:50%; width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; }
       .controls{
+        width:100%; max-width:100%; box-sizing:border-box; overflow-x:hidden;
         background:var(--panel); border:none; border-top:1.5px solid var(--line); border-radius:0;
-        padding:10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 18px rgba(10,25,55,.12);
+        padding:8px 10px calc(14px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 18px rgba(10,25,55,.12);
         display:flex; flex-direction:column; gap:8px; margin-top:auto;
       }
-      .btnrow{ display:flex; gap:8px; }
+      .btnrow{ display:flex; gap:6px; width:100%; box-sizing:border-box; }
       .btn{
         border:2px solid var(--line); background:var(--chip); color:var(--ink);
-        border-radius:12px; padding:10px 14px; font-weight:800; font-size:15px; min-height:48px;
-        display:inline-flex; align-items:center; gap:8px; justify-content:center;
+        border-radius:12px; padding:8px 8px; font-weight:800; font-size:13.5px; min-height:44px;
+        display:inline-flex; align-items:center; gap:6px; justify-content:center;
         transition:transform .08s, filter .15s, background .15s;
+        box-sizing:border-box; white-space:nowrap; flex:1; min-width:0;
       }
       .btn:hover{ filter:brightness(1.05); }
       .btn:active{ transform:translateY(1px) scale(.985); }
-      .btn svg{ width:20px; height:20px; flex:none; }
-      .btn.primary{ background:var(--accent); border-color:#8a5f00; color:var(--accent-ink); flex:1; font-size:17px; box-shadow:0 3px 0 #b97e00; }
+      .btn svg{ width:18px; height:18px; flex-shrink:0; }
+      .btn.primary{ background:var(--accent); border-color:#8a5f00; color:var(--accent-ink); flex:1.6; font-size:15px; box-shadow:0 3px 0 #b97e00; }
       .btn.primary:active{ box-shadow:0 1px 0 #b97e00; }
       .btn[aria-pressed="false"] .onI{ display:none; }
       .btn[aria-pressed="true"] .offI{ display:none; }
