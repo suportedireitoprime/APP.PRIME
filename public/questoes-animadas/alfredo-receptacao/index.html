@@ -29,22 +29,35 @@
         font-family:"Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing:antialiased;
       }
-      button{ font:inherit; cursor:pointer; min-height:44px; }
+      button{ font:inherit; cursor:pointer; min-height:48px; }
       button:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+      /* Mobile First: expansão total 100% de ponta a ponta sem bordas grossas */
       .wrap{
-        max-width:460px; margin:0 auto; padding:12px 10px 30px;
-        display:flex; flex-direction:column; gap:12px;
+        width:100%; max-width:100%; margin:0 auto; padding:0 0 calc(12px + env(safe-area-inset-bottom, 0px));
+        display:flex; flex-direction:column; gap:0; min-height:100dvh;
       }
       .stagebox{
         position:relative; width:100%; aspect-ratio:9/16;
-        max-height:min(78dvh, 760px); margin:0 auto;
-        border-radius:20px; overflow:hidden; background:#1b2b52;
-        box-shadow:var(--shadow), 0 2px 0 rgba(255,255,255,.35) inset, 0 0 0 1px rgba(10,25,55,.25);
-        border:3px solid var(--navy);
+        max-height:min(74dvh, calc(100dvh - 180px)); margin:0 auto;
+        border-radius:0; overflow:hidden; background:#101c34;
+        box-shadow:none; border:none;
         touch-action:manipulation;
       }
       @media (min-aspect-ratio: 9/16){
-        .stagebox{ width:auto; height:min(78dvh,760px); }
+        .stagebox{ width:auto; height:min(74dvh, calc(100dvh - 180px)); }
+      }
+      @media (min-width: 641px){
+        .wrap{
+          max-width:480px; margin:0 auto; padding:12px 12px 30px; gap:12px; min-height:auto;
+        }
+        .stagebox{
+          border-radius:18px; border:2.5px solid var(--navy);
+          box-shadow:var(--shadow), 0 2px 0 rgba(255,255,255,.35) inset, 0 0 0 1px rgba(10,25,55,.25);
+          max-height:min(78dvh, 760px);
+        }
+        .timeline{ border-radius:14px !important; border:1.5px solid var(--line) !important; }
+        .controls{ border-radius:14px !important; border:2px solid var(--line) !important; margin-top:0 !important; }
       }
       canvas#stage{ position:absolute; inset:0; width:100%; height:100%; display:block; }
       .bigplay{
@@ -107,10 +120,10 @@
          porque a sincronia do brilho/seta usa a mesma legenda. */
       .caption{ display:none; }
       .timeline{
-        position:sticky; top:8px; z-index:30;
-        background:var(--panel); border:1.5px solid var(--line); border-radius:14px;
-        padding:10px 12px 11px; box-shadow:0 8px 22px rgba(10,25,55,.13);
-        display:flex; flex-direction:column; gap:8px;
+        position:sticky; top:0; z-index:30;
+        background:var(--panel); border:none; border-bottom:1.5px solid var(--line); border-radius:0;
+        padding:8px 12px 8px; box-shadow:0 4px 18px rgba(10,25,55,.16);
+        display:flex; flex-direction:column; gap:6px;
       }
       .tl-head{ display:flex; align-items:baseline; gap:10px; }
       .tl-kicker{ flex:none; font-size:11px; font-weight:900; letter-spacing:1.1px; text-transform:uppercase; color:#9a6a00; }
@@ -124,11 +137,6 @@
         font-size:11px; font-weight:800; letter-spacing:.9px; text-transform:uppercase;
         color:var(--ink2); margin-top:1px;
       }
-      /* CARROSSEL DE MOMENTOS NO TOPO (pedido do Timothy, 22/11/2026):
-         os capítulos viraram um carrossel horizontal junto da linha
-         do tempo, no topo: ele rola sozinho conforme a cena anda,
-         com o momento atual destacado no centro. A lista de baixo
-         do palco saiu. */
       .chaps{
         display:flex; gap:6px; overflow-x:auto; overflow-y:hidden;
         padding:2px 1px 5px; scroll-snap-type:x proximity;
@@ -147,13 +155,14 @@
       .chap.cur{ background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 10px rgba(10,25,55,.3); }
       .chap .n{ flex:none; background:var(--accent); color:#14213a; border-radius:50%; width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; }
       .controls{
-        background:var(--panel); border:2px solid var(--line); border-radius:14px;
-        padding:10px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+        background:var(--panel); border:none; border-top:1.5px solid var(--line); border-radius:0;
+        padding:10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -4px 18px rgba(10,25,55,.12);
+        display:flex; flex-direction:column; gap:8px; margin-top:auto;
       }
       .btnrow{ display:flex; gap:8px; }
       .btn{
         border:2px solid var(--line); background:var(--chip); color:var(--ink);
-        border-radius:12px; padding:8px 14px; font-weight:800; font-size:15px;
+        border-radius:12px; padding:10px 14px; font-weight:800; font-size:15px; min-height:48px;
         display:inline-flex; align-items:center; gap:8px; justify-content:center;
         transition:transform .08s, filter .15s, background .15s;
       }
@@ -168,7 +177,7 @@
       .progress > div{ height:100%; width:0%; background:linear-gradient(90deg,#ffb400,#ffcf3f); transition:width .2s linear; border-radius:99px; }
       .ptime{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink2); font-weight:700; }
 
-      .note{ font-size:13px; color:var(--ink2); line-height:1.5; margin:2px 2px 0; }
+      .note{ font-size:12px; color:var(--ink2); line-height:1.45; margin:4px 12px 8px; text-align:center; }
       .note b{ color:var(--ink); }
       @media (prefers-reduced-motion: reduce){
         .bigplay .circ, .endcard, .pausebadge{ animation:none; }
@@ -180,51 +189,53 @@
         --qnavy:#0d1b2e; --qnavy2:#12263f; --qgold:#ffb400; --qgold2:#ffcf4d;
         --qink:#f2f5f9; --qink2:#aebdd0; --qcard:#132a45; --qline:#274a6e;
         --qgreen:#1d9e63; --qred:#d92b3a;
-        position:absolute; inset:0; background:#0e2138; color:var(--qink); z-index:30;
-        transform:translateY(103%); transition:transform .65s cubic-bezier(.22,.9,.3,1);
-        display:flex; flex-direction:column; padding:6px 9px 4px; overflow-y:auto;
+        position:absolute; inset:0; background:#0e2138; color:var(--qink); z-index:40;
+        transform:translateY(103%); transition:transform .45s cubic-bezier(.22,.9,.3,1);
+        display:flex; flex-direction:column; padding:12px 14px calc(24px + env(safe-area-inset-bottom, 0px)); overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
       }
       .quiz.show{ transform:translateY(0); }
       .quiz[hidden]{ display:none; }
       .quiz.arming .qalt{ opacity:.45; pointer-events:none; }
       .quiz-origin{
-        background:var(--qnavy2); border:2px solid var(--qgold); border-radius:14px; padding:5px 9px; margin-bottom:4px; text-align:center;
+        background:var(--qnavy2); border:2px solid var(--qgold); border-radius:14px; padding:8px 12px; margin-bottom:8px; text-align:center;
       }
       .quiz-origin .org-oab{
         display:inline-block; background:var(--qgold); color:#231a00; font-weight:900; letter-spacing:1.5px;
-        font-size:12.5px; padding:2px 10px; border-radius:8px; margin-bottom:4px;
+        font-size:13px; padding:3px 12px; border-radius:8px; margin-bottom:4px;
       }
-      .quiz-origin .org-main{ font-size:13px; font-weight:800; line-height:1.28; }
-      .quiz-origin .org-meta{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:4px; }
-      .quiz-origin .org-meta span{ background:#1d3a5c; border:1px solid var(--qline); color:var(--qink); font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; }
+      .quiz-origin .org-main{ font-size:13.5px; font-weight:800; line-height:1.3; }
+      .quiz-origin .org-meta{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+      .quiz-origin .org-meta span{ background:#1d3a5c; border:1px solid var(--qline); color:var(--qink); font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
       .quiz-origin .org-meta span.org-q{ background:#fff; color:var(--qnavy); }
-      .quiz-k{ font-size:10.5px; font-weight:800; letter-spacing:1px; color:var(--qink2); text-align:center; margin-bottom:3px; }
-      .quiz-en{ font-size:11.6px; line-height:1.28; font-weight:600; margin:0 0 4px; }
+      .quiz-k{ font-size:11px; font-weight:900; letter-spacing:1.2px; color:var(--qgold2); text-align:center; margin-bottom:6px; }
+      .quiz-en{ font-size:12.8px; line-height:1.45; font-weight:500; margin:0 0 10px; color:#e6eef8; }
       .qalt{
-        display:flex; gap:9px; align-items:flex-start; width:100%; text-align:left; cursor:pointer;
-        background:#16304e; border:2px solid var(--qline); color:var(--qink); border-radius:12px;
-        padding:6px 9px; margin:0 0 4px; font-size:11.4px; line-height:1.25; font-weight:600; min-height:44px;
+        display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left; cursor:pointer;
+        background:#16304e; border:2px solid var(--qline); color:var(--qink); border-radius:14px;
+        padding:10px 12px; margin:0 0 8px; font-size:12.6px; line-height:1.35; font-weight:600; min-height:48px;
+        transition:transform .08s, background .15s, border-color .15s;
       }
       .qalt .let{
-        flex:none; width:24px; height:24px; border-radius:50%; background:#1d3a5c; color:var(--qgold2);
-        display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12.5px; margin-top:1px;
+        flex:none; width:26px; height:26px; border-radius:50%; background:#1d3a5c; color:var(--qgold2);
+        display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; margin-top:1px;
       }
-      .qalt:active{ transform:translateY(1px); }
+      .qalt:active{ transform:translateY(1px) scale(0.99); }
       .qalt.picked-ok{ border-color:var(--qgreen); background:rgba(29,158,99,.22); }
       .qalt.picked-no{ border-color:var(--qred); background:rgba(217,43,58,.18); }
       .qalt.reveal-ok{ border-color:var(--qgreen); }
-      .quiz-status{ font-size:11px; color:var(--qink2); font-weight:700; text-align:center; margin:0 0 3px; line-height:1.32; }
+      .quiz-status{ font-size:11.5px; color:var(--qink2); font-weight:700; text-align:center; margin:0 0 6px; line-height:1.35; }
       .quiz-listen{
         display:flex; align-items:center; gap:9px; justify-content:center; width:100%;
         background:var(--qcard); border:1.5px solid var(--qline); color:var(--qink); border-radius:12px;
-        padding:6px; font-size:12px; font-weight:800; cursor:pointer; min-height:38px; margin-top:0;
+        padding:8px; font-size:12.5px; font-weight:800; cursor:pointer; min-height:44px; margin-top:2px;
       }
       .quiz-listen svg{ width:20px; height:20px; flex:none; }
-      .quiz-fb{ border-radius:12px; padding:7px 11px; font-weight:800; font-size:13px; line-height:1.35; margin:4px 0 2px; }
+      .quiz-fb{ border-radius:12px; padding:9px 12px; font-weight:800; font-size:13.5px; line-height:1.4; margin:6px 0 4px; }
       .quiz-fb.ok{ background:rgba(29,158,99,.18); color:#7dffb0; border:2px solid var(--qgreen); }
       .quiz-fb.no{ background:rgba(217,43,58,.15); color:#ff9d9d; border:2px solid var(--qred); }
       .quiz-fb[hidden]{ display:none; }
-      .quiz-hint{ font-size:10.5px; color:var(--qink2); font-weight:600; text-align:center; margin:3px 0 0; line-height:1.4; }
+      .quiz-hint{ font-size:11px; color:var(--qink2); font-weight:600; text-align:center; margin:6px 0 0; line-height:1.4; }
     </style>
   </head>
   <body>
