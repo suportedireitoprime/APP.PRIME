@@ -12,6 +12,7 @@ import HeroAnimatedWave from "./HeroAnimatedWave";
 import HomeBrandBanner from "./HomeBrandBanner";
 import FloatingOrbitingBrains from "@/components/common/FloatingOrbitingBrains";
 import { HomeTrialCard } from "@/components/subscription/HomeTrialCard";
+import HomeActionShortcuts from "./HomeActionShortcuts";
 import { useUnreadNotifCount } from "@/components/vademecum/outros/NotificationsSheet";
 import { Bell, Menu as MenuIcon } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
@@ -85,7 +86,7 @@ const HomeHeaderHero = ({
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll — 100% idêntico ao Vade Mecum */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[225px] sm:min-h-[245px] pb-4 sm:pb-6"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] sm:min-h-[340px]"
         style={{
           transform: "translateZ(0)",
           backgroundColor: "#050505",
@@ -157,6 +158,11 @@ const HomeHeaderHero = ({
               <HomeTrialCard />
             </div>
           </div>
+        </div>
+
+        {/* Atalhos Rápidos — dentro do painel (alinhamento idêntico ao Vade Mecum) */}
+        <div className="relative z-10 px-3 sm:px-5 pt-2.5 pb-4 sm:pb-5">
+          <HomeActionShortcuts />
         </div>
       </div>
 

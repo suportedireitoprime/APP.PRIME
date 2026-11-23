@@ -7,7 +7,6 @@ import { toast } from '@/hooks/use-toast';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import HomeBoletinsList from './HomeBoletinsList';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
-import HomeActionShortcuts from '@/components/vademecum/home/HomeActionShortcuts';
 import HomePraticarCarousel from '@/components/vademecum/home/carousel/HomePraticarCarousel';
 import HomeAulasInterativasBanner from '@/components/vademecum/home/HomeAulasInterativasBanner';
 interface HomeTabEstudosProps {
@@ -45,19 +44,14 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* 1. Lista de funções e atalhos rápidos fora do painel */}
+      {/* Botão de Aulas Interativas abaixo do painel */}
       <div className="pt-2">
-        <HomeActionShortcuts />
+        <HomeAulasInterativasBanner />
       </div>
 
-      {/* 2. Carrossel Praticar */}
+      {/* Carrossel Praticar no topo */}
       <div>
         <HomePraticarCarousel />
-      </div>
-
-      {/* 3. Aulas Interativas abaixo do carrossel praticar */}
-      <div className="pt-1">
-        <HomeAulasInterativasBanner />
       </div>
 
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}

@@ -17,7 +17,7 @@ const HomeActionShortcuts = () => {
   const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="flex items-center justify-between gap-2 mx-0.5 bg-[#1C1C1E] backdrop-blur-md border border-white/10 rounded-[28px] sm:rounded-[32px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-xl">
+    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl">
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
