@@ -207,7 +207,7 @@ export default function AdminLaboratorioAulas() {
                   : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Layouts Home (10)
+              Layouts da Home
             </button>
             <button
               type="button"
@@ -274,7 +274,7 @@ export default function AdminLaboratorioAulas() {
         {/* ── GRID DE PROTÓTIPOS ULTRA-MINIMALISTAS ── */}
         <div className="space-y-3">
 
-          {/* ── 0. NOVO: ESTÚDIO DE LAYOUTS DA TELA DE INÍCIO (10 VERSÕES) ── */}
+          {/* ── 0. NOVO: ESTÚDIO DE LAYOUTS DA TELA DE INÍCIO ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'layouts') && (
             <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 via-zinc-900/60 to-zinc-900/40 p-4 transition-all hover:border-emerald-500/50 group relative overflow-hidden shadow-lg">
               <div className="absolute top-0 right-0 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -284,14 +284,14 @@ export default function AdminLaboratorioAulas() {
                     <Layers className="w-5 h-5" />
                   </div>
                   <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-emerald-400 uppercase font-bold">
-                    10 VERSÕES
+                    LAYOUTS
                   </span>
                 </div>
 
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
-                      NOVO · 10 VERSÕES
+                      NOVO · INTERATIVO
                     </span>
                     <span className="text-[11px] text-zinc-400 font-normal">
                       Tela de Início · Design Studio
@@ -304,7 +304,7 @@ export default function AdminLaboratorioAulas() {
                   </h3>
 
                   <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                    10 arquiteturas interativas e imersivas da Home (Central de Comando, Streaming Prime, Duolingo RPG, Leitor Clássico, Bento Grid, Daily Briefing e mais) com simulador de tela e seletor ativo.
+                    Arquiteturas interativas e imersivas da Home (Central de Comando, Streaming Prime, Duolingo RPG, Leitor Clássico, Bento Grid, Daily Briefing e mais) com simulador de tela e seletor ativo.
                   </p>
 
                   <div className="pt-2 flex items-center gap-2">

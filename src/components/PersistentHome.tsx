@@ -30,9 +30,8 @@ const PersistentHome = () => {
     }
   }, [location.pathname]);
 
-  // Só monta depois que a auth resolveu e temos usuário — evita rodar
-  // efeitos da Home no fluxo público (auth/landing/etc).
-  if (loading || !user) return null;
+  // Só monta depois que a auth resolveu (login desativado temporariamente)
+  if (loading) return null;
 
   // Se o usuário acabou de se cadastrar, a triagem vai assumir a tela.
   // Esconde a Home proativamente para evitar piscar antes do redirecionamento.

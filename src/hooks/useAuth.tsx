@@ -50,6 +50,26 @@ interface AuthContextType {
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
 }
 
+export const DEV_MOCK_USER: User = {
+  id: '00000000-0000-0000-0000-000000000001',
+  app_metadata: { provider: 'email' },
+  user_metadata: { name: 'Estudante OAB', full_name: 'Estudante OAB' },
+  aud: 'authenticated',
+  created_at: '2026-01-01T00:00:00.000Z',
+  email: 'wes@gmail.com',
+  role: 'authenticated',
+  updated_at: '2026-01-01T00:00:00.000Z',
+};
+
+export const DEV_MOCK_SESSION: Session = {
+  access_token: 'dev-mock-access-token',
+  refresh_token: 'dev-mock-refresh-token',
+  expires_in: 3600,
+  expires_at: Math.floor(Date.now() / 1000) + 3600,
+  token_type: 'bearer',
+  user: DEV_MOCK_USER,
+};
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
@@ -556,9 +576,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
+  // Tela de login desativada temporariamente conforme solicitação
+  const effectiveUser = user ?? DEV_MOCK_USER;
+  const effectiveSession = session ?? DEV_MOCK_SESSION;
+
   const contextValue = useMemo(() => ({
-    user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword
-  }), [user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword]);
+    user: effectiveUser,
+    session: effectiveSession,
+    loading: false,
+    signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword
+  }), [effectiveUser, effectiveSession, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword]);
 
   return (
     <AuthContext.Provider value={contextValue}>

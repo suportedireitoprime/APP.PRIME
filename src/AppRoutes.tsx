@@ -443,9 +443,12 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   }
 
 
+  // Tela de login desativada temporariamente:
+  /*
   if (!user) {
     return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
   }
+  */
 
   // Se a rota exige triagem concluída e o usuário ainda não possui confirmação em cache nem checagem finalizada,
   // exibe um container escuro mínimo temporário para não vazar a interface restrita antes da validação (Item 21).
@@ -721,8 +724,7 @@ function HomeGate() {
     // Sem tela preta com spinner: retorna null para que a tela nativa de splash ou fundo cubra isso.
     return null;
   }
-  if (!user) return <Navigate to="/auth" replace />;
-  // O PersistentHome já renderiza a Home para usuários logados.
+  // Tela de login desativada: O PersistentHome já renderiza a Home para todos.
   // Retornamos null aqui para evitar duplicação do Index no DOM.
   return null;
 }
@@ -822,8 +824,8 @@ function AnimatedRoutes() {
       <GlobalTrialGate />
       <Suspense fallback={<LazyFallback />}>
         <Routes>
-            <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-            <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
+            <Route path="/auth" element={<Navigate to="/" replace />} />
+            <Route path="/landing" element={<Navigate to="/" replace />} />
 
             <Route path="/ir/*" element={<SmartLink />} />
             <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />

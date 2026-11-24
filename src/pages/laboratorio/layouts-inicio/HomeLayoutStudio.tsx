@@ -93,7 +93,7 @@ export const HomeLayoutStudio: React.FC<HomeLayoutStudioProps> = ({ onVoltar }) 
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                  LABORATÓRIO · 10 VERSÕES
+                  LABORATÓRIO · DESIGN STUDIO
                 </span>
                 <span className="text-xs text-zinc-500 font-mono">Design Studio</span>
               </div>
