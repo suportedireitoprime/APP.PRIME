@@ -101,10 +101,8 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
       : ultimaLei.descricao || 'Consulte os artigos e jurisprudência'
     : 'Consulte a CF/88, Códigos, Estatutos e Súmulas';
 
-  const themeColor = useMemo(() => {
-    if (!ultimaLei) return '#059669';
-    return getLeiColor(ultimaLei.leiId, ultimaLei.tipo);
-  }, [ultimaLei]);
+  // Banner de Continuar Leitura em verde esmeralda alinhado à identidade visual do Vade Mecum
+  const themeColor = '#10b981';
 
   return (
     <motion.button
