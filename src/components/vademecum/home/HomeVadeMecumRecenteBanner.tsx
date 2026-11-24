@@ -1,7 +1,7 @@
 import { memo, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Scale, BookOpen, Landmark, Gavel, FileText, ArrowRight, LucideIcon } from 'lucide-react';
+import { Scale, BookOpen, Landmark, Gavel, FileText, ArrowRight, Play, Sparkles, LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { getRecentes, LeiRecente } from '@/lib/leisRecentes';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -111,61 +111,42 @@ const HomeVadeMecumRecenteBanner = ({ onOpenLei }: HomeVadeMecumRecenteBannerPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       onClick={handleClick}
-      style={{
-        background: `linear-gradient(135deg, ${themeColor}26 0%, rgba(18, 18, 22, 0.94) 55%, rgba(10, 10, 12, 0.98) 100%)`,
-        borderColor: `${themeColor}40`,
-        boxShadow: `0 12px 32px rgba(0,0,0,0.7), inset 0 1px 0 ${themeColor}30`,
-      }}
-      className="w-full flex items-center gap-2.5 xs:gap-3 px-3 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 rounded-xl xs:rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative group cursor-pointer backdrop-blur-md"
+      className="w-full max-w-lg mx-auto bg-zinc-900/90 hover:bg-zinc-900 border border-emerald-500/30 hover:border-emerald-500/60 p-1.5 pl-2.5 pr-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_15px_rgba(16,185,129,0.18)] flex items-center justify-between backdrop-blur-xl group cursor-pointer transition-all active:scale-[0.98] relative overflow-hidden"
     >
-      {/* Ícone principal à esquerda — sem caixa de fundo, 100% limpo */}
-      <div className="flex items-center justify-center shrink-0 z-10">
-        <IconeLei
-          className="w-6 h-6 xs:w-6.5 xs:h-6.5 drop-shadow-sm group-hover:scale-105 transition-transform"
-          style={{ color: themeColor }}
-          strokeWidth={1.8}
-        />
+      {/* Glow suave no fundo da cápsula */}
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
+
+      {/* Ícone circular em badge esmeralda */}
+      <div className="flex items-center gap-2.5 min-w-0 z-10 flex-1">
+        <div className="w-9 h-9 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+          <IconeLei className="w-4.5 h-4.5" strokeWidth={1.8} />
+        </div>
+
+        {/* Textos da Cápsula */}
+        <div className="flex-1 min-w-0 text-left">
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+            </span>
+            <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-emerald-400">
+              {displayTag}
+            </span>
+            {ultimoArtigo && (
+              <span className="text-[10px] text-zinc-400 font-mono">
+                · Art. {ultimoArtigo}
+              </span>
+            )}
+          </div>
+          <p className="font-serif italic text-[13px] sm:text-[14px] font-bold text-white truncate drop-shadow-sm leading-tight mt-0.5">
+            {displayNome}
+          </p>
+        </div>
       </div>
 
-      {/* Textos informativos centrais */}
-      <div className="flex-1 min-w-0 z-10">
-        <p 
-          className="text-[9px] xs:text-[9.5px] font-bold uppercase tracking-wider mb-0.5 font-mono"
-          style={{ color: themeColor }}
-        >
-          {displayTag}
-        </p>
-        <p className="font-serif italic text-[14px] xs:text-[14.5px] sm:text-[15.5px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
-          {displayNome}
-        </p>
-        <p className="text-[10px] xs:text-[10.5px] font-semibold truncate flex items-center gap-1.5 text-zinc-300">
-          <span 
-            className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0"
-            style={{ backgroundColor: themeColor }} 
-          />
-          <span>{displaySubtitulo}</span>
-        </p>
-      </div>
-
-      {/* Seta indicativa à direita calibrada e proporcional */}
-      <ArrowRight
-        className="w-5 h-5 xs:w-5.5 xs:h-5.5 shrink-0 z-10 group-hover:translate-x-1 transition-transform"
-        style={{ color: themeColor }}
-        strokeWidth={2.4}
-      />
-
-      {/* Decoração de fundo — SVG translúcido no lado direito com glow da cor da lei */}
-      <div
-        className="absolute -right-2 -bottom-2 pointer-events-none select-none z-0 overflow-visible flex items-center justify-center"
-        style={{
-          filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 12px ${themeColor}35)`,
-          color: themeColor,
-        }}
-      >
-        <IconeLei
-          className="w-18 h-18 opacity-15"
-          strokeWidth={1.2}
-        />
+      {/* Botão de Ação Circular Esmeralda (Play / Retomar) */}
+      <div className="w-8 h-8 rounded-full bg-emerald-400 text-zinc-950 flex items-center justify-center shadow-md shadow-emerald-400/30 group-hover:bg-emerald-300 group-hover:scale-105 active:scale-95 transition-all shrink-0 z-10 ml-2">
+        <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
       </div>
     </motion.button>
   );
