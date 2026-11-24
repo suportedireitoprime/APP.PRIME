@@ -23,6 +23,7 @@ import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
+import { HomeLayoutStudio } from '@/pages/laboratorio/layouts-inicio/HomeLayoutStudio';
 import { QuestoesAnimadasPlayer } from '@/pages/laboratorio/QuestoesAnimadasPlayer';
 import { QuestoesAnimadasAlfredoPlayer } from '@/pages/laboratorio/QuestoesAnimadasAlfredoPlayer';
 import { AssinaturaVitaliciaView } from '@/components/assinatura/AssinaturaVitaliciaView';
@@ -38,13 +39,14 @@ const PlayerAulaNativo = lazy(() =>
   import('@/components/aulas-interativas/PlayerAulaNativo').then(m => ({ default: m.PlayerAulaNativo }))
 );
 
-type LabFiltro = 'todos' | 'questoes' | 'atlas' | 'icones' | 'aulas' | 'conversao';
+type LabFiltro = 'todos' | 'layouts' | 'questoes' | 'atlas' | 'icones' | 'aulas' | 'conversao';
 
 export default function AdminLaboratorioAulas() {
   const navigate = useNavigate();
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [etapaInicial, setEtapaInicial] = useState<number | undefined>(undefined);
   const [filtroAtivo, setFiltroAtivo] = useState<LabFiltro>('todos');
+  const [estudioLayoutAtivo, setEstudioLayoutAtivo] = useState(false);
   const [telaPosTrialAtiva, setTelaPosTrialAtiva] = useState(false);
   const [testadorIconeAtivo, setTestadorIconeAtivo] = useState(false);
   const [questaoAnimadaAtiva, setQuestaoAnimadaAtiva] = useState(false);
@@ -73,6 +75,15 @@ export default function AdminLaboratorioAulas() {
     try { haptic.impact('medium'); } catch {}
     setTelaPosTrialAtiva(true);
   };
+
+  // ── SEÇÃO NOVO: ESTÚDIO DE LAYOUTS DA TELA DE INÍCIO (10 VERSÕES) ──
+  if (estudioLayoutAtivo) {
+    return (
+      <HomeLayoutStudio
+        onVoltar={() => setEstudioLayoutAtivo(false)}
+      />
+    );
+  }
 
   // ── SEÇÃO NOVO: PREVIEW DO LAYOUT DE ASSINATURA VITALÍCIA ──
   if (previewSubLayout === 'vitalicio') {
@@ -185,7 +196,18 @@ export default function AdminLaboratorioAulas() {
                   : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Todos (5)
+              Todos (6)
+            </button>
+            <button
+              type="button"
+              onClick={() => { try { haptic.selection(); } catch {}; setFiltroAtivo('layouts'); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                filtroAtivo === 'layouts'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
+              }`}
+            >
+              Layouts Home (10)
             </button>
             <button
               type="button"
@@ -251,6 +273,57 @@ export default function AdminLaboratorioAulas() {
 
         {/* ── GRID DE PROTÓTIPOS ULTRA-MINIMALISTAS ── */}
         <div className="space-y-3">
+
+          {/* ── 0. NOVO: ESTÚDIO DE LAYOUTS DA TELA DE INÍCIO (10 VERSÕES) ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'layouts') && (
+            <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 via-zinc-900/60 to-zinc-900/40 p-4 transition-all hover:border-emerald-500/50 group relative overflow-hidden shadow-lg">
+              <div className="absolute top-0 right-0 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 relative bg-[#0a1410] shadow-sm flex items-center justify-center p-2">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40 group-hover:scale-110 transition-transform">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-emerald-400 uppercase font-bold">
+                    10 VERSÕES
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                      NOVO · 10 VERSÕES
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      Tela de Início · Design Studio
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Estúdio de Layouts da Tela de Início
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  </h3>
+
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    10 arquiteturas interativas e imersivas da Home (Central de Comando, Streaming Prime, Duolingo RPG, Leitor Clássico, Bento Grid, Daily Briefing e mais) com simulador de tela e seletor ativo.
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('heavy'); } catch {}
+                        setEstudioLayoutAtivo(true);
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-zinc-950 font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Abrir Estúdio de Layouts</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── 1. QUESTÕES ANIMADAS 2D (OAB / FGV) ── */}
           {(filtroAtivo === 'todos' || filtroAtivo === 'questoes') && (
