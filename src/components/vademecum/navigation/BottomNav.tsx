@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, Speech, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, Speech, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench, Target, Home } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
@@ -138,7 +138,7 @@ const BottomNav = () => {
       prefetchRoute('questoes');
       prefetchRoute('videoaulas');
       prefetchRoute('flashcards');
-      prefetchRoute('aulas');
+      prefetchRoute('aprender');
       prefetchRoute('vadeMecum');
       prefetchRoute('ferramentas');
       prefetchRoute('pilulas');
@@ -212,8 +212,19 @@ const BottomNav = () => {
     fn();
   };
 
-  // O menu de rodapé do início do aplicativo só deve aparecer no início do aplicativo (rota '/') e biblioteca
-  if (path !== '/' && path !== '/biblioteca') {
+  // O menu de rodapé deve persistir nos 5 hubs principais do aplicativo
+  const ROTAS_COM_BOTTOM_NAV = [
+    '/',
+    '/aprender',
+    '/aulas',
+    '/vade-mecum',
+    '/questoes',
+    '/ferramentas',
+    '/noticias',
+    '/biblioteca',
+  ];
+  const isTabPrincipal = ROTAS_COM_BOTTOM_NAV.some(r => path === r || (r !== '/' && path.startsWith(r) && !path.startsWith('/vade-mecum/') && !path.startsWith('/questoes/')));
+  if (!isTabPrincipal) {
     return null;
   }
 
@@ -243,7 +254,7 @@ const BottomNav = () => {
       >
         <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
-          {/* Slot 1: Notícias */}
+          {/* Slot 1: Início (Notícias, Radar 360, Informações) */}
           <button
             onPointerDown={() => prefetchRoute('noticias')}
             onMouseEnter={() => prefetchRoute('noticias')}
@@ -253,18 +264,18 @@ const BottomNav = () => {
                 localStorage.setItem('noticias_last_seen', String(Date.now()));
               } catch {}
               setNoticiasCount(0);
-              startTransition(() => navigate('/noticias'));
+              startTransition(() => navigate('/'));
             }}
             data-track="bottom_nav_click"
-            data-track-destino="noticias"
+            data-track-destino="inicio"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/noticias') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path === '/' || path.startsWith('/noticias') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label={`Notícias${noticiasCount > 0 ? ` (${noticiasCount} novas)` : ''}`}
+            aria-label={`Início${noticiasCount > 0 ? ` (${noticiasCount} novas)` : ''}`}
           >
             <div className="relative flex items-center justify-center">
-              <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-              {noticiasCount > 0 && !path.startsWith('/noticias') && (
+              <Home className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path === '/' || path.startsWith('/noticias') ? 'scale-110 text-white' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+              {noticiasCount > 0 && path !== '/' && (
                 <span className="absolute -top-1.5 -right-2.5 min-w-[19px] h-[18px] px-1.5 rounded-full bg-primary text-white text-[10px] font-medium tracking-tight leading-none flex items-center justify-center border-[1.5px] border-[#1C1C1E] shadow-[0_2px_8px_rgba(0,0,0,0.7),0_0_6px_rgba(225,29,72,0.4)] drop-shadow-md animate-in zoom-in-75 duration-200">
                   <span className="drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.7)]">
                     {noticiasCount > 99 ? '99+' : noticiasCount}
@@ -272,23 +283,23 @@ const BottomNav = () => {
                 </span>
               )}
             </div>
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Notícias</span>
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Início</span>
           </button>
 
-          {/* Slot 2: Chat */}
+          {/* Slot 2: Aprender (Só Aulas, Vídeos, Áudios, Lousa Mágica) */}
           <button
-            onPointerDown={() => prefetchRoute('chatJuridico')}
-            onMouseEnter={() => prefetchRoute('chatJuridico')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/chat-juridico')); }}
+            onPointerDown={() => prefetchRoute('aprender')}
+            onMouseEnter={() => prefetchRoute('aprender')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/aprender')); }}
             data-track="bottom_nav_click"
-            data-track-destino="chat-juridico"
+            data-track-destino="aprender"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/chat-juridico') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/aprender') || path.startsWith('/aulas') || path.startsWith('/videoaulas') || path.startsWith('/audioaulas') ? 'text-rose-400 md:bg-rose-500/15 md:ring-1 md:ring-rose-400/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Chat"
+            aria-label="Aprender"
           >
-            <MessageCircle className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/chat-juridico') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} fill={path.startsWith('/chat-juridico') ? 'currentColor' : 'none'} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
+            <GraduationCap className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/aprender') || path.startsWith('/aulas') || path.startsWith('/videoaulas') || path.startsWith('/audioaulas') ? 'scale-110 text-rose-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Aprender</span>
           </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
@@ -318,7 +329,23 @@ const BottomNav = () => {
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </button>
 
-          {/* Slot 4: Ferramentas */}
+          {/* Slot 4: Prática (Questões, Simulados OAB / Concursos) */}
+          <button
+            onPointerDown={() => prefetchRoute('questoes')}
+            onMouseEnter={() => prefetchRoute('questoes')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/questoes')); }}
+            data-track="bottom_nav_click"
+            data-track-destino="questoes"
+            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
+              path.startsWith('/questoes') || path.startsWith('/simulados') ? 'text-amber-400 md:bg-amber-500/15 md:ring-1 md:ring-amber-400/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+            }`}
+            aria-label="Prática"
+          >
+            <Target className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/questoes') || path.startsWith('/simulados') ? 'scale-110 text-amber-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Prática</span>
+          </button>
+
+          {/* Slot 5: Ferramentas (Dicionário, IA Tutor, Atlas 3D, Perfil) */}
           <button
             onPointerDown={() => prefetchRoute('ferramentas')}
             onMouseEnter={() => prefetchRoute('ferramentas')}
@@ -330,20 +357,8 @@ const BottomNav = () => {
             }`}
             aria-label="Ferramentas"
           >
-            <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <LayoutGrid className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
-          </button>
-
-          {/* Slot 5: Pesquisar */}
-          <button
-            onClick={() => { haptic.selection(); setSearchOpen(true); }}
-            data-track="bottom_nav_click"
-            data-track-destino="pesquisar"
-            className="flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10"
-            aria-label="Pesquisar"
-          >
-            <Search className="w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-sm -scale-x-100" strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
           </button>
 
           {/* Slot 6: Me Explique (Apenas Desktop) */}

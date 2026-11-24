@@ -93,6 +93,7 @@ function ForceUpdateWrapper() {
 // Eagerly loaded (critical path)
 import PersistentHome from "./components/PersistentHome.tsx";
 import Index from "./pages/Index.tsx";
+import BottomNav from "@/components/vademecum/navigation/BottomNav";
 import Auth from "./pages/auth/Auth.tsx";
 import Landing from "@/pages/auth/Landing";
 const Onboarding = lazy(() => import("./pages/auth/Onboarding.tsx"));
@@ -155,6 +156,7 @@ const Radares = lazy(routePrefetch.radares);
 
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
+const AprenderHub = lazyWithRetry(() => import("./pages/aprender/AprenderHub.tsx"));
 
 const QuestoesArea = lazy(() => import("./pages/questoes/QuestoesArea.tsx"));
 const FlashcardsArea = lazy(() => import("./pages/flashcards/FlashcardsArea.tsx"));
@@ -865,6 +867,8 @@ function AnimatedRoutes() {
 
 
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender" element={<ProtectedRoute><PageTransition instant><AprenderHub /></PageTransition></ProtectedRoute>} />
+          <Route path="/aulas" element={<Navigate to="/aprender" replace />} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition instant><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
@@ -1017,6 +1021,7 @@ function AnimatedRoutes() {
 
           </Routes>
       </Suspense>
+      <BottomNav />
   </div>
   );
 }

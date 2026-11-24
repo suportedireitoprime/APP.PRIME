@@ -56,6 +56,7 @@ export const routePrefetch = {
   meExplique: () => import("@/pages/ia/MeExplique.tsx"),
   audiobooks: () => import("@/pages/audiobooks/Audiobooks.tsx"),
   aulas: () => import("@/pages/admin/AdminAulasInterativas.tsx"),
+  aprender: () => import("@/pages/aprender/AprenderHub.tsx"),
   boletins: () => import("@/pages/noticias/Boletins.tsx"),
 } as const;
 
@@ -64,8 +65,9 @@ export type PrefetchKey = keyof typeof routePrefetch;
 // Rotas essenciais para pré-aquecimento escalonado sob demanda
 const MAIN_TAB_KEYS: PrefetchKey[] = [
   "vadeMecum",
+  "aprender",
   "questoes",
-  "flashcards",
+  "ferramentas",
 ];
 
 let mainTabsScheduled = false;
