@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { getNoticiasCache, prefetchNoticias, fetchNoticiaConteudo, type Noticia } from '@/services/noticiasService';
+import { getNoticiasCache, prefetchNoticias, fetchNoticiaConteudo, type Noticia, type NoticiaFonte } from '@/services/noticiasService';
 import { useReadNoticias } from '@/hooks/useNoticiaTracking';
 import { newsImg } from '@/lib/cdnImg';
 import NoticiaComentarios from '@/components/vademecum/blog/NoticiaComentarios';
@@ -89,6 +89,7 @@ const Noticias = () => {
   const [loading, setLoading] = useState<boolean>(() => getNoticiasCache() === null);
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
   const [dataFiltro, setDataFiltro] = useState<string>(''); // '' = todas, 'YYYY-MM-DD' = dia
+  const [fonteFiltro, setFonteFiltro] = useState<'todas' | NoticiaFonte>('todas');
   const [comentariosOpen, setComentariosOpen] = useState(false);
   const [comentariosCount, setComentariosCount] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -196,16 +197,20 @@ const Noticias = () => {
 
 
   const finalFiltered = useMemo(() => {
-    const filtered = !dataFiltro
+    const byDate = !dataFiltro
       ? noticias
       : noticias.filter(n => toYMD(new Date(n.data_publicacao)) === dataFiltro);
+
+    const filtered = fonteFiltro === 'todas'
+      ? byDate
+      : byDate.filter(n => n.fonte === fonteFiltro);
 
     return [...filtered].sort((a, b) => {
       const dateDiff = new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime();
       if (dateDiff !== 0) return dateDiff;
       return b.id.localeCompare(a.id);
     });
-  }, [noticias, dataFiltro]);
+  }, [noticias, dataFiltro, fonteFiltro]);
 
   const listNoticias = finalFiltered;
 
@@ -228,7 +233,11 @@ const Noticias = () => {
     }
   };
 
-  const fonteLabel = (_f: Noticia['fonte']) => 'Migalhas';
+  const fonteLabel = (f: Noticia['fonte']) => {
+    if (f === 'gran_oab') return 'Gran OAB';
+    if (f === 'gran_concursos') return 'Gran Concursos';
+    return 'Migalhas';
+  };
   const FonteIcon = (_props: { fonte: Noticia['fonte'] }) => <Scale className="w-3 h-3" />;
 
   const ContentViewer = ({ noticia }: { noticia: Noticia }) => (
@@ -290,8 +299,8 @@ const Noticias = () => {
     <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
       <div className="shrink-0 z-40 bg-background bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4 shadow-sm border-b border-border/40">
         <PageHeader
-          title="Notícias Legislativas"
-          subtitle="Últimas do mundo jurídico"
+          title="Notícias"
+          subtitle="Jurídicas, OAB e Concursos"
           onBack={() => goBack()}
           rightAction={
             <button
@@ -383,11 +392,37 @@ const Noticias = () => {
         </div>
 
         {/* Selected date label */}
-        <div className="flex items-center gap-2 px-4.5 pt-1 pb-1.5 max-w-3xl mx-auto">
+        <div className="flex items-center gap-2 px-4.5 pt-1 pb-2 max-w-3xl mx-auto">
           <Calendar className="w-4 h-4 text-primary shrink-0" />
           <span className="text-sm font-display font-semibold text-primary tracking-wide">
             {formatFullDate(dataFiltro ? new Date(dataFiltro + 'T00:00:00') : centerDate)}
           </span>
+        </div>
+
+        {/* Menu de alternância entre fontes (Todas, Jurídicas, OAB, Concursos) */}
+        <div className="flex items-center gap-2 px-3 pt-1 max-w-3xl mx-auto overflow-x-auto no-scrollbar">
+          {([
+            { id: 'todas', label: 'Todas' },
+            { id: 'migalhas', label: 'Jurídicas' },
+            { id: 'gran_oab', label: 'OAB' },
+            { id: 'gran_concursos', label: 'Concursos' },
+          ] as const).map((tab) => {
+            const active = fonteFiltro === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setFonteFiltro(tab.id)}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer active:scale-95 min-h-[34px] ${
+                  active
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                    : 'bg-card/60 text-foreground/80 hover:text-foreground hover:bg-card border-border/40'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
