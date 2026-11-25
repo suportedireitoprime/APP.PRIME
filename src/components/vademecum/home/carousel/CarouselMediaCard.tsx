@@ -5,10 +5,22 @@ import { newsImg } from '@/lib/cdnImg';
 import type { NoticiaFonte } from '@/services/noticiasService';
 import { FeedItem, formatTime, formatTempoRelativo } from './carouselTypes';
 
-const FONTE_CONFIG: Record<NoticiaFonte, { label: string; dotColor: string; sourceName: string }> = {
-  migalhas: { label: 'Jurídica', dotColor: 'bg-emerald-400', sourceName: 'Migalhas' },
-  gran_oab: { label: 'OAB', dotColor: 'bg-amber-400', sourceName: 'Gran OAB' },
-  gran_concursos: { label: 'Concursos', dotColor: 'bg-sky-400', sourceName: 'Gran Concursos' },
+const FONTE_CONFIG: Record<NoticiaFonte, { label: string; tagClass: string; sourceName: string }> = {
+  migalhas: {
+    label: 'Jurídica',
+    tagClass: 'bg-emerald-600/90 border-emerald-400/50 text-white',
+    sourceName: 'Migalhas',
+  },
+  gran_oab: {
+    label: 'OAB',
+    tagClass: 'bg-rose-600/90 border-rose-400/50 text-white',
+    sourceName: 'Gran OAB',
+  },
+  gran_concursos: {
+    label: 'Concursos',
+    tagClass: 'bg-blue-600/90 border-blue-400/50 text-white',
+    sourceName: 'Gran Concursos',
+  },
 };
 
 interface CarouselMediaCardProps {
@@ -66,11 +78,10 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
         <div className="absolute inset-x-0 bottom-0 h-[78%] bg-gradient-to-t from-black/95 via-black/70 to-transparent pointer-events-none" />
 
         <div className="relative z-10 flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold tracking-wide text-white bg-black/65 backdrop-blur-md border border-white/15">
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${fonteCfg.dotColor}`} />
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-bold tracking-wide backdrop-blur-md border shadow-sm ${fonteCfg.tagClass}`}>
             <span>{fonteCfg.label}</span>
-            <span className="text-white/50">·</span>
-            <span className="text-white/80 font-normal">{formatTempoRelativo(noticia.data_publicacao)}</span>
+            <span className="opacity-70">·</span>
+            <span className="font-medium opacity-90">{formatTempoRelativo(noticia.data_publicacao)}</span>
           </span>
 
           <div className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
