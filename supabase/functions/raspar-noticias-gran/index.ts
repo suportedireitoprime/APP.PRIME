@@ -63,6 +63,10 @@ function extractFirstImage(html: string): string | null {
   if (imgMatch?.[1]) return imgMatch[1].trim();
   const mediaMatch = html.match(/<media:content[^>]+url=["']([^"']+)["']/i);
   if (mediaMatch?.[1]) return mediaMatch[1].trim();
+  const thumbMatch = html.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/i);
+  if (thumbMatch?.[1]) return thumbMatch[1].trim();
+  const enclosureMatch = html.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image\//i);
+  if (enclosureMatch?.[1]) return enclosureMatch[1].trim();
   return null;
 }
 

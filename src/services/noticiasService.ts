@@ -97,23 +97,46 @@ export async function prefetchNoticias(force = false): Promise<void> {
   const MIGALHAS_COLS_LIST = 'id, titulo, resumo, imagem_url, categoria, link, data_publicacao, fonte';
 
   fetchPromise = (async () => {
-    const juridicas = await supabase
-      .from('noticias_juridicas' as any)
-      .select(MIGALHAS_COLS_LIST)
-      .not('imagem_url', 'is', null)
-      .neq('imagem_url', '')
-      .order('data_publicacao', { ascending: false })
-      .limit(60);
+    const [juridicas, oabRes, concursosRes] = await Promise.all([
+      supabase
+        .from('noticias_juridicas' as any)
+        .select(MIGALHAS_COLS_LIST)
+        .not('imagem_url', 'is', null)
+        .neq('imagem_url', '')
+        .order('data_publicacao', { ascending: false })
+        .limit(40),
+      supabase
+        .from('noticias_juridicas' as any)
+        .select(MIGALHAS_COLS_LIST)
+        .eq('fonte', 'gran_oab')
+        .not('imagem_url', 'is', null)
+        .neq('imagem_url', '')
+        .order('data_publicacao', { ascending: false })
+        .limit(20),
+      supabase
+        .from('noticias_juridicas' as any)
+        .select(MIGALHAS_COLS_LIST)
+        .eq('fonte', 'gran_concursos')
+        .not('imagem_url', 'is', null)
+        .neq('imagem_url', '')
+        .order('data_publicacao', { ascending: false })
+        .limit(20),
+    ]);
 
+    const seenIds = new Set<string>();
     const combined: Noticia[] = [];
 
-    if (!juridicas.error && juridicas.data) {
-      for (const n of juridicas.data as any[]) {
+    for (const res of [juridicas, oabRes, concursosRes]) {
+      if (res.error || !res.data) continue;
+      for (const n of res.data as any[]) {
         if (!n.imagem_url?.trim()) continue;
         const fonte: NoticiaFonte =
           n.fonte === 'gran_oab' || n.fonte === 'gran_concursos' ? n.fonte : 'migalhas';
+        const itemId = `${fonte}:${n.id}`;
+        if (seenIds.has(itemId)) continue;
+        seenIds.add(itemId);
         combined.push({
-          id: `${fonte}:${n.id}`,
+          id: itemId,
           titulo: n.titulo,
           resumo: n.resumo || '',
           conteudo: n.resumo || '',
