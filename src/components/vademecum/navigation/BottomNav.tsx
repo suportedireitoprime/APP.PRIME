@@ -35,12 +35,13 @@ const PRATICAR_ITENS: Array<{
   desc: string;
   to: string;
   icon: typeof Target;
+  colorClass: string;
   prefetch?: PrefetchKey;
 }> = [
-  { id: 'questoes', label: 'Questões', desc: 'Banco completo por matéria e banca', to: '/questoes', icon: CheckSquare, prefetch: 'questoes' },
-  { id: 'flashcards', label: 'Flashcards', desc: 'Memorização ativa com repetição espaçada', to: '/flashcards', icon: Layers, prefetch: 'flashcards' },
-  { id: 'simulado', label: 'Simulado', desc: 'Provas completas e estatísticas', to: '/simulados', icon: ListChecks },
-  { id: 'licoes', label: 'Lições', desc: 'Estudo guiado artigo por artigo', to: '/lei-seca', icon: FileText, prefetch: 'leiSeca' },
+  { id: 'questoes', label: 'Questões', desc: 'Banco completo por matéria e banca', to: '/questoes', icon: CheckSquare, colorClass: 'text-emerald-400', prefetch: 'questoes' },
+  { id: 'flashcards', label: 'Flashcards', desc: 'Memorização ativa com repetição espaçada', to: '/flashcards', icon: Layers, colorClass: 'text-amber-400', prefetch: 'flashcards' },
+  { id: 'simulado', label: 'Simulado', desc: 'Provas completas e estatísticas', to: '/simulados', icon: ListChecks, colorClass: 'text-sky-400' },
+  { id: 'licoes', label: 'Lições', desc: 'Estudo guiado artigo por artigo', to: '/lei-seca', icon: FileText, colorClass: 'text-violet-400', prefetch: 'leiSeca' },
 ];
 
 const AUDIOAULAS_ITENS: Array<{
@@ -49,10 +50,11 @@ const AUDIOAULAS_ITENS: Array<{
   desc: string;
   to: string;
   icon: typeof Headphones;
+  colorClass: string;
   prefetch?: PrefetchKey;
 }> = [
-  { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas narradas por área do Direito', to: '/audioaulas', icon: Headphones, prefetch: 'audioaulas' },
-  { id: 'pilulas', label: 'Pílulas', desc: 'Conceitos essenciais em minutos', to: '/pilulas', icon: Pill, prefetch: 'pilulas' },
+  { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas narradas por área do Direito', to: '/audioaulas', icon: Headphones, colorClass: 'text-rose-400', prefetch: 'audioaulas' },
+  { id: 'pilulas', label: 'Pílulas', desc: 'Conceitos essenciais em minutos', to: '/pilulas', icon: Pill, colorClass: 'text-cyan-400', prefetch: 'pilulas' },
 ];
 
 const BottomNav = () => {
@@ -167,6 +169,74 @@ const BottomNav = () => {
     startTransition(() => navigate(to));
   };
 
+  const navItems = [
+    {
+      id: 'inicio',
+      label: 'Início',
+      ariaLabel: 'Início',
+      icon: Home,
+      active: isInicioActive,
+      onClick: () => {
+        haptic.selection();
+        setPraticarOpen(false);
+        setAudioaulasOpen(false);
+        if (path !== '/') startTransition(() => navigate('/'));
+      },
+    },
+    {
+      id: 'praticar',
+      label: 'Praticar',
+      ariaLabel: 'Praticar',
+      icon: Target,
+      active: isPraticarActive,
+      onClick: () => {
+        haptic.selection();
+        setAudioaulasOpen(false);
+        setPraticarOpen((prev) => !prev);
+      },
+    },
+    {
+      id: 'audioaulas',
+      label: 'Audioaulas',
+      ariaLabel: 'Audioaulas',
+      icon: Headphones,
+      active: isAudioaulasActive,
+      onClick: () => {
+        haptic.selection();
+        setPraticarOpen(false);
+        setAudioaulasOpen((prev) => !prev);
+      },
+    },
+    {
+      id: 'biblioteca',
+      label: 'Biblioteca',
+      ariaLabel: 'Biblioteca',
+      icon: BookOpen,
+      active: isBibliotecaActive,
+      prefetch: 'biblioteca' as PrefetchKey,
+      onClick: () => {
+        haptic.selection();
+        setPraticarOpen(false);
+        setAudioaulasOpen(false);
+        startTransition(() => navigate('/bibliotecas'));
+      },
+    },
+    {
+      id: 'aulas',
+      label: 'Aulas',
+      ariaLabel: 'Aulas de Direito',
+      icon: GraduationCap,
+      active: isAulasActive,
+      prefetch: 'aulas' as PrefetchKey,
+      onClick: () => {
+        haptic.selection();
+        setPraticarOpen(false);
+        setAudioaulasOpen(false);
+        startTransition(() => navigate('/aulas'));
+      },
+    },
+  ];
+
   const navContent = (
     <>
       <nav
@@ -174,9 +244,9 @@ const BottomNav = () => {
         role="navigation"
         data-bottom-nav
         className={`fixed z-50 transition-all duration-200 ease-out
-          bottom-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-3 right-3 mx-auto max-w-md
-          bg-[#141418]/92 backdrop-blur-xl border border-white/15 rounded-3xl shadow-[0_14px_36px_rgba(0,0,0,0.72)]
-          md:top-0 md:bottom-0 md:left-0 md:right-auto md:mx-0 md:max-w-none md:w-[90px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
+          bottom-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-3 right-3 sm:left-5 sm:right-5 mx-auto w-auto max-w-lg sm:max-w-xl
+          bg-[#141418]/94 backdrop-blur-xl border border-white/15 rounded-[26px] sm:rounded-[28px] shadow-[0_14px_36px_rgba(0,0,0,0.72)]
+          md:top-0 md:bottom-0 md:left-0 md:right-auto md:mx-0 md:max-w-none md:w-[92px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
           ${hideNav ? 'translate-y-[160%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
       >
         <div
@@ -184,129 +254,36 @@ const BottomNav = () => {
           onTouchStart={handleNavWarmup}
           className="relative z-10 md:h-full"
         >
-          <div className="px-1.5 py-1.5 md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center">
-            <div className="grid grid-cols-5 items-center gap-1 md:grid-cols-1 md:items-stretch md:gap-4">
-              {/* 1. Início */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setPraticarOpen(false);
-                  setAudioaulasOpen(false);
-                  if (path !== '/') startTransition(() => navigate('/'));
-                }}
-                data-track="bottom_nav_click"
-                data-track-destino="inicio"
-                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
-                  isInicioActive
-                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-                aria-label="Início"
-              >
-                <Home className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isInicioActive ? 2 : 1.6} />
-                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
-                  Início
-                </span>
-              </button>
-
-              {/* 2. Praticar */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setAudioaulasOpen(false);
-                  setPraticarOpen((prev) => !prev);
-                }}
-                data-track="bottom_nav_click"
-                data-track-destino="praticar"
-                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
-                  isPraticarActive
-                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-                aria-label="Praticar"
-              >
-                <Target className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isPraticarActive ? 2 : 1.6} />
-                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
-                  Praticar
-                </span>
-              </button>
-
-              {/* 3. Audioaulas */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setPraticarOpen(false);
-                  setAudioaulasOpen((prev) => !prev);
-                }}
-                data-track="bottom_nav_click"
-                data-track-destino="audioaulas"
-                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
-                  isAudioaulasActive
-                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-                aria-label="Audioaulas"
-              >
-                <Headphones className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isAudioaulasActive ? 2 : 1.6} />
-                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
-                  Audioaulas
-                </span>
-              </button>
-
-              {/* 4. Biblioteca */}
-              <button
-                type="button"
-                onPointerDown={() => prefetchRoute('biblioteca')}
-                onMouseEnter={() => prefetchRoute('biblioteca')}
-                onClick={() => {
-                  haptic.selection();
-                  setPraticarOpen(false);
-                  setAudioaulasOpen(false);
-                  startTransition(() => navigate('/bibliotecas'));
-                }}
-                data-track="bottom_nav_click"
-                data-track-destino="biblioteca"
-                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
-                  isBibliotecaActive
-                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-                aria-label="Biblioteca"
-              >
-                <BookOpen className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isBibliotecaActive ? 2 : 1.6} />
-                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
-                  Biblioteca
-                </span>
-              </button>
-
-              {/* 5. Aulas de Direito */}
-              <button
-                type="button"
-                onPointerDown={() => prefetchRoute('aulas')}
-                onMouseEnter={() => prefetchRoute('aulas')}
-                onClick={() => {
-                  haptic.selection();
-                  setPraticarOpen(false);
-                  setAudioaulasOpen(false);
-                  startTransition(() => navigate('/aulas'));
-                }}
-                data-track="bottom_nav_click"
-                data-track-destino="aulas"
-                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
-                  isAulasActive
-                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                }`}
-                aria-label="Aulas de Direito"
-              >
-                <GraduationCap className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isAulasActive ? 2 : 1.6} />
-                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
-                  Aulas
-                </span>
-              </button>
+          <div className="px-2 py-2 sm:px-2.5 sm:py-2.5 md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center">
+            <div className="grid grid-cols-5 items-center gap-1 sm:gap-1.5 md:grid-cols-1 md:items-stretch md:gap-4">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onPointerDown={item.prefetch ? () => prefetchRoute(item.prefetch!) : undefined}
+                    onMouseEnter={item.prefetch ? () => prefetchRoute(item.prefetch!) : undefined}
+                    onClick={item.onClick}
+                    data-track="bottom_nav_click"
+                    data-track-destino={item.id}
+                    className={`min-h-[54px] sm:min-h-[60px] md:min-h-[64px] flex flex-col items-center justify-center gap-1 py-2 px-1 sm:px-2 md:py-3.5 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                      item.active
+                        ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                        : 'text-white/65 hover:text-white hover:bg-white/5'
+                    }`}
+                    aria-label={item.ariaLabel}
+                  >
+                    <Icon
+                      className="w-[22px] h-[22px] sm:w-6 sm:h-6 shrink-0"
+                      strokeWidth={item.active ? 2.1 : 1.7}
+                    />
+                    <span className="font-body text-[10.5px] sm:text-[11.5px] md:text-[11px] leading-tight text-center truncate max-w-full">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -348,9 +325,7 @@ const BottomNav = () => {
                     onClick={() => navigateFromSheet(item.to)}
                     className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/90 shrink-0">
-                      <Icon className="w-5 h-5" strokeWidth={1.6} />
-                    </div>
+                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
                     <div className="flex-1 min-w-0">
                       <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
                       <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
@@ -400,9 +375,7 @@ const BottomNav = () => {
                     onClick={() => navigateFromSheet(item.to)}
                     className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/90 shrink-0">
-                      <Icon className="w-5 h-5" strokeWidth={1.6} />
-                    </div>
+                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
                     <div className="flex-1 min-w-0">
                       <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
                       <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
