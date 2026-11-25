@@ -8,10 +8,18 @@ export const MAX_LIVROS = 12;
 
 export type Livro = any;
 
-export type FeedItem =
-  | { kind: 'noticia'; id: string; data: Noticia }
-  | { kind: 'blog'; id: string; data: BlogPost }
-  | { kind: 'livro'; id: string; data: Livro };
+export type FeedKind = 'noticia' | 'livro' | 'audiobook' | 'blog' | 'pilula';
+
+export type FeedItem = {
+  kind: FeedKind;
+  id: string;
+  badge: string;
+  title: string;
+  meta: string;
+  image: string;
+  route: string;
+  noticiaData?: Noticia;
+};
 
 export function formatTime(dateStr: string) {
   const d = new Date(dateStr);
