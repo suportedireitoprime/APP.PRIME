@@ -16,9 +16,11 @@ type Boletim = {
   titulo: string;
   subtitulo: string | null;
   status: string;
-  roteiro_json: any[];
+  roteiro_json?: any[] | null;
   created_at: string;
-  youtube_url?: string;
+  thumb_url?: string | null;
+  thumbnail_url?: string | null;
+  youtube_url?: string | null;
 };
 
 const TIPO_STYLES: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -28,6 +30,8 @@ const TIPO_STYLES: Record<string, { label: string; color: string; bg: string; bo
 };
 
 function getBoletimCover(b?: Boletim | null): string {
+  if (b?.thumbnail_url) return b.thumbnail_url;
+  if (b?.thumb_url) return b.thumb_url;
   if (!b || !Array.isArray(b.roteiro_json) || b.roteiro_json.length === 0) {
     return radarLeisLocal;
   }
@@ -68,34 +72,50 @@ export const HomeBoletinsList: React.FC = () => {
   const navigate = useNavigate();
   const [playerAtivo, setPlayerAtivo] = useState<Boletim | null>(null);
 
-  const { data: boletins = [], isLoading: loading } = useQuery<Boletim[]>({
+  const { data: boletins = [], isLoading: loading, isError } = useQuery<Boletim[]>({
     queryKey: ['boletins_juridicos_home'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('boletins_juridicos')
-        .select('*')
-        .eq('status', 'pronto')
+        .select('id, data_ref, tipo, titulo, subtitulo, status, created_at, thumb_url, thumbnail_url, youtube_url')
+        .in('status', ['pronto', 'sem_leis'])
+        .order('data_ref', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(5);
 
       if (error) throw error;
       return (data || []) as Boletim[];
     },
+    retry: 1,
     staleTime: 10 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
   });
 
-  const handlePlay = useCallback((b: Boletim, e?: React.MouseEvent) => {
+  const handlePlay = useCallback(async (b: Boletim, e?: React.MouseEvent) => {
     e?.stopPropagation();
     haptic.selection();
     if (Array.isArray(b.roteiro_json) && b.roteiro_json.length > 0) {
       setPlayerAtivo(b);
-    } else {
-      navigate('/boletins');
+      return;
     }
+    try {
+      const { data } = await supabase
+        .from('boletins_juridicos')
+        .select('roteiro_json')
+        .eq('id', b.id)
+        .maybeSingle();
+      const roteiro = Array.isArray(data?.roteiro_json) ? data.roteiro_json : [];
+      if (roteiro.length > 0) {
+        setPlayerAtivo({ ...b, roteiro_json: roteiro });
+        return;
+      }
+    } catch {
+      /* fallback para /boletins */
+    }
+    navigate('/boletins');
   }, [navigate]);
 
-  if (!loading && boletins.length === 0) {
+  if (isError || (!loading && boletins.length === 0)) {
     return null;
   }
 
