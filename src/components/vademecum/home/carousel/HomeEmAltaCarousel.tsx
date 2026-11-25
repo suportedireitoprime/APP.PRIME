@@ -282,7 +282,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
-            <span className="w-1 h-4 rounded-full bg-rose-600 shrink-0 shadow-[0_0_8px_rgba(225,29,72,0.7)]" />
+            <span className="w-1 h-4 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
             <span className="truncate">LEIS EM ALTA</span>
           </h3>
           <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
@@ -384,10 +384,10 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
                 
                 <div className="flex justify-between items-end mt-auto">
                   <div className="flex flex-col">
-                    <span className="font-display text-white text-[24px] sm:text-[26px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                    <span className="font-title text-white text-[24px] sm:text-[26px] font-bold tracking-normal drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
                       {item.id === 'ei' ? 'IDOSO' : item.sigla}
                     </span>
-                    <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                    <span className="font-body text-white/85 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.12em] mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                       {item.tipo === 'codigo' ? 'Código' : item.tipo === 'estatuto' ? 'Estatuto' : item.tipo === 'constituicao' ? 'Constituição' : 'Lei'}
                     </span>
                   </div>

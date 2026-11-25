@@ -11,8 +11,9 @@ import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecum
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
-import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
+import type { SheetType } from '@/components/vademecum/navigation/VadeMecumCategoriesSheet';
 
+const VadeMecumCategoriesSheet = lazyWithRetry(() => import('@/components/vademecum/navigation/VadeMecumCategoriesSheet'));
 const VadeMecumQuickActionSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VadeMecumQuickActionSheet'));
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
@@ -28,11 +29,22 @@ const VadeMecum = () => {
   const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
   const [activeQuickSheet, setActiveQuickSheet] = useState<QuickActionType | null>(null);
+  const [activeSheet, setActiveSheet] = useState<SheetType>(null);
 
   useEffect(() => {
     const handleAbrirBusca = () => setBuscaOpen(true);
+    const handleOpenSheetEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<SheetType>;
+      if (customEvent.detail) {
+        setActiveSheet(customEvent.detail);
+      }
+    };
     window.addEventListener('vademecum:abrir-busca', handleAbrirBusca);
-    return () => window.removeEventListener('vademecum:abrir-busca', handleAbrirBusca);
+    window.addEventListener('vademecum:abrir-sheet', handleOpenSheetEvent);
+    return () => {
+      window.removeEventListener('vademecum:abrir-busca', handleAbrirBusca);
+      window.removeEventListener('vademecum:abrir-sheet', handleOpenSheetEvent);
+    };
   }, []);
 
   const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
@@ -140,7 +152,7 @@ const VadeMecum = () => {
   }
 
   return (
-    <div className={`theme-vademecum min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+    <div className={`theme-vademecum min-h-dvh bg-[#0D0D0D] pb-[calc(2rem+var(--sai-bottom))] relative overflow-x-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
       <div className="fixed inset-0 z-0">
         <ShapeGrid />
       </div>
@@ -151,8 +163,16 @@ const VadeMecum = () => {
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-        
-        <VadeMecumBottomNav />
+
+        {activeSheet && (
+          <Suspense fallback={null}>
+            <VadeMecumCategoriesSheet
+              activeSheet={activeSheet}
+              onClose={() => setActiveSheet(null)}
+              maisMenu={[]}
+            />
+          </Suspense>
+        )}
 
         <Suspense fallback={null}>
           <VadeMecumQuickActionSheet

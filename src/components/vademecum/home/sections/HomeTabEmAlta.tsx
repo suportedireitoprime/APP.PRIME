@@ -71,7 +71,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
               onClick={() => setActiveTab(tab.id)}
               className={`min-h-[44px] px-5 py-2.5 rounded-full text-[14px] font-display font-bold uppercase tracking-wide flex items-center justify-center whitespace-nowrap transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-primary text-white shadow-md'
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
                   : 'bg-secondary/60 text-muted-foreground border border-border/50 hover:bg-secondary'
               }`}
             >
@@ -82,7 +82,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
 
         <div className="pt-1">
           <h3 className="font-display text-foreground text-[18px] font-bold uppercase flex items-center gap-2 tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+            <span className="w-1 h-5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
             <span className="truncate">
               {activeTab === 'todas' ? 'Legislação' : 
                activeTab === 'codigo' ? 'Códigos' :
@@ -112,8 +112,8 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
                 key={c.id}
                 icon={c.icon}
                 label={displayLabel}
-                sublabel={c.sublabel}
                 color={c.color}
+                titleClassName="font-card text-foreground font-semibold text-[14.5px] sm:text-[15.5px] uppercase tracking-[0.04em] leading-snug line-clamp-1"
                 delay={i * 0.03}
                 onClick={() => onOpenCategory({ ...c, label: displayLabel })}
                 data-track="home_card_click"
@@ -124,16 +124,16 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
           })}
 
           {activeTab === 'jurisprudencia' && [
-            { id: 'juri-stf-vinc', label: 'Súmulas Vinculantes', sublabel: 'STF', icon: ScrollText, color: '#EC4899' },
-            { id: 'juri-stf', label: 'Súmulas STF', sublabel: 'Supremo Tribunal Federal', icon: ScrollText, color: '#EC4899' },
-            { id: 'juri-stj', label: 'Súmulas STJ', sublabel: 'Superior Tribunal de Justiça', icon: ScrollText, color: '#EC4899' },
+            { id: 'juri-stf-vinc', label: 'Súmulas Vinculantes', icon: ScrollText, color: '#EC4899' },
+            { id: 'juri-stf', label: 'Súmulas STF', icon: ScrollText, color: '#EC4899' },
+            { id: 'juri-stj', label: 'Súmulas STJ', icon: ScrollText, color: '#EC4899' },
           ].map((c, i) => (
             <HomeCard
               key={c.id}
               icon={c.icon}
               label={c.label}
-              sublabel={c.sublabel}
               color={c.color}
+              titleClassName="font-card text-foreground font-semibold text-[14.5px] sm:text-[15.5px] uppercase tracking-[0.04em] leading-snug line-clamp-1"
               delay={i * 0.04}
               onClick={() => onOpenJurisprudencia?.()}
               data-track="home_card_click"
@@ -146,7 +146,6 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
             const LawIcon = getLawIcon(lei.id);
             
             let displayLabel = lei.sigla || lei.nome;
-            let displaySublabel = lei.nome;
             
             if (lei.tipo === 'estatuto') {
               if (lei.id === 'eca') {
@@ -156,7 +155,6 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
               } else {
                 displayLabel = lei.nome.replace(/^Estatuto (da|do|de|dos|das|nacional da) /i, '').trim();
               }
-              displaySublabel = lei.descricao;
             }
 
             return (
@@ -164,8 +162,8 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
                 key={lei.id}
                 icon={LawIcon}
                 label={displayLabel}
-                sublabel={displaySublabel}
                 color={lei.iconColor || '#38BDF8'}
+                titleClassName="font-card text-foreground font-semibold text-[14.5px] sm:text-[15.5px] uppercase tracking-[0.04em] leading-snug line-clamp-1 min-h-[22px] flex items-center"
                 inlineTitle={true}
                 delay={i * 0.03}
                 onClick={() => onOpenLei?.(lei.id)}
@@ -189,7 +187,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
       <div className="pt-2">
         <div className="mb-4">
           <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary" />
+            <span className="w-1 h-5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
             OUTRAS NORMAS
           </h3>
           <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
