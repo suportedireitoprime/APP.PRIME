@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { getNoticiasCache, prefetchNoticias, fetchNoticiaConteudo, type Noticia, type NoticiaFonte } from '@/services/noticiasService';
+import { getNoticiasCache, prefetchNoticias, subscribeNoticias, fetchNoticiaConteudo, type Noticia, type NoticiaFonte } from '@/services/noticiasService';
 import { useReadNoticias } from '@/hooks/useNoticiaTracking';
 import { newsImg } from '@/lib/cdnImg';
 import NoticiaComentarios from '@/components/vademecum/blog/NoticiaComentarios';
@@ -111,12 +111,16 @@ const Noticias = () => {
     try {
       localStorage.setItem('noticias_last_seen', String(Date.now()));
     } catch {}
-    if (getNoticiasCache()) return; // já hidratado no state inicial
+    const unsub = subscribeNoticias((data) => {
+      setNoticias(data);
+      setLoading(false);
+    });
     prefetchNoticias().then(() => {
       const data = getNoticiasCache();
       if (data) setNoticias(data);
       setLoading(false);
     });
+    return unsub;
   }, []);
 
 

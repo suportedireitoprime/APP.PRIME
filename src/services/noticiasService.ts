@@ -17,9 +17,9 @@ export interface Noticia {
   fonte: NoticiaFonte;
 }
 
-const SNAPSHOT_KEY = 'noticias:snapshot:v4';
+const SNAPSHOT_KEY = 'noticias:snapshot:v5';
 const SNAPSHOT_TTL_MS = 24 * 60 * 60 * 1000; // 24h (offline-friendly)
-const MIN_REFETCH_MS = 15 * 60 * 1000;  // 15 min entre revalidações
+const MIN_REFETCH_MS = 2 * 60 * 1000;  // 2 min entre revalidações
 
 let noticiasCache: Noticia[] | null = null;
 let fetchPromise: Promise<void> | null = null;
