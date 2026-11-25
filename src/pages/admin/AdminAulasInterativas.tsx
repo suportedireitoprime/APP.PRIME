@@ -262,7 +262,7 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
-      {/* ── Fundo Animado Oficial ShapeGrid do App ── */}
+      {/* Fundo minimalista com grade sutil */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0D0D0D]">
         <ShapeGrid 
           speed={0.25} 
@@ -274,16 +274,6 @@ export default function AdminAulasInterativas() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 pointer-events-none" />
       </div>
-
-      {/* Glow Atmosférico Temático da Disciplina */}
-      {disciplinaAtual && (
-        <div 
-          className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700 opacity-20"
-          style={{
-            background: `radial-gradient(ellipse 90% 55% at 50% 15%, ${disciplinaAtual.corDestaque}45, transparent 75%)`
-          }}
-        />
-      )}
 
       {/* Toast Flutuante de Alerta */}
       {toastAviso && (
