@@ -2,6 +2,7 @@ import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scale, BookOpen, Wrench, Bird, ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 import CarouselDots from './CarouselDots';
 import HomeSectionHeader from '../sections/HomeSectionHeader';
 
@@ -10,6 +11,7 @@ interface EmAltaFeatureItem {
   label: string;
   sublabel: string;
   sublabelHighlight?: string;
+  sublabelSuffix?: string;
   route: string;
   icon: LucideIcon;
 }
@@ -48,6 +50,7 @@ const ITEMS: EmAltaFeatureItem[] = [
 
 const HomeEmAltaCardsCarousel = () => {
   const navigate = useNavigate();
+  const { data: totalLivros = 2000 } = useTotalLivrosCount();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const initialIndex = ITEMS.length * 2;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -60,10 +63,19 @@ const HomeEmAltaCardsCarousel = () => {
   const childMidpointsRef = useRef<number[]>([]);
 
   // Duplica 5x para rolagem infinita suave para ambos os lados
-  const loopedItems = useMemo(
-    () => [...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS],
-    [],
-  );
+  const loopedItems = useMemo(() => {
+    const resolved = ITEMS.map((item) =>
+      item.id === 'biblioteca'
+        ? {
+            ...item,
+            sublabel: 'Mais de',
+            sublabelHighlight: totalLivros.toLocaleString('pt-BR'),
+            sublabelSuffix: 'livros',
+          }
+        : item,
+    );
+    return [...resolved, ...resolved, ...resolved, ...resolved, ...resolved];
+  }, [totalLivros]);
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const el = scrollerRef.current;
@@ -266,6 +278,7 @@ const HomeEmAltaCardsCarousel = () => {
                   {item.sublabelHighlight && (
                     <> <span className="text-primary font-semibold">{item.sublabelHighlight}</span></>
                   )}
+                  {item.sublabelSuffix && ` ${item.sublabelSuffix}`}
                 </p>
               </div>
             </button>
