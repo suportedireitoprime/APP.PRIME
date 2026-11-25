@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Noticia } from '@/services/noticiasService';
 import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
@@ -20,7 +19,6 @@ interface Props {
 }
 
 function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'default' }: Props) {
-  const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
@@ -111,12 +109,8 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
   };
 
   const handleOpen = useCallback((item: FeedItem) => {
-    if (item.kind === 'noticia' && item.noticiaData) {
-      setSelectedNoticia(item.noticiaData);
-      return;
-    }
-    navigate(item.route);
-  }, [navigate]);
+    setSelectedNoticia(item.data);
+  }, []);
 
   if (feed.length === 0) {
     return (

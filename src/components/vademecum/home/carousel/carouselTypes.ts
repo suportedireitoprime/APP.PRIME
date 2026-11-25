@@ -8,17 +8,10 @@ export const MAX_LIVROS = 12;
 
 export type Livro = any;
 
-export type FeedKind = 'noticia' | 'livro' | 'audiobook' | 'blog' | 'pilula';
-
 export type FeedItem = {
-  kind: FeedKind;
+  kind: 'noticia';
   id: string;
-  badge: string;
-  title: string;
-  meta: string;
-  image: string;
-  route: string;
-  noticiaData?: Noticia;
+  data: Noticia;
 };
 
 export function formatTime(dateStr: string) {

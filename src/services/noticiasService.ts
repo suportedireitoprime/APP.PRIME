@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { bundle } from '@/services/offlineBundle';
 
 
-export type NoticiaFonte = 'migalhas';
+export type NoticiaFonte = 'migalhas' | 'gran_oab' | 'gran_concursos';
 
 export interface Noticia {
   id: string;
@@ -94,7 +94,7 @@ export async function prefetchNoticias(force = false): Promise<void> {
   }
 
   // Colunas leves: SEM conteudo_md (o markdown é buscado sob demanda ao abrir).
-  const MIGALHAS_COLS_LIST = 'id, titulo, resumo, imagem_url, categoria, link, data_publicacao';
+  const MIGALHAS_COLS_LIST = 'id, titulo, resumo, imagem_url, categoria, link, data_publicacao, fonte';
 
   fetchPromise = (async () => {
     const juridicas = await supabase
@@ -103,24 +103,26 @@ export async function prefetchNoticias(force = false): Promise<void> {
       .not('imagem_url', 'is', null)
       .neq('imagem_url', '')
       .order('data_publicacao', { ascending: false })
-      .limit(40);
+      .limit(60);
 
     const combined: Noticia[] = [];
 
     if (!juridicas.error && juridicas.data) {
       for (const n of juridicas.data as any[]) {
         if (!n.imagem_url?.trim()) continue;
+        const fonte: NoticiaFonte =
+          n.fonte === 'gran_oab' || n.fonte === 'gran_concursos' ? n.fonte : 'migalhas';
         combined.push({
-          id: `migalhas:${n.id}`,
+          id: `${fonte}:${n.id}`,
           titulo: n.titulo,
           resumo: n.resumo || '',
           conteudo: n.resumo || '',
           conteudo_md: null,
           imagem_url: n.imagem_url,
-          categoria: n.categoria || 'Notícia Jurídica',
+          categoria: n.categoria || (fonte === 'gran_oab' ? 'OAB' : fonte === 'gran_concursos' ? 'Concursos' : 'Notícia Jurídica'),
           link: n.link,
           data_publicacao: n.data_publicacao,
-          fonte: 'migalhas',
+          fonte,
         });
       }
     }
@@ -178,7 +180,7 @@ export async function fetchNoticiaConteudo(id: string): Promise<string | null> {
     }
   } catch { /* ignore */ }
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return null;
-  const dbId = id.startsWith('migalhas:') ? id.slice('migalhas:'.length) : id;
+  const dbId = id.includes(':') ? id.split(':').slice(1).join(':') : id;
   try {
     const { data, error } = await supabase
       .from('noticias_juridicas' as any)
