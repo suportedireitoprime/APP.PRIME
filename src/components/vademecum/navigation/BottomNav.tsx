@@ -267,9 +267,9 @@ const BottomNav = () => {
         role="navigation"
         data-bottom-nav
         className={`fixed z-50 transition-all duration-200 ease-out
-          bottom-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-3 right-3 sm:left-5 sm:right-5 mx-auto w-auto max-w-lg sm:max-w-xl
-          bg-[#141418]/94 backdrop-blur-xl border border-white/15 rounded-[26px] sm:rounded-[28px] shadow-[0_14px_36px_rgba(0,0,0,0.72)]
-          md:top-0 md:bottom-0 md:left-0 md:right-auto md:mx-0 md:max-w-none md:w-[92px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
+          bottom-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-2.5 right-2.5 sm:left-5 sm:right-5 mx-auto w-auto max-w-xl sm:max-w-2xl
+          bg-[#141418]/94 backdrop-blur-xl border border-white/15 rounded-[28px] sm:rounded-[30px] shadow-[0_14px_36px_rgba(0,0,0,0.72)]
+          md:top-0 md:bottom-0 md:left-0 md:right-auto md:mx-0 md:max-w-none md:w-[100px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
           ${hideNav ? 'translate-y-[160%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
       >
         <div
@@ -277,8 +277,8 @@ const BottomNav = () => {
           onTouchStart={handleNavWarmup}
           className="relative z-10 md:h-full"
         >
-          <div className="px-2 py-2 sm:px-2.5 sm:py-2.5 md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center">
-            <div className="grid grid-cols-5 items-center gap-1 sm:gap-1.5 md:grid-cols-1 md:items-stretch md:gap-4">
+          <div className="px-2.5 py-2.5 sm:px-3.5 sm:py-3 md:px-2.5 md:py-8 md:h-full md:flex md:flex-col md:justify-center">
+            <div className="grid grid-cols-5 items-center gap-1.5 sm:gap-2.5 md:grid-cols-1 md:items-stretch md:gap-5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -290,7 +290,7 @@ const BottomNav = () => {
                     onClick={item.onClick}
                     data-track="bottom_nav_click"
                     data-track-destino={item.id}
-                    className={`min-h-[58px] sm:min-h-[64px] md:min-h-[68px] flex flex-col items-center justify-center gap-1.5 py-2 px-1 sm:px-2 md:py-3.5 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                    className={`min-h-[64px] sm:min-h-[70px] md:min-h-[74px] flex flex-col items-center justify-center gap-1.5 py-2.5 px-1.5 sm:px-2.5 md:py-4 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
                       item.active
                         ? 'bg-primary text-primary-foreground shadow-md shadow-primary/30 font-semibold'
                         : 'text-white/65 hover:text-white hover:bg-white/5'
@@ -298,10 +298,10 @@ const BottomNav = () => {
                     aria-label={item.ariaLabel}
                   >
                     <Icon
-                      className="w-6 h-6 sm:w-7 sm:h-7 shrink-0"
+                      className="w-7 h-7 sm:w-[30px] sm:h-[30px] shrink-0"
                       strokeWidth={item.active ? 2.1 : 1.75}
                     />
-                    <span className="font-body text-[10.5px] sm:text-[11.5px] md:text-[11px] leading-tight text-center truncate max-w-full">
+                    <span className="font-body text-[11px] sm:text-[12px] md:text-[11.5px] leading-tight text-center truncate max-w-full">
                       {item.label}
                     </span>
                   </button>
