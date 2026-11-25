@@ -58,14 +58,14 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.2) }}
-      className={`snap-center shrink-0 active:scale-[0.99] text-left cursor-pointer ${
-        variant === 'hero' ? 'w-[320px] max-w-[85vw]' : 'w-[85%] md:w-[46%] lg:w-[31%]'
+      className={`snap-center shrink-0 flex items-stretch active:scale-[0.99] text-left cursor-pointer ${
+        variant === 'hero' ? 'w-[320px] max-w-[85vw]' : 'w-[86%] sm:w-[68%] md:w-[46%] lg:w-[31%]'
       }`}
     >
       {isFullCover ? (
         <div
-          className={`relative w-full overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 transition-all duration-300 transform-gpu will-change-transform ${
-            variant === 'hero' ? 'h-[180px]' : 'h-[148px]'
+          className={`relative w-full overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex flex-col justify-between p-3.5 transition-all duration-300 transform-gpu will-change-transform ${
+            variant === 'hero' ? 'min-h-[180px]' : 'min-h-[158px] sm:min-h-[164px]'
           } ${
             isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
           }`}
@@ -89,23 +89,25 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
               className="absolute inset-0 w-full h-full object-cover brightness-95 contrast-[1.03]"
             />
           )}
-          <div className="absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-[78%] bg-gradient-to-t from-black/95 via-black/70 to-transparent pointer-events-none" />
 
-          <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center">
-            <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+          <div className="relative z-10 flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold tracking-wide text-white bg-black/65 backdrop-blur-md border border-white/15">
+              <BadgeIcon className={`w-3 h-3 shrink-0 ${style.iconColor}`} strokeWidth={2.2} />
+              <span>{item.badge}</span>
+            </span>
+
+            <div className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+            </div>
           </div>
 
-          <span className="absolute top-2.5 left-2.5 z-20 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold tracking-wide text-white bg-black/65 backdrop-blur-md border border-white/15">
-            <BadgeIcon className={`w-3 h-3 shrink-0 ${style.iconColor}`} strokeWidth={2.2} />
-            <span>{item.badge}</span>
-          </span>
-
-          <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3 pt-4">
-            <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/80">
+          <div className="relative z-10 pt-4">
+            <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85">
               <Clock className="w-3 h-3 shrink-0" />
-              <span className="truncate">{item.meta}</span>
+              <span className="leading-tight">{item.meta}</span>
             </div>
-            <p className="font-display text-white text-[14.5px] font-semibold leading-snug line-clamp-2 drop-shadow-sm">
+            <p className="font-display text-white text-[13.5px] sm:text-[14.5px] font-semibold leading-snug drop-shadow-sm">
               {item.title}
             </p>
           </div>
@@ -113,8 +115,8 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
       ) : (
         <div
           style={{ background: style.cardBg }}
-          className={`relative w-full overflow-hidden rounded-2xl border ${style.borderClass || 'border-white/15'} flex items-stretch p-3 gap-3.5 transition-all duration-300 transform-gpu will-change-transform ${
-            variant === 'hero' ? 'h-[180px]' : 'h-[148px]'
+          className={`relative w-full overflow-hidden rounded-2xl border ${style.borderClass || 'border-white/15'} flex items-stretch p-3 gap-3 transition-all duration-300 transform-gpu will-change-transform ${
+            variant === 'hero' ? 'min-h-[180px]' : 'min-h-[158px] sm:min-h-[164px]'
           } ${
             isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
           }`}
@@ -134,7 +136,7 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
           </svg>
 
           {/* Capa lateral à esquerda */}
-          <div className="relative h-full aspect-[3/4] rounded-xl overflow-hidden bg-black/30 border border-white/15 shrink-0 shadow-md">
+          <div className="relative w-[86px] sm:w-[96px] self-stretch rounded-xl overflow-hidden bg-black/30 border border-white/15 shrink-0 shadow-md">
             {item.image ? (
               <img
                 src={item.image}
@@ -151,25 +153,29 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
             )}
           </div>
 
-          {/* Conteúdo à direita */}
-          <div className="relative flex-1 min-w-0 flex flex-col justify-end pr-7 py-0.5 z-10">
-            <div className="absolute top-0 right-0 w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center">
-              <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+          {/* Conteúdo à direita sem abreviação */}
+          <div className="relative flex-1 min-w-0 flex flex-col justify-between py-0.5 z-10">
+            <div className="flex items-start justify-between gap-2">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-bold uppercase tracking-wider text-white bg-black/35 border border-white/15">
+                <BadgeIcon className={`w-2.5 h-2.5 shrink-0 ${style.iconColor}`} strokeWidth={2.2} />
+                <span>{item.badge}</span>
+              </span>
+
+              <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0">
+                <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+              </div>
             </div>
 
-            <span className="self-start inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-bold uppercase tracking-wider text-white bg-black/35 border border-white/15 mb-1.5">
-              <BadgeIcon className={`w-2.5 h-2.5 shrink-0 ${style.iconColor}`} strokeWidth={2.2} />
-              <span>{item.badge}</span>
-            </span>
+            <div className="pt-2">
+              <div className="flex items-center gap-1.5 mb-1 text-[10.5px] sm:text-[11px] text-white/85">
+                <Clock className="w-3 h-3 shrink-0 opacity-80" />
+                <span className="leading-tight">{item.meta}</span>
+              </div>
 
-            <div className="flex items-center gap-1.5 mb-0.5 text-[11px] text-white/80">
-              <Clock className="w-3 h-3 shrink-0 opacity-80" />
-              <span className="truncate">{item.meta}</span>
+              <p className="font-display text-white text-[13px] sm:text-[14px] font-semibold leading-snug drop-shadow-sm">
+                {item.title}
+              </p>
             </div>
-
-            <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm">
-              {item.title}
-            </p>
           </div>
         </div>
       )}

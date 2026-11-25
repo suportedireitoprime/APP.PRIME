@@ -3,8 +3,6 @@ import { getNoticiasCache, subscribeNoticias, type Noticia } from '@/services/no
 import { AUDIOBOOKS_CATALOGO_META } from '@/data/audiobooksMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { newsImg, directImg, prefetchImages } from '@/lib/cdnImg';
-import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.webp';
-import audiobooksHeroCover from '@/assets/covers/audiobooks-hero-cover.webp';
 import pilulasHeroCover from '@/assets/covers/pilulas-hero-cover.webp';
 import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
 import senadoHeroImg from '@/assets/radar/senado-hero.webp';
@@ -14,13 +12,21 @@ interface BlogHighlight {
   id: string;
   titulo: string;
   imagem_url: string | null;
-  tema: string | null;
+  categoria: string | null;
   tempo_leitura_min: number | null;
+}
+
+interface LivroHighlight {
+  id: number | string;
+  livro: string | null;
+  autor: string | null;
+  imagem: string | null;
 }
 
 export function useHomeFeed() {
   const [noticias, setNoticias] = useState<Noticia[]>(() => (getNoticiasCache() ?? []).slice(0, 3));
   const [blogPost, setBlogPost] = useState<BlogHighlight | null>(null);
+  const [livroDestaque, setLivroDestaque] = useState<LivroHighlight | null>(null);
 
   // Subscrição em tempo real das notícias jurídicas
   useEffect(() => {
@@ -37,17 +43,29 @@ export function useHomeFeed() {
     };
   }, []);
 
-  // Busca leve do artigo mais recente do Blog Jurídico
+  // Busca leve do artigo mais recente do Blog Jurídico e de um livro clássico em destaque
   useEffect(() => {
     let mounted = true;
     void supabase
       .from('blog_edicao_posts')
-      .select('id, titulo, imagem_url, tema, tempo_leitura_min')
+      .select('id, titulo, imagem_url, categoria, tempo_leitura_min')
+      .eq('publicado', true)
       .order('data_publicacao', { ascending: false })
       .limit(1)
       .then(({ data }) => {
         if (mounted && data && data.length > 0) {
           setBlogPost(data[0] as BlogHighlight);
+        }
+      });
+
+    void supabase
+      .from('biblioteca_classicos')
+      .select('id, livro, autor, imagem')
+      .not('imagem', 'is', null)
+      .limit(1)
+      .then(({ data }) => {
+        if (mounted && data && data.length > 0) {
+          setLivroDestaque(data[0] as LivroHighlight);
         }
       });
 
@@ -81,15 +99,25 @@ export function useHomeFeed() {
           route: '/noticias',
         };
 
-    const livroItem: FeedItem = {
-      kind: 'livro',
-      id: 'explorar-livro-classicos',
-      badge: 'Recomendação de Livro',
-      title: 'Clássicos do Direito & Filosofia Jurídica',
-      meta: 'Acervo completo · Biblioteca',
-      image: bibliotecaFilosofoCover,
-      route: '/bibliotecas/classicos',
-    };
+    const livroItem: FeedItem = livroDestaque
+      ? {
+          kind: 'livro',
+          id: `explorar-livro-${livroDestaque.id}`,
+          badge: 'Recomendação de Livro',
+          title: livroDestaque.livro || 'Clássicos do Direito',
+          meta: livroDestaque.autor ? `${livroDestaque.autor} · Clássicos` : 'Clássicos do Direito',
+          image: livroDestaque.imagem ? directImg(livroDestaque.imagem, 360) : bibliotecaCoverImg,
+          route: '/bibliotecas/classicos',
+        }
+      : {
+          kind: 'livro',
+          id: 'explorar-livro-classicos',
+          badge: 'Recomendação de Livro',
+          title: 'Clássicos do Direito & Filosofia Jurídica',
+          meta: 'Acervo completo · Biblioteca',
+          image: bibliotecaCoverImg,
+          route: '/bibliotecas/classicos',
+        };
 
     const audiobookItem: FeedItem = topAudiobook
       ? {
@@ -98,7 +126,7 @@ export function useHomeFeed() {
           badge: 'Audiobook',
           title: topAudiobook.titulo,
           meta: `${topAudiobook.autor} · ${topAudiobook.duracaoTotalFormatada || `${topAudiobook.totalCapitulos} caps`}`,
-          image: audiobooksHeroCover,
+          image: directImg(topAudiobook.capaUrl, 360),
           route: '/audiobooks',
         }
       : {
@@ -107,7 +135,7 @@ export function useHomeFeed() {
           badge: 'Audiobook',
           title: 'O Caso dos Exploradores de Cavernas',
           meta: 'Lon L. Fuller · Audiobooks',
-          image: audiobooksHeroCover,
+          image: bibliotecaCoverImg,
           route: '/audiobooks',
         };
 
@@ -117,7 +145,7 @@ export function useHomeFeed() {
           id: `explorar-blog-${blogPost.id}`,
           badge: 'Artigo de Blog',
           title: blogPost.titulo,
-          meta: `${blogPost.tempo_leitura_min || 4} min · ${blogPost.tema || 'Blog Jurídico'}`,
+          meta: `${blogPost.tempo_leitura_min || 4} min · ${blogPost.categoria || 'Blog Jurídico'}`,
           image: blogPost.imagem_url ? directImg(blogPost.imagem_url, 640) : bibliotecaCoverImg,
           route: '/blog',
         }
@@ -142,7 +170,7 @@ export function useHomeFeed() {
     };
 
     return [noticiaItem, livroItem, audiobookItem, blogItem, pilulaItem];
-  }, [noticias, blogPost]);
+  }, [noticias, blogPost, livroDestaque]);
 
   // Pré-carrega as imagens dos 5 cards para exibição instantânea
   useEffect(() => {

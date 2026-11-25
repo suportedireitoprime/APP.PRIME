@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, ArrowRight } from 'lucide-react';
+import { Scale, Wrench, Bot } from 'lucide-react';
+import HomeCard from '@/components/vademecum/home/HomeCard';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -103,27 +104,45 @@ const IndexMobile = () => {
           <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-7 pb-4 space-y-5">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
 
-            {/* Destaque Minimalista do Vade Mecum no Início (saiu do rodapé) */}
-            <button
-              type="button"
-              onClick={() => navigate('/vade-mecum')}
-              className="w-full min-h-[56px] flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl bg-rose-500/[0.08] hover:bg-rose-500/[0.14] border border-rose-500/20 hover:border-rose-500/35 backdrop-blur-sm active:scale-[0.99] transition-all text-left cursor-pointer"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/12 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
-                  <Scale className="w-5 h-5" strokeWidth={1.6} />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-display text-sm font-semibold text-white tracking-tight truncate">
-                    Vade Mecum · Legislação
-                  </p>
-                  <p className="font-body text-xs text-white/60 truncate mt-0.5">
-                    CF/88, Códigos, Estatutos e Súmulas
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className="w-4.5 h-4.5 text-rose-300/75 shrink-0" strokeWidth={1.8} />
-            </button>
+            {/* 3 Cards Principais no mesmo estilo de Estudos Livres */}
+            <div className="grid grid-cols-3 gap-2 md:gap-4">
+              <HomeCard
+                icon={Scale}
+                label="Vade Mecum"
+                sublabel="Leis e Códigos"
+                color="hsl(var(--primary))"
+                delay={0}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                onClick={() => navigate('/vade-mecum')}
+                data-track="home_card_click"
+                data-track-name="Vade Mecum"
+                data-track-section="topo"
+              />
+              <HomeCard
+                icon={Wrench}
+                label="Ferramentas"
+                sublabel="Utilitários"
+                color="hsl(var(--primary))"
+                delay={0.05}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                onClick={() => navigate('/ferramentas')}
+                data-track="home_card_click"
+                data-track-name="Ferramentas"
+                data-track-section="topo"
+              />
+              <HomeCard
+                icon={Bot}
+                label="Hórus"
+                sublabel="Assistente IA"
+                color="hsl(var(--primary))"
+                delay={0.1}
+                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                onClick={() => setAssistenteOpen(true)}
+                data-track="home_card_click"
+                data-track-name="Horus"
+                data-track-section="topo"
+              />
+            </div>
 
             <MobileHomeSections />
           </main>
