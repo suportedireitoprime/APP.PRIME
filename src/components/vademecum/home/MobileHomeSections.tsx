@@ -173,7 +173,7 @@ const MobileHomeSections = ({
   useBodyScrollLock(!!categoryOpen || juriOpen);
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
       {currentTab === 'categorias' && (
         <HomeTabCategorias
           onOpenCategory={(cat) => {

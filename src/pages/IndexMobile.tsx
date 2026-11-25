@@ -100,7 +100,7 @@ const IndexMobile = () => {
           hasTopBanner={false}
         />
         <div>
-          <main ref={contentRef} className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-5 sm:pt-6 pb-2 space-y-8">
+          <main ref={contentRef} className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-9 pb-2 space-y-8">
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
 
