@@ -670,27 +670,23 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         onBack={onBack ?? (() => navigate('/'))}
       />
 
-      {/* Conteúdo Principal com Estrutura Fluida e Organizada (Margem generosa e responsiva sem colar) */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-9 md:pt-12 mt-4 sm:mt-6 space-y-10 sm:space-y-14">
-        {/* Banner Continuar Leitura no modelo de Resumos com capa flush */}
-        <div className="mb-9 sm:mb-12">
+      {/* Conteúdo Principal Minimalista com respiro para o menu flutuante */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-5 sm:pt-7 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-8 sm:space-y-10">
+        {/* Banner Continuar Leitura */}
+        <div>
           <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
         </div>
 
         {/* ======================================================== */}
-        {/* CARROSSEL DO MEIO: ACERVOS ESPECIAIS (Persuasivo e Enxuto) */}
+        {/* ACERVOS ESPECIAIS (Minimalista)                          */}
         {/* ======================================================== */}
         <section className="space-y-3.5">
-          <div className="flex items-center justify-between gap-2 px-1">
-            <div className="min-w-0 flex-1">
-              <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.6)] shrink-0" />
-                <span className="truncate">ACERVOS ESPECIAIS</span>
-              </h3>
-            </div>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-sans text-zinc-400 text-xs font-semibold uppercase tracking-widest truncate">
+              Acervos Especiais
+            </h3>
 
             <div className="flex items-center gap-1.5 shrink-0">
-              {/* Botões de Navegação Desktop/Tablet para deslizar capas */}
               <div className="hidden sm:flex items-center gap-1">
                 <button
                   type="button"
@@ -699,7 +695,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   className={cn(
                     "w-7 h-7 rounded-full flex items-center justify-center border transition-all cursor-pointer",
                     canScrollLeft
-                      ? "bg-purple-950/50 border-purple-400/40 text-purple-200 hover:text-white hover:bg-purple-600/40 active:scale-95 shadow-sm"
+                      ? "bg-zinc-900 border-white/15 text-zinc-200 hover:text-white hover:bg-zinc-800 active:scale-95"
                       : "bg-white/5 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
                   )}
                   aria-label="Voltar capas"
@@ -713,7 +709,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   className={cn(
                     "w-7 h-7 rounded-full flex items-center justify-center border transition-all cursor-pointer",
                     canScrollRight
-                      ? "bg-purple-950/50 border-purple-400/40 text-purple-200 hover:text-white hover:bg-purple-600/40 active:scale-95 shadow-sm"
+                      ? "bg-zinc-900 border-white/15 text-zinc-200 hover:text-white hover:bg-zinc-800 active:scale-95"
                       : "bg-white/5 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
                   )}
                   aria-label="Avançar capas"
@@ -722,14 +718,13 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                 </button>
               </div>
 
-              {/* Ação para ver o acervo completo da categoria selecionada */}
               <button
                 type="button"
                 onClick={() => {
                   haptic.selection();
                   navigate(`/bibliotecas/${activeAcervo.id}`);
                 }}
-                className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-[11px] sm:text-xs font-semibold text-purple-200 hover:text-white hover:bg-purple-500/25 transition-all active:scale-95 cursor-pointer touch-manipulation shrink-0"
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all active:scale-95 cursor-pointer touch-manipulation shrink-0"
               >
                 <span>Ver acervo ({livrosDoAcervo.length || activeAcervo.defaultCount})</span>
                 <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -737,7 +732,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             </div>
           </div>
 
-          {/* Menu de Alternância de Acervos Especiais (Inicia sempre pelos Clássicos) */}
+          {/* Menu de Alternância de Acervos Especiais */}
           <div
             ref={menuAlternanciaRef}
             className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar pt-0.5 pb-1 select-none touch-pan-x"
@@ -754,25 +749,25 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   data-idx={idx}
                   onClick={() => handleSelectAcervo(idx)}
                   className={cn(
-                    "relative shrink-0 flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 select-none cursor-pointer border min-h-[38px] active:scale-95 touch-manipulation",
+                    "relative shrink-0 flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 select-none cursor-pointer border min-h-[38px] active:scale-95 touch-manipulation",
                     isAtivo
-                      ? "bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white border-purple-400 shadow-lg shadow-purple-900/40 ring-1 ring-purple-400/50 scale-[1.03]"
-                      : "bg-[#14121a]/90 text-zinc-400 hover:text-white hover:bg-white/10 border-white/10"
+                      ? "bg-white text-zinc-950 border-white font-semibold"
+                      : "bg-zinc-900/75 text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-white/10"
                   )}
                 >
                   <CatIcon
                     className={cn(
                       "w-3.5 h-3.5 shrink-0 transition-colors",
-                      isAtivo ? "text-purple-200" : "text-zinc-500"
+                      isAtivo ? "text-zinc-950" : "text-zinc-400"
                     )}
-                    strokeWidth={isAtivo ? 2.4 : 2}
+                    strokeWidth={2}
                   />
                   <span className="whitespace-nowrap font-sans">{cat.label}</span>
                   <span
                     className={cn(
-                      "text-[9px] px-1.5 py-0.5 rounded-full font-mono font-bold tracking-tight transition-colors",
+                      "text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold tracking-tight transition-colors",
                       isAtivo
-                        ? "bg-black/40 text-purple-200 border border-purple-400/30"
+                        ? "bg-zinc-950/10 text-zinc-900"
                         : "bg-white/5 text-zinc-500"
                     )}
                   >
@@ -783,8 +778,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             })}
           </div>
 
-          {/* Carrossel de Livros da Categoria Selecionada (Clássicos, Fora da Toga, etc.) */}
-          {/* Suporta deslize tátil suave no mobile (touch-pan-x) e arrastar com mouse no desktop */}
+          {/* Carrossel de Livros da Categoria Selecionada */}
           <div
             ref={livrosScrollerRef}
             onScroll={checkLivrosScroll}
@@ -792,7 +786,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             onMouseMove={handleLivrosMouseMove}
             onMouseUp={handleLivrosMouseEnd}
             onMouseLeave={handleLivrosMouseEnd}
-            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x touch-manipulation pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch cursor-grab active:cursor-grabbing select-none"
+            className="-mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x touch-manipulation pt-1 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch cursor-grab active:cursor-grabbing select-none"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {livrosDoAcervo.length > 0 ? (
@@ -808,9 +802,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                       haptic.selection();
                       onAbrirLivro(livro);
                     }}
-                    className="snap-start shrink-0 w-[138px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-200 active:scale-95 touch-pan-x touch-manipulation select-none"
+                    className="snap-start shrink-0 w-[134px] sm:w-[148px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-200 active:scale-95 touch-pan-x touch-manipulation select-none"
                   >
-                    <div className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden bg-zinc-950 shadow-[0_12px_28px_-6px_rgba(0,0,0,0.85)] ring-1 ring-white/10 group-hover:ring-purple-400/60 group-hover:shadow-[0_16px_36px_-6px_rgba(168,85,247,0.35)] transition-all duration-300 flex flex-col justify-end">
+                    <div className="relative aspect-[3/4.2] w-full rounded-2xl overflow-hidden bg-zinc-950 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-200 flex flex-col justify-end">
                       <img
                         src={coverUrl}
                         alt={livro.titulo}
@@ -819,40 +813,26 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                         onError={(e) => {
                           e.currentTarget.src = bibliotecaCoverImg;
                         }}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
                       />
 
-                      {/* Gradiente de Profundidade */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
 
-                      {/* Badge no Topo à Esquerda */}
-                      <div className="absolute top-2 left-2 z-10 pointer-events-none">
-                        {hasAudio ? (
-                          <div className="px-1.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-purple-400/40 text-[9px] font-bold text-purple-300 flex items-center gap-1 shadow-sm">
+                      {hasAudio && (
+                        <div className="absolute top-2 left-2 z-10 pointer-events-none">
+                          <div className="px-1.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[9px] font-medium text-zinc-200 flex items-center gap-1">
                             <Headphones className="w-2.5 h-2.5" />
                             <span>Áudio</span>
                           </div>
-                        ) : (
-                          <div className="px-1.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[8.5px] font-bold text-white/80 shadow-sm">
-                            {activeAcervo.label}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Botão de Ação no Topo à Direita */}
-                      <div className="absolute top-2 right-2 z-10 pointer-events-none">
-                        <div className="w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-center group-hover:bg-purple-600/80 group-hover:scale-110 transition-all shadow-md">
-                          <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.4} />
                         </div>
-                      </div>
+                      )}
 
-                      {/* Rodapé com Título e Autor dentro da Capa */}
-                      <div className="relative z-10 p-2.5 pt-6 bg-gradient-to-t from-black/95 via-black/75 to-transparent text-left pointer-events-none">
-                        <h4 className="font-sans font-bold text-[12px] sm:text-[13px] text-white leading-tight line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                      <div className="relative z-10 p-2.5 pt-6 text-left pointer-events-none">
+                        <h4 className="font-sans font-semibold text-[12px] sm:text-[13px] text-white leading-tight line-clamp-2">
                           {livro.titulo}
                         </h4>
                         {livro.autor && (
-                          <p className="text-[10px] text-zinc-300/80 truncate mt-0.5 font-normal">
+                          <p className="text-[10px] text-zinc-400 truncate mt-0.5">
                             {livro.autor}
                           </p>
                         )}
@@ -862,16 +842,14 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                 );
               })
             ) : (
-              /* Esqueletos enquanto carrega a coleção */
               Array.from({ length: 5 }).map((_, sIdx) => (
                 <div
                   key={`skel-book-${sIdx}`}
-                  className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl bg-zinc-900/60 border border-white/5 animate-pulse"
+                  className="snap-start shrink-0 w-[134px] sm:w-[148px] aspect-[3/4.2] rounded-2xl bg-zinc-900/60 border border-white/5 animate-pulse"
                 />
               ))
             )}
 
-            {/* Card Final: Ver Acervo Completo */}
             {livrosDoAcervo.length > 0 && (
               <div
                 onClick={() => {
@@ -879,16 +857,16 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                   haptic.selection();
                   navigate(`/bibliotecas/${activeAcervo.id}`);
                 }}
-                className="snap-start shrink-0 w-[138px] sm:w-[152px] aspect-[3/4.2] rounded-2xl border-2 border-dashed border-purple-500/40 bg-[#14121a]/90 hover:bg-purple-950/40 flex flex-col items-center justify-center text-center p-3 cursor-pointer group active:scale-95 transition-all touch-pan-x touch-manipulation select-none"
+                className="snap-start shrink-0 w-[134px] sm:w-[148px] aspect-[3/4.2] rounded-2xl border border-dashed border-white/15 bg-zinc-900/50 hover:bg-zinc-900 flex flex-col items-center justify-center text-center p-3 cursor-pointer group active:scale-95 transition-all touch-pan-x touch-manipulation select-none"
               >
-                <div className="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform mb-2 shadow-md">
-                  <ArrowUpRight className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:scale-110 transition-transform mb-2">
+                  <ArrowUpRight className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-bold text-white group-hover:text-purple-200">
-                  Ver todas as {livrosDoAcervo.length} obras
+                <span className="text-xs font-medium text-white">
+                  Ver todas ({livrosDoAcervo.length})
                 </span>
                 <span className="text-[10px] text-zinc-400 mt-0.5">
-                  de {activeAcervo.label}
+                  {activeAcervo.label}
                 </span>
               </div>
             )}
@@ -896,37 +874,33 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         </section>
 
         {/* ======================================================== */}
-        {/* LISTA DE BAIXO: SÓ DAS MATÉRIAS DE DIREITO               */}
-        {/* FORMATO E LAYOUT IDÊNTICO AO DE AUDIOBOOKS               */}
+        {/* MATÉRIAS DE DIREITO (Minimalista)                        */}
         {/* ======================================================== */}
-        <section className="pt-5 sm:pt-7 pb-8 sm:pb-12">
-          {/* Header da Seção: MATÉRIAS DE DIREITO com risco roxo oficial */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h2 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                  <span className="w-1 h-5 rounded-full bg-gradient-to-b from-[#C084FC] to-[#7C3AED] shadow-[0_0_8px_rgba(168,85,247,0.7)] shrink-0" />
-                  <span className="truncate">MATÉRIAS DE DIREITO</span>
-                </h2>
-              </div>
-            </div>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-sans text-zinc-400 text-xs font-semibold uppercase tracking-widest truncate">
+              Matérias de Direito
+            </h2>
+            <span className="text-xs text-zinc-500 font-mono">
+              {livrosFiltrados.length} {livrosFiltrados.length === 1 ? 'obra' : 'obras'}
+            </span>
           </div>
 
-          {/* Campo de Busca Rápida Idêntico a Audiobooks com Toque Roxo Crepuscular */}
-          <div className="relative mb-4 group">
-            <Search className="w-5 h-5 text-purple-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors group-focus-within:text-purple-300 drop-shadow-[0_0_6px_rgba(168,85,247,0.5)]" />
+          {/* Campo de Busca Minimalista */}
+          <div className="relative group">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors group-focus-within:text-white" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Buscar livro, autor ou tema em ${activeMateria.label}…`}
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#14121a]/95 border border-purple-500/25 text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-lg shadow-black/60"
+              placeholder={`Buscar em ${activeMateria.label}…`}
+              className="w-full pl-10 pr-10 h-12 text-sm rounded-xl bg-zinc-900/80 border border-white/10 text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-purple-300 hover:text-white cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer p-1"
                 aria-label="Limpar busca"
               >
                 <X className="w-4 h-4" />
@@ -934,94 +908,44 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             )}
           </div>
 
-          {/* Abas 3D Estilo Pasta com Linha Base e Fundo Roxo Crepuscular Oficial */}
-          <div className="relative -mr-4 sm:-mr-6 overflow-x-auto no-scrollbar mb-5 border-b border-purple-500/25">
-            <div className="flex w-max min-w-full items-end no-scrollbar h-11 sm:h-12 pt-1 pr-6 sm:pr-8">
-              {MATERIAS_DIREITO_TABS.map((tab, index) => {
-                const isActive = activeMateriaId === tab.id;
-                const zIndex = isActive ? 40 : 30 - Math.min(index, 20);
-                const countNumber = getTabCount(tab);
+          {/* Pills Horizontais Minimalistas das Matérias */}
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 select-none touch-pan-x">
+            {MATERIAS_DIREITO_TABS.map((tab) => {
+              const isActive = activeMateriaId === tab.id;
+              const countNumber = getTabCount(tab);
 
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      setActiveMateriaId(tab.id);
-                    }}
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setActiveMateriaId(tab.id);
+                  }}
+                  className={cn(
+                    "shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium border min-h-[38px] transition-all cursor-pointer select-none active:scale-95",
+                    isActive
+                      ? "bg-white text-zinc-950 border-white font-semibold"
+                      : "bg-zinc-900/75 text-zinc-400 hover:text-white hover:bg-zinc-800/80 border-white/10"
+                  )}
+                >
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span
                     className={cn(
-                      "relative shrink-0 h-full flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-t-2xl border-x border-t text-[10.5px] sm:text-[11.5px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
+                      "text-[10px] px-1.5 py-0.2 rounded-full font-mono font-semibold",
                       isActive
-                        ? "text-white font-bold border-transparent"
-                        : "bg-[#141416] text-white/50 hover:bg-[#1A1824] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/10 hover:border-purple-500/30 opacity-80 font-medium"
+                        ? "bg-zinc-950/10 text-zinc-900"
+                        : "bg-white/5 text-zinc-500"
                     )}
-                    style={{
-                      zIndex,
-                      marginLeft: index > 0 ? "-10px" : "0",
-                    }}
                   >
-                    {/* Fundo Deslizante Ativo no Tom Roxo Oficial com Brilho e Efeito 3D */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeBibliotecaMateriaTabPill"
-                        className="absolute inset-0 rounded-t-2xl border-x border-t z-0 overflow-hidden"
-                        style={{
-                          background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #4C1D95 100%)',
-                          borderColor: '#A855F7',
-                          boxShadow: 'inset 0 1px 4px rgba(255, 255, 255, 0.25)',
-                        }}
-                        initial={false}
-                        transition={{
-                          type: "spring",
-                          stiffness: 450,
-                          damping: 35,
-                          mass: 0.6,
-                        }}
-                      >
-                        {/* Brilho Superior Suave */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/25 opacity-90 pointer-events-none" />
-                        <div
-                          className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
-                          style={{ borderColor: '#C084FC' }}
-                        />
-                      </motion.div>
-                    )}
-
-                    <span
-                      className={cn(
-                        "relative z-10 whitespace-nowrap transition-transform duration-200 font-bold",
-                        isActive ? "scale-105 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" : "scale-100"
-                      )}
-                    >
-                      {tab.label}
-                    </span>
-
-                    <span
-                      className={cn(
-                        "relative z-10 text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold tracking-tight transition-colors duration-200",
-                        isActive
-                          ? "bg-black/35 text-purple-100 border border-purple-400/30 shadow-inner"
-                          : "bg-white/5 text-white/40"
-                      )}
-                    >
-                      {countNumber}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Linha de Base da Pasta Oficial com Transição Suave de Cor Roxa */}
-            <motion.div
-              className="min-w-full w-max h-0.5 relative z-20"
-              style={{
-                backgroundColor: '#8B5CF6',
-              }}
-            />
+                    {countNumber}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Listagem de Livros — Somente Lista Vertical Idêntica a Audiobooks */}
+          {/* Listagem Minimalista de Livros */}
           <AnimatePresence mode="wait">
             {livrosFiltrados.length === 0 ? (
               <motion.div
@@ -1030,25 +954,24 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.18 }}
-                className="py-16 text-center text-white/60 text-sm bg-zinc-900/40 border border-white/10 rounded-3xl px-4"
+                className="py-14 text-center text-zinc-400 text-sm bg-zinc-900/50 border border-white/10 rounded-2xl px-4"
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
-                  <BookOpen className="w-6 h-6" />
+                <div className="w-11 h-11 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
+                  <BookOpen className="w-5 h-5" />
                 </div>
-                <p className="font-semibold text-white">
+                <p className="font-medium text-white">
                   {searchQuery
                     ? `Nenhum livro encontrado para "${searchQuery}" em ${activeMateria.label}.`
                     : `Nenhum livro disponível em ${activeMateria.fullName}.`}
                 </p>
-                <p className="text-xs text-white/50 max-w-sm mx-auto mt-1">
-                  Tente buscar outro termo ou selecione outra matéria do Direito.
+                <p className="text-xs text-zinc-500 max-w-sm mx-auto mt-1">
+                  Tente outro termo ou selecione outra matéria.
                 </p>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="mt-3 px-4 py-1.5 rounded-full text-white text-xs font-bold transition-colors cursor-pointer"
-                    style={{ backgroundColor: activeMateria.corFundoBotao }}
+                    className="mt-3 px-4 py-1.5 rounded-full bg-white text-zinc-950 text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Limpar pesquisa
                   </button>
@@ -1057,69 +980,36 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             ) : (
               <motion.div
                 key={activeMateriaId}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
                 className="flex flex-col gap-2.5"
               >
                 {visibleLivros.map((livro, index) => {
                   const isFav = favoriteIds.has(`${livro.colecaoId || 'areas'}:${livro.id}`);
 
                   return (
-                    <motion.div
+                    <div
                       key={`${livro.colecaoId || 'areas'}:${livro.id}-${index}`}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.3,
-                        delay: Math.min(index * 0.03, 0.3),
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 24,
-                      }}
                       onClick={() => {
                         haptic.selection();
                         onAbrirLivro(livro);
                       }}
-                      aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                      style={{
-                        background: 'linear-gradient(135deg, #4A1D96 0%, #31136A 55%, #1A083B 100%)',
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          haptic.selection();
+                          onAbrirLivro(livro);
+                        }
                       }}
-                      className="group relative flex items-stretch rounded-2xl overflow-hidden transition-all duration-300 border border-purple-500/25 hover:border-purple-400/50 shadow-[0_6px_20px_rgba(0,0,0,0.65)] hover:shadow-[0_8px_28px_rgba(124,58,237,0.35)] cursor-pointer select-none text-left w-full h-[142px] sm:h-[150px] transform-gpu will-change-transform active:scale-[0.985] touch-pan-y"
+                      aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
+                      className="group flex items-center gap-3.5 p-3 rounded-2xl bg-zinc-900/75 hover:bg-zinc-800/80 border border-white/10 hover:border-white/20 transition-all cursor-pointer select-none text-left w-full active:scale-[0.99] touch-pan-y"
                     >
-                      {/* SVGs jurídicos decorativos ao fundo (idêntico ao Carrossel de Clássicos) */}
-                      <svg
-                        aria-hidden
-                        viewBox="0 0 200 200"
-                        className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/[0.08]"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                        <path d="M35 95 Q55 135 75 95 Z" />
-                        <path d="M125 95 Q145 135 165 95 Z" />
-                      </svg>
-                      <svg
-                        aria-hidden
-                        viewBox="0 0 100 100"
-                        className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/[0.08]"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      >
-                        <path d="M18 78 L58 38" />
-                        <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                        <path d="M10 88 H50" />
-                      </svg>
-
-                      {/* Capa do Livro à Esquerda (proporcional, com sombra tridimensional e fallback) */}
-                      <div className="relative h-full w-[96px] sm:w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Library className="w-8 h-8 text-white/20" />
-                        </div>
+                      {/* Capa Compacta à Esquerda */}
+                      <div className="relative w-[68px] sm:w-[76px] aspect-[3/4.2] rounded-xl overflow-hidden bg-zinc-950 border border-white/10 shrink-0 flex items-center justify-center">
                         <img
                           src={livro.capa ? directImg(livro.capa, 240) : bibliotecaCoverImg}
                           alt={livro.titulo}
@@ -1129,90 +1019,72 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                           onError={(e) => {
                             e.currentTarget.src = bibliotecaCoverImg;
                           }}
-                          className="relative h-[118px] sm:h-[124px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300"
-                          style={{
-                            boxShadow:
-                              '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.2)',
-                          }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
 
-                      {/* Detalhes à Direita no Padrão Clássicos com Botão ↗ no Canto Superior */}
-                      <div className="relative flex-1 min-w-0 flex flex-col justify-between p-3 sm:p-3.5 pr-10 z-[1]">
-                        {/* Botão Circular ↗ no Topo Direito (como em Clássicos) */}
-                        <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md group-hover:bg-purple-500/50 group-hover:scale-110 transition-all z-10">
-                          <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.4} />
-                        </div>
-
+                      {/* Informações do Livro */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
                         <div>
-                          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                            <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white bg-black/40 backdrop-blur-sm border border-white/15">
-                              <Library className="w-2.5 h-2.5" />
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
                               {activeMateria.label}
                             </span>
-                            {livro.autor && (
-                              <div className="flex items-center gap-1 text-[11px] text-white/80 truncate">
-                                <Clock className="w-3 h-3 shrink-0 opacity-70" />
-                                <span className="truncate">{livro.autor}</span>
-                              </div>
+                            {livro.paginas && (
+                              <span className="text-[10px] font-mono text-zinc-500">
+                                • {livro.paginas} págs
+                              </span>
                             )}
                           </div>
 
-                          <p className="font-display text-white text-[13.5px] sm:text-[14.5px] font-semibold leading-snug line-clamp-2 drop-shadow-sm group-hover:text-purple-100 transition-colors">
+                          <p className="font-sans text-white text-sm sm:text-[15px] font-semibold leading-snug line-clamp-2">
                             {livro.titulo}
                           </p>
+
+                          {livro.autor && (
+                            <p className="text-xs text-zinc-400 truncate mt-0.5">
+                              {livro.autor}
+                            </p>
+                          )}
                         </div>
 
-                        {/* Linha Inferior: Páginas + Favoritar + Botão Ler */}
-                        <div className="flex items-center justify-between gap-2 pt-1 mt-auto">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[10.5px] font-mono px-2 py-0.5 rounded-md bg-black/35 border border-purple-400/25 text-purple-200">
-                              <BookOpen className="w-3 h-3 text-purple-300" />
-                              <span className="font-bold">
-                                {livro.paginas ? `${livro.paginas} págs` : 'PDF Integral'}
-                              </span>
-                            </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleFavorite(livro);
+                            }}
+                            className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white py-1 px-2 -ml-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                            aria-label={isFav ? "Remover dos salvos" : "Salvar na estante"}
+                          >
+                            <Bookmark
+                              className={cn(
+                                "w-3.5 h-3.5 transition-colors",
+                                isFav ? "fill-white text-white" : "text-zinc-400"
+                              )}
+                              strokeWidth={2}
+                            />
+                            <span>{isFav ? 'Salvo' : 'Salvar'}</span>
+                          </button>
 
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleToggleFavorite(livro);
-                              }}
-                              className="p-1 rounded-md hover:bg-white/10 text-white/50 hover:text-amber-400 active:scale-90 transition-all cursor-pointer flex items-center justify-center shrink-0"
-                              aria-label={isFav ? "Remover dos salvos" : "Salvar na estante"}
-                            >
-                              <Bookmark
-                                className={cn(
-                                  "w-3.5 h-3.5 transition-colors",
-                                  isFav
-                                    ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                                    : "text-white/40 hover:text-white"
-                                )}
-                                strokeWidth={2}
-                              />
-                            </button>
-                          </div>
-
-                          <div className="shrink-0">
-                            <span className="text-[10.5px] uppercase tracking-wide font-bold text-white px-3 py-1 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 group-hover:from-purple-500 group-hover:to-indigo-500 transition-all duration-200 shadow-md flex items-center gap-1 border border-purple-400/30">
-                              <BookOpen className="w-3 h-3 stroke-[2.2]" />
-                              Ler
-                            </span>
-                          </div>
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-200 group-hover:text-white px-3 py-1 rounded-full bg-white/10 group-hover:bg-white group-hover:text-zinc-950 transition-colors">
+                            <span>Ler</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </span>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
 
                 {/* Paginação fluida para carregar mais obras */}
                 {livrosFiltrados.length > visibleLimit && (
-                  <div className="pt-4 pb-2 flex justify-center">
+                  <div className="pt-3 pb-2 flex justify-center">
                     <button
                       type="button"
                       onClick={() => setVisibleLimit((prev) => prev + 30)}
-                      className="px-6 py-2.5 rounded-full bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-white/10 text-xs sm:text-sm font-semibold active:scale-95 transition-all shadow-md cursor-pointer"
+                      className="px-5 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 text-xs font-medium active:scale-95 transition-all cursor-pointer"
                     >
                       Carregar mais obras ({livrosFiltrados.length - visibleLimit} restantes)
                     </button>

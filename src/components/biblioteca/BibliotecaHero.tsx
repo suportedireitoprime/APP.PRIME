@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
-import bibliotecaFilosofoCover from '@/assets/biblioteca-filosofo-cover.webp';
-import BibliotecaHeroWave from './BibliotecaHeroWave';
 import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 
 interface Props {
@@ -19,52 +17,39 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children })
   const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
   return (
-    <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[310px] xs:min-h-[325px] sm:min-h-[345px]"
-      style={{
-        transform: 'translateZ(0)',
-        backgroundColor: '#050505',
-      }}
-    >
-      {/* Blindagem de overscroll superior contra vazamento do fundo */}
-      <div
-        className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-        style={{ backgroundColor: '#050505' }}
-        aria-hidden="true"
-      />
+    <header className="sticky top-0 z-30 bg-[#0D0F12]/90 backdrop-blur-xl border-b border-white/10 pt-[var(--sai-top,env(safe-area-inset-top,0px))]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-3 space-y-3">
+        {/* Barra Superior Minimalista */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.light();
+                if (onBack) {
+                  onBack();
+                } else {
+                  navigate('/');
+                }
+              }}
+              aria-label="Voltar para o início"
+              className="grid w-11 h-11 sm:w-12 sm:h-12 shrink-0 place-items-center rounded-full bg-zinc-900/90 border border-white/10 text-white hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.2} />
+            </button>
 
-      {/* Imagem de Capa da Biblioteca Clássica ao Crepúsculo */}
-      <img
-        src={bibliotecaFilosofoCover}
-        alt="Biblioteca Jurídica"
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[68%_38%] md:object-[center_35%] z-0 pointer-events-none transform-gpu will-change-transform"
-      />
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-white leading-tight truncate">
+                Biblioteca
+              </h1>
+              <p className="text-xs text-zinc-400 truncate">
+                +{isLoading ? '...' : totalCount} obras jurídicas
+              </p>
+            </div>
+          </div>
 
-      {/* Onda Roxa / Púrpura Crepúsculo 3D em Seda Pura */}
-      <BibliotecaHeroWave />
-
-      {/* Cabeçalho Superior Transparente (Botões de Voltar e Meus PDFs / Offline) */}
-      <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
-        <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
-            onClick={() => {
-              haptic.light();
-              if (onBack) {
-                onBack();
-              } else {
-                navigate('/');
-              }
-            }}
-            aria-label="Voltar para o início"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
-          >
-            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-          </button>
-          <button
+            type="button"
             onClick={() => {
               haptic.selection();
               if (onAbrirCustomPdf) {
@@ -73,57 +58,20 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children })
                 navigate('/modo-offline/livros');
               }
             }}
-            aria-label="Meus PDFs ou Armazenamento Offline"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
+            aria-label="Meus PDFs e armazenamento offline"
+            className="inline-flex items-center gap-2 h-11 px-3.5 rounded-full bg-zinc-900/90 border border-white/10 text-zinc-200 hover:text-white hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer shrink-0 text-xs font-medium"
           >
-            <HardDrive className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2} />
+            <HardDrive className="w-4 h-4 shrink-0" strokeWidth={2} />
+            <span className="hidden xs:inline">Meus PDFs</span>
           </button>
         </div>
-      </header>
 
-      {/* Conteúdo: Altura calibrada, desobstruindo o botão voltar */}
-      <div className="relative z-10 pt-5 sm:pt-6 flex-1 flex flex-col justify-start min-h-[155px] sm:min-h-[170px]">
-        {/* Espaçamento vertical para livrar os botões superiores */}
-        <div className="h-[64px] sm:h-[72px] mb-2 shrink-0 w-full" aria-hidden="true" />
-
-        <div className="flex items-start justify-between gap-3 px-3 sm:px-4">
-          <div className="flex flex-col items-start text-left gap-1 z-10 relative ml-2 sm:ml-4 max-w-[250px]">
-            {/* Tipografia de Marca: Biblioteca (branco) + Jurídica (púrpura crepúsculo luminoso) */}
-            <h1 className="tracking-tight leading-[1.02] drop-shadow-[0_3px_8px_rgba(0,0,0,0.95)]">
-              <span className="font-serif text-[22px] sm:text-[26px] font-medium text-white block">
-                Biblioteca
-              </span>
-              <span className="font-serif italic text-[24px] sm:text-[28px] font-semibold text-[#D8B4FE] block drop-shadow-[0_2px_16px_rgba(168,85,247,0.85)] -mt-0.5">
-                Jurídica
-              </span>
-            </h1>
-
-            {/* Traço vertical púrpura e subtítulo oficial */}
-            <div className="mt-2 flex items-start text-left gap-2">
-              <div className="w-[3px] h-8 bg-gradient-to-b from-[#C084FC] via-[#7C3AED] to-[#4C1D95] rounded-full shrink-0 mt-0.5 shadow-[0_0_12px_rgba(168,85,247,0.7)]" />
-              <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
-                Acervo permanente com{' '}
-                <span className="text-[#E9D5FF] font-bold not-italic">
-                  +{isLoading ? '...' : totalCount} livros
-                </span>{' '}
-                ao seu dispor.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4 Atalhos Rápidos flutuando sobre a onda */}
-      <div className="relative z-10 px-4 sm:px-6 pt-2.5 pb-5 sm:pb-6">
+        {/* 4 Atalhos Rápidos Minimalistas */}
         <BibliotecaActionShortcuts />
-      </div>
 
-      {children && (
-        <div className="relative z-10 px-4 sm:px-6 w-full pb-5">
-          {children}
-        </div>
-      )}
-    </div>
+        {children && <div className="w-full pt-1">{children}</div>}
+      </div>
+    </header>
   );
 };
 

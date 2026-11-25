@@ -12,9 +12,8 @@ import HeroAnimatedWave from "./HeroAnimatedWave";
 import HomeBrandBanner from "./HomeBrandBanner";
 import FloatingOrbitingBrains from "@/components/common/FloatingOrbitingBrains";
 import { HomeTrialCard } from "@/components/subscription/HomeTrialCard";
-import HomeActionShortcuts from "./HomeActionShortcuts";
 import { useUnreadNotifCount } from "@/components/vademecum/outros/NotificationsSheet";
-import { Bell, Menu as MenuIcon } from "lucide-react";
+import { Bell, Menu as MenuIcon, Search } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
 
 const NotificationsSheet = lazyWithRetry(
@@ -81,7 +80,7 @@ const HomeHeaderHero = ({
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll — proporção nobre e elegante */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[295px] xs:min-h-[315px] sm:min-h-[345px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[275px] xs:min-h-[295px] sm:min-h-[320px]"
         style={{
           transform: "translateZ(0)",
           backgroundColor: "#050505",
@@ -155,9 +154,26 @@ const HomeHeaderHero = ({
           </div>
         </div>
 
-        {/* Atalhos Rápidos — dentro do painel posicionado suavemente mais para baixo */}
-        <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-3 xs:mt-4 sm:mt-5 pb-3 xs:pb-3.5 sm:pb-4">
-          <HomeActionShortcuts />
+        {/* Barra de Busca Global Minimalista */}
+        <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-3 xs:mt-4 sm:mt-5 pb-3.5 xs:pb-4 sm:pb-5">
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              if (onOpenSearch) {
+                onOpenSearch();
+              } else {
+                navigate('/pesquisar');
+              }
+            }}
+            aria-label="Buscar lei, artigo, tema ou aula"
+            className="w-full min-h-[48px] h-12 flex items-center gap-3 px-4 rounded-2xl bg-black/50 hover:bg-black/65 backdrop-blur-md border border-white/15 hover:border-white/25 transition-all active:scale-[0.99] text-left cursor-pointer shadow-lg"
+          >
+            <Search className="w-4.5 h-4.5 text-zinc-300 shrink-0" strokeWidth={2} />
+            <span className="flex-1 text-sm text-zinc-300/90 truncate">
+              Buscar lei, artigo, tema ou aula…
+            </span>
+          </button>
         </div>
       </div>
 

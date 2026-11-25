@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import { toast } from '@/hooks/use-toast';
+import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import HomeBoletinsList from './HomeBoletinsList';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
@@ -68,7 +69,14 @@ const HomeTabEstudos = ({
         </div>
       ) : (
         <div className="flex flex-col gap-7 pt-2">
-          {/* Seção Estudos Livres — posicionada logo após o carrossel de Leis em Alta */}
+          {/* Carrossel de Notícias Jurídicas antes de Estudos Livres */}
+          {!hideNoticias && (
+            <div className="-mx-4 sm:-mx-6 md:-mx-8">
+              <HomeNoticiasCarousel autoplay={noticiasAutoplay} onOpenChange={onNewsOpenChange} />
+            </div>
+          )}
+
+          {/* Seção Estudos Livres — posicionada logo após o carrossel de Notícias Jurídicas */}
           <div className="flex flex-col gap-3.5">
             <div className="relative z-10 flex items-start justify-between gap-3 px-1">
               <div className="min-w-0 flex-1">

@@ -4,10 +4,10 @@ import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Leitura',     icon: BookOpen,   action: () => abrirAtalhoBiblioteca('leitura'),       color: '#C084FC' },
-  { label: 'Em Alta',     icon: Flame,      action: () => abrirAtalhoBiblioteca('em-alta'),       color: '#FB923C' },
-  { label: 'Favoritos',   icon: Bookmark,   action: () => abrirAtalhoBiblioteca('favoritos'),     color: '#C084FC' },
-  { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#C084FC' },
+  { label: 'Leitura',   icon: BookOpen,  action: () => abrirAtalhoBiblioteca('leitura') },
+  { label: 'Em Alta',   icon: Flame,     action: () => abrirAtalhoBiblioteca('em-alta') },
+  { label: 'Favoritos', icon: Bookmark,  action: () => abrirAtalhoBiblioteca('favoritos') },
+  { label: 'Meus PDFs', icon: HardDrive, action: () => abrirAtalhoBiblioteca('personalizado') },
 ];
 
 interface BibliotecaActionShortcutsProps {
@@ -17,9 +17,9 @@ interface BibliotecaActionShortcutsProps {
 const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcutsProps) => {
   return (
     <div
-      className={`flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-[32px] sm:rounded-[36px] py-2.5 sm:py-3 px-3 sm:px-4 shadow-2xl ${className}`}
+      className={`grid grid-cols-4 gap-1.5 bg-zinc-900/75 border border-white/10 rounded-2xl p-1 ${className}`}
     >
-      {SHORTCUT_ITEMS.map((item, index) => {
+      {SHORTCUT_ITEMS.map((item) => {
         const Icon = item.icon;
         return (
           <button
@@ -29,18 +29,13 @@ const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcuts
               haptic.selection();
               item.action();
             }}
-            style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
+            className="group flex flex-col items-center justify-center min-h-[44px] py-1.5 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 active:scale-95 transition-all gap-1 text-center select-none cursor-pointer"
           >
             <Icon
-              className="w-[26px] h-[26px] shrink-0 transition-transform duration-200 group-hover:scale-110"
-              style={{
-                color: item.color,
-                filter: 'drop-shadow(0 2px 5px rgba(0, 0, 0, 0.65))',
-              }}
-              strokeWidth={2.1}
+              className="w-4 h-4 shrink-0 text-zinc-300 group-hover:text-white transition-colors"
+              strokeWidth={2}
             />
-            <span className="text-white/95 text-[12px] sm:text-[12.5px] font-semibold tracking-tight whitespace-nowrap drop-shadow-sm group-hover:text-white transition-colors">
+            <span className="text-zinc-300 group-hover:text-white text-[11px] font-medium tracking-tight whitespace-nowrap transition-colors">
               {item.label}
             </span>
           </button>

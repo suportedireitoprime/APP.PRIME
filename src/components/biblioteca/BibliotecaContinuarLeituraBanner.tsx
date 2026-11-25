@@ -118,12 +118,12 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
       type="button"
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.25 }}
       onClick={handleClick}
-      className="w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl border text-left active:scale-[0.99] transition-all overflow-hidden relative shadow-lg group cursor-pointer bg-gradient-to-r from-purple-950/25 via-[#161022] to-[#100b18] border-purple-500/25 hover:border-purple-400/50"
+      className="w-full flex items-center gap-3.5 p-3 rounded-2xl border text-left active:scale-[0.99] transition-all overflow-hidden relative group cursor-pointer bg-zinc-900/80 border-white/10 hover:border-white/20 hover:bg-zinc-900"
     >
-      {/* Capa Compacta Minimalista à Esquerda (Sem contorno) */}
-      <div className="w-12 sm:w-14 aspect-[3/4] rounded-xl overflow-hidden bg-black/60 shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
+      {/* Capa Compacta Minimalista à Esquerda */}
+      <div className="w-12 sm:w-14 aspect-[3/4] rounded-xl overflow-hidden bg-zinc-950 border border-white/10 shrink-0 relative">
         {capaUrl ? (
           <img
             src={capaUrl}
@@ -133,49 +133,43 @@ export const BibliotecaContinuarLeituraBanner = memo(function BibliotecaContinua
             decoding="async"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#2e1065] to-[#150926] flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-purple-300/80" />
+          <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-zinc-400" />
           </div>
         )}
-        <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/30 to-transparent pointer-events-none" />
       </div>
 
       {/* Informações Minimalistas Centrais */}
       <div className="flex-1 min-w-0 py-0.5">
-        {/* Linha 1: Label + Tag de Modo */}
         <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-[9.5px] font-bold uppercase tracking-wider text-[#C084FC] flex items-center gap-1">
-            <BookOpen className="w-2.5 h-2.5 fill-[#A855F7] text-[#A855F7]" />
-            Continuar Leitura
+          <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+            Continuar leitura
           </span>
-          <span className="text-[8.5px] font-mono font-bold uppercase px-1.5 py-0.2 rounded border tracking-wider bg-[#A855F7]/15 text-[#E9D5FF] border-[#A855F7]/35">
+          <span className="text-[9px] font-mono font-medium uppercase px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">
             {modoBadge}
           </span>
         </div>
 
-        {/* Linha 2: Título da Obra (sem abreviação, traços limpos) */}
-        <h4 className="font-sans font-normal text-sm sm:text-base text-white leading-snug truncate">
+        <h4 className="font-sans font-medium text-sm sm:text-base text-white leading-snug truncate">
           {displayNome}
         </h4>
 
-        {/* Linha 3: Descrição e Status em UMA LINHA ÚNICA com bolinha pulsante */}
-        <p className="text-[11px] sm:text-[11.5px] text-white/70 truncate mt-0.5 flex items-center gap-1.5 leading-snug">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#A855F7] shrink-0 animate-pulse shadow-[0_0_6px_#A855F7]" />
-          <span className="truncate">{descricaoUmaLinha}</span>
+        <p className="text-xs text-zinc-400 truncate mt-0.5 leading-snug">
+          {descricaoUmaLinha}
         </p>
 
-        {/* Linha 4: Barra de Progresso Fina e Minimalista (h-1) */}
-        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
+        {/* Barra de Progresso Fina e Minimalista */}
+        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-2">
           <div
             style={{ width: `${Math.max(percent, percent > 0 ? 4 : 0)}%` }}
-            className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-[#7C3AED] via-[#9333EA] to-[#C084FC] shadow-[0_0_8px_rgba(168,85,247,0.7)]"
+            className="h-full rounded-full transition-all duration-300 bg-white"
           />
         </div>
       </div>
 
       {/* Botão Ação Circular Minimalista à Direita */}
-      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#9333EA]/20 text-[#D8B4FE] border border-[#A855F7]/40 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 active:scale-95 shadow-md">
-        <ArrowRight className="w-3.5 h-3.5 stroke-[2.4]" />
+      <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 active:scale-95">
+        <ArrowRight className="w-4 h-4 stroke-[2.2]" />
       </div>
     </motion.button>
   );
