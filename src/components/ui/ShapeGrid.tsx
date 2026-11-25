@@ -77,6 +77,8 @@ const ShapeGrid = ({
     const isMoving = speed > 0;
     const minFrameInterval = 1000 / 30;
     let resizeFrameId: number | null = null;
+    let isInteractionPaused = false;
+    let interactionResumeTimer: number | null = null;
 
     // Tile pré-renderizado para o modo quadrado (reduz ~250 strokeRect/frame para 1 fillRect)
     let squareTilePattern: CanvasPattern | null = null;
@@ -311,7 +313,7 @@ const ShapeGrid = ({
     };
 
     const tryStart = () => {
-      if (isVisible && isPageVisible && active && !reducedMotion && !isContextLost && !requestRef.current) {
+      if (isVisible && isPageVisible && active && !reducedMotion && !isContextLost && !isInteractionPaused && !requestRef.current) {
         lastFrameTime = performance.now();
         requestRef.current = requestAnimationFrame(updateAnimation);
       }
@@ -319,7 +321,7 @@ const ShapeGrid = ({
 
     // 5. Loop de animação
     const updateAnimation = (now: number) => {
-      if (!isVisible || !isPageVisible || !active || reducedMotion || isContextLost) {
+      if (!isVisible || !isPageVisible || !active || reducedMotion || isContextLost || isInteractionPaused) {
         tryStop();
         return;
       }
@@ -565,6 +567,21 @@ const ShapeGrid = ({
 
     const handleVis = () => onVisibility();
     document.addEventListener('visibilitychange', handleVis);
+
+    const pauseDuringScrollOrTouch = () => {
+      isInteractionPaused = true;
+      tryStop();
+      if (interactionResumeTimer !== null) {
+        window.clearTimeout(interactionResumeTimer);
+      }
+      interactionResumeTimer = window.setTimeout(() => {
+        isInteractionPaused = false;
+        tryStart();
+      }, 220);
+    };
+    window.addEventListener('scroll', pauseDuringScrollOrTouch, { capture: true, passive: true });
+    window.addEventListener('touchstart', pauseDuringScrollOrTouch, { capture: true, passive: true });
+    window.addEventListener('wheel', pauseDuringScrollOrTouch, { capture: true, passive: true });
     
     let appListener: any;
     App.addListener('appStateChange', ({ isActive }) => {
@@ -596,6 +613,10 @@ const ShapeGrid = ({
 
     return () => {
       if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
+      if (interactionResumeTimer !== null) window.clearTimeout(interactionResumeTimer);
+      window.removeEventListener('scroll', pauseDuringScrollOrTouch, { capture: true });
+      window.removeEventListener('touchstart', pauseDuringScrollOrTouch, { capture: true });
+      window.removeEventListener('wheel', pauseDuringScrollOrTouch, { capture: true });
       resizeObserver.disconnect();
       tryStop();
       io.disconnect();

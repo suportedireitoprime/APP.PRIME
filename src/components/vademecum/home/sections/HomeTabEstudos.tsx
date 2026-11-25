@@ -68,7 +68,7 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-7 pt-2">
+        <div className="flex flex-col gap-7">
           {/* Carrossel de Notícias Jurídicas antes de Estudos Livres */}
           {!hideNoticias && (
             <div className="-mx-4 sm:-mx-6 md:-mx-8">

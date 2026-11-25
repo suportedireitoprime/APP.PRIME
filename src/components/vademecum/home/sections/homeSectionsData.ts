@@ -79,8 +79,8 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech, color: 'hsl(var(--primary))', route: '/me-explique' },
-  { id: 'ea-horus',       label: 'Hórus',            sublabel: 'Assistente IA',      icon: Bird,   color: 'hsl(var(--primary))', route: '/assistente-horus' },
+  { id: 'ea-me-explique',   label: 'Me Explique (IA)', sublabel: 'Explicações com IA',  icon: Speech,        color: 'hsl(var(--primary))', route: '/me-explique' },
+  { id: 'ea-chat-juridico', label: 'Chat Jurídico',    sublabel: 'Tire dúvidas com IA', icon: MessageCircle, color: 'hsl(var(--primary))', route: '/chat-juridico' },
 ];
 
 export const FAST_PILLS_ITEMS = [

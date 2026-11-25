@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, BookOpen, Wrench, ChevronRight, type LucideIcon } from 'lucide-react';
+import { Scale, BookOpen, Wrench, Bird, ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
 
@@ -34,14 +34,27 @@ const ITEMS: EmAltaFeatureItem[] = [
     route: '/ferramentas',
     icon: Wrench,
   },
+  {
+    id: 'horus',
+    label: 'Hórus',
+    sublabel: 'Assistente IA',
+    route: '/assistente-horus',
+    icon: Bird,
+  },
 ];
 
 const HomeEmAltaCardsCarousel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const [activeIndex, setActiveIndex] = useState(ITEMS.length * 2);
+  const initialIndex = ITEMS.length * 2;
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const activeIndexRef = useRef(initialIndex);
   const [isReady, setIsReady] = useState(false);
   const readyRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const settleTimerRef = useRef<number | null>(null);
+  const scrollRafRef = useRef<number | null>(null);
+  const childMidpointsRef = useRef<number[]>([]);
 
   // Duplica 5x para rolagem infinita suave para ambos os lados
   const loopedItems = useMemo(
@@ -60,7 +73,6 @@ const HomeEmAltaCardsCarousel = () => {
 
   useEffect(() => {
     if (isReady) return;
-    const initialIndex = ITEMS.length * 2; // Vade Mecum centralizado
     const t = setTimeout(() => {
       const el = scrollerRef.current;
       if (el) {
@@ -72,6 +84,7 @@ const HomeEmAltaCardsCarousel = () => {
         childMidpointsRef.current = mids;
         scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
       }
+      activeIndexRef.current = initialIndex;
       setActiveIndex(initialIndex);
       setIsReady(true);
       requestAnimationFrame(() => {
@@ -79,10 +92,35 @@ const HomeEmAltaCardsCarousel = () => {
       });
     }, 60);
     return () => clearTimeout(t);
-  }, [isReady, scrollToIndex]);
+  }, [initialIndex, isReady, scrollToIndex]);
 
-  const scrollRafRef = useRef<number | null>(null);
-  const childMidpointsRef = useRef<number[]>([]);
+  const settleWrapAround = useCallback(() => {
+    if (!readyRef.current || isDraggingRef.current) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const mids = childMidpointsRef.current;
+    if (mids.length === 0) return;
+
+    const current = activeIndexRef.current;
+    const N = ITEMS.length;
+    const halfWidth = el.clientWidth / 2;
+
+    if (current <= 1) {
+      const jumpTo = current + N * 2;
+      if (mids[jumpTo] !== undefined) {
+        el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+        activeIndexRef.current = jumpTo;
+        setActiveIndex(jumpTo);
+      }
+    } else if (current >= loopedItems.length - 2) {
+      const jumpTo = current - N * 2;
+      if (mids[jumpTo] !== undefined) {
+        el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+        activeIndexRef.current = jumpTo;
+        setActiveIndex(jumpTo);
+      }
+    }
+  }, [loopedItems.length]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -98,14 +136,26 @@ const HomeEmAltaCardsCarousel = () => {
     measure();
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
     ro?.observe(el);
+
+    const onScrollEnd = () => settleWrapAround();
+    el.addEventListener('scrollend', onScrollEnd);
+
     return () => {
       ro?.disconnect();
+      el.removeEventListener('scrollend', onScrollEnd);
       if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
+      if (settleTimerRef.current !== null) window.clearTimeout(settleTimerRef.current);
     };
-  }, [loopedItems.length]);
+  }, [loopedItems.length, settleWrapAround]);
 
   const handleScroll = useCallback(() => {
     if (!readyRef.current) return;
+
+    if (settleTimerRef.current !== null) {
+      window.clearTimeout(settleTimerRef.current);
+    }
+    settleTimerRef.current = window.setTimeout(settleWrapAround, 120);
+
     if (scrollRafRef.current !== null) return;
     scrollRafRef.current = requestAnimationFrame(() => {
       scrollRafRef.current = null;
@@ -126,29 +176,31 @@ const HomeEmAltaCardsCarousel = () => {
         }
       }
 
-      const N = ITEMS.length;
-      if (best <= 1) {
-        const jumpTo = best + N * 2;
-        if (mids[jumpTo] !== undefined) {
-          el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
-          setActiveIndex(jumpTo);
-          return;
-        }
-      } else if (best >= loopedItems.length - 2) {
-        const jumpTo = best - N * 2;
-        if (mids[jumpTo] !== undefined) {
-          el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
-          setActiveIndex(jumpTo);
-          return;
-        }
+      if (best !== activeIndexRef.current) {
+        activeIndexRef.current = best;
+        setActiveIndex(best);
       }
-
-      setActiveIndex(best);
     });
-  }, [loopedItems.length]);
+  }, [settleWrapAround]);
+
+  const handleDragStart = useCallback(() => {
+    isDraggingRef.current = true;
+    if (settleTimerRef.current !== null) {
+      window.clearTimeout(settleTimerRef.current);
+      settleTimerRef.current = null;
+    }
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    isDraggingRef.current = false;
+    if (settleTimerRef.current !== null) {
+      window.clearTimeout(settleTimerRef.current);
+    }
+    settleTimerRef.current = window.setTimeout(settleWrapAround, 120);
+  }, [settleWrapAround]);
 
   return (
-    <section className="flex flex-col gap-3.5">
+    <section className="flex flex-col gap-2.5">
       <div className="relative z-10 flex items-start justify-between gap-3 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
@@ -161,11 +213,17 @@ const HomeEmAltaCardsCarousel = () => {
         </div>
       </div>
 
-      {/* Carrossel Infinito com Zoom no Card Central (mesmo tamanho de Leis em Alta) */}
+      {/* Carrossel Infinito com Zoom no Card Central (otimizado para 120fps) */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory py-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        onPointerDown={handleDragStart}
+        onTouchStart={handleDragStart}
+        onPointerUp={handleDragEnd}
+        onPointerCancel={handleDragEnd}
+        onTouchEnd={handleDragEnd}
+        onTouchCancel={handleDragEnd}
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory pt-2 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -178,13 +236,14 @@ const HomeEmAltaCardsCarousel = () => {
               type="button"
               onClick={() => {
                 haptic.selection();
+                activeIndexRef.current = i;
                 setActiveIndex(i);
                 navigate(item.route);
               }}
               data-track="home_card_click"
               data-track-name={item.label}
               data-track-section="em_alta"
-              className={`snap-center shrink-0 w-[148px] sm:w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 transition-all duration-300 ease-out p-3.5 flex flex-col justify-between ${
+              className={`snap-center shrink-0 w-[148px] sm:w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 transition-[transform,opacity] duration-200 ease-out transform-gpu p-3.5 flex flex-col justify-between ${
                 isActive
                   ? 'scale-[1.06] opacity-100 z-10 shadow-xl'
                   : 'scale-100 opacity-75 z-0 shadow-sm'
@@ -192,12 +251,12 @@ const HomeEmAltaCardsCarousel = () => {
             >
               <div className="flex items-start justify-between gap-2">
                 <Icon
-                  className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 origin-center transition-transform duration-300 ease-out text-primary ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 origin-center transition-transform duration-200 ease-out text-primary ${
                     isActive
                       ? 'scale-110 drop-shadow-[0_2px_8px_hsl(var(--primary)/0.45)]'
                       : 'scale-100 opacity-85'
                   }`}
-                  strokeWidth={1.75}
+                  strokeWidth={1.4}
                 />
                 <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
               </div>
