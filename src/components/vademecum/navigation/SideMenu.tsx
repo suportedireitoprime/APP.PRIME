@@ -364,6 +364,18 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
+        {/* Card Exclusivo do Administrador */}
+        {isAdmin && (
+          <GroupCard title="Admin">
+            <MenuRow
+              icon={Lock}
+              iconColor="text-red-400"
+              label="Funções Admin"
+              onClick={() => handleItemClick('admin-funcoes')}
+            />
+          </GroupCard>
+        )}
+
         {/* Card de Sessão: Sair */}
         <GroupCard>
           <MenuRow
