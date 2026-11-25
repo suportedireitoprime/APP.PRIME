@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { Highlight } from '@/hooks/useHighlights';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 import { toast } from 'sonner';
 import { readArtigoGrifos, writeArtigoGrifos } from '@/lib/artigoGrifosSnapshot';
 import { invalidateCache, anotacoesKey } from '@/lib/artigoFuncoesPrefetch';
@@ -92,7 +93,7 @@ export function useArtigoGrifoMagico({
   const persistMagicHighlights = useCallback(async (grifos: MagicGrifo[]) => {
     if (!artigo?.numero || !tabelaNome || !grifos?.length) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user) return;
       if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
       const artigoId = `${tabelaNome}::${artigo.numero}`;
@@ -292,7 +293,7 @@ export function useArtigoGrifoMagico({
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
       const payload = next.map((g, i) => ({
         id: `ia_${g.cor}_${i}`,
@@ -582,7 +583,7 @@ export function useArtigoGrifoMagico({
           // Sincronia com Supabase (best-effort — se offline ou sem sessão, o
           // mirror local acima já garante a UX).
           try {
-            const { data: { user } } = await supabase.auth.getUser();
+            const user = await getCurrentSessionUser();
             if (user && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
               const highlightsPayload = grifos.map((g, i) => ({
                 id: `ia_${g.cor}_${i}`,

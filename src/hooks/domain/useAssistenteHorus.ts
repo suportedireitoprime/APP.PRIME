@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 import { toast } from 'sonner';
 import { horusService, NotifPrefs, DEFAULT_PREFS, HorusLinkedStatus } from '@/services/horusService';
 import { haptic } from '@/lib/nativeHaptics';
@@ -56,7 +57,7 @@ export function useAssistenteHorus() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     let isMounted = true;
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user || !isMounted) return;
       channel = supabase
         .channel(`horus-whatsapp-user-${user.id}`)
@@ -100,7 +101,7 @@ export function useAssistenteHorus() {
       requireVerification();
       return;
     }
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) return;
     
     setSavingKey(key);
@@ -119,7 +120,7 @@ export function useAssistenteHorus() {
     const finalName = nomeEdit.trim();
     if (!finalName) return toast.error('Digite um nome');
     
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) return;
     
     setSavingNome(true);
@@ -134,7 +135,7 @@ export function useAssistenteHorus() {
   const saveApelido = async () => {
     if (!linked) return toast.error('Verifique seu WhatsApp primeiro');
     
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) return;
     
     const finalApelido = apelidoEdit.trim();
