@@ -3,7 +3,7 @@ import {
   ShieldAlert, House, CircleDollarSign, FileText, ShieldCheck, Briefcase, Store, Building,
   Vote, HeartPulse, TreePine, ShoppingCart, Baby, Shield, Globe, Map,
   BookOpen, Video, NotebookPen, Headphones, Brain, BookA, Presentation, Speech,
-  CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, MessageCircle, type LucideIcon
+  CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, MessageCircle, Bird, type LucideIcon
 } from 'lucide-react';
 import { directImg } from '@/lib/cdnImg';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -79,12 +79,8 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',             icon: BookOpen,    color: 'hsl(var(--primary))', route: '/bibliotecas' },
-  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',         icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
-  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',             icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
-  { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech,      color: 'hsl(var(--primary))', route: '/me-explique' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Esquemas',          icon: Brain,       color: 'hsl(var(--primary))', route: '/mapas-mentais' },
-  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos',            icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
+  { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech, color: 'hsl(var(--primary))', route: '/me-explique' },
+  { id: 'ea-horus',       label: 'Hórus',            sublabel: 'Assistente IA',      icon: Bird,   color: 'hsl(var(--primary))', route: '/assistente-horus' },
 ];
 
 export const FAST_PILLS_ITEMS = [

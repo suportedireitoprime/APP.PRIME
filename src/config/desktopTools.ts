@@ -69,6 +69,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     hint: 'Modelos e documentos para o dia a dia',
     tools: [
       { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e modelos jurídicos', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
+      { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo organizadas por matéria', icon: Film, route: '/videoaulas', color: '#E11D48' },
     ],
   },
   {

@@ -90,7 +90,7 @@ const HomeTabEstudos = ({
               </div>
             </div>
             
-            <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4">
+            <div key="grid-estudos" className="grid grid-cols-2 gap-2 md:gap-4">
               {EMALTA_CATS.map((c, i) => (
                 <HomeCard
                   key={`cat-${c.id}`}
