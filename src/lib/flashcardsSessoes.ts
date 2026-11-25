@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 
 export type FlashcardsSessaoHistorico = {
   id: string; // timestamp string (e.g. Date.now().toString())
@@ -37,7 +38,7 @@ export function saveFlashcardsSessao(sessao: FlashcardsSessaoHistorico) {
   }
 
   // Fire and forget - Sincronizar remotamente
-  supabase.auth.getUser().then(({ data: { user } }) => {
+  getCurrentSessionUser().then((user) => {
     if (user) {
       supabase.from('flashcards_sessoes_historico').upsert({
         sessao_id: sessao.id,
@@ -59,7 +60,7 @@ export function removeFlashcardsSessao(id: string) {
   const all = getFlashcardsSessoes().filter(s => s.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 
-  supabase.auth.getUser().then(({ data: { user } }) => {
+  getCurrentSessionUser().then((user) => {
     if (user) {
       supabase.from('flashcards_sessoes_historico')
         .delete()
@@ -71,7 +72,7 @@ export function removeFlashcardsSessao(id: string) {
 
 /** Sincroniza sessoes locais que não estão no Supabase (usado no login) */
 export async function syncFlashcardsSessoesToRemote() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentSessionUser();
   if (!user) return;
   const local = getFlashcardsSessoes();
   if (local.length === 0) return;

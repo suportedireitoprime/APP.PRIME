@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 
 const LOCAL_KEY = (t: string, i: string) => `leitura-nativa:${t}:${i}`;
 
@@ -32,7 +33,7 @@ export async function pullLeituraProgress(force = false): Promise<void> {
   if (pulled && !force) return;
   pulled = true;
   try {
-    const { data: auth } = await supabase.auth.getUser();
+    const auth = { user: await getCurrentSessionUser() };
     const uid = auth?.user?.id;
     if (!uid) return;
 
@@ -93,7 +94,7 @@ export function pushLeituraProgress(livroTabela: string, livroId: string, delay 
 
 async function flush(livroTabela: string, livroId: string) {
   try {
-    const { data: auth } = await supabase.auth.getUser();
+    const auth = { user: await getCurrentSessionUser() };
     const uid = auth?.user?.id;
     if (!uid) return;
     const local = readLocal(livroTabela, livroId) as any;

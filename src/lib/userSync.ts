@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentUserId } from '@/lib/authSessionCache';
 
 /**
  * Sincronização genérica de listas do usuário (favoritos, recentes, histórico)
@@ -36,12 +37,7 @@ export type SyncedListOptions<T> = {
 };
 
 async function currentUserId(): Promise<string | null> {
-  try {
-    const { data } = await supabase.auth.getUser();
-    return data?.user?.id ?? null;
-  } catch {
-    return null;
-  }
+  return getCurrentUserId();
 }
 
 async function pushRow(escopo: string, itemKey: string, payload: any, deleted: boolean, at: number) {

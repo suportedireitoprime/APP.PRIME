@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { safeStorageUrl } from "@/lib/cdnImg";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentSessionUser } from "@/lib/authSessionCache";
 
 export interface ProgressoAudioaula {
   id: number;
@@ -48,7 +49,7 @@ function sincronizarSupabase(
   const executarUpsert = async () => {
     timersSync.delete(id);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user?.id) return;
 
       await supabase.from("videoaulas_progresso").upsert(
@@ -211,7 +212,7 @@ export function limparProgressoAudioaula(): void {
 /** Carrega os progressos remotos salvos no Supabase e mescla com o cache local */
 export async function carregarProgressoSupabase(): Promise<Record<number, ProgressoAulaItem>> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user?.id) return obterMapaProgressoAudioaulas();
 
     const { data, error } = await supabase

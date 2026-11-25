@@ -6,6 +6,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser, getCurrentUserId } from '@/lib/authSessionCache';
 
 export interface NativeNotificationPluginInterface {
   showProgressNotification(options: {
@@ -456,7 +457,7 @@ export async function registrarDisparoLocal(params: {
   if (!userEmail) {
     userEmail = 'aluno@direitoprime.com';
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (user?.email) userEmail = user.email;
     } catch {
       /* ignore */
@@ -485,7 +486,7 @@ export async function registrarDisparoLocal(params: {
   try {
     const targetUserId = params.userId && params.userId !== 'local_user'
       ? params.userId
-      : (await supabase.auth.getUser()).data.user?.id;
+      : (await getCurrentUserId());
 
     if (targetUserId) {
       await supabase.from('user_notifications').insert({
@@ -519,7 +520,7 @@ export async function registrarAberturaNotificacaoLocal(params: {
 
   let userEmail = 'aluno@direitoprime.com';
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (user?.email) userEmail = user.email;
   } catch {
     /* ignore */
@@ -558,7 +559,7 @@ export async function registrarAberturaNotificacaoLocal(params: {
 
   // Atualiza no Supabase para relatório admin
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (user?.id) {
       await supabase
         .from('user_notifications')
@@ -617,7 +618,7 @@ export async function obterMetricasNotificacoesLocais(): Promise<MetricasNotific
 
   // Tenta complementar com métricas globais do Supabase (user_notifications)
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     const currentUserId = user?.id;
 
     const { data: supaRows } = await supabase
@@ -692,7 +693,7 @@ export async function obterAlunosAtivosParaRetencao(): Promise<AlunoAtivoRetenca
     let emailAtual = 'aluno@direitoprime.com';
     let userIdAtual = 'local_user';
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (user?.email) emailAtual = user.email;
       if (user?.id) userIdAtual = user.id;
     } catch {

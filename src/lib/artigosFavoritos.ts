@@ -3,6 +3,7 @@
 // listagens em Meu Espaço → Meus Artigos e Meu Espaço → Minhas Leis (bottom sheet por lei).
 
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 
 export type ArtigoFav = {
   tabela_codigo: string;
@@ -39,7 +40,7 @@ function makeArtigoId(tabela: string, numero: string) {
 
 /** Retorna todos os favoritos do usuário (DB se logado, senão localStorage). */
 export async function listArtigosFavoritos(): Promise<ArtigoFav[]> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentSessionUser();
   if (!user) return readLocal();
   const { data } = await supabase
     .from('artigos_favoritos')
@@ -51,7 +52,7 @@ export async function listArtigosFavoritos(): Promise<ArtigoFav[]> {
 
 /** Lista favoritos de uma lei específica (usado pelo bottom sheet de Minhas Leis). */
 export async function listArtigosFavoritosByTabela(tabela: string): Promise<Array<ArtigoFav & { created_at?: string }>> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentSessionUser();
   if (!user) return readLocal().filter((f) => f.tabela_codigo === tabela);
   const { data } = await supabase
     .from('artigos_favoritos')
@@ -106,7 +107,7 @@ async function favoritoLimit(): Promise<number> {
 }
 
 export async function toggleArtigoFavorito(fav: ArtigoFav): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentSessionUser();
   if (!user) {
     throw new Error('Faça login para salvar seus favoritos no Supabase.');
   }
@@ -187,7 +188,7 @@ export async function toggleArtigoFavorito(fav: ArtigoFav): Promise<boolean> {
 /** Backfill: se houver dados no localStorage e o usuário estiver logado, envia para o DB. */
 export async function syncLocalToRemote() {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) return;
     const local = readLocal();
     if (local.length === 0) return;

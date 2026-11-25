@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 import { get, set } from 'idb-keyval';
 
 export type ContinuityKind = 'blog' | 'noticia' | 'artigo' | 'radar' | 'biblioteca' | 'other';
@@ -57,7 +58,7 @@ let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
 async function pushRemote(entry: ContinuityEntry) {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) return;
     const { error } = await supabase
       .from('user_activity_state')
@@ -89,7 +90,7 @@ export async function flushSyncQueue() {
   if (typeof window === 'undefined' || !navigator.onLine || isFlushing) return;
   isFlushing = true;
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) {
       await set(OFFLINE_QUEUE_KEY, []);
       return;
@@ -162,7 +163,7 @@ export async function fetchLatestContinuity(opts: { onlyOtherDevice?: boolean } 
   const local = readLocal();
   let remote: ContinuityEntry | null = null;
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (user) {
       const { data } = await supabase
         .from('user_activity_state')

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 import { toast } from 'sonner';
 
 export type EmAltaConfig = string[]; // Array of IDs
@@ -10,7 +11,7 @@ export const useEmAltaConfig = () => {
   const { data: config, isLoading } = useQuery({
     queryKey: ['em-alta-config'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user) return null;
 
       const { data, error } = await supabase
@@ -30,7 +31,7 @@ export const useEmAltaConfig = () => {
 
   const { mutate: updateConfig, isPending: isUpdating } = useMutation({
     mutationFn: async (newConfig: EmAltaConfig) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       if (!user) throw new Error('Não autenticado');
 
       const { error } = await supabase
