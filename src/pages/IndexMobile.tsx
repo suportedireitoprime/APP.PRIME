@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, Wrench, Bot } from 'lucide-react';
+import { Scale, Wrench, BookOpen } from 'lucide-react';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
@@ -104,44 +104,53 @@ const IndexMobile = () => {
           <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-7 pb-4 space-y-5">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
 
-            {/* 3 Cards Principais no mesmo estilo de Estudos Livres */}
-            <div className="grid grid-cols-3 gap-2 md:gap-4">
-              <HomeCard
-                icon={Scale}
-                label="Vade Mecum"
-                sublabel="Leis e Códigos"
-                color="hsl(var(--primary))"
-                delay={0}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                onClick={() => navigate('/vade-mecum')}
-                data-track="home_card_click"
-                data-track-name="Vade Mecum"
-                data-track-section="topo"
-              />
-              <HomeCard
-                icon={Wrench}
-                label="Ferramentas"
-                sublabel="Utilitários"
-                color="hsl(var(--primary))"
-                delay={0.05}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                onClick={() => navigate('/ferramentas')}
-                data-track="home_card_click"
-                data-track-name="Ferramentas"
-                data-track-section="topo"
-              />
-              <HomeCard
-                icon={Bot}
-                label="Hórus"
-                sublabel="Assistente IA"
-                color="hsl(var(--primary))"
-                delay={0.1}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                onClick={() => setAssistenteOpen(true)}
-                data-track="home_card_click"
-                data-track-name="Horus"
-                data-track-section="topo"
-              />
+            {/* Seção Em Alta — 3 Cards Principais no mesmo estilo de Estudos Livres */}
+            <div className="flex flex-col gap-3">
+              <div className="px-1">
+                <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
+                  <span className="w-1 h-4 rounded-full bg-primary shrink-0 shadow-[0_0_8px_hsl(var(--primary)/0.7)]" />
+                  <span className="truncate">EM ALTA</span>
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
+                <HomeCard
+                  icon={Scale}
+                  label="Vade Mecum"
+                  sublabel="Leis e Códigos"
+                  color="hsl(var(--primary))"
+                  delay={0}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  onClick={() => navigate('/vade-mecum')}
+                  data-track="home_card_click"
+                  data-track-name="Vade Mecum"
+                  data-track-section="em_alta"
+                />
+                <HomeCard
+                  icon={BookOpen}
+                  label="Biblioteca"
+                  sublabel="Obras"
+                  color="hsl(var(--primary))"
+                  delay={0.05}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  onClick={() => navigate('/bibliotecas')}
+                  data-track="home_card_click"
+                  data-track-name="Biblioteca"
+                  data-track-section="em_alta"
+                />
+                <HomeCard
+                  icon={Wrench}
+                  label="Ferramentas"
+                  sublabel="Utilitários"
+                  color="hsl(var(--primary))"
+                  delay={0.1}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  onClick={() => navigate('/ferramentas')}
+                  data-track="home_card_click"
+                  data-track-name="Ferramentas"
+                  data-track-section="em_alta"
+                />
+              </div>
             </div>
 
             <MobileHomeSections />

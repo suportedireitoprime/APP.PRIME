@@ -6,7 +6,8 @@ import {
   Home,
   Target,
   Headphones,
-  BookOpen,
+  NotebookPen,
+  Brain,
   GraduationCap,
   ChevronRight,
   X,
@@ -57,6 +58,19 @@ const AUDIOAULAS_ITENS: Array<{
   { id: 'pilulas', label: 'Pílulas', desc: 'Conceitos essenciais em minutos', to: '/pilulas', icon: Pill, colorClass: 'text-cyan-400', prefetch: 'pilulas' },
 ];
 
+const RESUMOS_ITENS: Array<{
+  id: string;
+  label: string;
+  desc: string;
+  to: string;
+  icon: typeof NotebookPen;
+  colorClass: string;
+  prefetch?: PrefetchKey;
+}> = [
+  { id: 'resumos', label: 'Resumos', desc: 'Sínteses e anotações jurídicas', to: '/resumos-juridicos', icon: NotebookPen, colorClass: 'text-amber-400' },
+  { id: 'mapas-mentais', label: 'Mapas Mentais', desc: 'Esquemas visuais para revisão rápida', to: '/mapas-mentais', icon: Brain, colorClass: 'text-violet-400' },
+];
+
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,6 +78,7 @@ const BottomNav = () => {
 
   const [praticarOpen, setPraticarOpen] = useState(false);
   const [audioaulasOpen, setAudioaulasOpen] = useState(false);
+  const [resumosOpen, setResumosOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -111,6 +126,7 @@ const BottomNav = () => {
     setExplicitHidden(false);
     setPraticarOpen(false);
     setAudioaulasOpen(false);
+    setResumosOpen(false);
   }, [path]);
 
   useEffect(() => {
@@ -153,19 +169,23 @@ const BottomNav = () => {
     path.startsWith('/audioaulas') ||
     path.startsWith('/pilulas');
 
-  const isBibliotecaActive = !praticarOpen && !audioaulasOpen && path.startsWith('/biblioteca');
-  const isAulasActive = !praticarOpen && !audioaulasOpen && path.startsWith('/aulas');
+  const isResumosActive =
+    resumosOpen ||
+    path.startsWith('/resumos-juridicos') ||
+    path.startsWith('/mapas-mentais');
+  const isAulasActive = !praticarOpen && !audioaulasOpen && !resumosOpen && path.startsWith('/aulas');
   const isInicioActive =
     path === '/' &&
     !praticarOpen &&
     !audioaulasOpen &&
-    !isBibliotecaActive &&
+    !resumosOpen &&
     !isAulasActive;
 
   const navigateFromSheet = (to: string) => {
     haptic.selection();
     setPraticarOpen(false);
     setAudioaulasOpen(false);
+    setResumosOpen(false);
     startTransition(() => navigate(to));
   };
 
@@ -180,6 +200,7 @@ const BottomNav = () => {
         haptic.selection();
         setPraticarOpen(false);
         setAudioaulasOpen(false);
+        setResumosOpen(false);
         if (path !== '/') startTransition(() => navigate('/'));
       },
     },
@@ -192,6 +213,7 @@ const BottomNav = () => {
       onClick: () => {
         haptic.selection();
         setAudioaulasOpen(false);
+        setResumosOpen(false);
         setPraticarOpen((prev) => !prev);
       },
     },
@@ -204,21 +226,21 @@ const BottomNav = () => {
       onClick: () => {
         haptic.selection();
         setPraticarOpen(false);
+        setResumosOpen(false);
         setAudioaulasOpen((prev) => !prev);
       },
     },
     {
-      id: 'biblioteca',
-      label: 'Biblioteca',
-      ariaLabel: 'Biblioteca',
-      icon: BookOpen,
-      active: isBibliotecaActive,
-      prefetch: 'biblioteca' as PrefetchKey,
+      id: 'resumos',
+      label: 'Resumos',
+      ariaLabel: 'Resumos e Mapas Mentais',
+      icon: NotebookPen,
+      active: isResumosActive,
       onClick: () => {
         haptic.selection();
         setPraticarOpen(false);
         setAudioaulasOpen(false);
-        startTransition(() => navigate('/bibliotecas'));
+        setResumosOpen((prev) => !prev);
       },
     },
     {
@@ -232,6 +254,7 @@ const BottomNav = () => {
         haptic.selection();
         setPraticarOpen(false);
         setAudioaulasOpen(false);
+        setResumosOpen(false);
         startTransition(() => navigate('/aulas'));
       },
     },
@@ -366,6 +389,56 @@ const BottomNav = () => {
             </div>
             <div className="px-4 space-y-2">
               {AUDIOAULAS_ITENS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
+                    onClick={() => navigateFromSheet(item.to)}
+                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
+                  >
+                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
+                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Sheet Minimalista: Resumos */}
+      {resumosOpen && (
+        <>
+          <div
+            onClick={() => setResumosOpen(false)}
+            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
+          />
+          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
+            <div className="flex items-center justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-white/15" />
+            </div>
+            <div className="flex items-center justify-between px-5 pb-3 pt-1">
+              <div>
+                <h3 className="font-display text-base font-semibold text-white tracking-tight">Resumos</h3>
+                <p className="font-body text-xs text-white/50">Revise com sínteses e esquemas visuais</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { haptic.light(); setResumosOpen(false); }}
+                aria-label="Fechar Resumos"
+                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-4 space-y-2">
+              {RESUMOS_ITENS.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
