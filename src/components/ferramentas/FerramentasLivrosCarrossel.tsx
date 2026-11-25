@@ -334,7 +334,7 @@ export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
         ref={scrollerRef}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="flex gap-3 md:gap-4 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory pb-1 -mx-4 sm:-mx-6 px-4 sm:px-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="flex gap-3 md:gap-4 overflow-x-auto overscroll-x-contain touch-pan-x touch-pan-y snap-x snap-mandatory pb-1 -mx-4 sm:-mx-6 px-4 sm:px-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
       >
         {livros.map((livro, i) => {
           const isActive = i === activeIndex;

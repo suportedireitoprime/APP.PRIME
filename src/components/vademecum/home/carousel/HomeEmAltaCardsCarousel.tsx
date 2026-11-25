@@ -231,7 +231,7 @@ const HomeEmAltaCardsCarousel = () => {
         onPointerCancel={handleDragEnd}
         onTouchEnd={handleDragEnd}
         onTouchCancel={handleDragEnd}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2 sm:gap-2.5 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory py-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2 sm:gap-2.5 overflow-x-auto overscroll-x-contain touch-pan-x touch-pan-y snap-x snap-mandatory py-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {

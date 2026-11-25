@@ -253,7 +253,7 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
         onTouchEnd={handleDragEnd}
         onTouchCancel={handleDragEnd}
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
-        className={`flex items-stretch overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none ${
+        className={`flex items-stretch overflow-x-auto overscroll-x-contain touch-pan-x touch-pan-y snap-x snap-mandatory pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none ${
           variant === 'hero' ? 'gap-4 px-0' : 'gap-3 md:gap-4 px-[7.5%] md:px-[4%] lg:px-[3%]'
         }`}
       >
