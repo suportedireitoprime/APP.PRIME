@@ -80,7 +80,7 @@ const HomeHeaderHero = ({
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll — proporção nobre e elegante */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20 min-h-[275px] xs:min-h-[295px] sm:min-h-[320px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[30px] xs:rounded-b-[34px] sm:rounded-b-[38px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col justify-between z-20 min-h-[290px] xs:min-h-[310px] sm:min-h-[335px] md:min-h-[360px] lg:min-h-[380px]"
         style={{
           transform: "translateZ(0)",
           backgroundColor: "#050505",
@@ -145,8 +145,8 @@ const HomeHeaderHero = ({
         </header>
 
         {/* Conteúdo: Logo à esquerda e Card de Status à direita — altura e respiro generosos */}
-        <div className="relative z-10 pt-3 xs:pt-3.5 sm:pt-4 flex flex-col justify-start min-h-[135px] xs:min-h-[148px] sm:min-h-[162px]">
-          <div className="flex items-start justify-between gap-3 px-3.5 sm:px-4.5">
+        <div className="relative z-10 pt-3.5 xs:pt-4 sm:pt-5 md:pt-6 flex flex-col justify-start min-h-[145px] xs:min-h-[158px] sm:min-h-[175px] md:min-h-[190px]">
+          <div className="flex items-start justify-between gap-3 px-3.5 sm:px-5 md:px-6">
             <HomeBrandBanner />
             <div className="relative z-10 w-[135px] xs:w-[150px] sm:w-[170px] shrink-0 pt-[48px] xs:pt-[54px] sm:pt-[60px] pr-1 sm:pr-2 empty:hidden">
               <HomeTrialCard />
@@ -155,7 +155,7 @@ const HomeHeaderHero = ({
         </div>
 
         {/* Barra de Busca Global Minimalista */}
-        <div className="relative z-10 px-3 xs:px-4 sm:px-5 mt-3 xs:mt-4 sm:mt-5 pb-3.5 xs:pb-4 sm:pb-5">
+        <div className="relative z-10 px-6 xs:px-7 sm:px-10 md:px-12 mt-3 xs:mt-3.5 sm:mt-4 pb-3.5 xs:pb-4 sm:pb-5">
           <button
             type="button"
             onClick={() => {
@@ -167,10 +167,10 @@ const HomeHeaderHero = ({
               }
             }}
             aria-label="Buscar lei, artigo, tema ou aula"
-            className="w-full min-h-[48px] h-12 flex items-center gap-3 px-4 rounded-2xl bg-black/50 hover:bg-black/65 backdrop-blur-md border border-white/15 hover:border-white/25 transition-all active:scale-[0.99] text-left cursor-pointer shadow-lg"
+            className="w-full max-w-[540px] md:max-w-[600px] mx-auto min-h-[54px] sm:min-h-[58px] h-[54px] sm:h-[58px] flex items-center gap-3 px-4 sm:px-5 rounded-2xl bg-black/50 hover:bg-black/65 backdrop-blur-md border border-white/15 hover:border-white/25 transition-all active:scale-[0.99] text-left cursor-pointer shadow-lg"
           >
-            <Search className="w-4.5 h-4.5 text-zinc-300 shrink-0" strokeWidth={2} />
-            <span className="flex-1 text-sm text-zinc-300/90 truncate">
+            <Search className="w-5 h-5 text-zinc-300 shrink-0" strokeWidth={2} />
+            <span className="flex-1 text-sm sm:text-[15px] text-zinc-300/90 truncate">
               Buscar lei, artigo, tema ou aula…
             </span>
           </button>

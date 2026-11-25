@@ -290,16 +290,16 @@ const BottomNav = () => {
                     onClick={item.onClick}
                     data-track="bottom_nav_click"
                     data-track-destino={item.id}
-                    className={`min-h-[54px] sm:min-h-[60px] md:min-h-[64px] flex flex-col items-center justify-center gap-1 py-2 px-1 sm:px-2 md:py-3.5 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                    className={`min-h-[58px] sm:min-h-[64px] md:min-h-[68px] flex flex-col items-center justify-center gap-1.5 py-2 px-1 sm:px-2 md:py-3.5 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
                       item.active
-                        ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/30 font-semibold'
                         : 'text-white/65 hover:text-white hover:bg-white/5'
                     }`}
                     aria-label={item.ariaLabel}
                   >
                     <Icon
-                      className="w-[22px] h-[22px] sm:w-6 sm:h-6 shrink-0"
-                      strokeWidth={item.active ? 2.1 : 1.7}
+                      className="w-6 h-6 sm:w-7 sm:h-7 shrink-0"
+                      strokeWidth={item.active ? 2.1 : 1.75}
                     />
                     <span className="font-body text-[10.5px] sm:text-[11.5px] md:text-[11px] leading-tight text-center truncate max-w-full">
                       {item.label}

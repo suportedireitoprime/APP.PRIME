@@ -8,6 +8,23 @@ import {
 import { newsImg, prefetchImages } from '@/lib/cdnImg';
 import { FeedItem } from './carouselTypes';
 
+function isTodayNoticia(dateStr?: string): boolean {
+  if (!dateStr) return false;
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const trimmed = dateStr.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return trimmed === todayStr;
+  }
+  const parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) return false;
+  return (
+    parsed.getFullYear() === now.getFullYear() &&
+    parsed.getMonth() === now.getMonth() &&
+    parsed.getDate() === now.getDate()
+  );
+}
+
 function interleaveByFonte(items: Noticia[], maxTotal = 12): Noticia[] {
   const juridicas = items.filter((n) => n.fonte === 'migalhas');
   const oab = items.filter((n) => n.fonte === 'gran_oab');
@@ -45,7 +62,8 @@ export function useHomeFeed() {
   }, []);
 
   const feed: FeedItem[] = useMemo(() => {
-    const selected = interleaveByFonte(noticias, 12);
+    const todayNoticias = noticias.filter((n) => isTodayNoticia(n.data_publicacao));
+    const selected = interleaveByFonte(todayNoticias, 12);
     return selected.map((n) => ({
       kind: 'noticia' as const,
       id: `explorar-${n.id}`,
@@ -64,6 +82,7 @@ export function useHomeFeed() {
   return {
     feed,
     feedMode: 'explorar' as const,
+    hasLoadedNoticias: noticias.length > 0,
   };
 }
 

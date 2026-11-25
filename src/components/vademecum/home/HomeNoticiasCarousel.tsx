@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Noticia } from '@/services/noticiasService';
 import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
@@ -22,14 +22,20 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
+  const scrollRafRef = useRef<number | null>(null);
+  const childMidpointsRef = useRef<number[]>([]);
+  const readyRef = useRef(false);
 
-  const { feed, feedMode } = useHomeFeed();
-  const [activeIndex, setActiveIndexState] = useState(0);
-  
-  const setActiveIndex = useCallback((idx: number | ((prev: number) => number)) => {
-    setActiveIndexState(idx);
-  }, []);
+  const { feed, feedMode, hasLoadedNoticias } = useHomeFeed();
+  const isInfinite = feed.length >= 2;
 
+  const loopedFeed = useMemo(
+    () => (isInfinite ? [...feed, ...feed, ...feed] : feed),
+    [feed, isInfinite],
+  );
+
+  const [activeIndex, setActiveIndex] = useState(() => (isInfinite ? feed.length : 0));
+  const [isReady, setIsReady] = useState(false);
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
 
   useEffect(() => {
@@ -40,7 +46,6 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
     }
   }, [selectedNoticia, onOpenChange]);
 
-
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -50,56 +55,116 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
     scroller.scrollTo({ left: target, behavior });
   }, []);
 
+  // Posiciona inicialmente na primeira notícia da cópia central para permitir loop infinito nos dois sentidos
+  useEffect(() => {
+    if (feed.length === 0) return;
+    readyRef.current = false;
+    setIsReady(false);
+    const initialIdx = isInfinite ? feed.length : 0;
+
+    const t = window.setTimeout(() => {
+      const scroller = scrollerRef.current;
+      if (scroller) {
+        const mids: number[] = [];
+        for (let i = 0; i < scroller.children.length; i++) {
+          const child = scroller.children[i] as HTMLElement;
+          mids.push(child.offsetLeft + child.clientWidth / 2);
+        }
+        childMidpointsRef.current = mids;
+        scrollToIndex(initialIdx, 'auto');
+      }
+      setActiveIndex(initialIdx);
+      setIsReady(true);
+      requestAnimationFrame(() => {
+        readyRef.current = true;
+      });
+    }, 60);
+
+    return () => window.clearTimeout(t);
+  }, [feed.length, isInfinite, scrollToIndex]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || loopedFeed.length === 0) return;
+
+    const measure = () => {
+      const mids: number[] = [];
+      for (let i = 0; i < scroller.children.length; i++) {
+        const child = scroller.children[i] as HTMLElement;
+        mids.push(child.offsetLeft + child.clientWidth / 2);
+      }
+      childMidpointsRef.current = mids;
+    };
+
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(scroller);
+
+    return () => {
+      ro?.disconnect();
+      if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
+    };
+  }, [loopedFeed.length]);
+
+  const handleScroll = useCallback(() => {
+    if (!readyRef.current) return;
+    if (scrollRafRef.current !== null) return;
+
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      const scroller = scrollerRef.current;
+      if (!scroller) return;
+      const mids = childMidpointsRef.current;
+      if (mids.length === 0) return;
+
+      const halfWidth = scroller.clientWidth / 2;
+      const center = scroller.scrollLeft + halfWidth;
+      let best = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < mids.length; i++) {
+        const dist = Math.abs(mids[i] - center);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      }
+
+      if (isInfinite) {
+        const n = feed.length;
+        if (best < n) {
+          const jumpTo = best + n;
+          if (mids[jumpTo] !== undefined) {
+            scroller.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+            setActiveIndex(jumpTo);
+            return;
+          }
+        } else if (best >= n * 2) {
+          const jumpTo = best - n;
+          if (mids[jumpTo] !== undefined) {
+            scroller.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+            setActiveIndex(jumpTo);
+            return;
+          }
+        }
+      }
+
+      setActiveIndex(best);
+    });
+  }, [feed.length, isInfinite]);
 
   useEffect(() => {
     if (!autoplay || feed.length < 2) return;
     const tick = () => {
       if (userInteractingRef.current) return;
-      const next = (activeIndex + 1) % feed.length;
+      const next = activeIndex + 1;
       setActiveIndex(next);
-      scrollToIndex(next);
+      scrollToIndex(next, 'smooth');
     };
     autoplayRef.current = window.setInterval(tick, AUTOPLAY_MS);
     return () => {
       if (autoplayRef.current) window.clearInterval(autoplayRef.current);
     };
   }, [autoplay, activeIndex, feed.length, scrollToIndex]);
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller || feed.length === 0) return;
-
-    const ratios = new Map<Element, number>();
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          ratios.set(entry.target, entry.intersectionRatio);
-        });
-
-        let maxRatio = -1;
-        let bestTarget: Element | null = null;
-        ratios.forEach((ratio, target) => {
-          if (ratio > maxRatio) {
-            maxRatio = ratio;
-            bestTarget = target;
-          }
-        });
-
-        if (bestTarget) {
-          const idx = Array.from(scroller.children).indexOf(bestTarget);
-          if (idx !== -1) setActiveIndex(idx);
-        }
-      },
-      {
-        root: scroller,
-        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
-      }
-    );
-
-    Array.from(scroller.children).forEach((child) => observer.observe(child));
-    return () => observer.disconnect();
-  }, [feed.length]);
 
   const pauseAutoplay = () => {
     userInteractingRef.current = true;
@@ -113,6 +178,7 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
   }, []);
 
   if (feed.length === 0) {
+    if (hasLoadedNoticias) return null;
     return (
       <div className="space-y-2.5">
         <div className="h-6 w-32 rounded-md bg-white/[0.04] animate-pulse mx-4" />
@@ -123,8 +189,10 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
     );
   }
 
+  const normalizedActiveIndex = feed.length > 0 ? activeIndex % feed.length : 0;
+
   return (
-    <div className={`space-y-2.5 ${variant === 'hero' ? 'max-w-[340px]' : ''}`}>
+    <div className={`space-y-3.5 ${variant === 'hero' ? 'max-w-[340px]' : ''}`}>
       {variant === 'default' && <CarouselHeaderTitle kind="noticia" />}
 
       <AnimatePresence mode="wait" initial={false}>
@@ -135,18 +203,20 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           ref={scrollerRef}
+          onScroll={handleScroll}
           onPointerDown={pauseAutoplay}
           onTouchStart={pauseAutoplay}
-          className={`flex items-stretch overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
+          style={{ visibility: isReady ? 'visible' : 'hidden' }}
+          className={`flex items-stretch overflow-x-auto snap-x snap-mandatory pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
             variant === 'hero' ? 'gap-4 px-0' : 'gap-3 md:gap-4 px-[7.5%] md:px-[4%] lg:px-[3%]'
           }`}
         >
-          {feed.map((item, i) => (
+          {loopedFeed.map((item, i) => (
             <CarouselMediaCard
-              key={item.id}
+              key={`${item.id}-${i}`}
               item={item}
               isActive={i === activeIndex}
-              index={i}
+              index={i % feed.length}
               onOpen={handleOpen}
               variant={variant}
             />
@@ -154,7 +224,9 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
         </motion.div>
       </AnimatePresence>
 
-      {variant === 'default' && <CarouselDots total={feed.length} activeIndex={activeIndex} />}
+      {variant === 'default' && (
+        <CarouselDots total={feed.length} activeIndex={normalizedActiveIndex} />
+      )}
 
       <NoticiaViewerSheet noticia={selectedNoticia} onClose={() => setSelectedNoticia(null)} />
     </div>
@@ -162,4 +234,3 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
 }
 
 export default memo(HomeNoticiasCarousel);
-

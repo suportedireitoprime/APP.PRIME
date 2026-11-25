@@ -81,7 +81,7 @@ export async function sincronizarTodosLembretesLocais(userId?: string): Promise<
         .eq('ativo', true),
       supabase
         .from('profiles')
-        .select('id, created_at, is_premium, streak_days')
+        .select('id, created_at, is_premium')
         .eq('id', targetUserId)
         .maybeSingle(),
     ]);
@@ -162,7 +162,7 @@ export async function sincronizarTodosLembretesLocais(userId?: string): Promise<
 
     // 4. Lembrete Diário de Streak (Fogo / Ofensiva às 20h)
     const profile = profileRes.data;
-    const streakDays = profile?.streak_days || 0;
+    const streakDays = (profile as any)?.streak_days || 0;
     notificationsToSchedule.push({
       id: ID_RANGE.STREAK,
       title: streakDays > 0 ? `🔥 Não perca sua sequência de ${streakDays} dias!` : '🔥 Inicie sua sequência de estudos hoje!',
@@ -175,8 +175,8 @@ export async function sincronizarTodosLembretesLocais(userId?: string): Promise<
     });
 
     // 5. Lembretes de Trial (Se usuário não for premium)
-    if (profile && !profile.is_premium && profile.created_at) {
-      const createdTime = new Date(profile.created_at).getTime();
+    if (profile && !(profile as any).is_premium && (profile as any).created_at) {
+      const createdTime = new Date((profile as any).created_at).getTime();
       const fire66h = new Date(createdTime + 66 * 3600 * 1000);
       const fire72h = new Date(createdTime + 72 * 3600 * 1000);
       const now = Date.now();

@@ -1,11 +1,32 @@
 // @ts-nocheck
-import React, { memo, useState, useMemo, useCallback, Suspense, lazy } from 'react';
+import React, { memo, useState, useMemo, useCallback, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Radio, ChevronRight, Clock, Sparkles } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Play, Radio, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import radarLeisLocal from '@/assets/radares/radar-leis.webp';
+
+const VISTOS_CACHE_KEY = 'boletins_vistos_cache_v1';
+
+function readCachedVistos(): string[] {
+  try {
+    const raw = localStorage.getItem(VISTOS_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCachedVistos(ids: string[]) {
+  try {
+    localStorage.setItem(VISTOS_CACHE_KEY, JSON.stringify(ids));
+  } catch {
+    /* ignore */
+  }
+}
 
 const BoletimPlayer = lazy(() => import('@/components/boletim/BoletimPlayer'));
 
@@ -25,7 +46,7 @@ type Boletim = {
 
 const TIPO_STYLES: Record<string, { label: string; color: string; bg: string; border: string }> = {
   juridico: { label: 'Jurídico', color: '#FACC15', bg: 'rgba(250, 204, 21, 0.12)', border: 'rgba(250, 204, 21, 0.3)' },
-  noticias: { label: 'Notícias', color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.12)', border: 'rgba(56, 189, 248, 0.3)' },
+  noticias: { label: 'Notícias', color: '#FB7185', bg: 'rgba(225, 29, 72, 0.14)', border: 'rgba(225, 29, 72, 0.35)' },
   legislativo: { label: 'Legislativo', color: '#FB923C', bg: 'rgba(251, 146, 60, 0.12)', border: 'rgba(251, 146, 60, 0.3)' },
 };
 
@@ -52,25 +73,57 @@ function getCleanTitle(titulo?: string | null): string {
     .trim() || 'Boletim de Notícias';
 }
 
-function formatData(dataRef?: string, createdAt?: string): string {
-  if (!dataRef && !createdAt) return 'Recente';
-  const raw = dataRef ? `${dataRef}T12:00:00` : createdAt;
-  const d = new Date(raw);
-  const now = new Date();
-  
-  const isToday = d.toDateString() === now.toDateString();
-  if (isToday) return 'Hoje';
-  
-  const yesterday = new Date();
-  yesterday.setDate(now.getDate() - 1);
-  if (d.toDateString() === yesterday.toDateString()) return 'Ontem';
-  
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
-}
-
 export const HomeBoletinsList: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [playerAtivo, setPlayerAtivo] = useState<Boletim | null>(null);
+  const [vistosIds, setVistosIds] = useState<string[]>(() => readCachedVistos());
+
+  const vistosSet = useMemo(() => new Set(vistosIds), [vistosIds]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    (async () => {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('boletim_visualizacoes')
+          .select('boletim_id')
+          .eq('user_id', user.id);
+        if (!active || error || !Array.isArray(data)) return;
+        const remoteIds = data.map((r: any) => String(r.boletim_id)).filter(Boolean);
+        setVistosIds((prev) => {
+          const merged = Array.from(new Set([...prev, ...remoteIds]));
+          writeCachedVistos(merged);
+          return merged;
+        });
+      } catch {
+        /* fallback silencioso */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  const markAsSeen = useCallback((boletimId: string) => {
+    setVistosIds((prev) => {
+      if (prev.includes(boletimId)) return prev;
+      const next = [...prev, boletimId];
+      writeCachedVistos(next);
+      return next;
+    });
+    if (user?.id) {
+      void (supabase as any)
+        .from('boletim_visualizacoes')
+        .upsert(
+          { user_id: user.id, boletim_id: boletimId, visto_em: new Date().toISOString() },
+          { onConflict: 'user_id,boletim_id' },
+        )
+        .then(() => {})
+        .catch(() => {});
+    }
+  }, [user?.id]);
 
   const { data: boletins = [], isLoading: loading, isError } = useQuery<Boletim[]>({
     queryKey: ['boletins_juridicos_home'],
@@ -94,6 +147,7 @@ export const HomeBoletinsList: React.FC = () => {
   const handlePlay = useCallback(async (b: Boletim, e?: React.MouseEvent) => {
     e?.stopPropagation();
     haptic.selection();
+    markAsSeen(b.id);
     if (Array.isArray(b.roteiro_json) && b.roteiro_json.length > 0) {
       setPlayerAtivo(b);
       return;
@@ -161,7 +215,7 @@ export const HomeBoletinsList: React.FC = () => {
             const cover = getBoletimCover(item);
             const title = getCleanTitle(item.titulo);
             const style = TIPO_STYLES[item.tipo] || TIPO_STYLES.noticias;
-            const dataStr = formatData(item.data_ref, item.created_at);
+            const isSeen = vistosSet.has(item.id);
 
             return (
               <div
@@ -197,10 +251,15 @@ export const HomeBoletinsList: React.FC = () => {
                     >
                       {style.label}
                     </span>
-                    <span className="text-[11px] text-zinc-400 font-medium flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-zinc-500" />
-                      {dataStr}
-                    </span>
+                    {isSeen && (
+                      <span
+                        className="inline-flex items-center text-emerald-400"
+                        title="Boletim já visto"
+                        aria-label="Boletim já visto"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={2.4} />
+                      </span>
+                    )}
                   </div>
 
                   <h4 className="font-sans text-[13.5px] sm:text-[14px] font-semibold text-white/95 leading-snug line-clamp-2 group-hover:text-primary transition-colors">
@@ -211,7 +270,7 @@ export const HomeBoletinsList: React.FC = () => {
                 {/* Botão de Ação Lateral */}
                 <div className="shrink-0 pr-1">
                   <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:bg-primary/20 group-hover:border-primary/40 transition-all">
-                    <Radio className="w-4 h-4 text-sky-400" />
+                    <Radio className="w-4 h-4 text-rose-400" />
                   </div>
                 </div>
               </div>
