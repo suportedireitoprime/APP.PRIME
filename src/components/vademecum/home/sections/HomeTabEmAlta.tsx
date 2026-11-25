@@ -1,14 +1,11 @@
 // @ts-nocheck
-import { memo, Suspense, useState } from 'react';
-import { ChevronRight, ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, Users, Search, Target, Shield, Coins, Heart, ShieldAlert, Plane, Trees, Flame } from 'lucide-react';
-import { lazyWithRetry } from "@/utils/lazyWithRetry";
+import { memo, useState } from 'react';
+import { ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, Users, Search, Target, Shield, Coins, Heart, ShieldAlert, Plane, Trees, Flame } from 'lucide-react';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
 import HomeVadeMecumRecenteBanner from '@/components/vademecum/home/HomeVadeMecumRecenteBanner';
-import { AREA_CATS, RADAR_CATS, Cat, AreaCat } from './homeSectionsData';
+import { AREA_CATS, Cat, AreaCat } from './homeSectionsData';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
-
-const AprendaSobreLeis = lazyWithRetry(() => import('@/components/vademecum/outros/AprendaSobreLeis'));
 
 interface HomeTabEmAltaProps {
   onOpenCategory: (cat: Cat | AreaCat) => void;
@@ -175,54 +172,6 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
           })}
         </div>
       </section>
-
-      {/* 3. APRENDA SOBRE AS LEIS */}
-      <div className="pt-4 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-        <Suspense fallback={<div className="h-32 bg-muted/20 animate-pulse rounded-xl mx-4 mt-8" />}>
-          <AprendaSobreLeis titleClassName="px-4 sm:px-6 md:px-8 lg:px-12" />
-        </Suspense>
-      </div>
-
-      {/* 4. OUTRAS NORMAS (RADARES) */}
-      <div className="pt-2">
-        <div className="mb-4">
-          <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
-            OUTRAS NORMAS
-          </h3>
-          <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
-            Acompanhe publicações diárias, radares e boletins jurídicos
-          </p>
-        </div>
-        <div className="space-y-2.5">
-          {RADAR_CATS.map((c) => {
-            const Icon = c.icon;
-            return (
-              <button
-                key={c.id}
-                onClick={() => onSelectRadar(c.id)}
-                data-track="home_radar_cat_click"
-                className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-secondary border border-border/60 shadow-sm transition focus-visible:outline-none"
-              >
-                <Icon
-                  className="w-8 h-8 shrink-0"
-                  style={{ color: c.color }}
-                  strokeWidth={1.15}
-                />
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
-                    {c.label}
-                  </p>
-                  <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
-                    {c.sublabel}
-                  </p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
