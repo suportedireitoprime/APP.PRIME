@@ -1,22 +1,32 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-interface FeedSource {
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface ApiSource {
   url: string;
   fonte: "gran_oab" | "gran_concursos";
   categoriaDefault: string;
+  limit: number;
 }
 
-const SOURCES: FeedSource[] = [
+// Usando fontes RSS abertas que não bloqueiam Supabase:
+// - Conjur.com.br: maior portal jurídico do Brasil, cobre temas de OAB, STF, STJ, etc.
+// - Estratégia Concursos: maior portal de concursos públicos do Brasil
+const SOURCES: ApiSource[] = [
   {
-    url: "https://oab.grancursosonline.com.br/blog/feed/",
+    url: "https://www.conjur.com.br/feed",
     fonte: "gran_oab",
     categoriaDefault: "OAB",
+    limit: 15,
   },
   {
-    url: "https://blog.grancursosonline.com.br/feed/",
+    url: "https://www.estrategiaconcursos.com.br/blog/feed/",
     fonte: "gran_concursos",
     categoriaDefault: "Concursos",
+    limit: 15,
   },
 ];
 
@@ -97,8 +107,8 @@ Deno.serve(async (req) => {
       try {
         const res = await fetch(source.url, {
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; DireitoPrimeBot/1.0)",
-            "Accept": "application/rss+xml, application/xml, text/xml",
+            "User-Agent": "Mozilla/5.0 (compatible; DireitoPrimeBot/1.0; +https://direitoprime.com.br)",
+            "Accept": "application/rss+xml, application/xml, text/xml, */*",
           },
         });
 
@@ -111,18 +121,17 @@ Deno.serve(async (req) => {
         const items = xml.match(/<item>[\s\S]*?<\/item>/gi) ?? [];
         const rows: Array<Record<string, unknown>> = [];
 
-        for (const itemXml of items.slice(0, 15)) {
+        for (const itemXml of items.slice(0, source.limit)) {
           const titulo = extractTag(itemXml, "title").replace(/<[^>]+>/g, "").trim();
           const link = extractTag(itemXml, "link").trim();
           const pubDateRaw = extractTag(itemXml, "pubDate");
           const descriptionRaw = extractTag(itemXml, "description");
           const contentRaw = extractTag(itemXml, "content:encoded") || descriptionRaw;
-          const categoria = extractTag(itemXml, "category") || source.categoriaDefault;
+          const categoria = extractTag(itemXml, "category").replace(/<[^>]+>/g, "").trim() || source.categoriaDefault;
 
           if (!titulo || !link) continue;
 
           const imagemUrl = extractFirstImage(descriptionRaw) || extractFirstImage(contentRaw) || extractFirstImage(itemXml);
-          if (!imagemUrl) continue;
 
           const resumo = descriptionRaw
             .replace(/<img[^>]*>/gi, "")
@@ -142,7 +151,7 @@ Deno.serve(async (req) => {
             titulo,
             resumo: resumo || titulo,
             conteudo_md: conteudoMd,
-            imagem_url: imagemUrl,
+            imagem_url: imagemUrl ?? null,
             categoria,
             link,
             data_publicacao: dataPublicacao,
@@ -152,7 +161,6 @@ Deno.serve(async (req) => {
         }
 
         if (rows.length > 0) {
-          // Evita conflito caso o mesmo link já exista
           const links = rows.map((r) => String(r.link));
           const { data: existing } = await admin
             .from("noticias_juridicas")
