@@ -7,8 +7,6 @@ import { toast } from '@/hooks/use-toast';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import HomeBoletinsList from './HomeBoletinsList';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
-import HomePraticarCarousel from '@/components/vademecum/home/carousel/HomePraticarCarousel';
-import HomeAulasInterativasBanner from '@/components/vademecum/home/HomeAulasInterativasBanner';
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
   hideBlog?: boolean;
@@ -38,22 +36,12 @@ const HomeTabEstudos = ({
   return (
     <motion.div
       key="estudos"
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+      transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-4 xs:space-y-4.5 sm:space-y-5"
     >
-      {/* Botão de Aulas Interativas abaixo do painel */}
-      <div className="pt-1 max-w-4xl mx-auto w-full">
-        <HomeAulasInterativasBanner />
-      </div>
-
-      {/* Carrossel Praticar no topo */}
-      <div>
-        <HomePraticarCarousel />
-      </div>
-
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
       {emAltaLeis ? (
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">

@@ -2,84 +2,71 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, Speech, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-
-const MentorOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/MentorOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
-// PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
+import {
+  Home,
+  Target,
+  Headphones,
+  BookOpen,
+  GraduationCap,
+  ChevronRight,
+  X,
+  CheckSquare,
+  Layers,
+  ListChecks,
+  FileText,
+  Pill,
+} from 'lucide-react';
 
 import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
-
-const DicionarioJuridico = lazyWithRetry(() => import('@/components/ferramentas/DicionarioJuridico'));
-const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
 import { pushRecente } from '@/lib/leisRecentes';
 import { startAppMetrics } from '@/lib/appMetrics';
 import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
-import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { prefetchRoute, prefetchMainTabsIdle, type PrefetchKey } from '@/lib/routePrefetch';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
-import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
-// Logo do app (web usa CDN, nativo usa bundle)
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
+const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 
-// Ícone oficial do WhatsApp (lucide não inclui logos de marca)
-const WhatsAppIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.83 9.83 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.82 11.82 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z"/>
-  </svg>
-);
-
-
-
-// Número do WhatsApp do Horus (formato internacional sem "+" nem espaços).
-const WHATSAPP_NUMERO = '5511914910906';
-const WHATSAPP_MSG = 'Olá Horus! Preciso da sua ajuda com uma dúvida jurídica.';
-
-const HORUS_TAGS = [
-  'Explicar',
-  'Explicar lei',
-  'Ler PDF',
-  'Ler imagem',
-  'Mandar áudio',
-  'Escutar áudio',
+const PRATICAR_ITENS: Array<{
+  id: string;
+  label: string;
+  desc: string;
+  to: string;
+  icon: typeof Target;
+  prefetch?: PrefetchKey;
+}> = [
+  { id: 'questoes', label: 'Questões', desc: 'Banco completo por matéria e banca', to: '/questoes', icon: CheckSquare, prefetch: 'questoes' },
+  { id: 'flashcards', label: 'Flashcards', desc: 'Memorização ativa com repetição espaçada', to: '/flashcards', icon: Layers, prefetch: 'flashcards' },
+  { id: 'simulado', label: 'Simulado', desc: 'Provas completas e estatísticas', to: '/simulados', icon: ListChecks },
+  { id: 'licoes', label: 'Lições', desc: 'Estudo guiado artigo por artigo', to: '/lei-seca', icon: FileText, prefetch: 'leiSeca' },
 ];
 
-
-// Mapa estático de cores (Tailwind JIT precisa das classes literais)
-const HORUS_COLOR: Record<string, { bg: string; text: string }> = {
-  emerald: { bg: 'bg-emerald-500/20 ring-1 ring-emerald-400/40', text: 'text-emerald-400' },
-  sky:     { bg: 'bg-sky-500/20 ring-1 ring-sky-400/40',         text: 'text-sky-400' },
-  rose:    { bg: 'bg-rose-500/20 ring-1 ring-rose-400/40',       text: 'text-rose-400' },
-  violet:  { bg: 'bg-violet-500/20 ring-1 ring-violet-400/40',   text: 'text-violet-400' },
-  amber:   { bg: 'bg-amber-500/20 ring-1 ring-amber-400/40',     text: 'text-amber-400' },
-  cyan:    { bg: 'bg-cyan-500/20 ring-1 ring-cyan-400/40',       text: 'text-cyan-400' },
-};
-
-// NavShine removido — o brilho contínuo pesava demais na barra
-// inferior (montada em toda navegação mobile/tablet).
+const AUDIOAULAS_ITENS: Array<{
+  id: string;
+  label: string;
+  desc: string;
+  to: string;
+  icon: typeof Headphones;
+  prefetch?: PrefetchKey;
+}> = [
+  { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas narradas por área do Direito', to: '/audioaulas', icon: Headphones, prefetch: 'audioaulas' },
+  { id: 'pilulas', label: 'Pílulas', desc: 'Conceitos essenciais em minutos', to: '/pilulas', icon: Pill, prefetch: 'pilulas' },
+];
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
-  const [ferramentasOpen, setFerramentasOpen] = useState(false);
-  const [assistenteChooserOpen, setAssistenteChooserOpen] = useState(false);
-  const [estudosOpen, setEstudosOpen] = useState(false);
+
+  const [praticarOpen, setPraticarOpen] = useState(false);
+  const [audioaulasOpen, setAudioaulasOpen] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [dicionarioOpen, setDicionarioOpen] = useState(false);
-  const [mentorOpen, setMentorOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [externalMenuOpen, setExternalMenuOpen] = useState(false);
-  // pessoalOpen removido — Meu Espaço é rota agora.
-  const [horusView, setHorusView] = useState<'chooser' | 'main' | 'funcoes' | 'notificacoes'>('chooser');
-
-  // (Removido: intervalo do NavShine — animação contínua no BottomNav.)
+  const [explicitHidden, setExplicitHidden] = useState(false);
 
   const prefetchProfile = usePrefetchProfileSummary();
 
@@ -90,10 +77,11 @@ const BottomNav = () => {
     };
     window.addEventListener('sidemenu-state', handler);
     startAppMetrics();
-    // Aquece o cache de "Meu Espaço" logo após o boot para que os stats
-    // apareçam no primeiro paint quando o usuário abrir a página.
     const idle: any = (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 300));
-    idle(() => { prefetchProfile(); import('@/components/vademecum/navigation/SideMenu').catch(() => {}); });
+    idle(() => {
+      prefetchProfile();
+      import('@/components/vademecum/navigation/SideMenu').catch(() => {});
+    });
     return () => window.removeEventListener('sidemenu-state', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -103,8 +91,6 @@ const BottomNav = () => {
     window.addEventListener('direitoprime:abrir-chat', handleOpenChat);
     return () => window.removeEventListener('direitoprime:abrir-chat', handleOpenChat);
   }, []);
-
-  const [explicitHidden, setExplicitHidden] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -117,669 +103,352 @@ const BottomNav = () => {
     return () => window.removeEventListener('direitoprime:bottom-nav-visibility', handler as EventListener);
   }, []);
 
-  // Qualquer troca de rota reabilita a nav (evita ficar escondida se um menu
-  // externo desmontou sem emitir o evento de fechamento).
   useEffect(() => {
     setExternalMenuOpen(false);
     setSideMenuOpen(false);
     setExplicitHidden(false);
+    setPraticarOpen(false);
+    setAudioaulasOpen(false);
   }, [path]);
 
-  // Pré-carrega os chunks das abas principais do BottomNav assim que o app fica ocioso
-  // para que o toque em qualquer aba abra instantaneamente (0ms de latência de rede).
   useEffect(() => {
     prefetchMainTabsIdle();
   }, []);
 
   const handleNavWarmup = () => {
     try {
-      prefetchRoute('vadeMecum');
-      prefetchRoute('ferramentas');
+      prefetchRoute('biblioteca');
+      prefetchRoute('aulas');
     } catch {
       /* noop */
     }
   };
 
   const keyboardHeight = useKeyboardHeight();
-  const hideNav = sideMenuOpen || externalMenuOpen || explicitHidden || keyboardHeight > 0 || path.startsWith('/blog') || path.startsWith('/noticias/boletins');
+  const hideNav =
+    sideMenuOpen ||
+    externalMenuOpen ||
+    explicitHidden ||
+    keyboardHeight > 0 ||
+    path.startsWith('/blog') ||
+    path.startsWith('/noticias/boletins');
 
-  const isEstudos = path.startsWith('/estudos') || path.startsWith('/resumos-juridicos') || path.startsWith('/biblioteca');
-
-  // Badge de novas notícias: conta quantas notícias são mais recentes que
-  // o timestamp "última vista" do localStorage. Se nunca viu, considera notícias recentes.
-  const [noticiasCount, setNoticiasCount] = useState(0);
-  useEffect(() => {
-    let cancel = false;
-    (async () => {
-      try {
-        const lastSeen = Number(localStorage.getItem('noticias_last_seen') || 0);
-        let countRes = 0;
-        if (lastSeen > 0) {
-          const { count } = await supabase
-            .from('noticias_juridicas')
-            .select('*', { count: 'exact', head: true })
-            .gt('created_at', new Date(lastSeen).toISOString());
-          countRes = count || 0;
-        } else {
-          const { count } = await supabase
-            .from('noticias_juridicas')
-            .select('*', { count: 'exact', head: true })
-            .gt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
-          countRes = (count && count > 0) ? count : 5;
-        }
-        if (cancel) return;
-        setNoticiasCount(countRes);
-      } catch {}
-    })();
-    return () => { cancel = true; };
-  }, [path]);
-
-
-
-  const FERRAMENTAS: Array<{ id: string; label: string; desc: string; icon: any; action: () => void; hot?: boolean; prefetch?: PrefetchKey }> = [
-    { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor, action: () => navigate('/desktop'), hot: true, prefetch: 'desktop' },
-    { id: 'vade-mecum', label: 'Vade Mecum', desc: 'Legislação completa: códigos, estatutos e leis', icon: Scale, action: () => navigate('/vade-mecum') },
-
-    { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
-    { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
-    { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, action: () => navigate('/noticias'), prefetch: 'noticias' },
-    { id: 'pilulas', label: 'Pílulas', desc: 'Aprenda a essência dos clássicos em minutos', icon: Pill, action: () => navigate('/pilulas') },
-  ];
-
-  const ESTUDOS_ITENS: Array<{ id: string; label: string; desc: string; icon: any; action: () => void; prefetch?: PrefetchKey }> = [
-    { id: 'resumos', label: 'Resumos Jurídicos', desc: 'Biblioteca por área, tema e subtema', icon: FileText, action: () => navigate('/resumos-juridicos'), prefetch: 'resumosJuridicos' },
-    { id: 'biblioteca', label: 'Biblioteca', desc: 'Ebooks jurídicos com leitor Kindle', icon: BookOpen, action: () => navigate('/biblioteca'), prefetch: 'biblioteca' },
-    { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com transcrição', icon: Video, action: () => navigate('/estudos'), prefetch: 'estudos' },
-  ];
-
-
-  const handleFerramenta = (fn: () => void) => {
-    setFerramentasOpen(false);
-    fn();
-  };
-
-  const handleEstudo = (fn: () => void) => {
-    setEstudosOpen(false);
-    fn();
-  };
-
-  // O menu de rodapé do início do aplicativo só deve aparecer no início do aplicativo (rota '/') e biblioteca
-  if (path !== '/' && path !== '/biblioteca') {
+  // Visível na Home e nas seções principais de Biblioteca
+  if (path !== '/' && path !== '/biblioteca' && !path.startsWith('/bibliotecas')) {
     return null;
   }
 
+  const isPraticarActive =
+    praticarOpen ||
+    path.startsWith('/questoes') ||
+    path.startsWith('/flashcards') ||
+    path.startsWith('/simulados') ||
+    path.startsWith('/lei-seca') ||
+    path.startsWith('/licoes');
+
+  const isAudioaulasActive =
+    audioaulasOpen ||
+    path.startsWith('/audioaulas') ||
+    path.startsWith('/pilulas');
+
+  const isBibliotecaActive = !praticarOpen && !audioaulasOpen && path.startsWith('/biblioteca');
+  const isAulasActive = !praticarOpen && !audioaulasOpen && path.startsWith('/aulas');
+  const isInicioActive =
+    path === '/' &&
+    !praticarOpen &&
+    !audioaulasOpen &&
+    !isBibliotecaActive &&
+    !isAulasActive;
+
+  const navigateFromSheet = (to: string) => {
+    haptic.selection();
+    setPraticarOpen(false);
+    setAudioaulasOpen(false);
+    startTransition(() => navigate(to));
+  };
+
   const navContent = (
     <>
-    {/* Bottom bar — celular (< md) e Navigation Rail — tablet (md a lg).
-        Desktop (lg+) usa a sidebar lateral. */}
-    <nav
-      aria-label="Navegação principal"
-      role="navigation"
-      data-bottom-nav
-      className={`fixed z-50 transition-all duration-300 ease-out 
-        bottom-0 left-0 right-0 bg-[#1C1C1E] backdrop-blur-md border-t border-white/10 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]
-        md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
-        ${hideNav ? 'translate-y-[140%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
-    >
-      {/* Degradê escuro subindo do rodapé para dar profundidade no mobile */}
-      <div
-        aria-hidden="true"
-        className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none md:hidden"
-      />
-      {/* Menu Principal */}
-      <div 
-        onPointerDown={handleNavWarmup}
-        onTouchStart={handleNavWarmup}
-        className="relative z-10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0 md:h-full"
+      <nav
+        aria-label="Navegação principal"
+        role="navigation"
+        data-bottom-nav
+        className={`fixed z-50 transition-all duration-200 ease-out
+          bottom-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-3 right-3 mx-auto max-w-md
+          bg-[#141418]/92 backdrop-blur-xl border border-white/15 rounded-3xl shadow-[0_14px_36px_rgba(0,0,0,0.72)]
+          md:top-0 md:bottom-0 md:left-0 md:right-auto md:mx-0 md:max-w-none md:w-[90px] md:border-t-0 md:rounded-none md:bg-black/95 md:shadow-none md:border-r md:border-white/10
+          ${hideNav ? 'translate-y-[160%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
       >
-        <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
-        <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
-          {/* Slot 1: Notícias */}
-          <button
-            onPointerDown={() => prefetchRoute('noticias')}
-            onMouseEnter={() => prefetchRoute('noticias')}
-            onClick={() => {
-              haptic.selection();
-              try {
-                localStorage.setItem('noticias_last_seen', String(Date.now()));
-              } catch {}
-              setNoticiasCount(0);
-              startTransition(() => navigate('/noticias'));
-            }}
-            data-track="bottom_nav_click"
-            data-track-destino="noticias"
-            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/noticias') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
-            }`}
-            aria-label={`Notícias${noticiasCount > 0 ? ` (${noticiasCount} novas)` : ''}`}
-          >
-            <div className="relative flex items-center justify-center">
-              <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-              {noticiasCount > 0 && !path.startsWith('/noticias') && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[19px] h-[18px] px-1.5 rounded-full bg-primary text-white text-[10px] font-medium tracking-tight leading-none flex items-center justify-center border-[1.5px] border-[#1C1C1E] shadow-[0_2px_8px_rgba(0,0,0,0.7),0_0_6px_rgba(225,29,72,0.4)] drop-shadow-md animate-in zoom-in-75 duration-200">
-                  <span className="drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.7)]">
-                    {noticiasCount > 99 ? '99+' : noticiasCount}
-                  </span>
+        <div
+          onPointerDown={handleNavWarmup}
+          onTouchStart={handleNavWarmup}
+          className="relative z-10 md:h-full"
+        >
+          <div className="px-1.5 py-1.5 md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center">
+            <div className="grid grid-cols-5 items-center gap-1 md:grid-cols-1 md:items-stretch md:gap-4">
+              {/* 1. Início */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setPraticarOpen(false);
+                  setAudioaulasOpen(false);
+                  if (path !== '/') startTransition(() => navigate('/'));
+                }}
+                data-track="bottom_nav_click"
+                data-track-destino="inicio"
+                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                  isInicioActive
+                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+                aria-label="Início"
+              >
+                <Home className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isInicioActive ? 2 : 1.6} />
+                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
+                  Início
                 </span>
-              )}
+              </button>
+
+              {/* 2. Praticar */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setAudioaulasOpen(false);
+                  setPraticarOpen((prev) => !prev);
+                }}
+                data-track="bottom_nav_click"
+                data-track-destino="praticar"
+                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                  isPraticarActive
+                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+                aria-label="Praticar"
+              >
+                <Target className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isPraticarActive ? 2 : 1.6} />
+                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
+                  Praticar
+                </span>
+              </button>
+
+              {/* 3. Audioaulas */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setPraticarOpen(false);
+                  setAudioaulasOpen((prev) => !prev);
+                }}
+                data-track="bottom_nav_click"
+                data-track-destino="audioaulas"
+                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                  isAudioaulasActive
+                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+                aria-label="Audioaulas"
+              >
+                <Headphones className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isAudioaulasActive ? 2 : 1.6} />
+                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
+                  Audioaulas
+                </span>
+              </button>
+
+              {/* 4. Biblioteca */}
+              <button
+                type="button"
+                onPointerDown={() => prefetchRoute('biblioteca')}
+                onMouseEnter={() => prefetchRoute('biblioteca')}
+                onClick={() => {
+                  haptic.selection();
+                  setPraticarOpen(false);
+                  setAudioaulasOpen(false);
+                  startTransition(() => navigate('/bibliotecas'));
+                }}
+                data-track="bottom_nav_click"
+                data-track-destino="biblioteca"
+                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                  isBibliotecaActive
+                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+                aria-label="Biblioteca"
+              >
+                <BookOpen className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isBibliotecaActive ? 2 : 1.6} />
+                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
+                  Biblioteca
+                </span>
+              </button>
+
+              {/* 5. Aulas de Direito */}
+              <button
+                type="button"
+                onPointerDown={() => prefetchRoute('aulas')}
+                onMouseEnter={() => prefetchRoute('aulas')}
+                onClick={() => {
+                  haptic.selection();
+                  setPraticarOpen(false);
+                  setAudioaulasOpen(false);
+                  startTransition(() => navigate('/aulas'));
+                }}
+                data-track="bottom_nav_click"
+                data-track-destino="aulas"
+                className={`min-h-[48px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 md:py-3 rounded-2xl transition-all active:scale-95 touch-manipulation cursor-pointer ${
+                  isAulasActive
+                    ? 'bg-white text-zinc-950 shadow-sm font-semibold'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+                aria-label="Aulas de Direito"
+              >
+                <GraduationCap className="w-5 h-5 md:w-6 md:h-6" strokeWidth={isAulasActive ? 2 : 1.6} />
+                <span className="font-body text-[10px] leading-tight text-center truncate max-w-full">
+                  Aulas
+                </span>
+              </button>
             </div>
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Notícias</span>
-          </button>
-
-          {/* Slot 2: Chat */}
-          <button
-            onPointerDown={() => prefetchRoute('chatJuridico')}
-            onMouseEnter={() => prefetchRoute('chatJuridico')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/chat-juridico')); }}
-            data-track="bottom_nav_click"
-            data-track-destino="chat-juridico"
-            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/chat-juridico') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
-            }`}
-            aria-label="Chat"
-          >
-            <MessageCircle className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/chat-juridico') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} fill={path.startsWith('/chat-juridico') ? 'currentColor' : 'none'} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
-          </button>
-
-          {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
-          <button
-            onPointerDown={() => prefetchRoute('vadeMecum')}
-            onMouseEnter={() => prefetchRoute('vadeMecum')}
-            onClick={() => { haptic.selection(); if (!path.startsWith('/vade-mecum')) startTransition(() => navigate('/vade-mecum')); }}
-            data-track="bottom_nav_click"
-            data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:opacity-70 transition-transform duration-100 touch-manipulation cursor-pointer"
-            aria-label="Vade Mecum"
-          >
-            <span
-              className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
-                path.startsWith('/vade-mecum') ? 'scale-110 md:bg-white/15 md:ring-1 md:ring-white/25' : ''
-              }`}
-            >
-              <Scale className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
-              {/* Reflexo brilhante que passa periodicamente no mobile */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite] md:hidden"
-              />
-            </span>
-            {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
-            <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8 md:hidden" />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
-          </button>
-
-          {/* Slot 4: Ferramentas */}
-          <button
-            onPointerDown={() => prefetchRoute('ferramentas')}
-            onMouseEnter={() => prefetchRoute('ferramentas')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/ferramentas')); }}
-            data-track="bottom_nav_click"
-            data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              location.pathname.startsWith('/ferramentas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
-            }`}
-            aria-label="Ferramentas"
-          >
-            <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
-          </button>
-
-          {/* Slot 5: Pesquisar */}
-          <button
-            onClick={() => { haptic.selection(); setSearchOpen(true); }}
-            data-track="bottom_nav_click"
-            data-track-destino="pesquisar"
-            className="flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10"
-            aria-label="Pesquisar"
-          >
-            <Search className="w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-sm -scale-x-100" strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
-          </button>
-
-          {/* Slot 6: Me Explique (Apenas Desktop) */}
-          <button
-            onPointerDown={() => prefetchRoute('meExplique')}
-            onMouseEnter={() => prefetchRoute('meExplique')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/me-explique')); }}
-            data-track="bottom_nav_click"
-            data-track-destino="me-explique"
-            className={`hidden md:flex flex-col items-center justify-center gap-1.5 py-1.5 md:py-3 rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/me-explique') ? 'text-amber-400 md:bg-amber-500/10 md:ring-1 md:ring-amber-500/25 md:shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-amber-300'
-            }`}
-            aria-label="Me Explique"
-          >
-            <Speech className={`w-8 h-8 xs:w-9 xs:h-9 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/me-explique') ? 'scale-110 text-amber-400' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Me Explique</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-
-    {/* Tablet agora usa a mesma bottom bar do celular (acima). */}
-
-
-
-
-    {/* Estudos Sheet */}
-    {estudosOpen && (
-      <>
-        <div
-          onClick={() => setEstudosOpen(false)}
-          className="fixed inset-0 z-[70] bg-background/80"
-        />
-        <div
-          className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-safe shadow-2xl"
-        >
-          <div className="flex items-center justify-center pt-2 pb-1">
-            <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
-          </div>
-          <div className="flex items-center justify-between px-4 pb-3">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-primary" />
-              <h3 className="font-display text-lg text-foreground">Estudos</h3>
-              <span className="ml-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-[0_0_10px_rgba(245,158,11,0.2)]">
-                 <Crown className="w-3 h-3 text-[#F59E0B]" strokeWidth={2.4} /> Premium
-              </span>
-            </div>
-            <button
-              onClick={() => { haptic.light(); setEstudosOpen(false); }}
-              aria-label="Fechar estudos"
-              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center cursor-pointer"
-            >
-              <X className="w-4 h-4 text-foreground" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="px-4 pb-8 flex flex-col gap-3">
-            {ESTUDOS_ITENS.map((f) => {
-              const Icon = f.icon;
-              return (
-                <button
-                  key={f.id}
-                  onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                  onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                  onClick={() => handleEstudo(f.action)}
-                  data-track="estudo_abrir"
-                  data-estudo-id={f.id}
-                  data-estudo-nome={f.label}
-                  className="group flex items-center gap-4 p-4 min-h-[76px] rounded-xl bg-secondary/50 border border-border hover:border-primary/40 hover:bg-secondary active:scale-[0.98] transition-all text-left cursor-pointer"
-                >
-                  <Icon className="w-6 h-6 text-primary stroke-[1.5] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
-                    <p className="font-body text-sm text-muted-foreground line-clamp-1">{f.desc}</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                </button>
-              );
-            })}
           </div>
         </div>
-      </>
-    )}
+      </nav>
 
-
-    {/* Ferramentas Sheet */}
-    {ferramentasOpen && (
-      <>
-        <div
-          onClick={() => setFerramentasOpen(false)}
-          className="fixed inset-0 z-[70] bg-background/80"
-        />
-        <div
-          className="fixed inset-0 z-[80] bg-card flex flex-col h-[100dvh] pt-[var(--sai-top)] pb-safe shadow-2xl"
-        >
-
-          <div className="flex items-center justify-between px-5 pb-4 shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                <Gavel className="w-5 h-5 text-primary" />
-              </div>
+      {/* Sheet Minimalista: Praticar */}
+      {praticarOpen && (
+        <>
+          <div
+            onClick={() => setPraticarOpen(false)}
+            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
+          />
+          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
+            <div className="flex items-center justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-white/15" />
+            </div>
+            <div className="flex items-center justify-between px-5 pb-3 pt-1">
               <div>
-                <h3 className="font-display text-xl font-bold text-foreground leading-tight">Ferramentas</h3>
-                <p className="font-body text-xs text-muted-foreground">Recursos jurídicos e utilitários</p>
+                <h3 className="font-display text-base font-semibold text-white tracking-tight">Praticar</h3>
+                <p className="font-body text-xs text-white/50">Escolha como treinar agora</p>
               </div>
+              <button
+                type="button"
+                onClick={() => { haptic.light(); setPraticarOpen(false); }}
+                aria-label="Fechar Praticar"
+                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => { haptic.light(); setFerramentasOpen(false); }}
-              aria-label="Fechar ferramentas"
-              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center cursor-pointer"
-            >
-              <ChevronDown className="w-5 h-5 text-foreground" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="px-4 pb-8 overflow-y-auto flex-1">
-            <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-              {FERRAMENTAS.map((f) => {
-                const Icon = f.icon;
+            <div className="px-4 space-y-2">
+              {PRATICAR_ITENS.map((item) => {
+                const Icon = item.icon;
                 return (
                   <button
-                    key={f.id}
-                    onPointerEnter={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                    onFocus={() => { if (f.prefetch) prefetchRoute(f.prefetch); }}
-                    onClick={() => handleFerramenta(f.action)}
-                    data-track="ferramenta_abrir"
-                    data-ferramenta-id={f.id}
-                    data-ferramenta-nome={f.label}
-                    data-ferramenta-origin="bottom_sheet"
-                    className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors cursor-pointer"
+                    key={item.id}
+                    type="button"
+                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
+                    onClick={() => navigateFromSheet(item.to)}
+                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center text-primary shrink-0">
-                      <Icon className="w-6 h-6" />
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/90 shrink-0">
+                      <Icon className="w-5 h-5" strokeWidth={1.6} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <div className="font-body text-base font-semibold text-foreground truncate">{f.label}</div>
-                      </div>
-                      <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">{f.desc}</div>
+                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
+                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
                     </div>
-                    {f.hot && (
-                      <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-wide border border-primary/30">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                        Em alta
-                      </span>
-                    )}
-                    <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
                   </button>
                 );
               })}
             </div>
           </div>
-        </div>
-      </>
-    )}
+        </>
+      )}
 
-    {/* Assistente Chooser Sheet — grande, tela cheia */}
-    {/* Assistente Chooser Sheet — grande, tela cheia */}
-    {assistenteChooserOpen && (
-      <>
-        <div
-          onClick={() => setAssistenteChooserOpen(false)}
-          className="fixed inset-0 z-[70] bg-background/85"
-        />
-        <div
-          className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-safe flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border shadow-2xl"
-        >
-          <div className="flex items-center justify-center pt-3 pb-2 shrink-0">
-            <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
-          </div>
-          <div className="flex items-center justify-between px-5 pb-4 shrink-0">
-            <div className="flex items-center gap-2.5 min-w-0">
-              {horusView !== 'chooser' && (
-                <button
-                  onClick={() => setHorusView(horusView === 'main' ? 'chooser' : 'main')}
-                  aria-label="Voltar"
-                  className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0 cursor-pointer"
-                >
-                  <ChevronRight className="w-5 h-5 text-foreground rotate-180" />
-                </button>
-              )}
-              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg shrink-0 ${horusView === 'chooser' ? 'bg-primary shadow-primary/30' : 'bg-emerald-500 shadow-emerald-500/30'}`}>
-                {horusView === 'chooser'
-                  ? <Scale className="w-6 h-6 text-primary-foreground" />
-                  : <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />}
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-display text-xl font-bold text-foreground leading-tight truncate">
-                  {horusView === 'chooser'
-                    ? 'Assistente'
-                    : horusView === 'funcoes'
-                    ? 'Funções'
-                    : horusView === 'notificacoes'
-                    ? 'Notificações'
-                    : 'Assistente Horus'}
-                </h3>
-                <p className="font-body text-xs text-muted-foreground truncate">
-                  {horusView === 'chooser'
-                    ? 'Escolha onde falar com seu assistente'
-                    : horusView === 'funcoes'
-                    ? 'O que o Horus faz por você'
-                    : horusView === 'notificacoes'
-                    ? 'Escolha o que quer receber'
-                    : 'Seu assistente jurídico no WhatsApp'}
-                </p>
-              </div>
+      {/* Sheet Minimalista: Audioaulas */}
+      {audioaulasOpen && (
+        <>
+          <div
+            onClick={() => setAudioaulasOpen(false)}
+            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
+          />
+          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
+            <div className="flex items-center justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-white/15" />
             </div>
-            <button
-              onClick={() => { setAssistenteChooserOpen(false); setHorusView('chooser'); }}
-              aria-label="Fechar"
-              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0 cursor-pointer"
-            >
-              <X className="w-5 h-5 text-foreground" aria-hidden="true" />
-            </button>
-          </div>
-
-
-          <div className="flex-1 overflow-y-auto px-5 pt-2 pb-8">
-            {horusView === 'chooser' && (
-              <div className="flex flex-col gap-3 pt-2">
-                <button
-                  onClick={() => {
-                    haptic.selection();
-                    setAssistenteChooserOpen(false);
-                    setHorusView('chooser');
-                    setMentorOpen(true);
-                  }}
-                  className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-primary/40 active:scale-[0.98] transition-all text-left cursor-pointer"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-primary/20 ring-1 ring-primary/40 flex items-center justify-center shrink-0">
-                    <Scale className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no app</p>
-                    <p className="font-body text-sm text-muted-foreground line-clamp-2">Converse aqui dentro, sem sair do app</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                </button>
-
-                <button
-                  onClick={() => { haptic.selection(); setHorusView('main'); }}
-                  className="group flex items-center gap-4 p-4 min-h-[80px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
-                    <WhatsAppIcon className="w-6 h-6 text-emerald-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-base font-bold text-foreground leading-tight">Assistente no WhatsApp</p>
-                    <p className="font-body text-sm text-muted-foreground line-clamp-2">Fale com o Horus direto no WhatsApp</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
-                </button>
+            <div className="flex items-center justify-between px-5 pb-3 pt-1">
+              <div>
+                <h3 className="font-display text-base font-semibold text-white tracking-tight">Audioaulas</h3>
+                <p className="font-body text-xs text-white/50">Estude ouvindo em qualquer lugar</p>
               </div>
-            )}
-
-            {horusView === 'main' && (
-              <div className="flex flex-col gap-6">
-                {/* Logo + descrição + tags */}
-                <div className="flex flex-col items-center text-center gap-4">
-                  <div
-                    className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden ring-4 ring-background"
-                  >
-                    <img
-                      src={primeLogo}
-                      alt="Direito Prime"
-                      className="w-14 h-14 object-contain"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="font-display text-lg font-bold text-foreground">Assistente Horus</h4>
-                    <p className="font-body text-sm text-muted-foreground max-w-[260px] leading-snug">
-                      Seu assistente jurídico no WhatsApp. Tire dúvidas, resuma documentos e receba avisos sobre o que importa para você.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {HORUS_TAGS.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1.5 rounded-full bg-secondary/70 border border-border/60 text-[11px] font-semibold text-foreground/80"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA centralizado — Falar com Horus */}
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(WHATSAPP_MSG)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setAssistenteChooserOpen(false)}
-                  className="mx-auto w-full max-w-sm h-14 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5 cursor-pointer"
-                >
-                  <WhatsAppIcon className="w-6 h-6 text-primary-foreground" />
-                  <span className="font-display text-base font-bold text-primary-foreground">Falar com Horus</span>
-                </a>
-
-                {/* Lista com 2 opções */}
-                <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => { haptic.light(); setAudioaulasOpen(false); }}
+                aria-label="Fechar Audioaulas"
+                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-4 space-y-2">
+              {AUDIOAULAS_ITENS.map((item) => {
+                const Icon = item.icon;
+                return (
                   <button
-                    onClick={() => { haptic.selection(); setHorusView('funcoes'); }}
-                    className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
+                    key={item.id}
+                    type="button"
+                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
+                    onClick={() => navigateFromSheet(item.to)}
+                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-400/40 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-6 h-6 text-emerald-400" />
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/90 shrink-0">
+                      <Icon className="w-5 h-5" strokeWidth={1.6} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-body text-base font-bold text-foreground leading-tight">Funções</p>
-                      <p className="font-body text-sm text-muted-foreground line-clamp-1">O que o Horus pode fazer</p>
+                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
+                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
                   </button>
-
-                  <button
-                    onClick={() => { haptic.selection(); setHorusView('notificacoes'); }}
-                    className="group flex items-center gap-4 p-4 min-h-[76px] rounded-2xl bg-secondary/50 border border-border hover:border-emerald-500/40 active:scale-[0.98] transition-all text-left cursor-pointer"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 ring-1 ring-amber-400/40 flex items-center justify-center shrink-0">
-                      <Bell className="w-6 h-6 text-amber-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-base font-bold text-foreground leading-tight">Notificações</p>
-                      <p className="font-body text-sm text-muted-foreground line-clamp-1">Escolha o que receber no WhatsApp</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-400 transition-colors shrink-0" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-
-            {horusView === 'funcoes' && (
-              <div className="flex flex-col gap-2.5">
-                {[
-                  { icon: Send, color: 'emerald', label: 'Enviar mensagem', desc: 'Mande qualquer dúvida por texto no WhatsApp e receba resposta na hora.' },
-                  { icon: Mic, color: 'sky', label: 'Áudio por voz', desc: 'Grave um áudio explicando sua dúvida. O Horus entende e responde em áudio também.' },
-                  { icon: FileText, color: 'rose', label: 'Ler PDF', desc: 'Envie um PDF de prova, artigo ou trabalho e peça resumo, correção ou explicação.' },
-                  { icon: ImageIcon, color: 'violet', label: 'Ler imagem', desc: 'Envie foto do caderno, prova ou documento — ele lê e comenta.' },
-                  { icon: Gavel, color: 'amber', label: 'Dúvidas jurídicas', desc: 'Explica artigos, súmulas, jurisprudência e conceitos de forma simples.' },
-                  { icon: BookOpen, color: 'cyan', label: 'Explicar lição', desc: 'Peça explicação passo a passo de qualquer conteúdo que estiver estudando.' },
-                ].map((f) => {
-                  const Icon = f.icon;
-                  return (
-                    <div
-                      key={f.label}
-                      className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/50 border border-border"
-                    >
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[f.color].bg}`}>
-                        <Icon className={`w-5 h-5 ${HORUS_COLOR[f.color].text}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-body text-base font-bold text-foreground leading-tight">{f.label}</p>
-                        <p className="font-body text-sm text-muted-foreground leading-snug mt-1">{f.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {horusView === 'notificacoes' && (
-              <div className="flex flex-col gap-2.5">
-                {[
-                  { icon: Newspaper, color: 'sky', label: 'Boletim jurídico diário', desc: 'Resumo diário das principais notícias do Direito.' },
-                  { icon: Gavel, color: 'amber', label: 'Boletim de leis diárias', desc: 'Novas leis e decretos publicados no DOU.' },
-                  { icon: Star, color: 'rose', label: 'Mudança em artigo favorito', desc: 'Aviso quando um artigo que você favoritou for alterado.' },
-                  { icon: ScanEye, color: 'violet', label: 'Radar Legislativo', desc: 'Andamento de PLs que você acompanha.' },
-                ].map((n) => {
-                  const Icon = n.icon;
-                  return (
-                    <label
-                      key={n.label}
-                      className="flex items-center gap-3 p-4 rounded-2xl bg-secondary/50 border border-border cursor-pointer"
-                    >
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${HORUS_COLOR[n.color].bg}`}>
-                        <Icon className={`w-5 h-5 ${HORUS_COLOR[n.color].text}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-body text-sm font-bold text-foreground leading-tight">{n.label}</p>
-                        <p className="font-body text-xs text-muted-foreground leading-snug mt-0.5 line-clamp-2">{n.desc}</p>
-                      </div>
-                      <input type="checkbox" className="w-5 h-5 accent-emerald-500 shrink-0" defaultChecked />
-                    </label>
-                  );
-                })}
-                <p className="font-body text-xs text-muted-foreground mt-3 px-1 leading-snug">
-                  As notificações são enviadas pelo WhatsApp do Horus. Você pode desativar a qualquer momento.
-                </p>
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </>
-    )}
+        </>
+      )}
 
+      {sideMenuOpen && (
+        <Suspense fallback={null}>
+          <SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} />
+        </Suspense>
+      )}
 
+      {searchOpen && (
+        <Suspense fallback={null}>
+          <SearchOverlay
+            open={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            onSelectLei={(lei) => {
+              setSearchOpen(false);
+              pushRecente({
+                tipo: lei.tipo,
+                leiId: lei.leiId,
+                nome: lei.nome,
+                descricao: lei.descricao,
+                tabela_nome: lei.tabela_nome,
+              });
+              const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
+              const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
+              navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
+            }}
+          />
+        </Suspense>
+      )}
 
-    {/* Side Menu (Perfil, Estudar, Legislação, Configurações) */}
-    {sideMenuOpen && (
-      <Suspense fallback={null}><SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} /></Suspense>
-    )}
-
-    {/* Search Overlay (80% bottom sheet) */}
-    {searchOpen && (
-      <Suspense fallback={null}>
-        <SearchOverlay
-          open={searchOpen}
-          onClose={() => setSearchOpen(false)}
-          onSelectLei={(lei) => {
-            setSearchOpen(false);
-            pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
-            const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
-            const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
-            navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-          }}
-        />
-      </Suspense>
-    )}
-
-    {/* Dicionário Jurídico */}
-    {dicionarioOpen && (
-      <Suspense fallback={null}>
-        <DicionarioJuridico open={dicionarioOpen} onClose={() => setDicionarioOpen(false)} />
-      </Suspense>
-    )}
-
-    {/* Mentor Jurídico */}
-    {mentorOpen && (
-      <Suspense fallback={null}>
-        <MentorOverlay open={mentorOpen} onClose={() => setMentorOpen(false)} />
-      </Suspense>
-    )}
-    {chatOpen && (
-      <Suspense fallback={null}>
-        <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
-      </Suspense>
-    )}
-
-    {/* Pessoal — agora é rota dedicada em /meu-espaco */}
-
-    {/* Chat Jurídico */}
-
+      {chatOpen && (
+        <Suspense fallback={null}>
+          <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 

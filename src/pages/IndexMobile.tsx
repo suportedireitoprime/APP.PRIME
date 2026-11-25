@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Scale, ArrowRight } from 'lucide-react';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -99,21 +100,45 @@ const IndexMobile = () => {
           hasTopBanner={false}
         />
         <div>
-          <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
+          <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-3 space-y-4">
             <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
-            
+
+            {/* Destaque Minimalista do Vade Mecum no Início (saiu do rodapé) */}
+            <button
+              type="button"
+              onClick={() => navigate('/vade-mecum')}
+              className="w-full min-h-[56px] flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl bg-zinc-900/75 hover:bg-zinc-900 border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">
+                  <Scale className="w-5 h-5" strokeWidth={1.6} />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-display text-sm font-semibold text-white tracking-tight truncate">
+                    Vade Mecum · Legislação
+                  </p>
+                  <p className="font-body text-xs text-white/55 truncate mt-0.5">
+                    CF/88, Códigos, Estatutos e Súmulas
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className="w-4.5 h-4.5 text-white/50 shrink-0" strokeWidth={1.8} />
+            </button>
+
             <MobileHomeSections />
           </main>
         </div>
         {location.pathname === '/' && <BottomNav />}
         <Suspense fallback={null}>
-          <SideMenu
-            open={menuOpen}
-            onClose={handleMenuClose}
-            onNavigate={handleMenuNavigate}
-          />
-          <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
-          <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
+          {menuOpen && (
+            <SideMenu
+              open={menuOpen}
+              onClose={handleMenuClose}
+              onNavigate={handleMenuNavigate}
+            />
+          )}
+          {searchOpen && <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />}
+          {assistenteOpen && <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />}
         </Suspense>
       </div>
     </div>

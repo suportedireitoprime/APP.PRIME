@@ -1,24 +1,22 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, BookOpen, ScrollText, Pill } from 'lucide-react';
-import { useShortcutBadges } from '@/hooks/useShortcutBadges';
+import { Scale, Newspaper, MessageCircle, Wrench } from 'lucide-react';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       tag: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       tag: 'Novo', prefetch: 'audiobooks' as PrefetchKey },
-  { label: 'Blog',        icon: ScrollText,            to: '/blog',             tag: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Pílulas',     icon: Pill,                  to: '/pilulas',          tag: 'Novo', prefetch: 'pilulas' as PrefetchKey },
+  { label: 'Vade Mecum', icon: Scale, to: '/vade-mecum', prefetch: 'vadeMecum' as PrefetchKey },
+  { label: 'Notícias', icon: Newspaper, to: '/noticias', prefetch: 'noticias' as PrefetchKey },
+  { label: 'Chat', icon: MessageCircle, to: '/chat-juridico', prefetch: 'chatJuridico' as PrefetchKey },
+  { label: 'Ferramentas', icon: Wrench, to: '/ferramentas', prefetch: 'ferramentas' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
   const navigate = useNavigate();
-  const shortcutBadges = useShortcutBadges();
 
   return (
-    <div className="flex items-center justify-between gap-1.5 xs:gap-2 mx-0.5 mt-0.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl xs:rounded-3xl py-1.5 xs:py-2 sm:py-2.5 px-1.5 xs:px-2.5 sm:px-3.5 shadow-xl">
-      {SHORTCUT_ITEMS.map((item, index) => {
+    <div className="flex items-center justify-between gap-1.5 mx-0.5 mt-0.5 bg-black/45 backdrop-blur-md border border-white/10 rounded-2xl py-1.5 px-2 shadow-lg">
+      {SHORTCUT_ITEMS.map((item) => {
         const Icon = item.icon;
         return (
           <button
@@ -30,26 +28,18 @@ const HomeActionShortcuts = () => {
             onClick={() => {
               try {
                 haptic.selection();
-              } catch (err) {
-                console.warn('[HomeActionShortcuts] Feedback error:', err);
+              } catch {
+                /* noop */
               }
               navigate(item.to);
             }}
-            style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
-            className="flex-1 min-w-0 group relative flex flex-col items-center justify-center pt-2 pb-1.5 px-0.5 rounded-xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-0.5 xs:gap-1 text-center select-none cursor-pointer overflow-visible"
+            className="flex-1 min-w-0 min-h-[48px] group flex flex-col items-center justify-center py-1.5 px-1 rounded-xl hover:bg-white/5 active:bg-white/10 transition-colors active:scale-95 gap-1 text-center select-none cursor-pointer"
           >
-            <div className="relative flex items-center justify-center">
-              {item.tag && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full bg-primary text-white text-[7.5px] xs:text-[8px] font-black tracking-wider uppercase leading-none shadow-[0_2px_6px_rgba(230,25,66,0.6)] border border-white/25 z-20 select-none pointer-events-none whitespace-nowrap">
-                  {item.tag}
-                </span>
-              )}
-              <Icon
-                className="w-5 h-5 xs:w-5.5 xs:h-5.5 sm:w-6 sm:h-6 shrink-0 transition-transform duration-200 group-hover:scale-110 text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                strokeWidth={2.1}
-              />
-            </div>
-            <span className="text-white/95 text-[10.5px] xs:text-[11px] sm:text-[12px] font-semibold tracking-tight truncate max-w-full drop-shadow-sm group-hover:text-white transition-colors">
+            <Icon
+              className="w-5 h-5 shrink-0 text-white/90 group-hover:text-white transition-colors"
+              strokeWidth={1.6}
+            />
+            <span className="text-white/80 text-[11px] font-medium tracking-tight truncate max-w-full group-hover:text-white transition-colors">
               {item.label}
             </span>
           </button>
