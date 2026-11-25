@@ -89,7 +89,7 @@ const IndexMobile = () => {
   const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-hidden">
+    <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-x-hidden">
       <div className="fixed inset-0 z-0">
         <ShapeGrid />
       </div>
@@ -100,9 +100,7 @@ const IndexMobile = () => {
           hasTopBanner={false}
         />
         <div>
-          <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-7 pb-4 space-y-5">
-            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
-
+          <main ref={contentRef} className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-5 sm:pt-6 pb-2 space-y-8">
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
 

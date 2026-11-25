@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import HomeBoletinsList from './HomeBoletinsList';
+import HomeSectionHeader from './HomeSectionHeader';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
@@ -68,7 +69,7 @@ const HomeTabEstudos = ({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-8">
           {/* Carrossel de Notícias Jurídicas antes de Estudos Livres */}
           {!hideNoticias && (
             <div className="-mx-4 sm:-mx-6 md:-mx-8">
@@ -76,30 +77,28 @@ const HomeTabEstudos = ({
             </div>
           )}
 
-          {/* Seção Estudos Livres — posicionada logo após o carrossel de Notícias Jurídicas */}
-          <div className="flex flex-col gap-3.5">
-            <div className="relative z-10 flex items-start justify-between gap-3 px-1">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
-                  <span className="w-1 h-4 rounded-full bg-primary shrink-0 shadow-[0_0_8px_hsl(var(--primary)/0.7)]" />
-                  <span className="truncate">ESTUDOS LIVRES</span>
-                </h3>
-                <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
-                  Ferramentas complementares para seus estudos
-                </p>
-              </div>
-            </div>
-            
-            <div key="grid-estudos" className="grid grid-cols-2 gap-2 md:gap-4">
+          {/* Seção Inteligência Jurídica — posicionada logo após o carrossel de Notícias Jurídicas */}
+          <div className="flex flex-col gap-3">
+            <HomeSectionHeader
+              title="INTELIGÊNCIA JURÍDICA"
+              subtitle="Ferramentas de inteligência artificial para seus estudos"
+            />
+
+            <div key="grid-estudos" className="grid grid-cols-2 gap-2.5 md:gap-4">
               {EMALTA_CATS.map((c, i) => (
                 <HomeCard
                   key={`cat-${c.id}`}
                   icon={c.icon}
                   label={c.label}
                   sublabel={c.sublabel}
-                  color={c.color}
+                  color="#FFFFFF"
+                  iconStrokeWidth={1.4}
+                  style={{
+                    background: 'linear-gradient(135deg, #BE123C 0%, #881337 55%, #4C0519 100%)',
+                  }}
+                  className="border-white/15 hover:border-white/30 shadow-md shadow-rose-950/40 [&_p.font-body]:text-white/85 [&_svg]:text-white/80"
+                  titleClassName="font-card text-white font-semibold text-[14px] sm:text-[15px] tracking-[-0.01em] leading-snug line-clamp-1"
                   delay={i * 0.05}
-                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                   badge={c.emBreve ? 'Em breve' : undefined}
                   onClick={() => {
                     if (c.emBreve) {
@@ -120,29 +119,13 @@ const HomeTabEstudos = ({
             </div>
           </div>
 
-          {/* Carrossel de Biblioteca Jurídica fixo */}
-          {!hideNoticias && (
-            <div className="pt-2">
-              <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl" />}>
-                <HomeLivrosCarousel />
-              </Suspense>
-            </div>
-          )}
+          {/* Carrossel de Biblioteca Jurídica */}
+          {!hideNoticias && <HomeLivrosCarousel />}
 
-          {/* Boletins Jurídicos em Lista Vertical (logo após o carrossel de clássicos) */}
-          <div className="pt-1">
-            <HomeBoletinsList />
-          </div>
+          {/* Boletins Jurídicos em Lista Vertical */}
+          <HomeBoletinsList />
         </div>
       )}
-
-
-      {/* SeÃ§Ã£o TrÃªs Poderes */}
-      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-      </div>
-
-      {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
-      <div className="h-28 w-full shrink-0 pointer-events-none" />
     </motion.div>
   );
 };

@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Play, Radio, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Play, Radio, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import radarLeisLocal from '@/assets/radares/radar-leis.webp';
+import HomeSectionHeader from './HomeSectionHeader';
 
 const VISTOS_CACHE_KEY = 'boletins_vistos_cache_v1';
 
@@ -174,31 +175,13 @@ export const HomeBoletinsList: React.FC = () => {
   }
 
   return (
-    <section className="pt-2 pb-6 space-y-3.5">
-      {/* Cabeçalho da Seção */}
-      <div className="flex items-center justify-between gap-3 px-1">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
-            <span className="w-1 h-4 rounded-full bg-primary shrink-0" />
-            <span className="truncate">BOLETINS</span>
-          </h3>
-          <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
-            Notícias jurídicas e informativos em áudio e vídeo
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            haptic.selection();
-            navigate('/boletins');
-          }}
-          className="group shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-[11.5px] sm:text-[12px] font-semibold text-white/80 hover:text-white transition-all shadow-sm cursor-pointer"
-        >
-          <span>Ver todos</span>
-          <ChevronRight className="w-3.5 h-3.5 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-        </button>
-      </div>
+    <section className="space-y-3.5">
+      <HomeSectionHeader
+        title="BOLETINS"
+        subtitle="Notícias jurídicas e informativos em áudio e vídeo"
+        actionLabel="Ver todos"
+        onAction={() => navigate('/boletins')}
+      />
 
       {/* Lista Vertical de Boletins */}
       <div className="space-y-2.5">
@@ -221,7 +204,7 @@ export const HomeBoletinsList: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => handlePlay(item)}
-                className="group relative flex items-center justify-between gap-3 p-2.5 rounded-2xl bg-[#18181B]/80 hover:bg-[#202024] active:bg-[#27272C] border border-white/5 hover:border-white/10 transition-all duration-200 cursor-pointer shadow-lg shadow-black/30 overflow-hidden"
+                className="group relative flex items-center justify-between gap-3 p-2.5 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 transition-colors duration-200 cursor-pointer shadow-sm overflow-hidden"
               >
                 {/* Capa com Thumbnail 16:9 e Botão Play Flutuante */}
                 <div className="relative w-[100px] sm:w-[110px] h-[66px] rounded-xl overflow-hidden shrink-0 bg-neutral-900 border border-white/10">

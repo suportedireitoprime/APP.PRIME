@@ -335,72 +335,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           )}
         </div>
 
-        {/* Categoria 1: Assistentes de IA (Separada de Funções) */}
-        <GroupCard title="Assistentes">
-          <MenuRow
-            icon={Bird}
-            iconColor="text-red-400"
-            label="Hórus"
-            onClick={() => handleItemClick('assistente-horus')}
-          />
-          <MenuRow
-            icon={Speech}
-            iconColor="text-red-400"
-            label="Me Explique"
-            onClick={() => handleItemClick('me-explique')}
-          />
-          <MenuRow
-            icon={Bot}
-            iconColor="text-red-400"
-            label="Chat Jurídico"
-            onClick={() => handleItemClick('chat-juridico')}
-          />
-        </GroupCard>
-
-        {/* Categoria 2: Biblioteca (Categoria exclusiva com menu suspenso / ramal) */}
-        <GroupCard title="Biblioteca">
-          <RamalRow
-            icon={Library}
-            iconColor="text-red-400"
-            label="Biblioteca"
-            isOpen={Boolean(openSections['biblioteca'])}
-            onToggle={() => toggleSection('biblioteca')}
-            items={RAMAL_BIBLIOTECA}
-            onItemClick={handleItemClick}
-          />
-        </GroupCard>
-
-        {/* Categoria 3: Funções (Vade Mecum, Estudos e Praticar) */}
-        <GroupCard title="Funções">
-          <RamalRow
-            icon={Scale}
-            iconColor="text-red-400"
-            label="Vade Mecum"
-            isOpen={Boolean(openSections['vademecum'])}
-            onToggle={() => toggleSection('vademecum')}
-            items={RAMAL_VADEMECUM}
-            onItemClick={handleItemClick}
-          />
-          <RamalRow
-            icon={GraduationCap}
-            iconColor="text-red-400"
-            label="Estudos"
-            isOpen={Boolean(openSections['estudos'])}
-            onToggle={() => toggleSection('estudos')}
-            items={RAMAL_ESTUDOS}
-            onItemClick={handleItemClick}
-          />
-          <RamalRow
-            icon={Target}
-            iconColor="text-red-400"
-            label="Praticar"
-            isOpen={Boolean(openSections['praticar'])}
-            onToggle={() => toggleSection('praticar')}
-            items={RAMAL_PRATICA}
-            onItemClick={handleItemClick}
-          />
-        </GroupCard>
-
         {/* Card com as funções principais: Minha assinatura, Avaliar aplicativo, Suporte, Sobre o app */}
         <GroupCard title="Conta & Suporte">
           <MenuRow
@@ -429,18 +363,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             onClick={() => handleItemClick('sobre')}
           />
         </GroupCard>
-
-        {/* Card Exclusivo do Administrador */}
-        {isAdmin && (
-          <GroupCard title="Admin">
-            <MenuRow
-              icon={Lock}
-              iconColor="text-red-400"
-              label="Funções Admin"
-              onClick={() => handleItemClick('admin-funcoes')}
-            />
-          </GroupCard>
-        )}
 
         {/* Card de Sessão: Sair */}
         <GroupCard>

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Scale, BookOpen, Wrench, Bird, ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
+import HomeSectionHeader from '../sections/HomeSectionHeader';
 
 interface EmAltaFeatureItem {
   id: string;
   label: string;
   sublabel: string;
+  sublabelHighlight?: string;
   route: string;
   icon: LucideIcon;
 }
@@ -16,7 +18,8 @@ const ITEMS: EmAltaFeatureItem[] = [
   {
     id: 'vade-mecum',
     label: 'Vade Mecum',
-    sublabel: 'Leis e Códigos',
+    sublabel: 'Legislação',
+    sublabelHighlight: 'atualizada',
     route: '/vade-mecum',
     icon: Scale,
   },
@@ -201,17 +204,10 @@ const HomeEmAltaCardsCarousel = () => {
 
   return (
     <section className="flex flex-col gap-2.5">
-      <div className="relative z-10 flex items-start justify-between gap-3 px-1">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
-            <span className="w-1 h-4 rounded-full bg-primary shrink-0 shadow-[0_0_8px_hsl(var(--primary)/0.7)]" />
-            <span className="truncate">EM ALTA</span>
-          </h3>
-          <p className="font-sans text-white/50 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
-            Principais recursos para seus estudos
-          </p>
-        </div>
-      </div>
+      <HomeSectionHeader
+        title="EM ALTA"
+        subtitle="Principais recursos para seus estudos"
+      />
 
       {/* Carrossel Infinito com Zoom no Card Central (otimizado para 120fps) */}
       <div
@@ -223,7 +219,7 @@ const HomeEmAltaCardsCarousel = () => {
         onPointerCancel={handleDragEnd}
         onTouchEnd={handleDragEnd}
         onTouchCancel={handleDragEnd}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory pt-2 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50%-74px)] sm:px-[calc(50%-81px)] flex gap-2 sm:gap-2.5 overflow-x-auto overscroll-x-contain touch-pan-x snap-x snap-mandatory py-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -245,8 +241,8 @@ const HomeEmAltaCardsCarousel = () => {
               data-track-section="em_alta"
               className={`snap-center shrink-0 w-[148px] sm:w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 transition-[transform,opacity] duration-200 ease-out transform-gpu p-3.5 flex flex-col justify-between ${
                 isActive
-                  ? 'scale-[1.06] opacity-100 z-10 shadow-xl'
-                  : 'scale-100 opacity-75 z-0 shadow-sm'
+                  ? 'scale-[1.08] opacity-100 z-10 shadow-xl'
+                  : 'scale-[0.92] opacity-75 z-0 shadow-sm'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
@@ -265,8 +261,11 @@ const HomeEmAltaCardsCarousel = () => {
                 <p className="font-display text-white text-sm sm:text-[15px] font-bold leading-tight truncate">
                   {item.label}
                 </p>
-                <p className="font-body text-white/55 text-[11px] sm:text-xs leading-snug truncate mt-0.5">
+                <p className="font-body text-white/55 text-[10.5px] sm:text-[11.5px] leading-snug truncate mt-0.5">
                   {item.sublabel}
+                  {item.sublabelHighlight && (
+                    <> <span className="text-primary font-semibold">{item.sublabelHighlight}</span></>
+                  )}
                 </p>
               </div>
             </button>
