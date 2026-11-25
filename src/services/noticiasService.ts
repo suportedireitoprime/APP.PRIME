@@ -17,7 +17,7 @@ export interface Noticia {
   fonte: NoticiaFonte;
 }
 
-const SNAPSHOT_KEY = 'noticias:snapshot:v5';
+const SNAPSHOT_KEY = 'noticias:snapshot:v6';
 const SNAPSHOT_TTL_MS = 24 * 60 * 60 * 1000; // 24h (offline-friendly)
 const MIN_REFETCH_MS = 2 * 60 * 1000;  // 2 min entre revalidações
 
