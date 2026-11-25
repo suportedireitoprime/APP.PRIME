@@ -41,9 +41,10 @@ import {
   subscribeTracking,
   type LivroSnapshot,
 } from '@/lib/bibliotecaTracking';
-import BibliotecaHero from './BibliotecaHero';
+import BibliotecaHero, { type BibliotecaMode } from './BibliotecaHero';
 import BibliotecaAtalhosBar from './BibliotecaAtalhosBar';
 import BibliotecaContinuarLeituraBanner from './BibliotecaContinuarLeituraBanner';
+import { BibliotecaAudiobooksView } from './BibliotecaAudiobooksView';
 
 import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
 
@@ -656,6 +657,14 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     setCanScrollRight(true);
   }, []);
 
+  const [activeMode, setActiveMode] = useState<BibliotecaMode>(() => {
+    if (typeof window !== 'undefined') {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab === 'audiobooks') return 'audiobooks';
+    }
+    return 'livros';
+  });
+
   return (
     <div className="relative w-full">
       {/* Hospeda os sheets e modais acionados pelos atalhos do hero */}
@@ -664,14 +673,20 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         onAbrirCustomPdf={onAbrirCustomPdf}
       />
 
-      {/* Hero Padrão Vade Mecum / Audiobooks com rota de voltar garantida para o início */}
+      {/* Hero Minimalista com Toggle Estratégico Livros | Audiobooks */}
       <BibliotecaHero
         onAbrirCustomPdf={() => onAbrirCustomPdf('Meus PDFs', '')}
         onBack={onBack ?? (() => navigate('/'))}
+        activeMode={activeMode}
+        onModeChange={setActiveMode}
       />
 
       {/* Conteúdo Principal Minimalista com respiro para o menu flutuante */}
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-5 sm:pt-7 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-8 sm:space-y-10">
+        {activeMode === 'audiobooks' ? (
+          <BibliotecaAudiobooksView />
+        ) : (
+          <>
         {/* Banner Continuar Leitura */}
         <div>
           <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
@@ -1094,6 +1109,8 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             )}
           </AnimatePresence>
         </section>
+          </>
+        )}
       </main>
     </div>
   );

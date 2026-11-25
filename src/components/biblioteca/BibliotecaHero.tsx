@@ -1,18 +1,29 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, HardDrive } from 'lucide-react';
+import { ArrowLeft, HardDrive, BookOpen, Headphones } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
+import { AUDIOBOOKS_CATALOGO_META } from '@/data/audiobooksMeta';
 import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
+
+export type BibliotecaMode = 'livros' | 'audiobooks';
 
 interface Props {
   onBuscar?: () => void;
   onAbrirCustomPdf?: () => void;
   onBack?: () => void;
+  activeMode?: BibliotecaMode;
+  onModeChange?: (mode: BibliotecaMode) => void;
   children?: React.ReactNode;
 }
 
-const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children }) => {
+const BibliotecaHero: React.FC<Props> = ({
+  onAbrirCustomPdf,
+  onBack,
+  activeMode = 'livros',
+  onModeChange,
+  children,
+}) => {
   const navigate = useNavigate();
   const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
@@ -66,8 +77,51 @@ const BibliotecaHero: React.FC<Props> = ({ onAbrirCustomPdf, onBack, children })
           </button>
         </div>
 
+        {/* Toggle Estratégico: Livros | Audiobooks */}
+        {onModeChange && (
+          <div className="grid grid-cols-2 gap-1.5 bg-zinc-900/90 border border-white/10 rounded-2xl p-1">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onModeChange('livros');
+              }}
+              className={`min-h-[40px] flex items-center justify-center gap-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeMode === 'livros'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 shrink-0" strokeWidth={2} />
+              <span>Livros</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onModeChange('audiobooks');
+              }}
+              className={`min-h-[40px] flex items-center justify-center gap-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeMode === 'audiobooks'
+                  ? 'bg-white text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Headphones className="w-4 h-4 shrink-0" strokeWidth={2} />
+              <span>Audiobooks</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  activeMode === 'audiobooks' ? 'bg-zinc-950/10 text-zinc-900' : 'bg-white/10 text-zinc-300'
+                }`}
+              >
+                {AUDIOBOOKS_CATALOGO_META.length}
+              </span>
+            </button>
+          </div>
+        )}
+
         {/* 4 Atalhos Rápidos Minimalistas */}
-        <BibliotecaActionShortcuts />
+        {activeMode === 'livros' && <BibliotecaActionShortcuts />}
 
         {children && <div className="w-full pt-1">{children}</div>}
       </div>

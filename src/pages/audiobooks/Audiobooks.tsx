@@ -211,7 +211,15 @@ export default function AudiobooksPage() {
   const player = useAudiobookPlayer();
 
   // Livro aberto no Painel de Detalhes
-  const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(null);
+  const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(() => {
+    if (typeof window !== "undefined") {
+      const idParam = new URLSearchParams(window.location.search).get("livro");
+      if (idParam) {
+        return AUDIOBOOKS_CATALOGO.find((b) => b.id === idParam) ?? null;
+      }
+    }
+    return null;
+  });
 
   // Livro selecionado para escolher modalidade (Audiobook Completo vs Resumo Analítico)
   const [livroModalidade, setLivroModalidade] = useState<AudiobookLivro | null>(null);
