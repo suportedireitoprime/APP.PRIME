@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Info, LogOut, ChevronRight, ChevronDown,
+  Info, LogOut, ChevronRight,
   LifeBuoy, Lock, Gem,
-  Pencil, Crown, Timer, Bird, Star,
-  Sparkles, Bot, Scale, Landmark, BookOpen, Shield, Gavel,
-  Speech, MessageCircle,
-  BookMarked, Bookmark, Columns3, Library, CheckSquare,
-  Trophy, Brain, Video, Headphones, BookOpenText, Compass,
-  NotebookPen, Flame, FileText, GraduationCap, BookA,
-  Radar, Newspaper, Bell, CloudDownload, Target,
+  Pencil, Crown, Timer, Star,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
@@ -31,68 +24,15 @@ interface SideMenuProps {
   onNavigate?: (section: string) => void;
 }
 
-interface RamalSubItem {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  iconColor?: string;
-  hint?: string;
-}
-
-const RAMAL_VADEMECUM: RamalSubItem[] = [
-  { id: 'vademecum', label: 'Vade Mecum Geral', icon: Scale, iconColor: 'text-red-400' },
-  { id: 'constituicao', label: 'Constituição Federal (CF/88)', icon: Landmark, iconColor: 'text-red-400' },
-  { id: 'codigos', label: 'Códigos & Legislação', icon: BookOpen, iconColor: 'text-red-400' },
-  { id: 'estatutos', label: 'Estatutos', icon: Shield, iconColor: 'text-red-400' },
-  { id: 'jurisprudencia', label: 'Súmulas & Jurisprudência', icon: Gavel, iconColor: 'text-red-400' },
-  { id: 'leis-ordinarias', label: 'Leis Ordinárias', icon: BookMarked, iconColor: 'text-red-400' },
-  { id: 'legislacao-especial', label: 'Legislação Especial', icon: Bookmark, iconColor: 'text-red-400' },
-  { id: 'legislacao-estadual', label: 'Legislação Estadual', icon: Columns3, iconColor: 'text-red-400' },
-];
-
-const RAMAL_BIBLIOTECA: RamalSubItem[] = [
-  { id: 'biblioteca-todas', label: 'Todas as Obras', icon: BookOpen, iconColor: 'text-red-400' },
-  { id: 'biblioteca-em-alta', label: 'Obras em Alta', icon: Flame, iconColor: 'text-red-400' },
-  { id: 'biblioteca-classicos', label: 'Clássicos do Direito', icon: Scale, iconColor: 'text-red-400' },
-  { id: 'biblioteca-meus-livros', label: 'Meus Livros', icon: Bookmark, iconColor: 'text-red-400' },
-  { id: 'biblioteca-offline', label: 'Livros Offline', icon: CloudDownload, iconColor: 'text-red-400' },
-];
-
-const RAMAL_ESTUDOS: RamalSubItem[] = [
-  { id: 'aulas-interativas', label: 'Aulas Interativas', icon: GraduationCap, iconColor: 'text-red-400' },
-  { id: 'audioaulas', label: 'Audioaulas', icon: Headphones, iconColor: 'text-red-400' },
-  { id: 'audiobooks', label: 'Audiobooks', icon: BookOpenText, iconColor: 'text-red-400' },
-  { id: 'videoaulas', label: 'Videoaulas', icon: Video, iconColor: 'text-red-400' },
-  { id: 'pilulas', label: 'Pílulas do Conhecimento', icon: Flame, iconColor: 'text-red-400' },
-  { id: 'resumos-juridicos', label: 'Resumos Jurídicos', icon: FileText, iconColor: 'text-red-400' },
-  { id: 'mapas-mentais', label: 'Mapas Mentais', icon: Compass, iconColor: 'text-red-400' },
-  { id: 'lei-seca', label: 'Lei Seca', icon: NotebookPen, iconColor: 'text-red-400' },
-];
-
-const RAMAL_PRATICA: RamalSubItem[] = [
-  { id: 'questoes', label: 'Questões OAB & Concursos', icon: CheckSquare, iconColor: 'text-red-400' },
-  { id: 'simulados', label: 'Simulados', icon: Trophy, iconColor: 'text-red-400' },
-  { id: 'flashcards', label: 'Flashcards', icon: Brain, iconColor: 'text-red-400' },
-];
-
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
   const [appVersion, setAppVersion] = useState<string>('v1.0.0');
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium, isTrial, expiresAt } = useSubscription();
   useBodyScrollLock(open);
-
-  const toggleSection = (id: string) => {
-    haptic.selection();
-    setOpenSections((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
 
   // Obter versão da build nativa (Android, iOS ou Web) sem número de build
   useEffect(() => {
@@ -480,105 +420,6 @@ function MenuRow({
         )}
       </div>
     </button>
-  );
-}
-
-function RamalRow({
-  icon: Icon,
-  label,
-  iconColor,
-  hint,
-  isOpen,
-  onToggle,
-  items,
-  onItemClick,
-}: {
-  icon: React.ElementType;
-  label: string;
-  iconColor?: string;
-  hint?: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  items: RamalSubItem[];
-  onItemClick: (id: string) => void;
-}) {
-  return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-label={label}
-        className="w-full flex items-center justify-between gap-3 px-4 py-[18px] text-left transition-colors active:bg-muted/60 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
-      >
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <Icon
-            className={`w-5 h-5 shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)] drop-shadow-[0_0_7px_rgba(248,113,113,0.45)] ${iconColor || 'text-red-400'}`}
-            strokeWidth={1.5}
-            aria-hidden="true"
-          />
-          <span className="font-body text-[15px] font-medium text-foreground/90 flex-1 truncate">{label}</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {hint && (
-            <span className="text-[11px] font-mono font-semibold text-zinc-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
-              {hint}
-            </span>
-          )}
-          <ChevronDown
-            className={`w-4 h-4 text-muted-foreground/50 shrink-0 transition-transform duration-200 ${
-              isOpen ? 'rotate-180 text-red-400' : ''
-            }`}
-            strokeWidth={1.8}
-            aria-hidden="true"
-          />
-        </div>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden bg-black/25 border-t border-border/40 divide-y divide-border/30"
-          >
-            {items.map((sub) => {
-              const SubIcon = sub.icon;
-              return (
-                <button
-                  key={sub.id}
-                  type="button"
-                  onClick={() => onItemClick(sub.id)}
-                  aria-label={sub.label}
-                  className="w-full min-h-[46px] flex items-center justify-between gap-3 pl-8 pr-4 py-3 text-left transition-colors hover:bg-secondary/70 active:bg-muted/60 group"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <SubIcon
-                      className={`w-4 h-4 shrink-0 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] drop-shadow-[0_0_6px_rgba(248,113,113,0.35)] ${sub.iconColor || 'text-red-400'}`}
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                    <span className="font-body text-[14px] text-foreground/85 group-hover:text-foreground flex-1 truncate">
-                      {sub.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {sub.hint && (
-                      <span className="text-[10px] font-mono font-semibold text-zinc-300 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded">
-                        {sub.hint}
-                      </span>
-                    )}
-                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" strokeWidth={1.8} />
-                  </div>
-                </button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
 
