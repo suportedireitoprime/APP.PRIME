@@ -6,6 +6,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { audiobooksTracking } from '@/lib/audiobooksTracking';
 import { NativeAudio } from '@/plugins/NativeAudioPlugin';
 import type { AudiobookLivro, AudiobookCapitulo, AudiobookCue } from '@/data/audiobooksCatalogo';
+import { hydrateAudiobook } from '@/lib/audiobooksLoader';
 
 interface AudiobookPlayerContextType {
   livroAtual: AudiobookLivro | null;
@@ -253,14 +254,13 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
   }, [livroAtual, capituloAtual, capituloIndex, isPlayingTitulo]);
 
   // Controles
-  const tocarLivro = useCallback((livro: AudiobookLivro, capIdx = 0, tempoInicial = 0) => {
-    haptic.selection();
-    notifyMediaPlay('audiobook');
+  const iniciarReproducaoLivro = useCallback((livro: AudiobookLivro, capIdx = 0, tempoInicial = 0) => {
     setLivroAtual(livro);
     setCapituloIndex(capIdx);
     setModalAberto(true);
 
     const cap = livro.capitulos[capIdx] || livro.capitulos[0];
+    if (!cap) return;
     const temTitulo = Boolean(cap?.audioTituloUrl) && tempoInicial <= 2;
     setIsPlayingTitulo(temTitulo);
 
@@ -309,6 +309,21 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
         .catch(() => {});
     }, 100);
   }, [velocidadeIndex]);
+
+  const tocarLivro = useCallback((livro: AudiobookLivro, capIdx = 0, tempoInicial = 0) => {
+    haptic.selection();
+    notifyMediaPlay('audiobook');
+    if (livro.capitulos && livro.capitulos.length > 0) {
+      iniciarReproducaoLivro(livro, capIdx, tempoInicial);
+      return;
+    }
+    setLivroAtual(livro);
+    setCapituloIndex(capIdx);
+    setModalAberto(true);
+    void hydrateAudiobook(livro).then((fullLivro) => {
+      iniciarReproducaoLivro(fullLivro, capIdx, tempoInicial);
+    });
+  }, [iniciarReproducaoLivro]);
 
   const selecionarCapitulo = useCallback((idx: number) => {
     if (!livroAtual || !livroAtual.capitulos[idx]) return;

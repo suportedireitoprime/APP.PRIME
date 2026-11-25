@@ -4,7 +4,7 @@
  * e revalidação suave em background.
  */
 import { supabase } from '@/integrations/supabase/client';
-import { AUDIOAULAS_ACERVO_INICIAL, type AulaAudio } from '@/data/audioaulasAcervo';
+import type { AulaAudio } from '@/data/audioaulasAcervo';
 
 const ACERVO_CACHE_KEY = 'vacatio:audioaulas_acervo_v2';
 const TTL_MS = 12 * 60 * 60 * 1000; // 12h
@@ -28,7 +28,14 @@ export function getCachedAudioaulas(): AulaAudio[] {
     }
   } catch {}
 
-  // Fallback imediato do acervo bundled
+  return [];
+}
+
+export async function loadAudioaulasFallbackCatalog(): Promise<AulaAudio[]> {
+  if (memoryAcervo && memoryAcervo.length > 0) return memoryAcervo;
+  const cached = getCachedAudioaulas();
+  if (cached.length > 0) return cached;
+  const { AUDIOAULAS_ACERVO_INICIAL } = await import('@/data/audioaulasAcervo');
   memoryAcervo = (AUDIOAULAS_ACERVO_INICIAL as AulaAudio[]) || [];
   return memoryAcervo;
 }

@@ -13,9 +13,7 @@ import {
   marcarAulaConcluida,
 } from '@/lib/audioaulaProgresso';
 import { R2_VACATIO_AUDIO_BASE_URL, safeStorageUrl } from '@/lib/cdnImg';
-import { NOVAS_AUDIOAULAS_CATALOG } from '@/data/novasAudioaulasCatalog';
-import { AUDIOAULAS_ACERVO_INICIAL } from '@/data/audioaulasAcervo';
-import { getCachedAudioaulas, saveCachedAudioaulas } from '@/services/audioaulasWarmup';
+import { getCachedAudioaulas, loadAudioaulasFallbackCatalog } from '@/services/audioaulasWarmup';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 import { NativeAudio } from '@/plugins/NativeAudioPlugin';
 import { agendarRetencaoAudioaula, cancelarRetencaoModulo } from '@/lib/nativo/notificacaoLocalManager';
@@ -67,6 +65,7 @@ interface AudioaulasPlayerContextType {
   tocandoIntro: boolean;
   openGate: () => void;
   gateBlocked: boolean;
+  ensureCatalogLoaded: () => Promise<AulaAudio[]>;
 }
 
 const FAV_KEY = 'aa_favoritos';
@@ -108,6 +107,7 @@ const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
   tocandoIntro: false,
   openGate: () => {},
   gateBlocked: false,
+  ensureCatalogLoaded: async () => [],
 };
 
 const Ctx = createContext<AudioaulasPlayerContextType | undefined>(undefined);
@@ -125,9 +125,9 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       memoryAulasCache = cached;
       return cached;
     }
-    return (AUDIOAULAS_ACERVO_INICIAL as AulaAudio[]) || [];
+    return [];
   });
-  const [loading, setLoading] = useState(() => aulas.length === 0);
+  const [loading, setLoading] = useState(false);
   const [atualId, setAtualId] = useState<number | null>(null);
   const [tocando, setTocando] = useState(false);
   const [tempo, setTempo] = useState(0);
@@ -144,22 +144,45 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const lastProgressoSaveRef = useRef<number>(0);
   const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
 
-  // Carregamento e cache aquecido das aulas (Offline-First / Stale-While-Revalidate a 0ms)
-  useEffect(() => {
-    let cancelado = false;
+  const catalogLoadPromiseRef = useRef<Promise<AulaAudio[]> | null>(null);
+  const catalogHydratedRef = useRef(false);
 
-    const carregar = async () => {
-      // 1. Hidratação instantânea do IndexedDB caso o cache em memória ainda esteja vazio
+  const ensureCatalogLoaded = useCallback(async (): Promise<AulaAudio[]> => {
+    if (catalogHydratedRef.current && memoryAulasCache && memoryAulasCache.length > 0) {
+      return memoryAulasCache;
+    }
+    if (catalogLoadPromiseRef.current) return catalogLoadPromiseRef.current;
+
+    catalogLoadPromiseRef.current = (async () => {
+      if (!memoryAulasCache || memoryAulasCache.length === 0) {
+        setLoading(true);
+      }
+
+      // 1. Hidratação instantânea do IndexedDB
       if (!memoryAulasCache || memoryAulasCache.length === 0) {
         try {
           const cached = await idbGet<AulaAudio[]>(AUDIOAULAS_CACHE_KEY);
-          if (cached && Array.isArray(cached) && cached.length > 0 && !cancelado) {
+          if (cached && Array.isArray(cached) && cached.length > 0) {
             memoryAulasCache = cached;
             setAulas(cached);
             setLoading(false);
           }
         } catch {
           /* ignore idb error */
+        }
+      }
+
+      // 1b. Se ainda vazio offline, carrega fallback bundled dinamicamente
+      if (!memoryAulasCache || memoryAulasCache.length === 0) {
+        try {
+          const fallback = await loadAudioaulasFallbackCatalog();
+          if (fallback.length > 0) {
+            memoryAulasCache = fallback;
+            setAulas(fallback);
+            setLoading(false);
+          }
+        } catch {
+          /* ignore fallback error */
         }
       }
 
@@ -175,7 +198,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             .select('id, area, tema, sequencia, titulo, descricao, url_audio')
             .order('id', { ascending: true })
             .range(from, from + batchSize - 1);
-          if (cancelado) return;
           if (error) {
             console.error('Erro ao revalidar acervo de audioaulas:', error);
             teveErro = true;
@@ -190,10 +212,9 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           }
           if (!data || data.length < batchSize) break;
         }
-        if (cancelado) return;
 
-        // Se revalidou com sucesso, mescla com o catálogo complementar e atualiza caches
         if (!teveErro && todasAulas.length > 0) {
+          const { NOVAS_AUDIOAULAS_CATALOG } = await import('@/data/novasAudioaulasCatalog');
           const chavesExistentes = new Set(
             todasAulas.map((a) => `${(a.area || '').toLowerCase()}:::${(a.tema || '').toLowerCase()}:::${(a.titulo || '').toLowerCase()}`)
           );
@@ -204,7 +225,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             }
           }
 
-          // Ordenação alfabética por Área e Sequência realizada em memória (instantânea a 0ms)
           todasAulas.sort((a, b) => {
             const comp = (a.area || '').localeCompare(b.area || '', 'pt-BR');
             if (comp !== 0) return comp;
@@ -213,26 +233,37 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
           memoryAulasCache = todasAulas;
           setAulas(todasAulas);
+          catalogHydratedRef.current = true;
           void idbSet(AUDIOAULAS_CACHE_KEY, todasAulas).catch(() => {});
+          return todasAulas;
         }
       } catch (err) {
         console.error('Erro ao revalidar acervo de audioaulas:', err);
       } finally {
-        if (!cancelado) setLoading(false);
+        setLoading(false);
+        catalogLoadPromiseRef.current = null;
       }
-    };
 
-    const idle = (cb: () => void) => {
-      const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: unknown) => void };
-      if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(cb, { timeout: 1500 });
-      else setTimeout(cb, 100);
-    };
+      return memoryAulasCache || [];
+    })();
 
-    idle(() => void carregar());
-    return () => {
-      cancelado = true;
-    };
+    return catalogLoadPromiseRef.current;
   }, []);
+
+  // Só hidrata em background no boot se o aluno tiver aula recente em andamento ou já estiver em /audioaulas
+  useEffect(() => {
+    const hasProgress = Boolean(obterUltimoProgressoAudioaula());
+    const onAudioRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/audioaulas');
+    if (!hasProgress && !onAudioRoute) return;
+
+    const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: unknown) => number; cancelIdleCallback?: (id: number) => void };
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(() => void ensureCatalogLoaded(), { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(() => void ensureCatalogLoaded(), 800);
+    return () => clearTimeout(t);
+  }, [ensureCatalogLoaded]);
 
   const alternarFavorito = useCallback((a: AulaAudio) => {
     setFavoritos((prev) => {
@@ -606,7 +637,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const retomarUltimoProgresso = useCallback(async () => {
     const ultimo = obterUltimoProgressoAudioaula();
     if (!ultimo) return;
-    const aulaEncontrada = aulas.find((x) => x.id === ultimo.id);
+    const list = aulas.length > 0 ? aulas : await ensureCatalogLoaded();
+    const aulaEncontrada = list.find((x) => x.id === ultimo.id);
     if (aulaEncontrada) {
       const tempoRecuado = Math.max(0, (ultimo.tempo || 0) - 1.0);
       const ok = await tocar(aulaEncontrada, undefined, tempoRecuado, true);
@@ -614,7 +646,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         setAberto(true);
       }
     }
-  }, [aulas, tocar]);
+  }, [aulas, tocar, ensureCatalogLoaded]);
 
   const togglePlay = useCallback(() => {
     if (!atual) return;
@@ -843,6 +875,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     tocandoIntro,
     openGate: gateMes.openGate,
     gateBlocked: gateMes.blocked,
+    ensureCatalogLoaded,
   };
 
   return (

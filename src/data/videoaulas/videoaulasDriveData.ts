@@ -1,5 +1,5 @@
-import catalogoIniciantesRaw from './catalogoIniciantes.json';
-import catalogoAreasRaw from './catalogoAreas.json';
+import catalogoIniciantesRaw from './catalogoIniciantesMeta.json';
+import catalogoAreasRaw from './catalogoAreasMeta.json';
 
 export interface QuestaoVideoaula {
   numero: number;
@@ -30,19 +30,19 @@ export interface VideoaulaDriveItem {
   duracao_seg: number;
   link: string;
   thumb: string;
-  questoes: QuestaoVideoaula[];
-  flashcards: FlashcardVideoaula[];
-  transcricao: string;
-  mapaMentalUrl: string;
-  resumoCompletoUrl: string;
-  resumoCornellUrl: string;
-  srtUrl: string;
+  questoes?: QuestaoVideoaula[];
+  flashcards?: FlashcardVideoaula[];
+  transcricao?: string;
+  mapaMentalUrl?: string;
+  resumoCompletoUrl?: string;
+  resumoCornellUrl?: string;
+  srtUrl?: string;
 }
 
 export const VIDEOAULAS_INICIANTES: VideoaulaDriveItem[] = catalogoIniciantesRaw as VideoaulaDriveItem[];
 export const VIDEOAULAS_AREAS: VideoaulaDriveItem[] = catalogoAreasRaw as VideoaulaDriveItem[];
 
-// Mapa para busca em O(1)
+// Mapa para busca em O(1) dos metadados leves
 const videoMap = new Map<string, VideoaulaDriveItem>();
 [...VIDEOAULAS_INICIANTES, ...VIDEOAULAS_AREAS].forEach((item) => {
   if (item.video_id) {
@@ -50,12 +50,34 @@ const videoMap = new Map<string, VideoaulaDriveItem>();
   }
 });
 
+const detailCache = new Map<string, VideoaulaDriveItem>();
+
 export function findVideoaulaByVideoId(videoId?: string | null): VideoaulaDriveItem | undefined {
   if (!videoId) return undefined;
-  return videoMap.get(videoId);
+  return detailCache.get(videoId) || videoMap.get(videoId);
 }
 
 export function isDriveVideoaula(videoId?: string | null): boolean {
   if (!videoId) return false;
   return videoMap.has(videoId);
+}
+
+/** Carrega sob demanda transcrição, questões, flashcards e mapas mentais da videoaula selecionada */
+export async function loadVideoaulaDriveDetail(videoId?: string | null): Promise<VideoaulaDriveItem | undefined> {
+  if (!videoId) return undefined;
+  const cached = detailCache.get(videoId);
+  if (cached) return cached;
+  if (!videoMap.has(videoId)) return undefined;
+
+  try {
+    const res = await fetch(`/data/videoaulas/${encodeURIComponent(videoId)}.json`);
+    if (res.ok) {
+      const full = (await res.json()) as VideoaulaDriveItem;
+      detailCache.set(videoId, full);
+      return full;
+    }
+  } catch {
+    /* fallback retorna metadados */
+  }
+  return videoMap.get(videoId);
 }

@@ -26,7 +26,12 @@ export function useAudioaulas(areaAtual: string | null) {
     seek,
     setVelocidade,
     tocandoIntro,
+    ensureCatalogLoaded,
   } = useAudioaulasPlayer();
+
+  useEffect(() => {
+    void ensureCatalogLoaded();
+  }, [ensureCatalogLoaded]);
 
   const [baixadas, setBaixadas] = useState<Set<string>>(new Set());
   const [aba, setAba] = useState<AudioaulasTab>('aulas');

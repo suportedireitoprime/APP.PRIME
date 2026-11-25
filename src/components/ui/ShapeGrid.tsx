@@ -75,8 +75,23 @@ const ShapeGrid = ({
     let isContextLost = false;
     let lastFrameTime = 0;
     const isMoving = speed > 0;
-    const minFrameInterval = 1000 / 45;
+    const minFrameInterval = 1000 / 30;
     let resizeFrameId: number | null = null;
+
+    // Tile pré-renderizado para o modo quadrado (reduz ~250 strokeRect/frame para 1 fillRect)
+    let squareTilePattern: CanvasPattern | null = null;
+    if (shape === 'square') {
+      const tile = document.createElement('canvas');
+      tile.width = safeSquareSize;
+      tile.height = safeSquareSize;
+      const tCtx = tile.getContext('2d');
+      if (tCtx) {
+        tCtx.strokeStyle = activeBorderColor;
+        tCtx.lineWidth = 1;
+        tCtx.strokeRect(0.5, 0.5, safeSquareSize, safeSquareSize);
+        squareTilePattern = ctx.createPattern(tile, 'repeat');
+      }
+    }
 
     // 1. Geometria e formas básicas
     const drawHex = (cx: number, cy: number, size: number) => {
@@ -255,25 +270,33 @@ const ShapeGrid = ({
         const offsetX = ((gridOffset.current.x % safeSquareSize) + safeSquareSize) % safeSquareSize;
         const offsetY = ((gridOffset.current.y % safeSquareSize) + safeSquareSize) % safeSquareSize;
 
-        const cols = Math.ceil(w / safeSquareSize) + 3;
-        const rows = Math.ceil(h / safeSquareSize) + 3;
+        if (squareTilePattern && cellOpacities.current.size === 0) {
+          ctx.save();
+          ctx.translate(offsetX, offsetY);
+          ctx.fillStyle = squareTilePattern;
+          ctx.fillRect(-offsetX, -offsetY, w + safeSquareSize, h + safeSquareSize);
+          ctx.restore();
+        } else {
+          const cols = Math.ceil(w / safeSquareSize) + 3;
+          const rows = Math.ceil(h / safeSquareSize) + 3;
 
-        for (let col = -2; col < cols; col++) {
-          for (let row = -2; row < rows; row++) {
-            const sx = Math.round(col * safeSquareSize + offsetX);
-            const sy = Math.round(row * safeSquareSize + offsetY);
+          for (let col = -2; col < cols; col++) {
+            for (let row = -2; row < rows; row++) {
+              const sx = Math.round(col * safeSquareSize + offsetX);
+              const sy = Math.round(row * safeSquareSize + offsetY);
 
-            const cellKey = `${col},${row}`;
-            const alpha = cellOpacities.current.get(cellKey);
-            if (alpha) {
-              ctx.globalAlpha = alpha;
-              ctx.fillStyle = activeHoverFillColor;
-              ctx.fillRect(sx, sy, safeSquareSize, safeSquareSize);
-              ctx.globalAlpha = 1;
+              const cellKey = `${col},${row}`;
+              const alpha = cellOpacities.current.get(cellKey);
+              if (alpha) {
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = activeHoverFillColor;
+                ctx.fillRect(sx, sy, safeSquareSize, safeSquareSize);
+                ctx.globalAlpha = 1;
+              }
+
+              ctx.strokeStyle = activeBorderColor;
+              ctx.strokeRect(sx, sy, safeSquareSize, safeSquareSize);
             }
-
-            ctx.strokeStyle = activeBorderColor;
-            ctx.strokeRect(sx, sy, safeSquareSize, safeSquareSize);
           }
         }
       }

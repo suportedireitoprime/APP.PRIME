@@ -40,12 +40,10 @@ import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronolo
 import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { formatarNomeArea } from '@/lib/flashcardsConstants';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { 
-  MATERIAS_CATALOGO_COMPLETO, 
-  AULAS_CATALOGO_COMPLETO,
-  MateriaItem,
-  AulaItem
-} from '@/data/aulasInterativasCatalogoCompleto';
+import {
+  MATERIAS_FLASHCARDS_INDEX,
+  type AulaTemaFlashcardsIndexItem,
+} from '@/data/materiasFlashcardsIndex';
 
 function getDisciplinaIdFromSlug(s?: string): string {
   if (!s) return 'administrativo';
@@ -685,14 +683,37 @@ const FlashcardsArea = () => {
 
   const pillContainerRef = useRef<HTMLDivElement>(null);
 
-  // 2. Obtém a lista oficial de matérias da disciplina diretamente de MATERIAS_CATALOGO_COMPLETO
+  // 2. Obtém a lista oficial de matérias da disciplina a partir do índice leve (~55 KB)
   const materiasDaDisciplina = useMemo(() => {
-    const list = MATERIAS_CATALOGO_COMPLETO.filter((m) => m.disciplinaId === disciplinaId);
+    const list = MATERIAS_FLASHCARDS_INDEX.filter((m) => m.disciplinaId === disciplinaId);
     if (list.length > 0) return list;
-    return MATERIAS_CATALOGO_COMPLETO.filter(
+    return MATERIAS_FLASHCARDS_INDEX.filter(
       (m) => m.disciplinaId.includes(disciplinaId) || disciplinaId.includes(m.disciplinaId)
     );
   }, [disciplinaId]);
+
+  const resolvedDisciplinaId = materiasDaDisciplina[0]?.disciplinaId || disciplinaId;
+  const [aulasTemasDaDisciplina, setAulasTemasDaDisciplina] = useState<AulaTemaFlashcardsIndexItem[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    const discIds = Array.from(new Set(materiasDaDisciplina.map((m) => m.disciplinaId)));
+    const targets = discIds.length > 0 ? discIds : [resolvedDisciplinaId];
+    void Promise.all(
+      targets.map(async (id) => {
+        try {
+          const res = await fetch(`/data/flashcards-temas/${encodeURIComponent(id)}.json`);
+          if (res.ok) return (await res.json()) as AulaTemaFlashcardsIndexItem[];
+        } catch {
+          /* ignore */
+        }
+        return [] as AulaTemaFlashcardsIndexItem[];
+      })
+    ).then((chunks) => {
+      if (active) setAulasTemasDaDisciplina(chunks.flat());
+    });
+    return () => { active = false; };
+  }, [materiasDaDisciplina, resolvedDisciplinaId]);
 
   // 3. Matéria selecionada/visível no menu horizontal superior de alternância
   const [materiaAtivaId, setMateriaAtivaId] = useState<string>('');
@@ -709,7 +730,7 @@ const FlashcardsArea = () => {
   // 4. Mapeamento de todas as matérias com seus temas e contagens de flashcards
   const materiasComTemas = useMemo(() => {
     return materiasDaDisciplina.map((mat, matIdx) => {
-      const aulas = AULAS_CATALOGO_COMPLETO.filter((a) => a.materiaId === mat.id)
+      const aulas = aulasTemasDaDisciplina.filter((a) => a.materiaId === mat.id)
         .sort((a, b) => a.numeroAula - b.numeroAula);
 
       const numMat = parseInt(String(mat.numeroMateria).split('.')[0], 10) || (matIdx + 1);
@@ -774,11 +795,12 @@ const FlashcardsArea = () => {
         totalCards: totalCardsMat,
         compreendidos: compreendidosMat,
         pct: pctMat,
-        capaInicial: items[0]?.capaUrl || mat.capaUrl || greciaFilosofosFundo,
+        capaInicial: items[0]?.capaUrl || greciaFilosofosFundo,
       };
     });
   }, [
     materiasDaDisciplina,
+    aulasTemasDaDisciplina,
     temasFlashcards,
     isPremium,
     officialFlashcardArea,

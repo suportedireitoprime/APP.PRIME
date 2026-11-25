@@ -5,24 +5,22 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, Speech, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
-import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
-import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
+const MentorOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/MentorOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
 
 import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
 
-import DicionarioJuridico from '@/components/ferramentas/DicionarioJuridico';
+const DicionarioJuridico = lazyWithRetry(() => import('@/components/ferramentas/DicionarioJuridico'));
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
-import SearchOverlay from '@/components/vademecum/overlays/SearchOverlay';
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
 import { pushRecente } from '@/lib/leisRecentes';
 import { startAppMetrics } from '@/lib/appMetrics';
 import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { prefetchRoute, prefetchMainTabsIdle, type PrefetchKey } from '@/lib/routePrefetch';
-import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
-import { warmQuestoesStartup } from '@/services/questoesWarmup';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
@@ -135,15 +133,8 @@ const BottomNav = () => {
 
   const handleNavWarmup = () => {
     try {
-      prefetchRoute('questoes');
-      prefetchRoute('videoaulas');
-      prefetchRoute('flashcards');
-      prefetchRoute('aulas');
       prefetchRoute('vadeMecum');
       prefetchRoute('ferramentas');
-      prefetchRoute('pilulas');
-      warmVideoaulasStartup();
-      warmQuestoesStartup();
     } catch {
       /* noop */
     }
@@ -745,27 +736,45 @@ const BottomNav = () => {
 
 
     {/* Side Menu (Perfil, Estudar, Legislação, Configurações) */}
-    <Suspense fallback={null}><SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} /></Suspense>
+    {sideMenuOpen && (
+      <Suspense fallback={null}><SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} /></Suspense>
+    )}
 
     {/* Search Overlay (80% bottom sheet) */}
-    <SearchOverlay
-      open={searchOpen}
-      onClose={() => setSearchOpen(false)}
-      onSelectLei={(lei) => {
-        setSearchOpen(false);
-        pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
-        const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
-        const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
-        navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-      }}
-    />
+    {searchOpen && (
+      <Suspense fallback={null}>
+        <SearchOverlay
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          onSelectLei={(lei) => {
+            setSearchOpen(false);
+            pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
+            const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
+            const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
+            navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
+          }}
+        />
+      </Suspense>
+    )}
 
     {/* Dicionário Jurídico */}
-    <DicionarioJuridico open={dicionarioOpen} onClose={() => setDicionarioOpen(false)} />
+    {dicionarioOpen && (
+      <Suspense fallback={null}>
+        <DicionarioJuridico open={dicionarioOpen} onClose={() => setDicionarioOpen(false)} />
+      </Suspense>
+    )}
 
     {/* Mentor Jurídico */}
-    <MentorOverlay open={mentorOpen} onClose={() => setMentorOpen(false)} />
-    <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
+    {mentorOpen && (
+      <Suspense fallback={null}>
+        <MentorOverlay open={mentorOpen} onClose={() => setMentorOpen(false)} />
+      </Suspense>
+    )}
+    {chatOpen && (
+      <Suspense fallback={null}>
+        <AssistenteOverlay open={chatOpen} onClose={() => setChatOpen(false)} />
+      </Suspense>
+    )}
 
     {/* Pessoal — agora é rota dedicada em /meu-espaco */}
 

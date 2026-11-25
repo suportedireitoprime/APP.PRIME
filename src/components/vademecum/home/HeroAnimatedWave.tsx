@@ -106,9 +106,9 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
 
   return (
     <div ref={containerRef} className={`absolute inset-0 pointer-events-none overflow-hidden z-[5] ${isPaused ? 'hero-silk-paused' : ''}`}>
-      {/* ── 1. Resplendor Volumétrico e Bloom Suave ── */}
+      {/* ── 1. Resplendor Volumétrico Estático (sem repaint contínuo em blur-3xl) ── */}
       <div 
-        className={`absolute -bottom-12 -left-10 w-[60%] h-[45%] rounded-full blur-3xl pointer-events-none transform-gpu ${
+        className={`absolute -bottom-12 -left-10 w-[60%] h-[45%] rounded-full blur-3xl pointer-events-none transform-gpu opacity-75 ${
           isGreen 
             ? 'bg-gradient-to-tr from-[#059669]/30 via-[#022c22]/20 to-transparent' 
             : 'bg-gradient-to-tr from-[#e61942]/25 via-[#3d050f]/15 to-transparent'
@@ -117,11 +117,10 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           background: isCustom
             ? `radial-gradient(circle at center, ${c}4D 0%, ${shadeHex(c, -0.7)}33 50%, transparent 100%)`
             : undefined,
-          animation: 'heroSilkAmbientPulse 8s ease-in-out infinite alternate',
         }}
       />
       <div 
-        className={`absolute -bottom-8 right-0 w-[55%] h-[50%] rounded-full blur-3xl pointer-events-none transform-gpu ${
+        className={`absolute -bottom-8 right-0 w-[55%] h-[50%] rounded-full blur-3xl pointer-events-none transform-gpu opacity-70 ${
           isGreen
             ? 'bg-gradient-to-tl from-[#10b981]/25 via-[#043d2f]/15 to-transparent'
             : 'bg-gradient-to-tl from-[#e61942]/25 via-[#4a0512]/15 to-transparent'
@@ -130,7 +129,6 @@ export const HeroAnimatedWave: React.FC<HeroAnimatedWaveProps> = ({
           background: isCustom
             ? `radial-gradient(circle at center, ${c}4D 0%, ${shadeHex(c, -0.7)}33 50%, transparent 100%)`
             : undefined,
-          animation: 'heroSilkAmbientPulse 10s ease-in-out infinite alternate-reverse',
         }}
       />
 

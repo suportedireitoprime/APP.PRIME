@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import cerebroRoxo from '@/assets/covers/cerebro-vazado-roxo.webp';
 import cerebroCiano from '@/assets/covers/cerebro-vazado-ciano.webp';
 import cerebroDourado from '@/assets/covers/cerebro-vazado-dourado.webp';
@@ -10,9 +9,9 @@ interface FloatingOrbitingBrainsProps {
 }
 
 const BRAIN_VARIANTS = [
-  { img: cerebroRoxo, glow: 'rgba(168,85,247,0.75)' },
-  { img: cerebroCiano, glow: 'rgba(56,189,248,0.75)' },
-  { img: cerebroDourado, glow: 'rgba(251,191,36,0.75)' },
+  { img: cerebroRoxo, delay: '0s' },
+  { img: cerebroCiano, delay: '-4.6s' },
+  { img: cerebroDourado, delay: '-9.2s' },
 ];
 
 export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
@@ -25,17 +24,13 @@ export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
     const isReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (isReduced) return;
 
-    // ⚡ Prioriza o first paint e toque do usuário; inicia a órbita suave após 1.2s
+    // Prioriza o first paint e toque do usuário; inicia a órbita CSS no compositor após 1.2s
     const t = setTimeout(() => {
       if (!document.hidden) setAnimar(true);
     }, 1200);
 
     const handleVisibility = () => {
-      if (document.hidden) {
-        setAnimar(false);
-      } else if (!isReduced) {
-        setAnimar(true);
-      }
+      setAnimar(!document.hidden && !isReduced);
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
@@ -52,59 +47,35 @@ export const FloatingOrbitingBrains: React.FC<FloatingOrbitingBrainsProps> = ({
 
   return (
     <div className={className || defaultClass} aria-hidden="true">
-      {BRAIN_VARIANTS.map((brain, i) => {
-        const delay = i * 4.6;
-        return (
-          <motion.div
-            key={i}
-            className="absolute w-12 h-12 sm:w-16 sm:h-16"
-            animate={
-              animar
-                ? {
-                    x: [
-                      100 * Math.cos(0),
-                      100 * Math.cos((2 * Math.PI) / 3),
-                      100 * Math.cos((4 * Math.PI) / 3),
-                      100 * Math.cos(2 * Math.PI),
-                    ],
-                    y: [
-                      42 * Math.sin(0),
-                      42 * Math.sin((2 * Math.PI) / 3),
-                      42 * Math.sin((4 * Math.PI) / 3),
-                      42 * Math.sin(2 * Math.PI),
-                    ],
-                    scale: [1, 0.72, 1.15, 1],
-                    opacity: [0.92, 0.5, 1, 0.92],
-                  }
-                : {
-                    x: 0,
-                    y: 0,
-                    scale: 1,
-                    opacity: 0.8,
-                  }
-            }
-            transition={{
-              duration: 14,
-              repeat: Infinity,
-              ease: 'linear',
-              delay: -delay,
-            }}
-            style={{
-              left: '50%',
-              top: '50%',
-              marginLeft: -24,
-              marginTop: -24,
-            }}
-          >
-            <img
-              src={brain.img}
-              alt=""
-              className="w-full h-full object-contain filter drop-shadow-[0_0_12px_var(--glow)]"
-              style={{ ['--glow' as string]: brain.glow }}
-            />
-          </motion.div>
-        );
-      })}
+      <style>{`
+        @keyframes dpBrainOrbit {
+          0%   { transform: translate3d(100px, 0px, 0) scale(1); opacity: 0.92; }
+          33%  { transform: translate3d(-50px, 36.4px, 0) scale(0.72); opacity: 0.5; }
+          66%  { transform: translate3d(-50px, -36.4px, 0) scale(1.15); opacity: 1; }
+          100% { transform: translate3d(100px, 0px, 0) scale(1); opacity: 0.92; }
+        }
+      `}</style>
+      {BRAIN_VARIANTS.map((brain, i) => (
+        <div
+          key={i}
+          className="absolute w-12 h-12 sm:w-16 sm:h-16 transform-gpu will-change-transform"
+          style={{
+            left: '50%',
+            top: '50%',
+            marginLeft: -24,
+            marginTop: -24,
+            animation: animar ? `dpBrainOrbit 14s linear ${brain.delay} infinite` : 'none',
+            opacity: animar ? undefined : 0.8,
+          }}
+        >
+          <img
+            src={brain.img}
+            alt=""
+            decoding="async"
+            className="w-full h-full object-contain"
+          />
+        </div>
+      ))}
     </div>
   );
 };

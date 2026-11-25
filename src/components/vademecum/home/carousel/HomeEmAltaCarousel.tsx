@@ -211,41 +211,69 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
     }
   }, [randomizedItems.length, isReady, scrollToIndex]);
 
-  const handleScroll = useCallback(() => {
+  const scrollRafRef = useRef<number | null>(null);
+  const childMidpointsRef = useRef<number[]>([]);
+
+  // Pré-calcula centros dos cards apenas quando itens ou viewport mudam (elimina layout thrashing no scroll)
+  useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < el.children.length; i++) {
-      const child = el.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
-      if (dist < bestDist) { bestDist = dist; best = i; }
-    }
+    const measure = () => {
+      const mids: number[] = [];
+      for (let i = 0; i < el.children.length; i++) {
+        const child = el.children[i] as HTMLElement;
+        mids.push(child.offsetLeft + child.clientWidth / 2);
+      }
+      childMidpointsRef.current = mids;
+    };
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    return () => {
+      ro?.disconnect();
+      if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
+    };
+  }, [loopedItems.length]);
 
-    const N = randomizedItems.length;
-    if (N > 0) {
-      if (best <= 1) {
-        const jumpTo = best + N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
-          setActiveIndex(jumpTo);
-          return;
-        }
-      } else if (best >= loopedItems.length - 2) {
-        const jumpTo = best - N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
-          setActiveIndex(jumpTo);
-          return;
+  const handleScroll = useCallback(() => {
+    if (scrollRafRef.current !== null) return;
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      const el = scrollerRef.current;
+      if (!el) return;
+      const mids = childMidpointsRef.current;
+      if (mids.length === 0) return;
+
+      const halfWidth = el.clientWidth / 2;
+      const center = el.scrollLeft + halfWidth;
+      let best = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < mids.length; i++) {
+        const dist = Math.abs(mids[i] - center);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      }
+
+      const N = randomizedItems.length;
+      if (N > 0) {
+        if (best <= 1) {
+          const jumpTo = best + N * 2;
+          if (mids[jumpTo] !== undefined) {
+            el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+            setActiveIndex(jumpTo);
+            return;
+          }
+        } else if (best >= loopedItems.length - 2) {
+          const jumpTo = best - N * 2;
+          if (mids[jumpTo] !== undefined) {
+            el.scrollTo({ left: mids[jumpTo] - halfWidth, behavior: 'auto' });
+            setActiveIndex(jumpTo);
+            return;
+          }
         }
       }
-    }
 
-    setActiveIndex(best);
+      setActiveIndex(best);
+    });
   }, [randomizedItems.length, loopedItems.length]);
 
   return (

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
+@source not "../src/data";
+@source not "../public";
+@source not "../scripts";
+@source not "../supabase";
 /* Fontes movidas para index.html (preconnect + preload async) para não bloquear render. */
 
 

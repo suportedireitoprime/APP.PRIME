@@ -466,29 +466,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   return <>{children}</>;
 }
 
-// Preload critical chunks in idle time
-if (typeof window !== 'undefined') {
-  const preloadChunks = () => {
-    import('./pages/assinatura/Assinatura.tsx');
-    import('./pages/vademecum/CategoriaLegislacao.tsx');
-    routePrefetch.estudos();
-    routePrefetch.ferramentas();
-    routePrefetch.radar360();
-    routePrefetch.blog();
-    routePrefetch.noticias();
-    routePrefetch.questoes();
-    import('@/pages/pilulas/PilulasLista');
-    routePrefetch.leiSeca();
-    routePrefetch.leiSecaTrilha();
-    routePrefetch.leiSecaParte();
-    routePrefetch.leiSecaPlayer();
-  };
-  if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(preloadChunks, { timeout: 1000 });
-  } else {
-    setTimeout(preloadChunks, 400);
-  }
-}
+// Preload sob demanda centralizado em appWarmupService.ts para evitar disputa de banda/CPU no boot.
 
 function EstudosRouter() {
   const location = useLocation();
@@ -761,38 +739,27 @@ function AnimatedRoutes() {
     prefetchNearby(location.pathname);
   }, [location.pathname, location.search, location.hash]);
 
-  // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
-  // ao entrar na área, a lista já pinta sem skeleton nem rede.
+  // Sincronização leve de favoritos/recentes da conta em idle após login.
+  // O carregamento de videoaulasStore (2MB+) e demais módulos pesados fica sob demanda/escalonado no appWarmupService.
   useEffect(() => {
     if (!user) return;
-    void import('@/lib/videoaulasStore').then((m) => {
-      m.hydrateVideoaulasCache();
-      m.warmVideoaulasCache();
-    });
-    // Favoritos/recentes (biblioteca, leis, resumos, dicionário) da conta.
-    void Promise.all([
-      import('@/lib/leisFavoritos'),
-      import('@/lib/bibliotecaTracking'),
-      import('@/lib/resumosLocal'),
-      import('@/hooks/useDicionarioPrefs'),
-      import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(qc)),
-      // import('@/hooks/useQuestoes').then((m) => m.prefetchQuestoesCache()),
-    ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
-
-
-    // Pré-carrega os chunks das telas de Videoaulas em idle: navegar
-    // (e voltar) passa a resolver do cache de módulos, sem Suspense visível.
-    const carregarChunks = () => {
-      ([
-        'videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
-        'videoaulasLista', 'resumosJuridicos', 'resumosJuridicosTemas',
-        'resumosJuridicosSubtemas', 'resumosJuridicosLista', 'audioaulas',
-        'dicionario', 'biblioteca', 'bibliotecaCategoria', 'blog',
-      ] as PrefetchKey[]).forEach((k) => prefetchRoute(k));
+    const syncUser = () => {
+      void Promise.all([
+        import('@/lib/leisFavoritos'),
+        import('@/lib/bibliotecaTracking'),
+        import('@/lib/resumosLocal'),
+        import('@/hooks/useDicionarioPrefs'),
+        import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(qc)),
+      ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
     };
     const ric = (window as any).requestIdleCallback as ((cb: () => void, o?: { timeout?: number }) => number) | undefined;
-    if (ric) ric(carregarChunks, { timeout: 3000 }); else setTimeout(carregarChunks, 1200);
-  }, [user]);
+    if (ric) {
+      const id = ric(syncUser, { timeout: 2500 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(syncUser, 1200);
+    return () => clearTimeout(t);
+  }, [user, qc]);
 
 
   // GA4/Meta: vincular user_id e propriedades quando autentica / desloga.

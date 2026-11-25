@@ -38,7 +38,7 @@ export function useHomeWarmup(imagesToPreload: string[], queryClient?: QueryClie
         prefetchNoticias();
         
         if (isDesktop) {
-          prefetchAllArtigos(4);
+          prefetchAllArtigos(2, true);
           if (queryClient) {
             window.setTimeout(() => warmBiblioteca(queryClient), 600);
           }

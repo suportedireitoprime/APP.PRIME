@@ -34,6 +34,7 @@ import {
 } from "@/components/audiobooks/AudiobooksQuickActionSheet";
 import { audiobooksTracking, AudiobookRecenteItem } from "@/lib/audiobooksTracking";
 import { useAudiobookPlayer } from "@/contexts/AudiobookPlayerContext";
+import { hydrateAudiobook } from "@/lib/audiobooksLoader";
 
 export type AudiobookCategoriaTab = "classicos" | "lideranca" | "fora_da_toga" | "oratoria";
 
@@ -584,11 +585,17 @@ export default function AudiobooksPage() {
     if (idx !== activeCarouselIndex) {
       scrollCarouselToIndex(idx);
     }
+    if (livro.status === 'disponivel' && (!livro.capitulos || livro.capitulos.length === 0)) {
+      void hydrateAudiobook(livro);
+    }
     setLivroModalidade(livro);
   };
 
   const handleCardClick = (livro: AudiobookLivro) => {
     haptic.selection();
+    if (livro.status === 'disponivel' && (!livro.capitulos || livro.capitulos.length === 0)) {
+      void hydrateAudiobook(livro);
+    }
     setLivroModalidade(livro);
   };
 
@@ -1083,6 +1090,9 @@ export default function AudiobooksPage() {
         activeSheet={activeQuickSheet}
         onClose={() => setActiveQuickSheet(null)}
         onSelectLivro={(livro) => {
+          if (livro.status === 'disponivel' && (!livro.capitulos || livro.capitulos.length === 0)) {
+            void hydrateAudiobook(livro);
+          }
           setLivroModalidade(livro);
         }}
         onPlayLivro={(livro, idx) => {
@@ -1103,6 +1113,11 @@ export default function AudiobooksPage() {
         onSelectCompleto={(livro) => {
           setLivroModalidade(null);
           setLivroSelecionado(livro);
+          if (livro.status === 'disponivel' && (!livro.capitulos || livro.capitulos.length === 0)) {
+            void hydrateAudiobook(livro).then((full) => {
+              setLivroSelecionado((curr) => (curr && curr.id === full.id ? full : curr));
+            });
+          }
         }}
         onSelectResumo={(livro) => {
           setLivroModalidade(null);

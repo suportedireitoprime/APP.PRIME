@@ -33,7 +33,7 @@ import { VideoaulaSidebarDesktop } from '@/components/videoaulas/view/VideoaulaS
 import { VideoaulaPanoramaIA } from '@/components/videoaulas/view/VideoaulaPanoramaIA';
 import { VideoaulaPlayerHeader } from '@/components/videoaulas/view/VideoaulaPlayerHeader';
 import { VideoaulaResumeDialog } from '@/components/videoaulas/view/VideoaulaResumeDialog';
-import { findVideoaulaByVideoId } from '@/data/videoaulas/videoaulasDriveData';
+import { findVideoaulaByVideoId, loadVideoaulaDriveDetail, type VideoaulaDriveItem } from '@/data/videoaulas/videoaulasDriveData';
 import { QuestoesPanel } from '@/components/videoaulas/acoes/VideoaulaQuestoesPanel';
 import { FlashcardsPanel } from '@/components/videoaulas/acoes/VideoaulaEstudoPanels';
 import { cn } from '@/lib/utils';
@@ -56,7 +56,21 @@ const VideoaulaView = () => {
   const { tocarVideo, tempo, duracao, setTocandoState, seek } = useVideoaulasPlayer();
 
   const state = useVideoaulaView({ catalogoId, videoId, userId, setTocandoState });
-  const driveItem = useMemo(() => findVideoaulaByVideoId(videoId), [videoId]);
+  const [driveItemDetail, setDriveItemDetail] = useState<VideoaulaDriveItem | undefined>(() => findVideoaulaByVideoId(videoId));
+
+  useEffect(() => {
+    let alive = true;
+    const meta = findVideoaulaByVideoId(videoId);
+    setDriveItemDetail(meta);
+    if (videoId && meta) {
+      void loadVideoaulaDriveDetail(videoId).then((full) => {
+        if (alive && full) setDriveItemDetail(full);
+      });
+    }
+    return () => { alive = false; };
+  }, [videoId]);
+
+  const driveItem = driveItemDetail;
 
   const [activeTab, setActiveTab] = useState<AbaVideoaula>('resumo');
   const [showAnotacoes, setShowAnotacoes] = useState(false);

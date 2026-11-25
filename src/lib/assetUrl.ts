@@ -81,11 +81,17 @@ function resolveBundled(nameOrUrl: string | undefined | null): string | undefine
   if (!nameOrUrl) return undefined;
   const normalized = nameOrUrl.replace(/\\/g, '/');
   const name = normalized.split('/').pop()?.split('?')[0]?.split('#')[0];
-  if (name && bundledMap[name]) return bundledMap[name];
+  if (name) {
+    if (bundledMap[name]) return bundledMap[name];
+    const webpName = name.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    if (webpName !== name && bundledMap[webpName]) return bundledMap[webpName];
+  }
   if (normalized.includes('biblioteca-obras/capas/')) {
     const filename = normalized.split('biblioteca-obras/capas/')[1]?.split('?')[0]?.split('#')[0];
     if (filename && !filename.includes('/')) {
       if (bundledMap[filename]) return bundledMap[filename];
+      const webpFilename = filename.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      if (webpFilename !== filename && bundledMap[webpFilename]) return bundledMap[webpFilename];
       if (LOCAL_MANUAL_CAPAS.has(filename)) {
         return `/biblioteca-obras/capas/${filename}`;
       }

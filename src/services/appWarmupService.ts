@@ -6,12 +6,7 @@
  *  - Executa as tarefas de forma escalonada (Staggered), separando cada módulo por intervalos de 1.2s-1.5s em momentos ociosos.
  */
 import type { QueryClient } from '@tanstack/react-query';
-import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
-import { warmResumosCache } from '@/services/resumosWarmup';
-import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
-import { warmQuestoesStartup } from '@/services/questoesWarmup';
 import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
-import { populateFTS5FromBundle } from '@/services/fts5Populator';
 import { routePrefetch } from '@/lib/routePrefetch';
 import { Capacitor } from '@capacitor/core';
 import brasaoImg from '@/assets/brasao-republica.webp';
@@ -57,41 +52,39 @@ export function scheduleAppWarmup(qc: QueryClient): void {
         }
       }, 1500);
 
-      // ── Etapa 2 (após 1.5s): Resumos Jurídicos de forma leve ──
+      // ── Etapa 2 (após 2.0s): Resumos Jurídicos de forma leve (import dinâmico) ──
       setTimeout(() => {
         runIdle(() => {
-          void warmResumosCache();
+          void import('@/services/resumosWarmup').then((m) => m.warmResumosCache()).catch(() => {});
         }, 2000);
-      }, 1500);
+      }, 2000);
 
-      // ── Etapa 3 (após 3.0s): Biblioteca controlada ──
+      // ── Etapa 3 (após 4.0s): Biblioteca controlada ──
       setTimeout(() => {
         runIdle(() => {
-          scheduleWarmBiblioteca(qc, 10);
+          void import('@/services/bibliotecaWarmup').then((m) => m.scheduleWarmBiblioteca(qc, 10)).catch(() => {});
         }, 2500);
-      }, 3000);
+      }, 4000);
 
-      // ── Etapa 4 (após 4.5s): Videoaulas e Questões ──
+      // ── Etapa 4 (após 6.0s): Questões (Videoaulas sob demanda para evitar baixar 2MB no boot) ──
       setTimeout(() => {
         runIdle(() => {
-          warmVideoaulasStartup();
-          warmQuestoesStartup();
+          void import('@/services/questoesWarmup').then((m) => m.warmQuestoesStartup()).catch(() => {});
         }, 2500);
-      }, 4500);
-
-      // ── Etapa 5 (após 6.0s): FTS5 SQLite Offline em background ──
-      setTimeout(() => {
-        runIdle(() => {
-          void populateFTS5FromBundle();
-        }, 3000);
       }, 6000);
 
-      // ── Etapa 6 (após 7.5s): Prefetch cirúrgico escalonado de rotas ──
+      // ── Etapa 5 (após 8.0s): FTS5 SQLite Offline em background ──
+      setTimeout(() => {
+        runIdle(() => {
+          void import('@/services/fts5Populator').then((m) => m.populateFTS5FromBundle()).catch(() => {});
+        }, 3000);
+      }, 8000);
+
+      // ── Etapa 6 (após 10s): Prefetch cirúrgico escalonado de rotas ──
       setTimeout(() => {
         const routes = [
           () => routePrefetch.vadeMecum(),
           () => routePrefetch.biblioteca(),
-          () => routePrefetch.aulas(),
         ];
 
         let idx = 0;
