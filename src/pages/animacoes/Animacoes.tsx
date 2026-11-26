@@ -122,7 +122,7 @@ const Animacoes: React.FC = () => {
             <div className="relative w-full sm:max-w-[460px] overflow-hidden bg-zinc-950 sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl">
               <iframe
                 key={ativa.slug}
-                src={`${ativa.htmlR2Url}?v=4`}
+                src={`${ativa.htmlR2Url}?v=5`}
                 title={ativa.tituloHtml || ativa.titulo}
                 allow="autoplay; fullscreen"
                 scrolling="no"
