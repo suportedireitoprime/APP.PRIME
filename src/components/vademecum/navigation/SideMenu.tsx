@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
   LifeBuoy, Lock, Gem,
-  Pencil, Crown, Timer, Star,
+  Pencil, Crown, Timer, Star, User,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
@@ -274,6 +274,16 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             />
           )}
         </div>
+
+        {/* Card Isolado: Meu Perfil */}
+        <GroupCard>
+          <MenuRow
+            icon={User}
+            iconColor="text-red-400"
+            label="Meu Perfil"
+            onClick={() => handleItemClick('perfil')}
+          />
+        </GroupCard>
 
         {/* Card com as funções principais: Minha assinatura, Avaliar aplicativo, Suporte, Sobre o app */}
         <GroupCard title="Conta & Suporte">
