@@ -219,8 +219,8 @@ const BottomNav = () => {
     },
     {
       id: 'audioaulas',
-      label: 'Audioaulas',
-      ariaLabel: 'Audioaulas',
+      label: 'Em Áudio',
+      ariaLabel: 'Em Áudio',
       icon: Headphones,
       active: isAudioaulasActive,
       onClick: () => {
