@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, Pill, ChevronRight } from 'lucide-react';
+import { Scale, Sparkles, Radar, Headphones, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
 
@@ -98,15 +98,41 @@ const IndexMobile = () => {
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
 
-            {/* Atalhos compactos vermelhos abaixo de Em Alta (Vade Mecum e Pílulas) */}
+            {/* Atalhos compactos vermelhos abaixo de Em Alta (Vade Mecum, Novidades, Radar e Ouça a Lei) */}
             <section className="flex flex-col gap-3">
-              <HomeSectionHeader title="LEIS E PÍLULAS" />
+              <HomeSectionHeader title="LEIS E NOVIDADES" />
 
               <div className="grid grid-cols-2 gap-2.5 md:gap-4">
                 {[
-                  { id: 'vade-mecum-atalho', label: 'Vade Mecum', route: '/vade-mecum', icon: Scale },
-                  { id: 'pilulas-atalho', label: 'Pílulas', route: '/pilulas', icon: Pill },
-                ].map(({ id, label, route, icon: Icon }) => (
+                  {
+                    id: 'vade-mecum-atalho',
+                    label: 'Vade Mecum',
+                    route: '/vade-mecum',
+                    icon: Scale,
+                    bg: 'linear-gradient(135deg, #E11D48 0%, #BE123C 55%, #881337 100%)',
+                  },
+                  {
+                    id: 'novidades-atalho',
+                    label: 'Novidades',
+                    route: '/novidades',
+                    icon: Sparkles,
+                    bg: 'linear-gradient(135deg, #E11D48 0%, #BE123C 55%, #881337 100%)',
+                  },
+                  {
+                    id: 'radar-atalho',
+                    label: 'Radar',
+                    route: '/radar-360',
+                    icon: Radar,
+                    bg: 'linear-gradient(135deg, #9F1239 0%, #70102D 55%, #3B0718 100%)',
+                  },
+                  {
+                    id: 'ouca-a-lei-atalho',
+                    label: 'Ouça a Lei',
+                    route: '/audioleis',
+                    icon: Headphones,
+                    bg: 'linear-gradient(135deg, #9F1239 0%, #70102D 55%, #3B0718 100%)',
+                  },
+                ].map(({ id, label, route, icon: Icon, bg }) => (
                   <button
                     key={id}
                     type="button"
@@ -114,9 +140,7 @@ const IndexMobile = () => {
                       haptic.selection();
                       navigate(route);
                     }}
-                    style={{
-                      background: 'linear-gradient(135deg, #BE123C 0%, #881337 55%, #4C0519 100%)',
-                    }}
+                    style={{ background: bg }}
                     className="group relative flex items-center justify-between w-full min-h-[68px] sm:min-h-[72px] px-3.5 sm:px-4 py-3 rounded-2xl border border-white/15 hover:border-white/30 shadow-md shadow-rose-950/40 active:scale-[0.98] transition-all duration-300 text-left overflow-hidden"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
