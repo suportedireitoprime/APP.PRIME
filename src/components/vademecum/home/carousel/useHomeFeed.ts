@@ -22,16 +22,27 @@ function isWithinLast48h(dateStr?: string): boolean {
 
 function interleaveByFonte(items: Noticia[], maxTotal = 12): Noticia[] {
   const juridicas = items.filter((n) => n.fonte === 'migalhas');
-  const oab = items.filter((n) => n.fonte === 'gran_oab');
   const concursos = items.filter((n) => n.fonte === 'gran_concursos');
+  const oab = items.filter((n) => n.fonte === 'gran_oab');
 
   const result: Noticia[] = [];
-  const maxLen = Math.max(juridicas.length, oab.length, concursos.length);
+  let jIdx = 0;
+  let cIdx = 0;
+  let oIdx = 0;
 
-  for (let i = 0; i < maxLen && result.length < maxTotal; i++) {
-    if (juridicas[i] && result.length < maxTotal) result.push(juridicas[i]);
-    if (oab[i] && result.length < maxTotal) result.push(oab[i]);
-    if (concursos[i] && result.length < maxTotal) result.push(concursos[i]);
+  while (
+    result.length < maxTotal &&
+    (jIdx < juridicas.length || cIdx < concursos.length || oIdx < oab.length)
+  ) {
+    for (let k = 0; k < 2 && jIdx < juridicas.length && result.length < maxTotal; k++) {
+      result.push(juridicas[jIdx++]);
+    }
+    if (cIdx < concursos.length && result.length < maxTotal) {
+      result.push(concursos[cIdx++]);
+    }
+    if (oIdx < oab.length && result.length < maxTotal) {
+      result.push(oab[oIdx++]);
+    }
   }
 
   return result;
