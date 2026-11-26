@@ -26,7 +26,6 @@ import HomeHeaderHero from '@/components/vademecum/home/HomeHeaderHero';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
 import { pushRecente } from '@/lib/leisRecentes';
-import { warmCoverCache } from '@/lib/coverLoader';
 import { track } from '@/lib/analyticsEvents';
 
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -60,14 +59,6 @@ const IndexMobile = () => {
   // SEO & Título dinâmico da Home
   useEffect(() => {
     document.title = 'Direito Prime - Vade Mecum, Leis & Estudos Jurídicos';
-  }, []);
-
-  useEffect(() => {
-    // ⚡ Executa o pré-aquecimento de capas após a tela inicial estar estável e interagida
-    const timer = setTimeout(() => {
-      warmCoverCache();
-    }, 8000);
-    return () => clearTimeout(timer);
   }, []);
 
   // Usa o hook de warmup centralizado para a Home Mobile

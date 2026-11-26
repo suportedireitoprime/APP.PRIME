@@ -73,9 +73,17 @@ async function pushRow(escopo: string, itemKey: string, payload: any, deleted: b
   }
 }
 
+const FETCH_TTL_MS = 2 * 60 * 1000;
+const fetchCache = new Map<string, { at: number; rows: Row[] }>();
+
 async function fetchRows(escopo: string): Promise<Row[]> {
   const uid = await currentUserId();
   if (!uid) return [];
+  const cacheKey = `${uid}:${escopo}`;
+  const cached = fetchCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < FETCH_TTL_MS) {
+    return cached.rows;
+  }
   try {
     const { data, error } = await supabase
       .from('user_sync_items' as any)
@@ -85,7 +93,9 @@ async function fetchRows(escopo: string): Promise<Row[]> {
       .order('item_at', { ascending: false })
       .limit(500);
     if (error || !data) return [];
-    return data as unknown as Row[];
+    const rows = data as unknown as Row[];
+    fetchCache.set(cacheKey, { at: Date.now(), rows });
+    return rows;
   } catch {
     return [];
   }

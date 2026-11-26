@@ -86,31 +86,5 @@ export function useBibliotecaLeituraStatus() {
   // Primeira carga: se já tem cache, revalida em silêncio no fundo
   useEffect(() => { load(!!CACHE); }, [load]);
 
-  // Realtime — atualiza status quando muda
-  useEffect(() => {
-    const channel = supabase
-      .channel('biblioteca-leitura-nativa-admin')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'biblioteca_leitura_nativa' },
-        (payload: any) => {
-          const s = payload.new ?? payload.old;
-          const canonical = resolveLivroTabela(s.livro_tabela);
-          setItems((prev) => prev.map((it) =>
-            (it.colecao.table === s.livro_tabela || it.colecao.table === canonical || it.colecao.id === s.livro_tabela) && String(it.id) === String(s.livro_id)
-              ? { ...it, leitura: { ...(it.leitura ?? {}), ...s } }
-              : it
-          ));
-          if (CACHE) {
-            CACHE = CACHE.map((it) =>
-              (it.colecao.table === s.livro_tabela || it.colecao.table === canonical || it.colecao.id === s.livro_tabela) && String(it.id) === String(s.livro_id)
-                ? { ...it, leitura: { ...(it.leitura ?? {}), ...s } }
-                : it
-            );
-          }
-        })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
   return { items, loading, reload: () => load(false) };
 }
