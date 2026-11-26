@@ -32,7 +32,7 @@ const OVERRIDE_STYLE = `<style id="app-prime-override">
     padding: 0 !important;
     background: #09090b !important;
     color: #fafafa !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important;
   }
   .wrap {
     width: 100% !important;
@@ -52,25 +52,12 @@ const OVERRIDE_STYLE = `<style id="app-prime-override">
     border: 0 !important;
     box-shadow: none !important;
   }
-  .caption {
-    border-radius: 0 !important;
-    border: 0 !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    background: #111114 !important;
-    color: #f4f4f5 !important;
-    padding: 10px 14px !important;
-    min-height: 52px !important;
-    font-size: 15px !important;
-    line-height: 1.45 !important;
-    box-shadow: none !important;
-  }
+  .caption,
+  #caption,
   .caption .who,
   #capwho {
     display: none !important;
   }
-  .caption .w { color: #a1a1aa !important; }
-  .caption .w.on { color: #fafafa !important; }
-  .caption .w.hot { color: #fbbf24 !important; }
   .controls {
     border-radius: 0 !important;
     border: 0 !important;
@@ -106,18 +93,47 @@ const OVERRIDE_STYLE = `<style id="app-prime-override">
   }
 </style>`;
 
+const RESIZE_SCRIPT = `<script id="app-prime-resize">
+(function(){
+  function sendHeight(){
+    try {
+      var wrap = document.querySelector('.wrap') || document.getElementById('wrap') || document.body;
+      var h = Math.ceil(wrap ? wrap.getBoundingClientRect().height : document.documentElement.scrollHeight);
+      if (h > 100 && window.parent !== window) {
+        window.parent.postMessage({ type: 'animacao-resize', height: h }, '*');
+      }
+    } catch(e) {}
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  if (typeof ResizeObserver !== 'undefined') {
+    var ro = new ResizeObserver(sendHeight);
+    ro.observe(document.documentElement);
+  }
+  setInterval(sendHeight, 600);
+  sendHeight();
+})();
+</script>`;
+
 async function patchOne(item, idx, total) {
   const res = await fetch(`${item.htmlR2Url}?nocache=${Date.now()}`);
   if (!res.ok) throw new Error(`HTTP ${res.status} ao baixar ${item.slug}`);
   let html = await res.text();
 
-  // Remove override antigo se existir (idempotente)
+  // Remove overrides antigos se existirem (idempotente)
   html = html.replace(/<style id="app-prime-override">[\s\S]*?<\/style>\s*/i, '');
+  html = html.replace(/<script id="app-prime-resize">[\s\S]*?<\/script>\s*/i, '');
 
   if (html.includes('</head>')) {
     html = html.replace('</head>', `${OVERRIDE_STYLE}\n</head>`);
   } else {
     html = `${OVERRIDE_STYLE}\n${html}`;
+  }
+
+  if (html.includes('</body>')) {
+    html = html.replace('</body>', `${RESIZE_SCRIPT}\n</body>`);
+  } else {
+    html = `${html}\n${RESIZE_SCRIPT}`;
   }
 
   const key = `animacoes/${item.slug}/index.html`;
