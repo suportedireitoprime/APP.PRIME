@@ -1,34 +1,11 @@
 import {
-  BookOpenText,
-  MicVocal,
-  ScanEye,
   Newspaper,
   Film,
-  NotebookText,
   Clapperboard,
-  MapPin,
   Radar,
-  FileSignature,
-  Mic,
-  Mail,
-  CloudDownload,
-  Library,
-  GraduationCap,
-  Bell,
-  CreditCard,
-  LifeBuoy,
-  User,
-  Sparkles,
-  Layers,
-  Scale,
-  Trophy,
-  Bot,
+  Headphones,
   Bird,
   Speech,
-  FolderOpen,
-  CalendarDays,
-  Gamepad2,
-  Camera,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -50,8 +27,7 @@ export type DesktopToolGroup = {
 
 /**
  * Catálogo único das funções disponíveis no desktop.
- * Serve tanto para a página /ferramentas quanto para o menu rápido do cabeçalho,
- * garantindo que nenhuma função fique acessível só no mobile.
+ * Serve tanto para a página /ferramentas quanto para a aba Ferramentas da Home.
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
   {
@@ -59,16 +35,17 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     label: 'Inteligência Artificial',
     hint: 'Tutores jurídicos e ferramentas com inteligência artificial',
     tools: [
-      { id: 'assistente', label: 'Hórus', desc: 'Assistente WhatsApp', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
-      { id: 'me-explique', label: 'Me Explique (IA)', desc: 'Explicações jurídicas com voz, câmera e avatar interativo', icon: Speech, route: '/me-explique', color: '#F97316' },
+      { id: 'assistente', label: 'Hórus', desc: 'Assistente jurídico inteligente', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
+      { id: 'me-explique', label: 'Me Explique (IA)', desc: 'Explicações jurídicas com voz e tutor interativo', icon: Speech, route: '/me-explique', color: '#F97316' },
     ],
   },
   {
-    id: 'pratica',
-    label: 'Prática Forense',
-    hint: 'Modelos e documentos para o dia a dia',
+    id: 'midia',
+    label: 'Estudo Visual & Áudio',
+    hint: 'Casos animados, leis narradas e videoaulas',
     tools: [
-      { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e modelos jurídicos', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
+      { id: 'animacoes', label: 'Animações Jurídicas', desc: 'Casos penais e OAB explicados em animação 2D', icon: Clapperboard, route: '/animacoes', color: '#F59E0B' },
+      { id: 'audioleis', label: 'Ouça a Lei', desc: 'Artigos de lei narrados com acompanhamento', icon: Headphones, route: '/audioleis', color: '#10B981' },
       { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo organizadas por matéria', icon: Film, route: '/videoaulas', color: '#E11D48' },
     ],
   },

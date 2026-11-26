@@ -1,43 +1,18 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Bell,
-  Scale,
-  Gavel,
-  BookOpen,
-  Landmark,
-  Feather,
-  ScrollText,
-  Bird,
-  Heart,
-} from "lucide-react";
-import { pickAsset } from "@/lib/assetUrl";
-import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
-import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
+import { Bell, Bird, Heart } from "lucide-react";
 import NotificationsSheet, {
   useUnreadNotifCount,
 } from "@/components/vademecum/outros/NotificationsSheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getFavoritos, type Favorito } from "@/lib/leisFavoritos";
+import { getFavoritos } from "@/lib/leisFavoritos";
+import { tipoToSlug, leiToSlug } from "@/lib/legislacaoSlugs";
 import logoCoruja from "@/assets/logo-coruja.webp";
 
-const primeLogo = pickAsset(primeLogoBundled, primeLogoAsset.url);
-
-// Ícones decorativos flutuando ao fundo — bem discretos, low-opacity.
-const BACKDROP_ICONS = [
-  { Icon: Scale, top: "18%", left: "6%", size: 42, rot: -12 },
-  { Icon: Gavel, top: "58%", left: "14%", size: 34, rot: 8 },
-  { Icon: BookOpen, top: "22%", left: "32%", size: 30, rot: 4 },
-  { Icon: Landmark, top: "62%", left: "46%", size: 44, rot: -6 },
-  { Icon: Feather, top: "20%", left: "62%", size: 28, rot: 14 },
-  { Icon: ScrollText, top: "60%", left: "74%", size: 34, rot: -10 },
-  { Icon: Scale, top: "28%", left: "88%", size: 36, rot: 10 },
-];
+type Favorito = ReturnType<typeof getFavoritos>[number];
 
 interface Props {
-  onSearchClick?: () => void;
   onAssistenteClick?: () => void;
 }
 
@@ -45,7 +20,6 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
-
   const [favoritos, setFavoritos] = useState<Favorito[]>([]);
 
   useEffect(() => {
@@ -58,52 +32,27 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
   }, []);
 
   return (
-    <div
-      className="sticky top-0 z-40 w-full overflow-hidden border-b border-primary/30"
-      style={{ height: 104 }}
-    >
-      {/* Degradê amarelo subindo do rodapé */}
-      <div className="absolute inset-0 bg-linear-to-t from-primary/85 via-primary/35 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-linear-to-b from-background/60 via-transparent to-transparent pointer-events-none" />
-
-      {/* Elementos jurídicos decorativos */}
-      <div className="absolute inset-0 pointer-events-none">
-        {BACKDROP_ICONS.map(({ Icon, top, left, size, rot }, i) => (
-          <div
-            key={i}
-            className="absolute text-primary-foreground/15"
-            style={{ top, left, transform: `rotate(${rot}deg)` }}
-          >
-            <Icon size={size} strokeWidth={1.5} />
-          </div>
-        ))}
-      </div>
-
-      {/* Conteúdo */}
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-8 xl:px-12 flex items-center gap-6">
-        {/* Logo + wordmark */}
+    <header className="sticky top-0 z-40 w-full h-16 bg-zinc-950/90 backdrop-blur-md border-b border-white/10">
+      <div className="h-full max-w-7xl mx-auto px-6 xl:px-10 flex items-center gap-4">
+        {/* Logo + wordmark minimalista */}
         <button onClick={() => navigate("/")} className="flex items-center gap-3 shrink-0 group">
-          <div className="relative">
-            <div className="absolute inset-0 blur-xl bg-primary/40 rounded-full scale-125" />
-            <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-xl border-2 border-amber-500/30 ring-1 ring-white/15 bg-background/40 flex items-center justify-center p-1">
-              <img
-                src={logoCoruja}
-                alt="Estudos Jurídicos"
-                className="w-full h-full object-contain drop-shadow"
-              />
-            </div>
+          <div className="w-9 h-9 rounded-xl overflow-hidden border border-white/15 bg-zinc-900 flex items-center justify-center p-1">
+            <img
+              src={logoCoruja}
+              alt="Direito Prime"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div className="flex flex-col items-start leading-tight">
-            <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm">
-              Estudos Jurídicos
+            <span className="font-display text-base font-bold text-white tracking-tight">
+              Direito Prime
             </span>
-            <span className="font-body text-[11px] uppercase tracking-[0.24em] text-white/90">
+            <span className="font-body text-[10px] uppercase tracking-[0.2em] text-zinc-400">
               Uso Profissional
             </span>
           </div>
         </button>
 
-        {/* Espaço flexível */}
         <div className="flex-1" />
 
         {/* Favoritos Rápidos */}
@@ -112,10 +61,11 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
                 <button
-                  className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
+                  type="button"
+                  className="relative shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors group"
                   aria-label="Favoritos"
                 >
-                  <Heart className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+                  <Heart className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
                 </button>
               </PopoverTrigger>
             </TooltipTrigger>
@@ -123,7 +73,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
           </Tooltip>
           <PopoverContent
             align="end"
-            className="w-80 p-0 border-primary/20 shadow-2xl overflow-hidden bg-background"
+            className="w-80 p-0 border-white/10 shadow-2xl overflow-hidden bg-zinc-950"
           >
             <div className="p-3 bg-card border-b border-border flex items-center justify-between">
               <h4 className="font-display font-bold text-sm flex items-center gap-2">
@@ -131,7 +81,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
                 Últimos Favoritos
               </h4>
             </div>
-            <div className="max-h-75 overflow-y-auto p-2 flex flex-col gap-1">
+            <div className="max-h-72 overflow-y-auto p-2 flex flex-col gap-1">
               {favoritos.length === 0 ? (
                 <p className="text-sm text-muted-foreground p-4 text-center">
                   Nenhum artigo favoritado ainda.
@@ -139,15 +89,16 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
               ) : (
                 favoritos.map((fav) => (
                   <button
-                    key={fav.id}
-                    onClick={() => navigate(`/lei/${fav.lei_id}?artigo=${fav.artigo_id}`)}
+                    key={fav.leiId}
+                    type="button"
+                    onClick={() => navigate(`/legislacao/${tipoToSlug(fav.tipo)}/${leiToSlug({ id: fav.leiId, nome: fav.nome })}`)}
                     className="flex flex-col text-left p-3 rounded-xl hover:bg-secondary/60 transition-colors"
                   >
                     <span className="font-display font-bold text-sm text-foreground mb-1 line-clamp-1">
-                      {fav.artigo_label || fav.artigo_id}
+                      {fav.nome}
                     </span>
                     <span className="font-body text-xs text-muted-foreground line-clamp-2">
-                      {fav.lei_nome}
+                      {fav.descricao || fav.tipo}
                     </span>
                   </button>
                 ))
@@ -156,6 +107,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
             {favoritos.length > 0 && (
               <div className="p-2 bg-card border-t border-border">
                 <button
+                  type="button"
                   onClick={() => document.dispatchEvent(new CustomEvent("OPEN_FAVORITOS_MODAL"))}
                   className="w-full py-2 text-xs font-bold text-primary hover:bg-primary/10 rounded-lg transition-colors"
                 >
@@ -166,39 +118,38 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
           </PopoverContent>
         </Popover>
 
-        {/* Assistente Horus */}
+        {/* Assistente Hórus */}
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <button
+              type="button"
               onClick={() =>
                 onAssistenteClick ? onAssistenteClick() : navigate("/assistente-horus")
               }
-              className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
-              aria-label="Assistente Horus"
+              className="relative shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors group"
+              aria-label="Assistente Hórus"
             >
-              <Bird className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+              <Bird className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="flex items-center gap-2">
-            Assistente Horus
-            <span className="text-xs text-muted-foreground bg-white/10 px-1.5 py-0.5 rounded">
-              Alt+A
-            </span>
+            Assistente Hórus
           </TooltipContent>
         </Tooltip>
 
-        {/* Botão de notificações */}
+        {/* Notificações */}
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <button
+              type="button"
               onClick={() => setNotifOpen(true)}
-              className="relative shrink-0 w-11 h-11 rounded-xl bg-neutral-900/70 backdrop-blur border border-primary-foreground/40 hover:border-primary-foreground/70 hover:bg-neutral-900 flex items-center justify-center transition-colors group"
+              className="relative shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors group"
               aria-label={unreadCount > 0 ? `Notificações (${unreadCount} novas)` : "Notificações"}
             >
-              <Bell className="w-5 h-5 text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform" />
+              <Bell className="w-4 h-4 text-zinc-200 group-hover:scale-110 transition-transform" />
               {unreadCount > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full bg-primary text-neutral-900 text-[10px] font-black flex items-center justify-center border-2 border-neutral-900 shadow-lg"
+                  className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-amber-400 text-zinc-950 text-[10px] font-black flex items-center justify-center"
                   aria-hidden
                 >
                   {unreadCount > 99 ? "99+" : unreadCount}
@@ -213,7 +164,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
       </div>
 
       <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
-    </div>
+    </header>
   );
 };
 

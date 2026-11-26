@@ -2,19 +2,17 @@ import { useState, useEffect, useMemo, memo, type ElementType } from 'react';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import {
   Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel,
-  Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock,
+  Radar, RefreshCw, Info, LogOut, BookMarked, HeartPulse, Lock,
   User as UserIcon, BookOpenText, CloudDownload, CreditCard, LifeBuoy,
-  Library, Route as RouteIcon, FileUp, Heart, Speech,
+  Library, Speech, GraduationCap, Headphones, Clapperboard,
 } from 'lucide-react';
-import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
-import { getColecoesVisiveis } from '@/lib/bibliotecaColecoes';
 import SuporteSheet from '@/components/vademecum/sheets/SuporteSheet';
 import DesktopCategoriaSheet from '@/components/vademecum/desktop/DesktopCategoriaSheet';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { isAdminEmail } from '@/lib/adminEmails';
@@ -60,17 +58,18 @@ const CATEGORIAS = [
 ] as const;
 
 const SECOES_NAV = [
+  { id: 'legislacao', label: 'Início', icon: Scale, color: '#DC2626', route: '/' },
+  { id: 'aulas', label: 'Aulas', icon: GraduationCap, color: '#10B981', route: '/aulas' },
+  { id: 'audioleis', label: 'Ouça a Lei', icon: Headphones, color: '#F59E0B', route: '/audioleis' },
+  { id: 'animacoes', label: 'Animações', icon: Clapperboard, color: '#F97316', route: '/animacoes' },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
   { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
-  { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626', route: '/' },
-  { id: 'biblioteca' as Tab, label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
-  { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981', route: '/noticias' },
+  { id: 'noticias', label: 'Atualizações', icon: RefreshCw, color: '#EC4899', route: '/noticias' },
 ] as const;
 
 const CONTEUDO_ITEMS: readonly SidebarNavItem[] = [
-  { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
-  { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
-  { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
-  { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
+  { id: 'blog', label: 'Blog Jurídico', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
+  { id: 'explicacao', label: 'Artigos e Análises', icon: Newspaper, route: '/pessoal/artigos', color: '#6366F1' },
 ] as const;
 
 const FERRAMENTAS_ITEMS: readonly SidebarNavItem[] = [
@@ -95,8 +94,9 @@ const PROFISSAO_MAP: Record<string, string> = {
   advogado: 'Advogado',
 };
 
-const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) => {
+const DesktopSidebar = memo(({ activeTab: _activeTab, onTabChange }: DesktopSidebarProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signOut, user } = useAuth();
   const { data: profileSummary } = useProfileSummary();
   const isAdmin = isAdminEmail(user?.email);
@@ -134,32 +134,9 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
       setLogoutPrompt(true);
       return;
     }
-    if (item.id === 'explicacao') {
-      navigate('/pessoal/artigos');
-      return;
-    }
     if (item.route) navigate(item.route);
     else console.warn('[DesktopSidebar] item sem rota nem handler:', item.id);
   };
-
-  const meuAcervoItems = useMemo<readonly SidebarNavItem[]>(() => [
-    { id: 'bib-leitura', label: 'Leitura', icon: BookMarked, onClick: () => abrirAtalhoBiblioteca('leitura') },
-    { id: 'bib-trilhas', label: 'Trilhas', icon: RouteIcon, route: '/bibliotecas/trilhas' },
-    { id: 'bib-favoritos', label: 'Favoritos', icon: Heart, onClick: () => abrirAtalhoBiblioteca('favoritos') },
-    { id: 'bib-personalizado', label: 'Personalizado', icon: FileUp, route: '/modo-offline' },
-  ], []);
-
-  const colecoesItems = useMemo<readonly SidebarNavItem[]>(
-    () =>
-      getColecoesVisiveis(isAdmin).map((cat) => ({
-        id: cat.id,
-        label: cat.label,
-        icon: BookOpenText,
-        route: `/bibliotecas/${cat.id}`,
-        color: '#D97706',
-      })),
-    [isAdmin],
-  );
 
   const renderSection = (title: string, items: readonly SidebarNavItem[], usePrimaryTint = false) => (
     <div className="py-1 border-t border-border/50">
@@ -224,8 +201,8 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
           style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}
         >
           {/* Header – user profile */}
-          <div className="h-[104px] flex items-center px-4 shrink-0 border-b border-border/50 bg-zinc-950">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-transparent hover:border-primary/50 transition-colors shrink-0">
+          <div className="h-16 flex items-center px-3.5 shrink-0 border-b border-border/50 bg-zinc-950">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/15 flex items-center justify-center border border-white/10 hover:border-primary/50 transition-colors shrink-0">
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
               ) : (
@@ -272,7 +249,9 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
               )}
               {SECOES_NAV.map((item) => {
                 const Icon = item.icon;
-                const active = !item.route && activeTab === item.id;
+                const active = item.route === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(item.route);
                 return (
                   <button
                     key={item.id}
@@ -307,59 +286,50 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
               })}
             </div>
 
-            {activeTab === 'biblioteca' ? (
-              <>
-                {renderSection('Meu Acervo', meuAcervoItems, true)}
-                {renderSection('Coleções', colecoesItems)}
-              </>
-            ) : (
-              <>
-                <div className="pb-1 border-t border-border/50 pt-1">
-                  {!collapsed && (
-                    <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                      Categorias
-                    </p>
-                  )}
-                  {CATEGORIAS.map((cat) => {
-                    const Icon = cat.icon;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (cat.tipo === 'constituicao') {
-                            navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                            return;
-                          }
-                          const doCatalogo = getLeisPorTipo(cat.tipo);
-                          if (doCatalogo.length === 0) {
-                            navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                            return;
-                          }
-                          setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
-                        }}
-                        title={collapsed ? cat.label : undefined}
-                        className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
-                      >
-                        <div
-                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
-                          style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
-                        >
-                          <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
-                          <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
-                        </div>
-                        {!collapsed && <span>{cat.label}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Categorias
+                </p>
+              )}
+              {CATEGORIAS.map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (cat.tipo === 'constituicao') {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      const doCatalogo = getLeisPorTipo(cat.tipo);
+                      if (doCatalogo.length === 0) {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
+                    }}
+                    title={collapsed ? cat.label : undefined}
+                    className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
+                      style={{ backgroundColor: `${cat.color}33` }}
+                    >
+                      <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
+                      <Icon className="w-[16px] h-[16px]" style={{ color: cat.color }} />
+                    </div>
+                    {!collapsed && <span>{cat.label}</span>}
+                  </button>
+                );
+              })}
+            </div>
 
-                {renderSection('Conteúdo', CONTEUDO_ITEMS)}
-                {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
-              </>
-            )}
+            {renderSection('Conteúdo', CONTEUDO_ITEMS)}
+            {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
 
             {renderSection('Minha conta', CONTA_ITEMS)}
           </div>

@@ -1,11 +1,4 @@
-// @ts-nocheck
 import {
-  Sparkles,
-  MessageSquare,
-  Layers,
-  HelpCircle,
-  GraduationCap,
-  Bell,
   Search,
   Book,
   Library,
@@ -13,23 +6,15 @@ import {
   MonitorPlay,
   Headphones,
   ChevronRight,
-  Bot,
   ListChecks,
   BookA,
-  Gavel,
   Newspaper,
 } from "lucide-react";
 import { FlashcardsIcon } from "@/components/icons/FlashcardsIcon";
 import { AprenderDeckStacked, useAprenderItems } from "@/components/vademecum/home/aprender/chunks";
 import { useNavigate } from "react-router-dom";
 import heroBannerAsset from "@/assets/desktop-hero-banner.webp";
-import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
-import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
-import { pickAsset, srcOf } from "@/lib/assetUrl";
 import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
-import logoCoruja from "@/assets/logo-coruja.webp";
-
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 interface Props {
   typingHint?: string;
@@ -58,7 +43,7 @@ const DesktopHeroBanner = ({
           className="absolute inset-0 w-full h-full object-cover object-[70%_center] z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
           loading="eager"
           decoding="async"
-          fetchpriority="high"
+          fetchPriority="high"
         />
 
         {/* Overlay vermelho com recorte poligonal cobrindo parte da esquerda */}
@@ -93,46 +78,12 @@ const DesktopHeroBanner = ({
             <AprenderDeckStacked items={items} onItemClick={handleItemClick} />
           </div>
           <button
-            onClick={() => navigate("/aprender")}
+            onClick={() => navigate("/aulas")}
             className="relative flex items-center justify-center gap-2 font-display text-white text-[13px] font-bold uppercase tracking-widest py-2.5 w-[85%] mx-auto rounded-xl bg-red-900/80 hover:bg-red-950/90 transition-all border border-red-700/50 overflow-hidden group shadow-[0_8px_30px_rgba(153,27,27,0.3)]"
           >
             <span className="relative z-10">Acessar</span>
             <ChevronRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform relative z-10" />
             <div className="absolute inset-0 translate-x-[-150%] bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
-          </button>
-        </div>
-
-        {/* HEADER INTERNO (Logo + Título + Notificações) */}
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-8 py-6 pointer-events-none">
-          <div className="flex items-center gap-3 shrink-0 pointer-events-auto">
-            <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-xl border border-amber-500/30 ring-1 ring-white/15 bg-background/40 flex items-center justify-center p-1">
-              <img
-                src={logoCoruja}
-                alt="Estudos Jurídicos"
-                className="w-full h-full object-contain drop-shadow"
-              />
-            </div>
-            <div className="flex flex-col items-start leading-none justify-center mt-1">
-              <span className="font-serif italic text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-                Direito Prime
-              </span>
-              <span className="font-body text-[10px] uppercase tracking-[0.24em] text-white/80 mt-1.5 pl-1">
-                Uso Profissional
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={onNotifClick}
-            className="relative shrink-0 w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 hover:border-white/40 flex items-center justify-center transition-colors pointer-events-auto group/notif shadow-lg"
-            aria-label="Notificações"
-          >
-            <Bell className="w-5 h-5 text-white drop-shadow-md group-hover/notif:scale-110 transition-transform" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-[#1E1E22] shadow-sm animate-pulse-slow">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
           </button>
         </div>
 

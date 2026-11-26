@@ -1,6 +1,6 @@
 import { startTransition } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, Newspaper } from 'lucide-react';
+import { Scale, Gavel, Library, BookOpenText, Newspaper } from 'lucide-react';
 import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
 
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -33,7 +33,7 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
 
   // Deriva o tema de forma síncrona diretamente da rota para evitar qualquer flicker de cor (Item 45)
   const currentPath = location.pathname.toLowerCase();
-  const themeClass = currentPath.startsWith('/aprender')
+  const themeClass = currentPath.startsWith('/aulas')
     ? 'theme-aprender'
     : currentPath.startsWith('/questoes')
     ? 'theme-questoes'
