@@ -288,6 +288,7 @@ const AdminHorus = lazyWithRetry(() => import("./pages/admin/AdminHorus.tsx"));
 const AdminOmniRouteTeste = lazyWithRetry(() => import("./pages/admin/AdminOmniRouteTeste.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const Audioleis = lazyWithRetry(routePrefetch.audioLeis);
+const Animacoes = lazyWithRetry(routePrefetch.animacoes);
 const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
 const Assinatura = lazyWithRetry(() => import("./pages/assinatura/Assinatura.tsx"));
 const PlanosAtivos = lazyWithRetry(() => import("./pages/assinatura/PlanosAtivos.tsx"));
@@ -959,6 +960,8 @@ function AnimatedRoutes() {
           <Route path="/audioleis" element={<ProtectedRoute><PageTransition instant><Audioleis /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis/:leiId" element={<ProtectedRoute><PageTransition instant><Audioleis /></PageTransition></ProtectedRoute>} />
           <Route path="/audio-leis" element={<ProtectedRoute><PageTransition instant><Audioleis /></PageTransition></ProtectedRoute>} />
+          <Route path="/animacoes" element={<ProtectedRoute><PageTransition instant><Animacoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/animacoes/:slug" element={<ProtectedRoute><PageTransition instant><Animacoes /></PageTransition></ProtectedRoute>} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />

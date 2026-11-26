@@ -205,6 +205,21 @@ const BottomNav = () => {
       },
     },
     {
+      id: 'aulas',
+      label: 'Aulas',
+      ariaLabel: 'Aulas de Direito',
+      icon: GraduationCap,
+      active: isAulasActive,
+      prefetch: 'aulas' as PrefetchKey,
+      onClick: () => {
+        haptic.selection();
+        setPraticarOpen(false);
+        setAudioaulasOpen(false);
+        setResumosOpen(false);
+        startTransition(() => navigate('/aulas'));
+      },
+    },
+    {
       id: 'praticar',
       label: 'Praticar',
       ariaLabel: 'Praticar',
@@ -241,21 +256,6 @@ const BottomNav = () => {
         setPraticarOpen(false);
         setAudioaulasOpen(false);
         setResumosOpen((prev) => !prev);
-      },
-    },
-    {
-      id: 'aulas',
-      label: 'Aulas',
-      ariaLabel: 'Aulas de Direito',
-      icon: GraduationCap,
-      active: isAulasActive,
-      prefetch: 'aulas' as PrefetchKey,
-      onClick: () => {
-        haptic.selection();
-        setPraticarOpen(false);
-        setAudioaulasOpen(false);
-        setResumosOpen(false);
-        startTransition(() => navigate('/aulas'));
       },
     },
   ];

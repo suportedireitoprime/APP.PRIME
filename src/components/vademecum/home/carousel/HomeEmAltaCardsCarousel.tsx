@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, BookOpen, Wrench, Bird, ChevronRight, type LucideIcon } from 'lucide-react';
+import { Newspaper, BookOpen, Wrench, Bird, ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 import CarouselDots from './CarouselDots';
@@ -18,12 +18,12 @@ interface EmAltaFeatureItem {
 
 const ITEMS: EmAltaFeatureItem[] = [
   {
-    id: 'vade-mecum',
-    label: 'Vade Mecum',
-    sublabel: 'Legislação',
-    sublabelHighlight: 'atualizada',
-    route: '/vade-mecum',
-    icon: Scale,
+    id: 'blog',
+    label: 'Blog',
+    sublabel: 'Artigos',
+    sublabelHighlight: 'jurídicos',
+    route: '/blog',
+    icon: Newspaper,
   },
   {
     id: 'biblioteca',

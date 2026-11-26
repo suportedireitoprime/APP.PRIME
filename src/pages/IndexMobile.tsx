@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Scale, AlertTriangle, Radar, Headphones, Lightbulb, Newspaper, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
+import HomeAnimacoesCarousel from '@/components/animacoes/HomeAnimacoesCarousel';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -97,6 +98,9 @@ const IndexMobile = () => {
           <main ref={contentRef} className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-9 pb-2 space-y-8">
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
+
+            {/* Carrossel de Animações Jurídicas no início do app */}
+            <HomeAnimacoesCarousel />
 
             {/* Legislação 360° abaixo de Em Alta */}
             <section className="flex flex-col gap-3">
