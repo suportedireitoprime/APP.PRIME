@@ -9,7 +9,7 @@ import {
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
-import { COLECOES } from '@/lib/bibliotecaColecoes';
+import { getColecoesVisiveis } from '@/lib/bibliotecaColecoes';
 import SuporteSheet from '@/components/vademecum/sheets/SuporteSheet';
 import DesktopCategoriaSheet from '@/components/vademecum/desktop/DesktopCategoriaSheet';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
@@ -148,6 +148,18 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
     { id: 'bib-favoritos', label: 'Favoritos', icon: Heart, onClick: () => abrirAtalhoBiblioteca('favoritos') },
     { id: 'bib-personalizado', label: 'Personalizado', icon: FileUp, route: '/modo-offline' },
   ], []);
+
+  const colecoesItems = useMemo<readonly SidebarNavItem[]>(
+    () =>
+      getColecoesVisiveis(isAdmin).map((cat) => ({
+        id: cat.id,
+        label: cat.label,
+        icon: BookOpenText,
+        route: `/bibliotecas/${cat.id}`,
+        color: '#D97706',
+      })),
+    [isAdmin],
+  );
 
   const renderSection = (title: string, items: readonly SidebarNavItem[], usePrimaryTint = false) => (
     <div className="py-1 border-t border-border/50">
@@ -298,27 +310,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
             {activeTab === 'biblioteca' ? (
               <>
                 {renderSection('Meu Acervo', meuAcervoItems, true)}
-                <div className="pb-1 border-t border-border/50 pt-1">
-                  {!collapsed && (
-                    <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                      Coleções
-                    </p>
-                  )}
-                  {COLECOES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      title={collapsed ? cat.label : undefined}
-                      className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
-                    >
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: '#D9770633', boxShadow: '0 2px 6px -2px #D9770655' }}>
-                        <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: '#D97706' }} />
-                        <BookOpenText className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: '#D97706' }} />
-                      </div>
-                      {!collapsed && <span className="truncate">{cat.label}</span>}
-                    </button>
-                  ))}
-                </div>
+                {renderSection('Coleções', colecoesItems)}
               </>
             ) : (
               <>
