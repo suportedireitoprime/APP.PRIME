@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState, useEffect } from 'react';
+import { lazy, Suspense, useMemo, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -20,7 +20,6 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
 import { useVideoaulaResumo, type AulaCtxInput } from '@/hooks/useVideoaulaAcao';
 import { limparTitulo, formatarTituloEditorial, getCatalogo } from '@/lib/videoaulasCatalogos';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,11 +31,21 @@ import { useVideoaulaView } from '@/hooks/useVideoaulaView';
 import { VideoaulaSidebarDesktop } from '@/components/videoaulas/view/VideoaulaSidebarDesktop';
 import { VideoaulaPanoramaIA } from '@/components/videoaulas/view/VideoaulaPanoramaIA';
 import { VideoaulaPlayerHeader } from '@/components/videoaulas/view/VideoaulaPlayerHeader';
-import { VideoaulaResumeDialog } from '@/components/videoaulas/view/VideoaulaResumeDialog';
 import { findVideoaulaByVideoId, loadVideoaulaDriveDetail, type VideoaulaDriveItem } from '@/data/videoaulas/videoaulasDriveData';
-import { QuestoesPanel } from '@/components/videoaulas/acoes/VideoaulaQuestoesPanel';
-import { FlashcardsPanel } from '@/components/videoaulas/acoes/VideoaulaEstudoPanels';
 import { cn } from '@/lib/utils';
+
+const AnotacoesAulaSheet = lazy(() =>
+  import('@/components/videoaulas/AnotacoesAulaSheet').then((m) => ({ default: m.AnotacoesAulaSheet })),
+);
+const VideoaulaResumeDialog = lazy(() =>
+  import('@/components/videoaulas/view/VideoaulaResumeDialog').then((m) => ({ default: m.VideoaulaResumeDialog })),
+);
+const QuestoesPanel = lazy(() =>
+  import('@/components/videoaulas/acoes/VideoaulaQuestoesPanel').then((m) => ({ default: m.QuestoesPanel })),
+);
+const FlashcardsPanel = lazy(() =>
+  import('@/components/videoaulas/acoes/VideoaulaEstudoPanels').then((m) => ({ default: m.FlashcardsPanel })),
+);
 import {
   Drawer,
   DrawerContent,
@@ -478,7 +487,9 @@ const VideoaulaView = () => {
                   </div>
 
                   {driveQuestoes.length > 0 ? (
-                    <QuestoesPanel questoes={driveQuestoes} />
+                    <Suspense fallback={null}>
+                      <QuestoesPanel questoes={driveQuestoes} />
+                    </Suspense>
                   ) : (
                     <div className="p-8 text-center rounded-2xl bg-zinc-900/40 border border-white/10 text-zinc-400 text-sm">
                       Nenhuma questão disponível para esta aula no momento.
@@ -524,7 +535,9 @@ const VideoaulaView = () => {
 
                   {driveCards.length > 0 ? (
                     <div className="py-4">
-                      <FlashcardsPanel cards={driveCards} />
+                      <Suspense fallback={null}>
+                        <FlashcardsPanel cards={driveCards} />
+                      </Suspense>
                     </div>
                   ) : (
                     <div className="p-8 text-center rounded-2xl bg-zinc-900/40 border border-white/10 text-zinc-400 text-sm">
@@ -696,32 +709,40 @@ const VideoaulaView = () => {
       </div>
 
       {/* Diálogo de Retomada de Tempo */}
-      <VideoaulaResumeDialog
-        open={state.showResumePrompt.show}
-        tempo={state.showResumePrompt.tempo}
-        onOpenChange={handleAlertClose}
-        onRestart={() => {
-          state.setInicio(0);
-          seek(0);
-          setTocandoState(true);
-          state.setShowResumePrompt({ show: false, tempo: 0 });
-        }}
-        onResume={() => {
-          state.setInicio(state.showResumePrompt.tempo);
-          seek(state.showResumePrompt.tempo);
-          setTocandoState(true);
-          state.setShowResumePrompt({ show: false, tempo: 0 });
-        }}
-      />
+      {state.showResumePrompt.show && (
+        <Suspense fallback={null}>
+          <VideoaulaResumeDialog
+            open={state.showResumePrompt.show}
+            tempo={state.showResumePrompt.tempo}
+            onOpenChange={handleAlertClose}
+            onRestart={() => {
+              state.setInicio(0);
+              seek(0);
+              setTocandoState(true);
+              state.setShowResumePrompt({ show: false, tempo: 0 });
+            }}
+            onResume={() => {
+              state.setInicio(state.showResumePrompt.tempo);
+              seek(state.showResumePrompt.tempo);
+              setTocandoState(true);
+              state.setShowResumePrompt({ show: false, tempo: 0 });
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Sheet de Anotações do Estudante */}
-      <AnotacoesAulaSheet
-        open={showAnotacoes}
-        onClose={() => setShowAnotacoes(false)}
-        videoId={videoId ?? ''}
-        aulaTitulo={tituloLimpo}
-        areaSlug={areaSlug}
-      />
+      {showAnotacoes && (
+        <Suspense fallback={null}>
+          <AnotacoesAulaSheet
+            open={showAnotacoes}
+            onClose={() => setShowAnotacoes(false)}
+            videoId={videoId ?? ''}
+            aulaTitulo={tituloLimpo}
+            areaSlug={areaSlug}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

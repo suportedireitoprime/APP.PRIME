@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Loader2, ChevronRight, Play, ArrowLeft } from 'lucide-react';
 import { VideoaulasHero } from './VideoaulasHero';
@@ -8,7 +8,10 @@ import { VideoaulasIniciantesCarousel } from './VideoaulasIniciantesCarousel';
 import { VideoaulasAreaCard, type VideoaulaAreaItem } from './VideoaulasAreaCard';
 import { VideoaulasAulaResultCard } from './VideoaulasAulaResultCard';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
-import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
+
+const VideoaulasDesempenhoSheet = lazy(
+  () => import('@/components/videoaulas/VideoaulasDesempenhoSheet'),
+);
 import { normalizeTexto, type useVideoaulas } from '@/hooks/useVideoaulas';
 import { simplificarNomeArea, getCapaDaArea, slugify } from '@/lib/videoaulasCatalogos';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
@@ -372,11 +375,15 @@ export const VideoaulasMobileView: React.FC<VideoaulasMobileViewProps> = ({
       />
 
       {/* Sheet de Desempenho */}
-      <VideoaulasDesempenhoSheet
-        open={state.showDesempenho}
-        onClose={() => state.setShowDesempenho(false)}
-        horasTotais={horasAssistidas}
-      />
+      {state.showDesempenho && (
+        <Suspense fallback={null}>
+          <VideoaulasDesempenhoSheet
+            open={state.showDesempenho}
+            onClose={() => state.setShowDesempenho(false)}
+            horasTotais={horasAssistidas}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

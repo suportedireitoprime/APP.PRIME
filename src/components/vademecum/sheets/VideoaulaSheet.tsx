@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { autoPip } from '@/lib/nativo/pip';
@@ -9,13 +9,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Loader2, Play, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Plus, Brain, Trash2, RectangleHorizontal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
-import { pdf } from '@react-pdf/renderer';
 import { toast } from 'sonner';
 import { baixarBlob } from '@/lib/nativo';
 import { resumoMdComponents } from './chunks/VideoaulaResumoMarkdown';
-import { VideoaulaPdfDocument } from './chunks/VideoaulaPdf';
-import { VideoaulaPraticarSheet, Questao, Flashcard } from './chunks/VideoaulaPraticarSheet';
-import { VideoaulaChatOverlay, ChatMessage } from './chunks/VideoaulaChatOverlay';
+import type { Questao, Flashcard } from './chunks/VideoaulaPraticarSheet';
+import type { ChatMessage } from './chunks/VideoaulaChatOverlay';
+
+const VideoaulaPraticarSheet = lazy(() =>
+  import('./chunks/VideoaulaPraticarSheet').then((m) => ({ default: m.VideoaulaPraticarSheet })),
+);
+const VideoaulaChatOverlay = lazy(() =>
+  import('./chunks/VideoaulaChatOverlay').then((m) => ({ default: m.VideoaulaChatOverlay })),
+);
 
 interface VideoaulaSheetProps {
   open: boolean;
@@ -310,6 +315,10 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
     if (!resumo || pdfExporting) return;
     setPdfExporting(true);
     try {
+      const [{ pdf }, { VideoaulaPdfDocument }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./chunks/VideoaulaPdf'),
+      ]);
       const doc = <VideoaulaPdfDocument video={video} resumo={resumo} artigoNumero={artigoNumero} tabelaNome={tabelaNome} textoArtigoCompleto={textoArtigoCompleto} />;
       const blob = await pdf(doc).toBlob();
       const slug = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
@@ -607,41 +616,49 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
             </div>
 
             {/* ─── PRATICAR bottom sheet ─── */}
-            <VideoaulaPraticarSheet
-              open={praticarOpen}
-              onClose={closePraticar}
-              mode={praticarMode}
-              setMode={setPraticarMode}
-              openMode={openPraticar}
-              questoes={questoes}
-              questoesLoading={questoesLoading}
-              flashcards={flashcards}
-              flashcardsLoading={flashcardsLoading}
-              currentQIdx={currentQIdx}
-              setCurrentQIdx={setCurrentQIdx}
-              selectedAlt={selectedAlt}
-              setSelectedAlt={setSelectedAlt}
-              answered={answered}
-              setAnswered={setAnswered}
-              currentFcIdx={currentFcIdx}
-              setCurrentFcIdx={setCurrentFcIdx}
-              flipped={flipped}
-              setFlipped={setFlipped}
-              handleResponder={handleResponder}
-              handleNextQuestion={handleNextQuestion}
-              handleNextFc={handleNextFc}
-              handlePrevFc={handlePrevFc}
-            />
-            <VideoaulaChatOverlay
-              open={chatOpen}
-              onClose={() => setChatOpen(false)}
-              messages={chatMessages}
-              loading={chatLoading}
-              input={chatInput}
-              onInputChange={setChatInput}
-              onSend={sendChatMessage}
-              chatEndRef={chatEndRef}
-            />
+            {praticarOpen && (
+              <Suspense fallback={null}>
+                <VideoaulaPraticarSheet
+                  open={praticarOpen}
+                  onClose={closePraticar}
+                  mode={praticarMode}
+                  setMode={setPraticarMode}
+                  openMode={openPraticar}
+                  questoes={questoes}
+                  questoesLoading={questoesLoading}
+                  flashcards={flashcards}
+                  flashcardsLoading={flashcardsLoading}
+                  currentQIdx={currentQIdx}
+                  setCurrentQIdx={setCurrentQIdx}
+                  selectedAlt={selectedAlt}
+                  setSelectedAlt={setSelectedAlt}
+                  answered={answered}
+                  setAnswered={setAnswered}
+                  currentFcIdx={currentFcIdx}
+                  setCurrentFcIdx={setCurrentFcIdx}
+                  flipped={flipped}
+                  setFlipped={setFlipped}
+                  handleResponder={handleResponder}
+                  handleNextQuestion={handleNextQuestion}
+                  handleNextFc={handleNextFc}
+                  handlePrevFc={handlePrevFc}
+                />
+              </Suspense>
+            )}
+            {chatOpen && (
+              <Suspense fallback={null}>
+                <VideoaulaChatOverlay
+                  open={chatOpen}
+                  onClose={() => setChatOpen(false)}
+                  messages={chatMessages}
+                  loading={chatLoading}
+                  input={chatInput}
+                  onInputChange={setChatInput}
+                  onSend={sendChatMessage}
+                  chatEndRef={chatEndRef}
+                />
+              </Suspense>
+            )}
             {/* RECURSOS DRAWER */}
             <AnimatePresence>
               {recursosAberto && (
