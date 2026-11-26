@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, Clock, Scale, ExternalLink, Share2, MessageCircle, Heart, Type, Plus, Minus } from 'lucide-react';
@@ -10,10 +9,11 @@ import { newsImg } from '@/lib/cdnImg';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { type Noticia, fetchNoticiaConteudo } from '@/services/noticiasService';
-import NoticiaComentarios from '@/components/vademecum/blog/NoticiaComentarios';
-import ShareSheet from '@/components/vademecum/sheets/ShareSheet';
 import { useFavoritoNoticia } from '@/hooks/useNoticiaTracking';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+
+const NoticiaComentarios = lazy(() => import('@/components/vademecum/blog/NoticiaComentarios'));
+const ShareSheet = lazy(() => import('@/components/vademecum/sheets/ShareSheet'));
 
 function cleanMd(md: string): string {
   if (!md) return '';
@@ -125,7 +125,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     alt={noticia.titulo}
                     className="w-full h-full object-cover"
                     decoding="async"
-                    fetchpriority="high"
+                    fetchPriority="high"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
@@ -231,7 +231,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
               <div className="space-y-4 px-5 pt-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className="inline-flex items-center text-[10px] font-bold text-primary uppercase tracking-wide">
-                    {noticia.fonte === 'jota' ? 'JOTA' : noticia.fonte === 'camara' ? 'CÂMARA' : noticia.fonte === 'senado' ? 'SENADO' : 'MIGALHAS'}
+                    {noticia.fonte === 'gran_oab' ? 'GRAN OAB' : noticia.fonte === 'gran_concursos' ? 'GRAN CONCURSOS' : 'MIGALHAS'}
                   </span>
                   {noticia.categoria && (
                     <>
@@ -290,13 +290,17 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
             </div>
           </motion.div>
 
-          <ShareSheet
-            open={shareOpen}
-            onClose={() => setShareOpen(false)}
-            title={noticia.titulo}
-            text={noticia.resumo}
-            url={noticia.link}
-          />
+          {shareOpen && (
+            <Suspense fallback={null}>
+              <ShareSheet
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+                title={noticia.titulo}
+                text={noticia.resumo}
+                url={noticia.link}
+              />
+            </Suspense>
+          )}
 
           <AnimatePresence>
             {comentariosOpen && (
@@ -341,10 +345,12 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     </h3>
                   </div>
                   <div className="flex-1 overflow-y-auto px-5 pb-8">
-                    <NoticiaComentarios
-                      noticiaRef={noticia.id}
-                      onCountChange={setComentariosCount}
-                    />
+                    <Suspense fallback={null}>
+                      <NoticiaComentarios
+                        noticiaRef={noticia.id}
+                        onCountChange={setComentariosCount}
+                      />
+                    </Suspense>
                   </div>
                 </motion.div>
               </>

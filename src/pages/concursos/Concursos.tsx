@@ -9,138 +9,21 @@ import { LoadingState, EmptyState } from '@/components/ui/states';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
 import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
 import { getConcursoVisual, getBandeiraUrl, extractConcursoUf } from '@/lib/concursosVisuais';
 import { getSharedConcursos, setSharedConcursos } from '@/lib/concursosCache';
 import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-
-const ESTADOS_MAP: Record<string, string> = {
-  'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
-  'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
-  'MA': 'Maranhão', 'MT': 'Mato Grosso', 'MS': 'Mato Grosso do Sul', 'MG': 'Minas Gerais',
-  'PA': 'Pará', 'PB': 'Paraíba', 'PR': 'Paraná', 'PE': 'Pernambuco', 'PI': 'Piauí',
-  'RJ': 'Rio de Janeiro', 'RN': 'Rio Grande do Norte', 'RS': 'Rio Grande do Sul',
-  'RO': 'Rondônia', 'RR': 'Roraima', 'SC': 'Santa Catarina', 'SP': 'São Paulo',
-  'SE': 'Sergipe', 'TO': 'Tocantins', 'BR': 'Nacional'
-};
-
-type ConcursoNoticia = {
-  id: string;
-  data_publicacao: string;
-  created_at?: string;
-  conteudo_md?: string | null;
-  titulo: string;
-  imagem_url?: string;
-  link: string;
-  uf?: string;
-  cargos?: string[];
-  cargos_resumo?: string;
-  vagas_salario?: string;
-  formacao?: string;
-  resumo?: string;
-  dias_restantes?: number;
-};
-
-const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-
-const CARGOS_FILTRO_OPTIONS = [
-  { value: 'TODOS', label: 'Todos os Cargos' },
-  { value: 'delegado_de_policia', label: '👮 Segurança Pública & Policial' },
-  { value: 'tribunais_judiciario_analistas', label: '🏛️ Tribunais & Judiciário' },
-  { value: 'juiz_magistratura', label: '⚖️ Magistratura' },
-  { value: 'advocacia_publica', label: '📜 Advocacia Pública' },
-  { value: 'fiscal_controle_auditores', label: '📊 Fiscal & Auditoria' },
-  { value: 'enfermagem_saude_geral', label: '🩺 Saúde & Enfermagem' },
-  { value: 'educacao_professor', label: '🎓 Educação & Docência' },
-  { value: 'administrativo', label: '🏢 Gestão & Administrativo' },
-  { value: 'tecnologia_da_informacao', label: '💻 Tecnologia da Informação' },
-  { value: 'engenharia_arquitetura', label: '📐 Engenharia & Arquitetura' },
-  { value: 'contabilidade_e_financas', label: '💰 Contabilidade & Finanças' },
-  { value: 'odontologia', label: '🦷 Odontologia & Saúde Bucal' },
-  { value: 'operacional_servicos_gerais', label: '🛠️ Operacional & Serviços Gerais' },
-  { value: 'curinga_cargo_generico', label: '📋 Outros / Vários Cargos' },
-];
-
-const PRAZOS_FILTRO_OPTIONS = [
-  { value: 'TODOS', label: 'Todos os Prazos' },
-  { value: 'urgente_3', label: '🔥 Urgente: Até 3 dias' },
-  { value: 'urgente_7', label: '⚡ Esta semana: Até 7 dias' },
-  { value: 'mais_7', label: '📅 Mais de 7 dias' },
-  { value: 'mais_15', label: '⏳ Mais de 15 dias' },
-];
-
-const SALARIOS_FILTRO_OPTIONS = [
-  { value: 'TODOS', label: 'Todos os Salários' },
-  { value: '3000', label: '+ R$ 3.000' },
-  { value: '5000', label: '+ R$ 5.000' },
-  { value: '8000', label: '+ R$ 8.000' },
-  { value: '10000', label: '+ R$ 10.000' },
-  { value: '15000', label: '+ R$ 15.000' },
-];
-
-function extractSalarioNumber(text: string): number | null {
-  if (!text) return null;
-  const match = text.match(/R\$\s*([\d.]+)(?:,\d{2})?/i);
-  if (match && match[1]) {
-    const clean = match[1].replace(/\./g, '');
-    const num = parseFloat(clean);
-    return isNaN(num) ? null : num;
-  }
-  return null;
-}
-
-function formatDateParts(dateStr: string) {
-  const d = new Date(dateStr);
-  const day = d.getDate();
-  const month = MONTHS[d.getMonth()];
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  return { day, month, time: `${hours}:${minutes}` };
-}
-
-function formatDateFull(dateStr: string) {
-  const d = new Date(dateStr);
-  const day = d.getDate();
-  const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  return `${day} ${months[d.getMonth()]} · ${hours}:${minutes}`;
-}
-
-function getDayList(centerDate: Date, count = 5): Date[] {
-  const days: Date[] = [];
-  for (let i = 0; i < count; i++) {
-    const d = new Date(centerDate);
-    d.setDate(d.getDate() - i);
-    days.push(d);
-  }
-  return days;
-}
-
-function dayLabel(date: Date): string {
-  const today = new Date();
-  if (date.toDateString() === today.toDateString()) return 'HOJE';
-  return WEEKDAYS[date.getDay()];
-}
-
-function formatFullDate(date: Date): string {
-  const weekdayFull = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
-  const monthFull = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${weekdayFull[date.getDay()]}, ${date.getDate()} de ${monthFull[date.getMonth()]} de ${date.getFullYear()}`;
-}
-
-function extractCargo(item: ConcursoNoticia): string {
-  if (item.cargos_resumo) return item.cargos_resumo;
-  if (item.cargos && item.cargos.length > 0) return item.cargos[0];
-  const match = item.titulo.match(/(?:para|cargo(?:s)? de|função de)\s+(.+?)(?:\s*-|\s*$)/i);
-  if (match && match[1]) {
-    return match[1].split(' e ')[0].trim();
-  }
-  return "Vários Cargos";
-}
+import { MONTHS, formatDateParts, formatDateFull, getDayList, dayLabel, formatFullDate, toYMD } from '@/lib/noticiasDateUtils';
+import {
+  ESTADOS_MAP,
+  CARGOS_FILTRO_OPTIONS,
+  PRAZOS_FILTRO_OPTIONS,
+  SALARIOS_FILTRO_OPTIONS,
+  extractSalarioNumber,
+  extractCargo,
+  type ConcursoNoticia,
+} from './concursosFiltersConfig';
 
 const Concursos = () => {
   const navigate = useNavigate();
@@ -150,13 +33,6 @@ const Concursos = () => {
   // Cache instantâneo de 0ms
   const [concursos, setConcursos] = useState<ConcursoNoticia[]>(() => getSharedConcursos() as ConcursoNoticia[]);
   const [loading, setLoading] = useState<boolean>(() => getSharedConcursos().length === 0);
-
-  const toYMD = (d: Date) => {
-    const y = d.getFullYear();
-    const m = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
 
   const todayYMD = toYMD(new Date());
 
@@ -215,7 +91,7 @@ const Concursos = () => {
 
   const openExternalLink = (url: string) => {
     if (Capacitor.isNativePlatform()) {
-      void Browser.open({ url });
+      void import('@capacitor/browser').then(({ Browser }) => Browser.open({ url }));
     } else {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
