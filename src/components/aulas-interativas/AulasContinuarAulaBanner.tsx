@@ -4,6 +4,7 @@ import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { DISCIPLINAS_CATALOGO } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { haptic } from '@/lib/nativeHaptics';
+import { AulasCardRubyBackground } from './AulasCardRubyBackground';
 
 interface AulasContinuarAulaBannerProps {
   aula: AulaItem;
