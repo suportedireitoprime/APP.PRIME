@@ -24,6 +24,7 @@ import { AULAS_LABORATORIO_CATALOGO } from '@/data/aulasLaboratorioData';
 import { TelaPosTrialView } from '@/components/subscription/TelaPosTrialView';
 import { IconesLogoStudio } from '@/pages/laboratorio/icones-logo/IconesLogoStudio';
 import { HomeLayoutStudio } from '@/pages/laboratorio/layouts-inicio/HomeLayoutStudio';
+import { AnimacaoLabStudio } from '@/pages/laboratorio/AnimacaoLabStudio';
 import { QuestoesAnimadasPlayer } from '@/pages/laboratorio/QuestoesAnimadasPlayer';
 import { QuestoesAnimadasAlfredoPlayer } from '@/pages/laboratorio/QuestoesAnimadasAlfredoPlayer';
 import { AssinaturaVitaliciaView } from '@/components/assinatura/AssinaturaVitaliciaView';
@@ -47,6 +48,7 @@ export default function AdminLaboratorioAulas() {
   const [etapaInicial, setEtapaInicial] = useState<number | undefined>(undefined);
   const [filtroAtivo, setFiltroAtivo] = useState<LabFiltro>('todos');
   const [estudioLayoutAtivo, setEstudioLayoutAtivo] = useState(false);
+  const [editorAnimacaoAtivo, setEditorAnimacaoAtivo] = useState(false);
   const [telaPosTrialAtiva, setTelaPosTrialAtiva] = useState(false);
   const [testadorIconeAtivo, setTestadorIconeAtivo] = useState(false);
   const [questaoAnimadaAtiva, setQuestaoAnimadaAtiva] = useState(false);
@@ -81,6 +83,15 @@ export default function AdminLaboratorioAulas() {
     return (
       <HomeLayoutStudio
         onVoltar={() => setEstudioLayoutAtivo(false)}
+      />
+    );
+  }
+
+  // ── SEÇÃO NOVO: ESTÚDIO DE EDIÇÃO DE ANIMAÇÕES (30 CASOS DO R2) ──
+  if (editorAnimacaoAtivo) {
+    return (
+      <AnimacaoLabStudio
+        onVoltar={() => setEditorAnimacaoAtivo(false)}
       />
     );
   }
@@ -196,7 +207,7 @@ export default function AdminLaboratorioAulas() {
                   : 'bg-zinc-900/80 text-zinc-400 hover:text-white border border-white/5'
               }`}
             >
-              Todos (6)
+              Todos (7)
             </button>
             <button
               type="button"
@@ -318,6 +329,57 @@ export default function AdminLaboratorioAulas() {
                     >
                       <Play className="w-3 h-3 fill-current" />
                       <span>Abrir Estúdio de Layouts</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── 0B. NOVO: ESTÚDIO DE EDIÇÃO DE ANIMAÇÕES ── */}
+          {(filtroAtivo === 'todos' || filtroAtivo === 'questoes') && (
+            <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-zinc-900/60 to-zinc-900/40 p-4 transition-all hover:border-amber-500/50 group relative overflow-hidden shadow-lg">
+              <div className="absolute top-0 right-0 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-start gap-3.5">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-amber-500/30 relative bg-[#161005] shadow-sm flex items-center justify-center p-2">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/40 group-hover:scale-110 transition-transform">
+                    <Film className="w-5 h-5" />
+                  </div>
+                  <span className="absolute bottom-1 inset-x-0 text-center text-[7.5px] font-mono text-amber-400 uppercase font-bold">
+                    EDITOR 2D
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                      NOVO · EDITOR
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-normal">
+                      Animações Jurídicas · R2 Studio
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Estúdio de Edição de Animações
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  </h3>
+
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    Carregue qualquer uma das 30 animações prontas do R2, edite o código HTML/Canvas, teste ajustes visuais ao vivo, ouça as faixas MP3 e baixe a versão melhorada.
+                  </p>
+
+                  <div className="pt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { haptic.impact('heavy'); } catch {}
+                        setEditorAnimacaoAtivo(true);
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>Abrir Editor de Animações</span>
                     </button>
                   </div>
                 </div>
