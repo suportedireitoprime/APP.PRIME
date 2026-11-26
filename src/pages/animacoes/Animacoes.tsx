@@ -2,6 +2,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   Clapperboard,
   FileText,
   Maximize2,
@@ -22,6 +24,62 @@ const animacoesCatalog = animacoesCatalogRaw as AnimacaoItem[];
 
 const CATEGORIAS = ['Todas', 'OAB', 'Código Penal', 'Concursos'] as const;
 
+const SECOES_INTERNAS = [
+  /^#\s*Reel original/i,
+  /^##\s*O que tem de ser melhor/i,
+  /^##\s*Motor e estilo/i,
+  /^##\s*Paleta/i,
+  /^##\s*Checagem/i,
+  /^##\s*Personagens/i,
+  /^##\s*Roteiro/i,
+];
+
+function renderBoldText(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className="font-semibold text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
+function parseTratamentoJuridico(md?: string): Array<{ type: 'h' | 'p' | 'li'; text: string }> {
+  if (!md) return [];
+  const lines = md.split(/\r?\n/);
+  const out: Array<{ type: 'h' | 'p' | 'li'; text: string }> = [];
+  let skipSection = false;
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line === '---') continue;
+
+    if (/^#{1,3}\s+/.test(line)) {
+      if (SECOES_INTERNAS.some((rx) => rx.test(line))) {
+        skipSection = true;
+        continue;
+      }
+      skipSection = false;
+      const cleanHeading = line.replace(/^#{1,3}\s+/, '').trim();
+      if (cleanHeading) out.push({ type: 'h', text: cleanHeading });
+      continue;
+    }
+
+    if (skipSection) continue;
+
+    if (/^[-*]\s+/.test(line)) {
+      out.push({ type: 'li', text: line.replace(/^[-*]\s+/, '').trim() });
+    } else {
+      out.push({ type: 'p', text: line });
+    }
+  }
+  return out;
+}
+
 const Animacoes: React.FC = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug?: string }>();
@@ -33,9 +91,21 @@ const Animacoes: React.FC = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [mostrarTexto, setMostrarTexto] = useState(true);
 
-  const ativa = useMemo(
-    () => (slug ? animacoesCatalog.find((a) => a.slug === slug) || null : null),
+  const ativaIndex = useMemo(
+    () => (slug ? animacoesCatalog.findIndex((a) => a.slug === slug) : -1),
     [slug]
+  );
+
+  const ativa = ativaIndex >= 0 ? animacoesCatalog[ativaIndex] : null;
+  const prevAnimacao = ativaIndex > 0 ? animacoesCatalog[ativaIndex - 1] : null;
+  const nextAnimacao =
+    ativaIndex >= 0 && ativaIndex < animacoesCatalog.length - 1
+      ? animacoesCatalog[ativaIndex + 1]
+      : null;
+
+  const blocosJuridicos = useMemo(
+    () => parseTratamentoJuridico(ativa?.tratamentoMd),
+    [ativa?.tratamentoMd]
   );
 
   const filtradas = useMemo(() => {
@@ -82,9 +152,13 @@ const Animacoes: React.FC = () => {
         />
       </div>
 
-      <main className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] space-y-6">
+      <main
+        className={`relative z-10 max-w-[1440px] mx-auto pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] ${
+          ativa ? 'px-0 sm:px-6 space-y-3 sm:space-y-5' : 'px-4 sm:px-6 space-y-6'
+        }`}
+      >
         {/* Header minimalista */}
-        <header className="flex items-center justify-between gap-3">
+        <header className={`flex items-center justify-between gap-3 ${ativa ? 'px-3 sm:px-0' : ''}`}>
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -103,13 +177,13 @@ const Animacoes: React.FC = () => {
               <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
             </button>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight truncate">
+              <h1 className="text-base sm:text-2xl font-bold text-white tracking-tight truncate">
                 {ativa ? ativa.tituloHtml || ativa.titulo : 'Animações Jurídicas'}
               </h1>
               <p className="text-xs text-zinc-400 truncate">
                 {ativa
                   ? `${ativa.categoria}${ativa.gabarito ? ` • Gabarito ${ativa.gabarito}` : ''}`
-                  : `${animacoesCatalog.length} casos animados com áudio no R2`}
+                  : `${animacoesCatalog.length} casos animados com áudio`}
               </p>
             </div>
           </div>
@@ -139,24 +213,54 @@ const Animacoes: React.FC = () => {
           )}
         </header>
 
-        {/* Visualizador da Animação Selecionada */}
+        {/* Visualizador Full-Bleed da Animação Selecionada */}
         {ativa ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            <div className="lg:col-span-8 space-y-3">
-              <div className="relative w-full aspect-video min-h-[360px] sm:min-h-[480px] rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl">
+            <div className="lg:col-span-5 flex flex-col items-center space-y-3">
+              <div className="relative w-full lg:max-w-[430px] overflow-hidden bg-zinc-950 sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl">
                 <iframe
                   key={`${ativa.slug}_${reloadKey}`}
                   ref={iframeRef}
-                  src={ativa.htmlR2Url}
+                  src={`${ativa.htmlR2Url}?v=2`}
                   title={ativa.tituloHtml || ativa.titulo}
                   allow="autoplay; fullscreen"
-                  className="w-full h-full border-0"
+                  className="w-full h-[calc(100vw*1.778+135px)] sm:h-[820px] max-h-[86dvh] border-0 block bg-zinc-950"
                 />
+              </div>
+
+              {/* Navegação Anterior / Próxima */}
+              <div className="w-full lg:max-w-[430px] px-3 sm:px-0 flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  disabled={!prevAnimacao}
+                  onClick={() => {
+                    if (!prevAnimacao) return;
+                    haptic.selection();
+                    navigate(`/animacoes/${prevAnimacao.slug}`);
+                  }}
+                  className="flex-1 min-h-[44px] px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 disabled:opacity-35 disabled:pointer-events-none border border-white/10 flex items-center justify-center gap-1.5 text-xs font-semibold text-zinc-200 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Anterior</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={!nextAnimacao}
+                  onClick={() => {
+                    if (!nextAnimacao) return;
+                    haptic.selection();
+                    navigate(`/animacoes/${nextAnimacao.slug}`);
+                  }}
+                  className="flex-1 min-h-[44px] px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 disabled:opacity-35 disabled:pointer-events-none border border-amber-500/30 flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-300 transition-colors"
+                >
+                  <span className="truncate">Próxima</span>
+                  <ChevronRight className="w-4 h-4 shrink-0" />
+                </button>
               </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-3">
-              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+            <div className="lg:col-span-7 px-3 sm:px-0 space-y-3">
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-300">
                     <FileText className="w-4 h-4" />
@@ -171,15 +275,45 @@ const Animacoes: React.FC = () => {
                   </button>
                 </div>
 
-                {ativa.gabarito && (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-300">
-                    Gabarito: {ativa.gabarito}
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {ativa.artigoRef && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-xs font-bold text-amber-300">
+                      {ativa.artigoRef}
+                    </span>
+                  )}
+                  {ativa.exameRef && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-zinc-300">
+                      {ativa.exameRef}
+                    </span>
+                  )}
+                  {ativa.gabarito && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-300">
+                      Gabarito: {ativa.gabarito}
+                    </span>
+                  )}
+                </div>
 
                 {mostrarTexto && (
-                  <div className="max-h-[420px] overflow-y-auto pr-1 space-y-2 text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                    {ativa.tratamentoMd || ativa.resumo || 'Material de apoio desta animação.'}
+                  <div className="max-h-[460px] overflow-y-auto pr-1 space-y-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                    {blocosJuridicos.length > 0 ? (
+                      blocosJuridicos.map((b, idx) =>
+                        b.type === 'h' ? (
+                          <h3 key={idx} className="text-xs sm:text-sm font-bold text-amber-300 pt-2 first:pt-0">
+                            {renderBoldText(b.text)}
+                          </h3>
+                        ) : b.type === 'li' ? (
+                          <p key={idx} className="pl-3 border-l-2 border-amber-500/30 text-zinc-300">
+                            {renderBoldText(b.text)}
+                          </p>
+                        ) : (
+                          <p key={idx} className="text-zinc-300">
+                            {renderBoldText(b.text)}
+                          </p>
+                        )
+                      )
+                    ) : (
+                      <p>{ativa.resumo || 'Material de apoio desta animação.'}</p>
+                    )}
                   </div>
                 )}
               </div>
