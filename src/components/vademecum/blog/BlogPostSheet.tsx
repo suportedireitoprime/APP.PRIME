@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import { getCurrentSessionUser } from "@/lib/authSessionCache";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -303,9 +304,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
       .then(({ appEvents }) => appEvents.abrirBlog({ post_id: post.id, titulo: post.titulo }))
       .catch(() => {});
     (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getCurrentSessionUser();
       // view (best-effort, sem bloquear UI)
       supabase
         .from("blog_post_views")
@@ -343,9 +342,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
   const toggleLike = async () => {
     if (!post || likeBusy) return;
     setLikeBusy(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (!user) {
       setLikeBusy(false);
       return;

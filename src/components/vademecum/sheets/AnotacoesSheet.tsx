@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentUserId } from '@/lib/authSessionCache';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
@@ -155,7 +156,7 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
   const keyboardHeight = useKeyboardHeight();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    getCurrentUserId().then(setUserId);
   }, []);
 
   useEffect(() => {

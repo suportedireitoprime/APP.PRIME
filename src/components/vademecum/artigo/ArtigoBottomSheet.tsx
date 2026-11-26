@@ -11,6 +11,7 @@ import GrifoVoicePanel, {
   type VoicePhase,
 } from "@/components/vademecum/grifos_ocr/GrifoVoicePanel";
 import { useNavigate } from "react-router-dom";
+import { getCurrentSessionUser } from "@/lib/authSessionCache";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import useBodyScrollLock from "@/hooks/useBodyScrollLock";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -541,9 +542,7 @@ const ArtigoBottomSheet = ({
     let cancelled = false;
     (async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const user = await getCurrentSessionUser();
         if (!user) {
           if (!cancelled) setAnotacoesCount(0);
           return;

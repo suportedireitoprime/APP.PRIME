@@ -66,13 +66,11 @@ const VadeMecum = () => {
 
   const renderContent = () => (
     <>
-      {activeTab === 'emalta' && (
-        <div className={isDesktop ? "-mx-8 -mt-6 2xl:-mx-14" : ""}>
-          <VadeMecumHero 
-            onOpenSearch={() => setBuscaOpen(true)}
-            onSelectQuickAction={(action) => setActiveQuickSheet(action)} 
-          />
-        </div>
+      {activeTab === 'emalta' && !isDesktop && (
+        <VadeMecumHero
+          onOpenSearch={() => setBuscaOpen(true)}
+          onSelectQuickAction={(action) => setActiveQuickSheet(action)}
+        />
       )}
 
 

@@ -48,7 +48,7 @@ export const BlogEmAltaCarousel: React.FC<BlogEmAltaCarouselProps> = ({
       </div>
 
       {/* Carrossel Horizontal: Títulos DENTRO da capa sobre o degradê, sem abreviação, sem descrição */}
-      <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+      <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x touch-pan-y overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
         {posts.slice(0, 20).map((post, index) => {
           return (
             <div
