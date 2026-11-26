@@ -21,11 +21,13 @@ import { Route as AdminNotificacoesLocaisRouteImport } from './routes/admin-noti
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
+import { Route as AnimacoesRouteImport } from './routes/animacoes'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
 import { Route as AtlasJuridicoRouteImport } from './routes/atlas-juridico'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudiobooksRouteImport } from './routes/audiobooks'
+import { Route as AudioleisRouteImport } from './routes/audioleis'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -226,6 +228,11 @@ const AdminRotasRoute = AdminRotasRouteImport.update({
   path: '/admin-rotas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnimacoesRoute = AnimacoesRouteImport.update({
+  id: '/animacoes',
+  path: '/animacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AssinaturaRoute = AssinaturaRouteImport.update({
   id: '/assinatura',
   path: '/assinatura',
@@ -249,6 +256,11 @@ const AudioaulasRoute = AudioaulasRouteImport.update({
 const AudiobooksRoute = AudiobooksRouteImport.update({
   id: '/audiobooks',
   path: '/audiobooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AudioleisRoute = AudioleisRouteImport.update({
+  id: '/audioleis',
+  path: '/audioleis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -982,11 +994,13 @@ export interface FileRoutesByFullPath {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
+  '/animacoes': typeof AnimacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
+  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1140,11 +1154,13 @@ export interface FileRoutesByTo {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
+  '/animacoes': typeof AnimacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
+  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1299,11 +1315,13 @@ export interface FileRoutesById {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
+  '/animacoes': typeof AnimacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atlas-juridico': typeof AtlasJuridicoRoute
   '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
+  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1459,11 +1477,13 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
+    | '/animacoes'
     | '/assinatura'
     | '/assistente-horus'
     | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
+    | '/audioleis'
     | '/auth'
     | '/bibliotecas'
     | '/blog'
@@ -1617,11 +1637,13 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
+    | '/animacoes'
     | '/assinatura'
     | '/assistente-horus'
     | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
+    | '/audioleis'
     | '/auth'
     | '/bibliotecas'
     | '/blog'
@@ -1775,11 +1797,13 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
+    | '/animacoes'
     | '/assinatura'
     | '/assistente-horus'
     | '/atlas-juridico'
     | '/audioaulas'
     | '/audiobooks'
+    | '/audioleis'
     | '/auth'
     | '/bibliotecas'
     | '/blog'
@@ -1934,11 +1958,13 @@ export interface RootRouteChildren {
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
+  AnimacoesRoute: typeof AnimacoesRoute
   AssinaturaRoute: typeof AssinaturaRoute
   AssistenteHorusRoute: typeof AssistenteHorusRoute
   AtlasJuridicoRoute: typeof AtlasJuridicoRoute
   AudioaulasRoute: typeof AudioaulasRoute
   AudiobooksRoute: typeof AudiobooksRoute
+  AudioleisRoute: typeof AudioleisRoute
   AuthRoute: typeof AuthRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
   BlogRoute: typeof BlogRoute
@@ -2080,6 +2106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRotasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/animacoes': {
+      id: '/animacoes'
+      path: '/animacoes'
+      fullPath: '/animacoes'
+      preLoaderRoute: typeof AnimacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/assinatura': {
       id: '/assinatura'
       path: '/assinatura'
@@ -2113,6 +2146,13 @@ declare module '@tanstack/react-router' {
       path: '/audiobooks'
       fullPath: '/audiobooks'
       preLoaderRoute: typeof AudiobooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audioleis': {
+      id: '/audioleis'
+      path: '/audioleis'
+      fullPath: '/audioleis'
+      preLoaderRoute: typeof AudioleisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -3580,11 +3620,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,
+  AnimacoesRoute: AnimacoesRoute,
   AssinaturaRoute: AssinaturaRoute,
   AssistenteHorusRoute: AssistenteHorusRoute,
   AtlasJuridicoRoute: AtlasJuridicoRoute,
   AudioaulasRoute: AudioaulasRoute,
   AudiobooksRoute: AudiobooksRoute,
+  AudioleisRoute: AudioleisRoute,
   AuthRoute: AuthRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
   BlogRoute: BlogRoute,
