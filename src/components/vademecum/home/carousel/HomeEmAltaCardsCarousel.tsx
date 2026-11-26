@@ -218,7 +218,6 @@ const HomeEmAltaCardsCarousel = () => {
     <section className="flex flex-col gap-2.5">
       <HomeSectionHeader
         title="EM ALTA"
-        subtitle="Principais recursos para seus estudos"
       />
 
       {/* Carrossel Infinito com Zoom no Card Central (otimizado para 120fps) */}

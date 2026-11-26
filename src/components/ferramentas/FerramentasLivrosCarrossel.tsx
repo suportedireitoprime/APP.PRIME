@@ -324,7 +324,6 @@ export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
     <section className="space-y-3">
       <HomeSectionHeader
         title="CLÁSSICOS DO DIREITO"
-        subtitle="Obras fundamentais e livros jurídicos"
         actionLabel="Ver todos"
         onAction={() => navigate('/bibliotecas/classicos')}
       />

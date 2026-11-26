@@ -81,7 +81,6 @@ const HomeTabEstudos = ({
           <div className="flex flex-col gap-3">
             <HomeSectionHeader
               title="INTELIGÊNCIA JURÍDICA"
-              subtitle="Ferramentas de inteligência artificial para seus estudos"
             />
 
             <div key="grid-estudos" className="grid grid-cols-2 gap-2.5 md:gap-4">

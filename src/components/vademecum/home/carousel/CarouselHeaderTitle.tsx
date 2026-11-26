@@ -12,7 +12,6 @@ const CarouselHeaderTitle = (_props: CarouselHeaderTitleProps) => {
   return (
     <HomeSectionHeader
       title="NOTÍCIAS"
-      subtitle="Atualizações jurídicas, OAB e concursos"
       actionLabel="Ver todas"
       onAction={() => navigate('/noticias')}
       className="mb-3.5 px-4 sm:px-6 md:px-8"
