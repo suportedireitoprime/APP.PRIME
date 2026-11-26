@@ -63,7 +63,9 @@ export function useHomeFeed() {
 
   const feed: FeedItem[] = useMemo(() => {
     const todayNoticias = noticias.filter((n) => isTodayNoticia(n.data_publicacao));
-    const selected = interleaveByFonte(todayNoticias, 12);
+    const pool = todayNoticias.length > 0 ? todayNoticias : noticias;
+    const interleaved = interleaveByFonte(pool, 12);
+    const selected = interleaved.length > 0 ? interleaved : pool.slice(0, 12);
     return selected.map((n) => ({
       kind: 'noticia' as const,
       id: `explorar-${n.id}`,

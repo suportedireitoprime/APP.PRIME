@@ -33,8 +33,6 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Sparkles,
 };
 
-const ITENS_INICIAIS = 10;
-
 const ITENS_INICIAIS = 8;
 
 export const AulasTrilhasCarousel: React.FC<AulasTrilhasCarouselProps> = React.memo(
