@@ -1,6 +1,5 @@
-import React, { useState, useEffect, startTransition } from 'react';
+import React, { useState, useEffect, startTransition, lazy, Suspense } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { App } from '@capacitor/app';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -19,7 +18,9 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { LegalSheet } from '@/components/auth/LegalSheet';
+const LegalSheet = lazy(() =>
+  import('@/components/auth/LegalSheet').then((m) => ({ default: m.LegalSheet })),
+);
 import { track } from '@/lib/analyticsEvents';
 import { toastErroAuth } from './authUtils';
 import { SocialButtons } from './SocialButtons';
@@ -91,18 +92,24 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
     };
 
     window.addEventListener('focus', resetLoaders);
+    let active = true;
     let appListener: { remove: () => void } | null = null;
     if (Capacitor.isNativePlatform()) {
-      App.addListener('appStateChange', ({ isActive }) => {
-        if (isActive) resetLoaders();
-      }).then(l => appListener = l);
+      import('@capacitor/app')
+        .then(({ App }) => App.addListener('appStateChange', ({ isActive }) => {
+          if (isActive) resetLoaders();
+        }))
+        .then((l) => {
+          if (!active) l.remove();
+          else appListener = l;
+        })
+        .catch(() => {});
     }
 
     return () => {
+      active = false;
       window.removeEventListener('focus', resetLoaders);
-      if (appListener) {
-        appListener.remove();
-      }
+      appListener?.remove();
     };
   }, []);
 
@@ -616,11 +623,15 @@ export const AuthDrawer: React.FC<AuthDrawerProps> = ({ mode, setMode, onClose }
       )}
       </AnimatePresence>
 
-      <LegalSheet
-        open={legalOpen !== null}
-        onOpenChange={(o) => !o && setLegalOpen(null)}
-        kind={legalOpen ?? 'privacidade'}
-      />
+      {legalOpen !== null && (
+        <Suspense fallback={null}>
+          <LegalSheet
+            open
+            onOpenChange={(o) => !o && setLegalOpen(null)}
+            kind={legalOpen}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

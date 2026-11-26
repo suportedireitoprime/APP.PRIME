@@ -1,4 +1,4 @@
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect, startTransition, lazy, Suspense } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, ArrowLeft } from 'lucide-react';
@@ -6,11 +6,34 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
-import { AuthAjudaSheet } from '@/components/auth/AuthAjudaSheet';
-import { AuthDrawer, type AuthMode } from '@/components/auth/AuthDrawer';
-import { AuthDesktopHero } from '@/components/auth/AuthDesktopHero';
-import { AuthMobileHero } from '@/components/auth/AuthMobileHero';
+import type { AuthMode } from '@/components/auth/AuthDrawer';
 import { GoogleOneTap } from '@/components/auth/GoogleOneTap';
+
+const AuthDesktopHero = lazy(() =>
+  import('@/components/auth/AuthDesktopHero').then((m) => ({ default: m.AuthDesktopHero })),
+);
+const AuthMobileHero = lazy(() =>
+  import('@/components/auth/AuthMobileHero').then((m) => ({ default: m.AuthMobileHero })),
+);
+const AuthDrawer = lazy(() =>
+  import('@/components/auth/AuthDrawer').then((m) => ({ default: m.AuthDrawer })),
+);
+const AuthAjudaSheet = lazy(() =>
+  import('@/components/auth/AuthAjudaSheet').then((m) => ({ default: m.AuthAjudaSheet })),
+);
+
+async function restoreNativeSession(rawSession: unknown): Promise<void> {
+  try {
+    const sessionObj = typeof rawSession === 'string' ? JSON.parse(rawSession) : rawSession;
+    const access_token = (sessionObj as { access_token?: string })?.access_token;
+    const refresh_token = (sessionObj as { refresh_token?: string })?.refresh_token;
+    if (access_token && refresh_token) {
+      await supabase.auth.setSession({ access_token, refresh_token });
+    }
+  } catch (e) {
+    console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+  }
+}
 
 const Auth = () => {
   const { user, loading } = useAuth();
@@ -20,129 +43,115 @@ const Auth = () => {
   const [drawerMode, setDrawerMode] = useState<AuthMode>(null);
   const [ajudaOpen, setAjudaOpen] = useState(false);
 
-  // Redireciona usuário autenticado via startTransition
+  // Redireciona usuário autenticado via startTransition com guard de unmount
   useEffect(() => {
-    if (!loading && user) {
-      const cacheKey = `onboarding_completed:${user.id}`;
-      const isCompleted = localStorage.getItem(cacheKey) === '1';
-      
-      if (isCompleted) {
-        startTransition(() => navigate('/', { replace: true }));
-      } else {
-        import('idb-keyval').then(({ get }) => {
-          get(cacheKey).then((val) => {
-             if (val === '1' || val === true) {
-               try { localStorage.setItem(cacheKey, '1'); } catch {}
-               startTransition(() => navigate('/', { replace: true }));
-             } else {
-               checkDbOnboarding();
-             }
-          }).catch(() => {
-             checkDbOnboarding();
-          });
-        }).catch(() => {
-           checkDbOnboarding();
-        });
+    if (loading || !user) return;
+    let cancelled = false;
+    const cacheKey = `onboarding_completed:${user.id}`;
 
-        async function checkDbOnboarding() {
-          try {
-            if (isAdminEmail(user?.email)) {
-              try { localStorage.setItem(cacheKey, '1'); } catch {}
-              import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
-              void supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user!.id);
-              startTransition(() => navigate('/', { replace: true }));
-              return;
-            }
-            const { data } = await supabase.from('profiles').select('onboarding_completed_at').eq('id', user!.id).maybeSingle();
-            if (data?.onboarding_completed_at) {
-              try { localStorage.setItem(cacheKey, '1'); } catch {}
-              import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
-              startTransition(() => navigate('/', { replace: true }));
-            } else {
-              startTransition(() => navigate('/onboarding', { replace: true }));
-            }
-          } catch (err) {
-            startTransition(() => navigate('/onboarding', { replace: true }));
-          }
-        }
+    const go = (path: '/' | '/onboarding') => {
+      if (!cancelled) {
+        startTransition(() => navigate(path, { replace: true }));
       }
+    };
+
+    const checkDbOnboarding = async () => {
+      try {
+        if (isAdminEmail(user.email)) {
+          try { localStorage.setItem(cacheKey, '1'); } catch {}
+          import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
+          void supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user.id);
+          go('/');
+          return;
+        }
+        const { data } = await supabase
+          .from('profiles')
+          .select('onboarding_completed_at')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (cancelled) return;
+        if (data?.onboarding_completed_at) {
+          try { localStorage.setItem(cacheKey, '1'); } catch {}
+          import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
+          go('/');
+        } else {
+          go('/onboarding');
+        }
+      } catch {
+        go('/onboarding');
+      }
+    };
+
+    if (localStorage.getItem(cacheKey) === '1') {
+      go('/');
+      return () => { cancelled = true; };
     }
+
+    import('idb-keyval')
+      .then(({ get }) => get(cacheKey))
+      .then((val) => {
+        if (cancelled) return;
+        if (val === '1' || val === true) {
+          try { localStorage.setItem(cacheKey, '1'); } catch {}
+          go('/');
+        } else {
+          void checkDbOnboarding();
+        }
+      })
+      .catch(() => {
+        void checkDbOnboarding();
+      });
+
+    return () => { cancelled = true; };
   }, [loading, user, navigate]);
 
   // Se for nativo (Android/iOS), registra listener para sucesso de autenticação nativa
   useEffect(() => {
-    if (Capacitor.isNativePlatform() && !user) {
-      let isSubscribed = true;
-      let authHandle: { remove: () => void } | null = null;
-      
-      import('@/plugins/NativeAuthPlugin')
-        .then(({ NativeAuth }) => {
-          NativeAuth.addListener('onAuthSuccess', async (data) => {
-            if (data?.session) {
-              try {
-                const sessionObj =
-                  typeof data.session === 'string' ? JSON.parse(data.session) : data.session;
-                if (sessionObj?.access_token && sessionObj?.refresh_token) {
-                  await supabase.auth.setSession({
-                    access_token: sessionObj.access_token,
-                    refresh_token: sessionObj.refresh_token,
-                  });
-                }
-              } catch (e) {
-                console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
-              }
-              startTransition(() => {
-                navigate('/', { replace: true });
-              });
-            }
+    if (!Capacitor.isNativePlatform() || user) return;
+    let isSubscribed = true;
+    let authHandle: { remove: () => void } | null = null;
+
+    import('@/plugins/NativeAuthPlugin')
+      .then(({ NativeAuth }) => {
+        if (!isSubscribed) return;
+        NativeAuth.addListener('onAuthSuccess', async (data) => {
+          if (!isSubscribed || !data?.session) return;
+          await restoreNativeSession(data.session);
+          if (isSubscribed) {
+            startTransition(() => navigate('/', { replace: true }));
+          }
+        })
+          .then((h) => {
+            if (!isSubscribed) h?.remove?.();
+            else authHandle = h;
           })
-            .then((h) => {
-              if (!isSubscribed) {
-                h?.remove?.();
-              } else {
-                authHandle = h;
+          .catch((err) => {
+            console.warn('[Auth] NativeAuth.addListener não disponível:', err);
+          });
+
+        const autoMode = (location.state as { autoOpenMode?: 'login' | 'signup' } | null)?.autoOpenMode;
+        if (autoMode) {
+          NativeAuth.openAuth({ mode: autoMode })
+            .then(async (res) => {
+              if (!isSubscribed || !res?.success || !res.session) return;
+              await restoreNativeSession(res.session);
+              if (isSubscribed) {
+                startTransition(() => navigate('/', { replace: true }));
               }
             })
             .catch((err) => {
-              console.warn('[Auth] NativeAuth.addListener não disponível:', err);
+              console.warn('[Auth] NativeAuth.openAuth não disponível:', err);
             });
+        }
+      })
+      .catch((err) => {
+        console.warn('[Auth] Falha ao carregar NativeAuthPlugin:', err);
+      });
 
-          const autoMode = (location.state as { autoOpenMode?: 'login' | 'signup' } | null)?.autoOpenMode;
-          if (autoMode) {
-            NativeAuth.openAuth({ mode: autoMode })
-              .then(async (res) => {
-                if (res?.success && res.session) {
-                  try {
-                    const sessionObj =
-                      typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
-                    if (sessionObj?.access_token && sessionObj?.refresh_token) {
-                      await supabase.auth.setSession({
-                        access_token: sessionObj.access_token,
-                        refresh_token: sessionObj.refresh_token,
-                      });
-                    }
-                  } catch (e) {
-                    console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
-                  }
-                  startTransition(() => {
-                    navigate('/', { replace: true });
-                  });
-                }
-              })
-              .catch((err) => {
-                console.warn('[Auth] NativeAuth.openAuth não disponível:', err);
-              });
-          }
-        })
-        .catch((err) => {
-          console.warn('[Auth] Falha ao carregar NativeAuthPlugin:', err);
-        });
-
-      return () => {
-        isSubscribed = false;
-        authHandle?.remove?.();
-      };
-    }
+    return () => {
+      isSubscribed = false;
+      authHandle?.remove?.();
+    };
   }, [navigate, user, location.state]);
 
   // Pré-aquece a Home/Dashboard apenas após o pico inicial de carregamento e Splash
@@ -174,14 +183,16 @@ const Auth = () => {
 
   return (
     <main className="min-h-dvh w-full relative flex flex-col bg-[#0d0f12] overflow-hidden">
-      {isDesktop ? (
-        <AuthDesktopHero />
-      ) : (
-        <AuthMobileHero
-          onOpenDrawer={setDrawerMode}
-          onOpenAjuda={() => setAjudaOpen(true)}
-        />
-      )}
+      <Suspense fallback={<div className="min-h-dvh w-full bg-[#0d0f12]" />}>
+        {isDesktop ? (
+          <AuthDesktopHero />
+        ) : (
+          <AuthMobileHero
+            onOpenDrawer={setDrawerMode}
+            onOpenAjuda={() => setAjudaOpen(true)}
+          />
+        )}
+      </Suspense>
 
       {/* Botão de voltar */}
       <button
@@ -203,13 +214,16 @@ const Auth = () => {
         <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
 
-      <AuthDrawer
-        mode={drawerMode}
-        setMode={setDrawerMode}
-        onClose={() => setDrawerMode(null)}
-      />
-
-      <AuthAjudaSheet open={ajudaOpen} onClose={() => setAjudaOpen(false)} />
+      <Suspense fallback={null}>
+        {drawerMode !== null && (
+          <AuthDrawer
+            mode={drawerMode}
+            setMode={setDrawerMode}
+            onClose={() => setDrawerMode(null)}
+          />
+        )}
+        {ajudaOpen && <AuthAjudaSheet open={ajudaOpen} onClose={() => setAjudaOpen(false)} />}
+      </Suspense>
 
       {!Capacitor.isNativePlatform() && <GoogleOneTap />}
     </main>
@@ -217,4 +231,3 @@ const Auth = () => {
 };
 
 export default Auth;
-
