@@ -12,7 +12,7 @@ export default function ChatJuridico() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-[#0D0D0D]">
       {/* Sempre aberto */}
       <AssistenteOverlay open={true} onClose={() => navigate('/')} />
     </div>

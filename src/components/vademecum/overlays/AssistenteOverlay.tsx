@@ -4,7 +4,6 @@ import { Loader2, Check, Square, ArrowDown } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { pdf, Document, Page, Text as PdfText } from '@react-pdf/renderer';
 import { track } from '@/lib/analyticsEvents';
 
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -16,7 +15,6 @@ import {
 import { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
-import { baixarBlob } from '@/lib/nativo';
 import { haptic } from '@/lib/nativeHaptics';
 import { Capacitor } from '@capacitor/core';
 import { takePhoto } from '@/lib/nativeCamera';
@@ -29,11 +27,11 @@ import {
   Session,
   ANALYZE_STEPS,
   pickSuggestions,
-  pdfStyles,
-  stripMd,
   loadSessions,
   saveSessions,
 } from './assistente/assistenteTypes';
+import { exportMessageToPdf } from './assistente/assistentePdfExport';
+import { processChatAttachmentFile } from './assistente/assistenteAttachments';
 import { AssistenteEmptyState } from './assistente/AssistenteEmptyState';
 import { AssistenteMessageItem } from './assistente/AssistenteMessageItem';
 import { AssistenteInputBar } from './assistente/AssistenteInputBar';
@@ -251,52 +249,15 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   };
 
   const handleFile = async (file: File) => {
-    if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const maxW = 1200;
-        const maxH = 1200;
-        let { width, height } = img;
-        if (width > maxW || height > maxH) {
-          if (width > height) {
-            height = Math.round((height * maxW) / width);
-            width = maxW;
-          } else {
-            width = Math.round((width * maxH) / height);
-            height = maxH;
-          }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        const base64String = dataUrl.split(',')[1];
-        setAttachment({ mime: 'image/jpeg', data: base64String, name: file.name });
-        setAttachOpen(false);
-        toast.success('Foto anexada com sucesso');
-      };
-      img.onerror = () => toast.error('Erro ao ler a imagem');
-      img.src = url;
-    } else if (file.type === 'application/pdf') {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          const base64String = result.split(',')[1];
-          setAttachment({ mime: 'application/pdf', data: base64String, name: file.name });
-          setAttachOpen(false);
-          toast.success('PDF anexado com sucesso');
-        }
-      };
-      reader.onerror = () => toast.error('Erro ao ler o PDF');
-      reader.readAsDataURL(file);
-    } else {
-      toast.error('Apenas imagens e PDFs são suportados');
+    try {
+      const processed = await processChatAttachmentFile(file);
+      setAttachment(processed);
+      setAttachOpen(false);
+      toast.success(
+        processed.mime === 'application/pdf' ? 'PDF anexado com sucesso' : 'Foto anexada com sucesso',
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Erro ao processar arquivo');
     }
   };
 
@@ -618,27 +579,9 @@ DIRETRIZES FUNDAMENTAIS DE ESCRITA E PEDAGOGIA:
     track('chat_juridico_export_pdf', { message_length: msg.content.length });
     setGenOverlay({ kind: 'pdf', label: 'Gerando PDF' });
     try {
-      const doc = (
-        <Document>
-          <Page size="A4" style={pdfStyles.page}>
-            <PdfText style={pdfStyles.h}>Resposta do Chat</PdfText>
-            {stripMd(msg.content)
-              .split('\n')
-              .map((p, i) => (
-                <PdfText key={i} style={pdfStyles.p}>
-                  {p}
-                </PdfText>
-              ))}
-          </Page>
-        </Document>
-      );
-      const blob = await pdf(doc).toBlob();
-      await baixarBlob(blob, 'chat-juridico.pdf', {
-        titulo: 'Chat jurídico',
-        toastSucesso: false,
-      });
+      await exportMessageToPdf(msg);
       toast.success('PDF exportado');
-    } catch (e) {
+    } catch {
       toast.error('Erro no PDF');
     } finally {
       setGenOverlay(null);
