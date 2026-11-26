@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { getCurrentSessionUser } from '@/lib/authSessionCache';
 
 const ANONYMOUS_USER_KEY = 'aulas_trilhas_anon_user_id';
 const LOCAL_PROGRESSO_KEY = 'aulas_interativas_progresso_v1';
@@ -28,7 +29,7 @@ export interface AulaProgressoDb {
  */
 export async function getEffectiveUserId(): Promise<string> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentSessionUser();
     if (user?.id) {
       return user.id;
     }

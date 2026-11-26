@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import {
   ArrowLeft,
   Search,
@@ -20,9 +20,17 @@ import {
 } from '@/data/aulasTrilhasCronologicas';
 import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
 import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
-import { AulasRecentesModal } from './AulasRecentesModal';
-import { AulasEmAltaModal } from './AulasEmAltaModal';
-import { AulasTrilhasListaModal } from './AulasTrilhasListaModal';
+import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
+
+const AulasRecentesModal = lazy(() =>
+  import('./AulasRecentesModal').then((m) => ({ default: m.AulasRecentesModal })),
+);
+const AulasEmAltaModal = lazy(() =>
+  import('./AulasEmAltaModal').then((m) => ({ default: m.AulasEmAltaModal })),
+);
+const AulasTrilhasListaModal = lazy(() =>
+  import('./AulasTrilhasListaModal').then((m) => ({ default: m.AulasTrilhasListaModal })),
+);
 
 const NOMES_DISCIPLINA: Record<string, string> = {
   'DIREITO PENAL': 'Direito Penal',
@@ -324,28 +332,19 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
         {/* Grid Minimalista de Disciplinas (substitui o Coverflow 3D) */}
         <section className="space-y-3">
-          <div className="flex items-center justify-between gap-2 px-1">
-            <div>
-              <h2 className="font-display text-sm font-semibold text-white uppercase tracking-wider">
-                {faseAtiva ? `Áreas · Módulo ${faseAtiva.faseNumero}` : 'Áreas do Direito'}
-              </h2>
-              <p className="font-body text-xs text-white/45 mt-0.5">
-                {disciplinasExibidas.length} {disciplinasExibidas.length === 1 ? 'disciplina' : 'disciplinas'} disponíveis
-              </p>
-            </div>
-            {faseSelecionadaId && (
-              <button
-                type="button"
-                onClick={() => {
-                  try { haptic.selection(); } catch {}
-                  setFaseSelecionadaId(null);
-                }}
-                className="text-xs font-medium px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-white/15 cursor-pointer"
-              >
-                Ver todas ({disciplinasFiltradas.length})
-              </button>
-            )}
-          </div>
+          <HomeSectionHeader
+            title={faseAtiva ? `ÁREAS · MÓDULO ${faseAtiva.faseNumero}` : 'ÁREAS DO DIREITO'}
+            subtitle={`${disciplinasExibidas.length} ${disciplinasExibidas.length === 1 ? 'disciplina' : 'disciplinas'} disponíveis`}
+            actionLabel={faseSelecionadaId ? `Ver todas (${disciplinasFiltradas.length})` : undefined}
+            onAction={
+              faseSelecionadaId
+                ? () => {
+                    try { haptic.selection(); } catch {}
+                    setFaseSelecionadaId(null);
+                  }
+                : undefined
+            }
+          />
 
           {disciplinasExibidas.length === 0 ? (
             <div className="py-10 text-center rounded-2xl bg-zinc-900/60 border border-white/10 p-6">
@@ -421,62 +420,70 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         </section>
       </main>
 
-      <AulasRecentesModal
-        isOpen={recentesModalOpen}
-        onClose={() => setRecentesModalOpen(false)}
-        aulas={aulasCatalogo}
-        calcularProgressoCiclo={calcularProgressoCiclo}
-        onIniciarAula={handleIniciarAulaSegura}
-      />
+      <Suspense fallback={null}>
+        {recentesModalOpen && (
+          <AulasRecentesModal
+            isOpen={recentesModalOpen}
+            onClose={() => setRecentesModalOpen(false)}
+            aulas={aulasCatalogo}
+            calcularProgressoCiclo={calcularProgressoCiclo}
+            onIniciarAula={handleIniciarAulaSegura}
+          />
+        )}
 
-      <AulasEmAltaModal
-        isOpen={emAltaModalOpen}
-        onClose={() => setEmAltaModalOpen(false)}
-        aulas={aulasCatalogo}
-        onIniciarAula={handleIniciarAulaSegura}
-      />
+        {emAltaModalOpen && (
+          <AulasEmAltaModal
+            isOpen={emAltaModalOpen}
+            onClose={() => setEmAltaModalOpen(false)}
+            aulas={aulasCatalogo}
+            onIniciarAula={handleIniciarAulaSegura}
+          />
+        )}
 
-      <AulasTrilhasListaModal
-        isOpen={trilhasListaModalOpen}
-        onClose={() => {
-          setTrilhasListaModalOpen(false);
-          setModuloInicialAbertoId(null);
-        }}
-        disciplinas={disciplinasFiltradas}
-        aulas={aulasCatalogo}
-        faseSelecionadaId={faseSelecionadaId}
-        onSelectFase={setFaseSelecionadaId}
-        onIniciarAula={(item) => {
-          const aulaItemReal =
-            (aulasCatalogo && aulasCatalogo.find((a) => a.id === item.id)) ||
-            AULAS_CATALOGO_COMPLETO.find((a) => a.id === item.id);
-          if (aulaItemReal) {
-            handleIniciarAulaSegura(aulaItemReal);
-            return;
-          }
+        {trilhasListaModalOpen && (
+          <AulasTrilhasListaModal
+            isOpen={trilhasListaModalOpen}
+            onClose={() => {
+              setTrilhasListaModalOpen(false);
+              setModuloInicialAbertoId(null);
+            }}
+            disciplinas={disciplinasFiltradas}
+            aulas={aulasCatalogo}
+            faseSelecionadaId={faseSelecionadaId}
+            onSelectFase={setFaseSelecionadaId}
+            onIniciarAula={(item) => {
+              const aulaItemReal =
+                (aulasCatalogo && aulasCatalogo.find((a) => a.id === item.id)) ||
+                AULAS_CATALOGO_COMPLETO.find((a) => a.id === item.id);
+              if (aulaItemReal) {
+                handleIniciarAulaSegura(aulaItemReal);
+                return;
+              }
 
-          const modAula = item as TrilhaModuloAula;
-          const fullAula: AulaItem = {
-            id: modAula.id,
-            numeroAula: modAula.numeroAula || 'Aula 01',
-            titulo: modAula.titulo || modAula.aulaNumeroOuTitulo,
-            descricao: modAula.sobre || '',
-            slug: modAula.id,
-            etapas: modAula.etapas || 30,
-            audioQtd: 1,
-            imagensQtd: 1,
-            urlHtmlR2: modAula.urlHtmlR2 || '',
-            urlJsonR2: modAula.urlJsonR2,
-            capaUrl: modAula.capaUrl || '',
-            status: 'pronto',
-            disciplinaId: modAula.disciplinaId || 'penal',
-            materiaId: modAula.materiaId || 'mat-01',
-          };
-          handleIniciarAulaSegura(fullAula);
-        }}
-        moduloInicialId={moduloInicialAbertoId}
-        calcularProgressoCiclo={calcularProgressoCiclo}
-      />
+              const modAula = item as TrilhaModuloAula;
+              const fullAula: AulaItem = {
+                id: modAula.id,
+                numeroAula: modAula.numeroAula || 'Aula 01',
+                titulo: modAula.titulo || modAula.aulaNumeroOuTitulo,
+                descricao: modAula.sobre || '',
+                slug: modAula.id,
+                etapas: modAula.etapas || 30,
+                audioQtd: 1,
+                imagensQtd: 1,
+                urlHtmlR2: modAula.urlHtmlR2 || '',
+                urlJsonR2: modAula.urlJsonR2,
+                capaUrl: modAula.capaUrl || '',
+                status: 'pronto',
+                disciplinaId: modAula.disciplinaId || 'penal',
+                materiaId: modAula.materiaId || 'mat-01',
+              };
+              handleIniciarAulaSegura(fullAula);
+            }}
+            moduloInicialId={moduloInicialAbertoId}
+            calcularProgressoCiclo={calcularProgressoCiclo}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

@@ -8,13 +8,13 @@ import { assetUrl } from '@/lib/assetUrl';
 
 // Catálogo e Tipos
 import { DISCIPLINAS_CATALOGO, DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
-import { 
-  MATERIAS_CATALOGO_COMPLETO, 
+import {
+  MATERIAS_CATALOGO_COMPLETO,
   AULAS_CATALOGO_COMPLETO,
   MateriaItem,
-  AulaItem
+  AulaItem,
 } from '@/data/aulasInterativasCatalogoCompleto';
-import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
+import type { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 
 // Hooks Especializados
 import { useAulasProgresso } from '@/hooks/useAulasProgresso';
@@ -26,10 +26,16 @@ import { AulasTrilhaMateriaView } from '@/components/aulas-interativas/AulasTril
 import { AulasMateriaSheet } from '@/components/aulas-interativas/AulasMateriaSheet';
 import { AulasDetalheSheet } from '@/components/aulas-interativas/AulasDetalheSheet';
 
-// Abas Analíticas Secundárias
-import { AulasTabProgresso } from '@/components/aulas-interativas/AulasTabProgresso';
-import { AulasTabFavoritos } from '@/components/aulas-interativas/AulasTabFavoritos';
-import { AulasTabEstatisticas } from '@/components/aulas-interativas/AulasTabEstatisticas';
+// Code Splitting (Lazy Loading sob Demanda) para Abas Secundárias e Componentes Pesados
+const AulasTabProgresso = lazy(() =>
+  import('@/components/aulas-interativas/AulasTabProgresso').then(m => ({ default: m.AulasTabProgresso }))
+);
+const AulasTabFavoritos = lazy(() =>
+  import('@/components/aulas-interativas/AulasTabFavoritos').then(m => ({ default: m.AulasTabFavoritos }))
+);
+const AulasTabEstatisticas = lazy(() =>
+  import('@/components/aulas-interativas/AulasTabEstatisticas').then(m => ({ default: m.AulasTabEstatisticas }))
+);
 
 // Code Splitting (Lazy Loading sob Demanda) para Componentes Pesados
 const PlayerAulaNativo = lazy(() => 
@@ -62,6 +68,14 @@ export default function AdminAulasInterativas() {
   // Estados dos Modais Secundários
   const [modalFlashcardsAula, setModalFlashcardsAula] = useState<AulaItem | null>(null);
   const [modalQuestoesAula, setModalQuestoesAula] = useState<AulaItem | null>(null);
+  const [conteudoAulasMap, setConteudoAulasMap] = useState<typeof CONTEUDO_AULAS | null>(null);
+
+  useEffect(() => {
+    if ((!modalFlashcardsAula && !modalQuestoesAula) || conteudoAulasMap) return;
+    import('@/data/aulasInterativasConteudo')
+      .then((m) => setConteudoAulasMap(m.CONTEUDO_AULAS))
+      .catch(() => {});
+  }, [modalFlashcardsAula, modalQuestoesAula, conteudoAulasMap]);
   const [modalBloqueioAula, setModalBloqueioAula] = useState<{ aula: AulaItem; motivo: 'revisar' | 'praticar' } | null>(null);
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
   const [modoLivreTeste] = useState(false);
@@ -320,6 +334,7 @@ export default function AdminAulasInterativas() {
           )}
 
           {/* Abas Analíticas Secundárias */}
+          <Suspense fallback={<div className="min-h-[40vh]" />}>
           {abaAtiva === 'progresso' && (
             <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto my-2 px-2 pt-16">
               <AulasTabProgresso
@@ -375,6 +390,7 @@ export default function AdminAulasInterativas() {
               />
             </div>
           )}
+          </Suspense>
         </>
       )}
 
@@ -440,10 +456,10 @@ export default function AdminAulasInterativas() {
           MODAIS SECUNDÁRIOS COM LAZY LOADING
          ══════════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={null}>
-        {modalFlashcardsAula && CONTEUDO_AULAS[modalFlashcardsAula.id] && (
+        {modalFlashcardsAula && conteudoAulasMap?.[modalFlashcardsAula.id] && (
           <ModalRevisarFlashcards
             tituloAula={`${modalFlashcardsAula.numeroAula} · ${modalFlashcardsAula.titulo}`}
-            flashcards={CONTEUDO_AULAS[modalFlashcardsAula.id].flashcards}
+            flashcards={conteudoAulasMap[modalFlashcardsAula.id].flashcards}
             onFechar={() => setModalFlashcardsAula(null)}
             onConcluir={() => {
               concluirFlashcards(modalFlashcardsAula.id);
@@ -452,10 +468,10 @@ export default function AdminAulasInterativas() {
           />
         )}
 
-        {modalQuestoesAula && CONTEUDO_AULAS[modalQuestoesAula.id] && (
+        {modalQuestoesAula && conteudoAulasMap?.[modalQuestoesAula.id] && (
           <ModalPraticarQuestoes
             tituloAula={`${modalQuestoesAula.numeroAula} · ${modalQuestoesAula.titulo}`}
-            questoes={CONTEUDO_AULAS[modalQuestoesAula.id].questoes}
+            questoes={conteudoAulasMap[modalQuestoesAula.id].questoes}
             onFechar={() => setModalQuestoesAula(null)}
             onConcluir={() => {
               concluirQuestoes(modalQuestoesAula.id);
