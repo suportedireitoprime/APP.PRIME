@@ -203,7 +203,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             >
               {buscaAberta ? <X className="w-5 h-5" strokeWidth={1.8} /> : <Search className="w-5 h-5" strokeWidth={1.8} />}
             </button>
-          </header>
+          </div>
 
           {(buscaAberta || buscaTermo) && (
             <div className="relative">
@@ -243,10 +243,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
               <span className="text-[10.5px] font-medium truncate">
                 Recentes{totalEmAndamento > 0 ? ` (${totalEmAndamento})` : ''}
               </span>
-              <span className="font-serif italic text-[26px] sm:text-[30px] font-semibold text-rose-400 block drop-shadow-[0_2px_14px_rgba(225,29,72,0.65)] -mt-0.5">
-                em Trilha
-              </span>
-            </h1>
+            </button>
 
             <button
               type="button"
