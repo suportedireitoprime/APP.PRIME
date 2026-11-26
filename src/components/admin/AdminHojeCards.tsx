@@ -1,256 +1,32 @@
 // @ts-nocheck
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target, Repeat, AlertTriangle, X } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useCallback, useEffect, useState, useRef, lazy, Suspense } from 'react';
+import { Radio, UserPlus, Sparkles, Zap, DollarSign, Check, RefreshCw, Repeat } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { UserDossieSheet } from './UserDossieSheet';
-import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
+import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from '@/lib/precos';
 import { isAnualAntigo } from '@/hooks/useSubscription';
+import { isAdminEmail } from '@/lib/adminEmails';
+import type { CardId, CountsState, PeriodoId, Row, TotaisData } from './visao-geral/visaoGeralTypes';
+import {
+  getHojeBrasilia,
+  isoDate,
+  getBrasiliaDayRange,
+  sameDay,
+  hora,
+  readSeen,
+  writeSeen,
+} from './visao-geral/visaoGeralUtils';
+import { VisaoGeralFunilBar } from './visao-geral/VisaoGeralFunilBar';
 
-type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial' | 'renovou';
-type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
-
-const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
+const UserDossieSheet = lazy(() =>
+  import('./UserDossieSheet').then((m) => ({ default: m.UserDossieSheet })),
+);
+const VisaoGeralListaSheet = lazy(() => import('./visao-geral/VisaoGeralListaSheet'));
+const VisaoGeralTotaisSheet = lazy(() => import('./visao-geral/VisaoGeralTotaisSheet'));
 
 // Cache em memória para métricas de datas passadas (evita recalcular dias imutáveis no Postgres)
 const pastDaysMetricasCache = new Map<string, any>();
-
-interface Row {
-  key: string;
-  title: string;
-  subtitle?: string | null;
-  meta?: string | null;
-  userId?: string | null;
-  email?: string | null;
-  provider?: string | null;
-  acessos?: number | null;
-  tempo_tela?: number | null;
-  avatarUrl?: string | null;
-  isPremium?: boolean;
-  isAdmin?: boolean;
-  funcaoPreferida?: string | null;
-  planValue?: number;
-  planTag?: { plano: string, status: string, expires_at: string | null };
-  googleId?: string | null;
-  created_at?: string | null;
-  faixaEtaria?: string | null;
-  checkoutStatus?: 'pago' | 'recusado' | 'enviando' | 'etapa2_parou' | 'desistiu_inicio';
-  checkoutStatusLabel?: string;
-  checkoutDetalhes?: string;
-  logsCheckout?: {
-    event_name: string;
-    created_at: string;
-    erro?: string;
-    plano?: string;
-    payment_id?: string;
-    billingType?: string;
-    valor?: number;
-    pixStatus?: 'pago' | 'nao_pago' | 'pendente';
-    cep?: string;
-    cidade?: string;
-    uf?: string;
-  }[];
-}
-
-function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: string | null): string {
-  if (createdAt) {
-    const dataCad = new Date(createdAt);
-    if (!isNaN(dataCad.getTime())) {
-      const agora = new Date();
-      const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
-      const inicioCad = new Date(dataCad.getFullYear(), dataCad.getMonth(), dataCad.getDate());
-      const diffDias = Math.floor((inicioHoje.getTime() - inicioCad.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diffDias <= 0) return 'Cadastrado hoje';
-      if (diffDias === 1) return 'Cadastrado há 1 dia';
-      if (diffDias < 30) return `Cadastrado há ${diffDias} dias`;
-      const meses = Math.floor(diffDias / 30);
-      if (meses === 1) return 'Cadastrado há 1 mês';
-      if (meses < 12) return `Cadastrado há ${meses} meses`;
-      const anos = (diffDias / 365).toFixed(1).replace('.0', '');
-      return `Cadastrado há ${anos} ${anos === '1' ? 'ano' : 'anos'}`;
-    }
-  }
-  if (fallbackSubtitle && fallbackSubtitle !== 'Desconhecida' && fallbackSubtitle !== 'App aberto') {
-    return fallbackSubtitle;
-  }
-  return 'Cadastrado recentemente';
-}
-
-function renderTrialCountdown(createdAt?: string | null, isPremium?: boolean) {
-  if (isPremium) {
-    return (
-      <span className="inline-flex items-center rounded bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-[1px] text-[9.5px] font-bold text-emerald-400">
-        ASSINANTE ATIVO
-      </span>
-    );
-  }
-
-  if (!createdAt) return <>{formatTempoCadastro(createdAt, null)}</>;
-  
-  const dataCad = new Date(createdAt);
-  if (isNaN(dataCad.getTime())) return <>{formatTempoCadastro(createdAt, null)}</>;
-  
-  // 3 dias de acesso liberado
-  const expiresAt = new Date(dataCad.getTime() + 3 * 24 * 60 * 60 * 1000);
-  const now = new Date();
-  const diffMs = expiresAt.getTime() - now.getTime();
-  
-  if (diffMs <= 0) {
-    return (
-      <span className="inline-flex items-center rounded bg-rose-500/10 border border-rose-500/20 px-1.5 py-[1px] text-[9.5px] font-bold text-rose-400">
-        ACESSO EXPIRADO
-      </span>
-    );
-  }
-  
-  const totalMinutes = Math.floor(diffMs / (1000 * 60));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  
-  return (
-    <span className="inline-flex items-center gap-1 text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 rounded px-1.5 py-[1px] text-[9.5px]">
-      <Timer className="w-2.5 h-2.5" />
-      {hours}h {minutes}m restantes
-    </span>
-  );
-}
-
-function formatStatusPt(status?: string | null): string {
-  if (!status) return 'ATIVO';
-  const s = status.toLowerCase();
-  if (s === 'active' || s === 'ativo') return 'ATIVO';
-  if (s.includes('cancel')) return 'CANCELADO';
-  if (s.includes('pend')) return 'PENDENTE';
-  if (s.includes('overdue') || s.includes('atras')) return 'ATRASADO';
-  if (s.includes('trial')) return 'TESTE';
-  if (s.includes('expir')) return 'EXPIRADO';
-  return status.replace(/^subscription_state_/i, '').toUpperCase();
-}
-
-function formatPlanoTag(plano?: string | null): string {
-  if (!plano) return '';
-  const p = plano.toLowerCase();
-  if (p.includes('anual') && (p.includes('promo') || p.includes('promocional'))) {
-    return 'ANUAL PROMO';
-  }
-  if (p.includes('vital') || p === 'vitalicio') {
-    return 'VITALÍCIO';
-  }
-  if (p.includes('anual')) {
-    return 'ANUAL';
-  }
-  if (p.includes('mensal')) {
-    return 'MENSAL';
-  }
-  return plano.toUpperCase();
-}
-
-const ProviderTag = ({ provider }: { provider?: string | null }) => {
-  if (!provider) return null;
-  const p = provider.toLowerCase();
-  const cfg = p.includes('google')
-    ? {
-        label: 'Google',
-        node: <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>,
-        bg: 'bg-[hsl(var(--provider-google))]',
-        fg: 'text-[hsl(var(--provider-google-foreground))]',
-        border: 'border-[hsl(var(--provider-google))]/30',
-      }
-    : p.includes('apple')
-      ? {
-          label: 'Apple',
-          node: <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.43.987 3.96.948 1.565-.027 2.613-1.508 3.611-2.973 1.157-1.69 1.636-3.327 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702z"/></svg>,
-          bg: 'bg-[hsl(var(--provider-apple))]',
-          fg: 'text-[hsl(var(--provider-apple-foreground))]',
-          border: 'border-[hsl(var(--provider-apple))]/30',
-        }
-      : {
-          label: 'E-mail',
-          node: <Mail className="w-3 h-3" />,
-          bg: 'bg-[hsl(var(--provider-email))]',
-          fg: 'text-[hsl(var(--provider-email-foreground))]',
-          border: 'border-[hsl(var(--provider-email))]/30',
-        };
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2 py-[2px] font-body text-[10px] shrink-0',
-        cfg.bg,
-        cfg.fg,
-        cfg.border,
-      )}
-    >
-      {cfg.node}
-      {cfg.label}
-    </span>
-  );
-};
-
-const getHojeBrasilia = (): Date => {
-  const spStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-  const [mes, dia, ano] = spStr.split('/');
-  return new Date(Number(ano), Number(mes) - 1, Number(dia));
-};
-
-const isoDate = (d: Date) => {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-};
-
-const getBrasiliaDayRange = (datas: Date[]) => {
-  const dataMin = datas[datas.length - 1];
-  const dataMax = datas[0];
-  const isoMin = isoDate(dataMin);
-  const isoMax = isoDate(dataMax);
-  const startIso = new Date(`${isoMin}T00:00:00-03:00`).toISOString();
-  const nextDay = new Date(`${isoMax}T00:00:00-03:00`);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const endIso = nextDay.toISOString();
-  return { startIso, endIso };
-};
-
-const dayRange = (d: Date) => {
-  const iso = isoDate(d);
-  const startIso = new Date(`${iso}T00:00:00-03:00`).toISOString();
-  const nextDay = new Date(`${iso}T00:00:00-03:00`);
-  nextDay.setDate(nextDay.getDate() + 1);
-  return { start: startIso, end: nextDay.toISOString() };
-};
-
-const sameDay = (a: Date, b: Date) => isoDate(a) === isoDate(b);
-
-const hora = (v?: string | null) =>
-  v ? new Date(v).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }) : '';
-
-const DIAS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-
-type Seen = { count: number; keys: string[] };
-
-const seenStorageKey = (id: CardId, d: Date) => `admin_hoje_seen_${id}_${isoDate(d)}`;
-
-const readSeen = (id: CardId, d: Date): Seen => {
-  try {
-    const raw = localStorage.getItem(seenStorageKey(id, d));
-    if (!raw) return { count: 0, keys: [] };
-    const parsed = JSON.parse(raw);
-    return { count: parsed.count || 0, keys: Array.isArray(parsed.keys) ? parsed.keys : [] };
-  } catch {
-    return { count: 0, keys: [] };
-  }
-};
-
-const writeSeen = (id: CardId, d: Date, seen: Seen) => {
-  try {
-    localStorage.setItem(seenStorageKey(id, d), JSON.stringify(seen));
-  } catch {
-    /* ignore */
-  }
-};
 
 export function AdminHojeCards() {
   const [counts, setCounts] = useState<Record<CardId | 'trialValor' | 'renovouValor' | 'checkoutPago' | 'checkoutRecusado' | 'checkoutEtapa2' | 'checkoutDesistiu', number>>(() => {
@@ -389,7 +165,7 @@ export function AdminHojeCards() {
 
     const isAdminUser = (uid?: string | null, em?: string | null) => {
       const cleanEm = (em || '').toLowerCase().trim();
-      if (cleanEm && ADMIN_EMAILS.includes(cleanEm)) return true;
+      if (isAdminEmail(cleanEm)) return true;
       if (currentUserEmail && cleanEm === currentUserEmail) return true;
       if (currentUserId && uid === currentUserId) return true;
       return false;
@@ -994,62 +770,6 @@ export function AdminHojeCards() {
     };
   }, [load]);
 
-  // Supabase Realtime: atualiza dashboard instantaneamente em novos cadastros e assinaturas
-  useEffect(() => {
-    if (periodo !== 'hoje') return;
-
-    let debounceTimer: NodeJS.Timeout | null = null;
-    const triggerDebouncedLoad = () => {
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        void load();
-      }, 2000);
-    };
-
-    const channel = supabase
-      .channel('admin-dashboard-realtime')
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'profiles' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'legacy_subscribers' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'play_subscriptions' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: '*', schema: 'public', table: 'apple_subscriptions' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: '*', schema: 'public', table: 'asaas_subscriptions' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'app_events' },
-        triggerDebouncedLoad
-      )
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          triggerDebouncedLoad();
-        }
-      });
-
-    return () => {
-      if (debounceTimer) clearTimeout(debounceTimer);
-      void supabase.removeChannel(channel);
-    };
-  }, [periodo, load]);
-
   const fetchRows = useCallback(async (id: CardId, date: Date) => {
     // If we have cached rows for this id and period is 'hoje', show them instantly
     if (rowsCache.current[id] && periodo === 'hoje') {
@@ -1067,7 +787,7 @@ export function AdminHojeCards() {
 
       const isAdminUser = (uid?: string | null, em?: string | null) => {
         const cleanEm = (em || '').toLowerCase().trim();
-        if (cleanEm && ADMIN_EMAILS.includes(cleanEm)) return true;
+        if (isAdminEmail(cleanEm)) return true;
         if (currentUserEmail && cleanEm === currentUserEmail) return true;
         if (currentUserId && uid === currentUserId) return true;
         return false;
@@ -2254,615 +1974,54 @@ export function AdminHojeCards() {
         {CARDS.slice(3).map(c => renderCardButton(c, true))}
       </div>
 
-      {/* Régua Visual do Funil de Conversão (Item 4) */}
-      <div className="flex items-center justify-between px-2.5 py-1.5 mb-2 rounded-xl bg-secondary/20 border border-border/40 backdrop-blur-sm text-[10px] sm:text-[11px]">
-        <div className="flex items-center gap-1.5 sm:gap-2 font-medium text-muted-foreground overflow-x-auto scrollbar-none py-0.5">
-          <span className="font-semibold text-zinc-400 shrink-0">Funil:</span>
-          
-          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
-            <span className="text-zinc-500">1.</span> {counts.paywall} telas
-          </span>
+      <VisaoGeralFunilBar counts={counts} />
 
-          <span className="text-zinc-600 shrink-0">➔</span>
+      <Suspense fallback={null}>
+        {open && (
+          <VisaoGeralListaSheet
+            open={open}
+            onClose={() => setOpen(null)}
+            rotuloPeriodo={rotuloPeriodo}
+            loading={loading}
+            rows={rows}
+            filteredRows={filteredRows}
+            novosKeys={novosKeys}
+            filtroCheckout={filtroCheckout}
+            setFiltroCheckout={setFiltroCheckout}
+            filtroUser={filtroUser}
+            setFiltroUser={setFiltroUser}
+            onOpenTotais={abrirTotais}
+            onSelectDossie={setDossie}
+          />
+        )}
 
-          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
-            <span className="text-zinc-500">2.</span> {counts.viu_planos} checkout
-            <span className={cn(
-              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
-              counts.paywall > 0 && counts.viu_planos > 0 ? "bg-sky-500/15 text-sky-400 border border-sky-500/30" : "text-zinc-600"
-            )}>
-              {counts.paywall > 0 ? `${((counts.viu_planos / counts.paywall) * 100).toFixed(1)}%` : '0%'}
-            </span>
-          </span>
+        {(totaisOpen || !!provOpen) && (
+          <VisaoGeralTotaisSheet
+            openCard={open}
+            totaisOpen={totaisOpen}
+            onTotaisOpenChange={setTotaisOpen}
+            totais={totais as TotaisData | null}
+            totaisLoading={totaisLoading}
+            onOpenProvider={abrirProvider}
+            provOpen={provOpen}
+            onCloseProv={() => setProvOpen(null)}
+            provRows={provRows}
+            provLoading={provLoading}
+            onSelectDossie={setDossie}
+          />
+        )}
 
-          <span className="text-zinc-600 shrink-0">➔</span>
-
-          <span className="text-foreground font-semibold flex items-center gap-1 shrink-0">
-            <span className="text-zinc-500">3.</span> {counts.trial} assinou
-            <span className={cn(
-              "px-1 py-0.5 rounded text-[8.5px] font-bold tabular-nums",
-              counts.viu_planos > 0 && counts.trial > 0 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "text-zinc-600"
-            )}>
-              {counts.viu_planos > 0 ? `${((counts.trial / counts.viu_planos) * 100).toFixed(1)}%` : '0%'}
-            </span>
-          </span>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-1 shrink-0 pl-2 border-l border-border/40 text-[10.5px]">
-          <span className="text-zinc-500">Conversão Geral:</span>
-          <span className={cn(
-            "font-extrabold tabular-nums",
-            counts.paywall > 0 && counts.trial > 0 ? "text-emerald-400" : "text-zinc-500"
-          )}>
-            {counts.paywall > 0 ? `${((counts.trial / counts.paywall) * 100).toFixed(1)}%` : '0.0%'}
-          </span>
-        </div>
-      </div>
-
-      {/* Detalhamento Analítico de Checkouts da Visão Geral */}
-      <div className="flex items-center justify-between px-2.5 py-1.5 mb-3 rounded-xl bg-secondary/15 border border-border/35 text-[10px] sm:text-[11px] flex-wrap gap-y-1">
-        <span className="text-muted-foreground font-medium flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-          <span className="font-semibold text-zinc-300">Status dos Checkouts:</span>
-        </span>
-        <div className="flex items-center gap-1.5 sm:gap-2 font-semibold flex-wrap">
-          <span className="text-emerald-400 flex items-center gap-1">
-            <span>{counts.checkoutPago}</span> <span className="font-normal text-zinc-400 text-[9.5px]">concluído{counts.checkoutPago === 1 ? '' : 's'}</span>
-          </span>
-          <span className="text-zinc-600">·</span>
-          {counts.checkoutRecusado > 0 ? (
-            <span className="text-rose-400 font-bold bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/30">
-              {counts.checkoutRecusado} RECUSADO{counts.checkoutRecusado === 1 ? '' : 'S'}
-            </span>
-          ) : (
-            <span className="text-zinc-400 text-[9.5px] font-normal">0 recusados</span>
-          )}
-          <span className="text-zinc-600">·</span>
-          <span className="text-amber-400/90 text-[9.5px] font-normal">
-            <strong className="font-semibold text-amber-400">{counts.checkoutEtapa2}</strong> parou etapa 2
-          </span>
-          <span className="text-zinc-600">·</span>
-          <span className="text-zinc-400 text-[9.5px] font-normal">
-            <strong className="font-semibold text-zinc-300">{counts.checkoutDesistiu}</strong> desistência inicial
-          </span>
-        </div>
-      </div>
-
-      <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
-          <SheetHeader className="px-4 pt-5 pb-3 border-b border-border/50 text-left">
-            <div className="flex items-start justify-between gap-3 pr-9">
-              <div className="min-w-0">
-                <SheetTitle className="font-display text-base font-bold text-foreground">
-                  {open ? `${titles[open]} · ${rotuloPeriodo}` : ''}
-                </SheetTitle>
-                <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">
-                  {loading ? 'Carregando…' : `${filteredRows.length} registro${filteredRows.length === 1 ? '' : 's'}`}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={abrirTotais}
-                className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 font-body text-[12px] font-semibold text-primary hover:bg-primary/20 active:bg-primary/30 transition-colors"
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                Totais
-              </button>
-            </div>
-
-            {open === 'viu_planos' && (
-              <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full gap-1 overflow-x-auto scrollbar-none">
-                {(['todos', 'pagos', 'recusados', 'abandonos'] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setFiltroCheckout(f)}
-                    className={cn(
-                      'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-lg transition-all whitespace-nowrap',
-                      filtroCheckout === f
-                        ? 'bg-background shadow-sm text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {f === 'todos' && `Todos (${rows.length})`}
-                    {f === 'pagos' && `Pagos (${rows.filter(r => r.checkoutStatus === 'pago').length})`}
-                    {f === 'recusados' && `Recusados (${rows.filter(r => r.checkoutStatus === 'recusado').length})`}
-                    {f === 'abandonos' && `Abandonos (${rows.filter(r => r.checkoutStatus === 'etapa2_parou' || r.checkoutStatus === 'desistiu_inicio').length})`}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {(open === 'online' || open === 'online5m') && (
-              <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
-                {(['gratuitos', 'assinantes', 'todos'] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setFiltroUser(t)}
-                    className={cn(
-                      'flex-1 text-[11.5px] font-semibold py-1.5 rounded-lg capitalize transition-all',
-                      filtroUser === t 
-                        ? 'bg-background shadow-sm text-foreground' 
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t === 'gratuitos' && `Gratuitos (${rows.filter(r => !r.isPremium && !r.isAdmin).length})`}
-                    {t === 'assinantes' && `Assinantes (${rows.filter(r => r.isPremium).length})`}
-                    {t === 'todos' && `Todos (${rows.length})`}
-                  </button>
-                ))}
-              </div>
-            )}
-          </SheetHeader>
-
-
-
-
-          <div className="p-3">
-            {loading ? (
-              <div className="flex justify-center py-10 text-muted-foreground">
-                <Loader2 className="w-5 h-5 animate-spin" />
-              </div>
-            ) : filteredRows.length === 0 ? (
-              <p className="font-body text-sm text-muted-foreground text-center py-10">
-                Nenhum registro encontrado.
-              </p>
-            ) : (
-              <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                {filteredRows.map((r) => (
-                  <button
-                    key={r.key}
-                    type="button"
-                    onClick={() => r.userId && setDossie(r)}
-                    className={cn(
-                      'w-full text-left flex items-center gap-3 px-4 py-2.5 min-h-[76px] hover:bg-secondary/60 active:bg-secondary transition-colors',
-                      novosKeys.has(r.key) && 'bg-emerald-500/10',
-                    )}
-                  >
-                    {r.avatarUrl && r.avatarUrl !== 'null' ? (
-                      <div className="relative shrink-0 w-9 h-9 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
-                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
-                        <img src={r.avatarUrl} alt={r.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                      </div>
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="font-body text-sm font-semibold text-foreground truncate">{r.title}</div>
-                        {r.isPremium && (
-                          <Crown className="w-4 h-4 text-[#FFD700] fill-[#FFD700] drop-shadow-md shrink-0" />
-                        )}
-                        {r.isAdmin && (
-                          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                            ADMIN
-                          </span>
-                        )}
-                        {typeof r.acessos === 'number' && r.acessos > 1 && (
-                          <span
-                            title={`${r.acessos} acessos no dia`}
-                            className="shrink-0 font-body text-[10.5px] font-bold text-rose-400"
-                          >
-                            {r.acessos}x
-                          </span>
-                        )}
-                        {typeof r.tempo_tela === 'number' && r.tempo_tela > 0 && (
-                          <span
-                            title="Tempo de tela"
-                            className="shrink-0 font-body text-[10.5px] font-bold text-emerald-500"
-                          >
-                            · {formatarDuracao(r.tempo_tela)}
-                          </span>
-                        )}
-                        {novosKeys.has(r.key) && (
-                          <span className="shrink-0 rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[1px] font-body text-[9.5px] font-bold text-emerald-400">
-                            NOVO
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-0.5 mt-0.5">
-                        {r.email ? (
-                          <div className="font-body text-xs text-muted-foreground/90 truncate">
-                            {r.email}
-                          </div>
-                        ) : (
-                          <div className="font-body text-xs text-muted-foreground/40 italic truncate">
-                            {r.subtitle || 'Usuário'}
-                          </div>
-                        )}
-                        {/* Linha unificada e fixa de Status / Assinatura (Zero Layout Shift) */}
-                        <div className="flex items-center gap-1.5 flex-wrap mt-0.5 min-h-[20px]">
-                          {r.planTag ? (
-                            <>
-                              <span 
-                                className="shrink-0 inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9px] font-bold text-foreground"
-                                title={r.planTag.plano}
-                              >
-                                {formatPlanoTag(r.planTag.plano)}
-                              </span>
-                              <span className="shrink-0 inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-400">
-                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(r.planValue || 0)}
-                              </span>
-                              <span className={cn(
-                                "shrink-0 inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9px] font-bold",
-                                r.planTag.status?.toLowerCase() === 'ativo' || r.planTag.status?.toLowerCase() === 'active'
-                                  ? 'bg-secondary/60 border-border/50 text-emerald-400'
-                                  : r.planTag.status?.toLowerCase() === 'cancelado' || r.planTag.status?.toLowerCase().includes('expir')
-                                  ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
-                                  : 'bg-secondary/50 border-border/50 text-muted-foreground'
-                              )}>
-                                {formatStatusPt(r.planTag.status)}
-                              </span>
-                              {r.planTag.expires_at && (
-                                <span className="shrink-0 inline-flex items-center text-[9.5px] font-medium text-muted-foreground opacity-80 truncate" title={`Expira em: ${r.planTag.expires_at}`}>
-                                  Até {r.planTag.expires_at}
-                                </span>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {(open === 'online' || open === 'online5m') ? (
-                                renderTrialCountdown(r.created_at, (r as any).isPremium ?? r.is_premium)
-                              ) : (
-                                formatTempoCadastro(r.created_at, null)
-                              )}
-                            </>
-                          )}
-                          {r.faixaEtaria && (
-                            <span className="text-[10px] text-muted-foreground/60 truncate">
-                              · {r.faixaEtaria}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Rota atual em posição estável */}
-                        {(open === 'online' || open === 'online5m') && r.subtitle && r.subtitle !== 'Desconhecida' && r.subtitle !== 'App aberto' && (
-                          <div className="font-body text-[10.5px] text-emerald-400 font-medium truncate mt-0.5">
-                            Em {r.subtitle}
-                          </div>
-                        )}
-
-                        {/* Ação Uso de Recursos sempre estável no rodapé */}
-                        {(open === 'online' || open === 'online5m') && (
-                          <div className="flex items-center gap-1.5 mt-1">
-                            <span
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-500/15 border border-purple-500/30 text-[9.5px] font-semibold text-purple-300 hover:bg-purple-500/25 transition-colors"
-                              title="Clique para ver o dossiê e o status detalhado de uso"
-                            >
-                              <Target className="w-2.5 h-2.5 text-purple-400" />
-                              Uso de Recursos
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Se for modal de Checkout, exibe badge detalhado de status */}
-                        {open === 'viu_planos' && (
-                          <div className="flex flex-col gap-1 mt-1.5">
-                            {r.checkoutStatus === 'pago' && (
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-black text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.25)]">
-                                  <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
-                                  PAGAMENTO CONFIRMADO
-                                </span>
-                                {r.checkoutDetalhes && (
-                                  <span className="text-[10px] font-bold text-emerald-400">
-                                    · {r.checkoutDetalhes}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-
-                            {r.checkoutStatus === 'recusado' && (
-                              <div className="flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 text-[10px] font-black text-rose-300 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.3)]">
-                                    <AlertTriangle className="w-3 h-3 text-rose-400" />
-                                    PAGAMENTO RECUSADO PELO BANCO
-                                  </span>
-                                </div>
-                                {r.checkoutDetalhes && (
-                                  <p className="text-[10px] font-medium text-rose-400/90 leading-tight">
-                                    Motivo: {r.checkoutDetalhes}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-
-                            {r.checkoutStatus === 'enviando' && (
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                                  <Timer className="w-3 h-3 text-amber-400" />
-                                  PIX GERADO / AGUARDANDO PAGAMENTO
-                                </span>
-                              </div>
-                            )}
-
-                            {r.checkoutStatus === 'etapa2_parou' && (
-                              <div className="flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-400">
-                                    <Timer className="w-3 h-3 text-amber-400" />
-                                    PAROU NA ETAPA 2 (DADOS PREENCHIDOS)
-                                  </span>
-                                  {r.checkoutDetalhes && (
-                                    <span className="text-[9.5px] font-semibold text-amber-300">
-                                      · {r.checkoutDetalhes}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-[9.5px] text-zinc-400 leading-tight">
-                                  Preencheu os dados de cadastro, mas não enviou pagamento (cartão ou PIX).
-                                </p>
-                              </div>
-                            )}
-
-                            {r.checkoutStatus === 'desistiu_inicio' && (
-                              <div className="flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="inline-flex items-center gap-1 rounded-md bg-zinc-800/90 border border-zinc-700/80 px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
-                                    <X className="w-3 h-3 text-zinc-500" />
-                                    DESISTÊNCIA INICIAL (NÃO PREENCHEU)
-                                  </span>
-                                </div>
-                                <p className="text-[9.5px] text-zinc-500 leading-tight">
-                                  Abriu a tela de checkout e voltou sem preencher o formulário.
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {r.logsCheckout && r.logsCheckout.length > 0 && (
-                          <div className="mt-2 space-y-1.5">
-                             {r.logsCheckout.map((log, idx) => {
-                               const isPixGerado = log.event_name === 'checkout_pix_gerado';
-                               const isPixPago = log.event_name === 'checkout_pix_pago' || (isPixGerado && log.pixStatus === 'pago');
-                               const isPixNaoPago = isPixGerado && log.pixStatus === 'nao_pago';
-                               const isPixPendente = isPixGerado && (log.pixStatus === 'pendente' || !log.pixStatus);
-
-                               return (
-                                 <div key={idx} className="flex items-center gap-1.5 text-[10px]">
-                                   <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
-
-                                   {log.event_name === 'begin_checkout' && (
-                                     <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1 rounded uppercase font-bold text-[9px]">
-                                       CHECKOUT INICIADO
-                                     </span>
-                                   )}
-
-                                   {log.event_name === 'checkout_etapa1_concluida' && (
-                                     <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1 rounded uppercase font-bold text-[9px]">
-                                       ETAPA 1 CONCLUÍDA {log.cidade ? `(${log.cidade}/${log.uf})` : ''}
-                                     </span>
-                                   )}
-
-                                   {isPixPago && (
-                                     <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-black uppercase text-[9px] shadow-[0_0_8px_rgba(16,185,129,0.25)] flex items-center gap-1">
-                                       <span>PIX PAGO</span>
-                                       <span>✓</span>
-                                     </span>
-                                   )}
-
-                                   {isPixNaoPago && (
-                                     <span className="bg-zinc-800/80 text-zinc-400 border border-zinc-700/60 px-1.5 py-0.5 rounded uppercase font-semibold text-[9px] opacity-75">
-                                       PIX NÃO PAGO
-                                     </span>
-                                   )}
-
-                                   {isPixPendente && !isPixPago && (
-                                     <span className="bg-amber-500/10 text-amber-400 border border-amber-500/25 px-1.5 py-0.5 rounded uppercase font-bold text-[9px]">
-                                       PIX PENDENTE
-                                     </span>
-                                   )}
-
-                                   {log.event_name === 'checkout_cc_enviado' && (
-                                     <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1 rounded uppercase font-bold text-[9px]">
-                                       CC ENVIADO
-                                     </span>
-                                   )}
-
-                                   {log.event_name === 'checkout_cc_recusado' && (
-                                     <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1 rounded uppercase font-bold text-[9px]">
-                                       CC RECUSADO
-                                     </span>
-                                   )}
-
-                                   {log.event_name === 'checkout_cc_aprovado' && (
-                                     <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded uppercase font-black text-[9px] shadow-[0_0_8px_rgba(16,185,129,0.25)] flex items-center gap-1">
-                                       <span>CC APROVADO</span>
-                                       <span>✓</span>
-                                     </span>
-                                   )}
-
-                                   {log.plano && <span className="text-muted-foreground ml-1">({log.plano.replace('_', ' ')})</span>}
-                                   {log.erro && <span className="text-rose-400 ml-1 truncate max-w-[120px]" title={log.erro}>- {log.erro}</span>}
-                                 </div>
-                               );
-                             })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="shrink-0 flex flex-col items-end justify-center gap-1 text-right min-w-[65px]">
-                      <ProviderTag provider={r.provider} />
-                      {r.meta && (
-                        <span className="font-body text-[10.5px] font-medium text-muted-foreground/80">
-                          {r.meta}
-                        </span>
-                      )}
-                      {r.googleId && (
-                        <div className="text-[9px] opacity-70 uppercase" title="Google Subscription ID / Token">
-                          {r.googleId.slice(0, 15)}...
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
-
-              </div>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={totaisOpen} onOpenChange={setTotaisOpen}>
-        <SheetContent side="bottom" className="rounded-t-2xl h-[92vh] max-h-[92vh] overflow-y-auto p-0 bg-background border-border">
-          <SheetHeader className="px-4 pt-5 pb-3 border-b border-border/50 text-left">
-            <SheetTitle className="font-display text-base font-bold text-foreground">
-              {open ? `Totais · ${titles[open]}` : 'Totais'}
-            </SheetTitle>
-            <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">Métricas gerais acumuladas</p>
-          </SheetHeader>
-
-          <div className="p-3 space-y-3">
-            {totaisLoading || !totais ? (
-              <div className="flex justify-center py-12 text-muted-foreground">
-                <Loader2 className="w-5 h-5 animate-spin" />
-              </div>
-            ) : totais.error ? (
-              <p className="font-body text-sm text-muted-foreground text-center py-10">Acesso restrito a administradores.</p>
-            ) : (
-              <>
-                <div className="rounded-2xl border border-primary/40 bg-primary/10 px-4 py-5 text-center">
-                  <div className="font-display text-4xl font-bold text-primary leading-none">{totais.total ?? 0}</div>
-                  <div className="font-body text-[12px] text-muted-foreground mt-1.5">Total acumulado</div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { l: 'Hoje', v: totais.hoje },
-                    { l: '7 dias', v: totais.d7 },
-                    { l: '30 dias', v: totais.d30 },
-                  ].map((x) => (
-                    <div key={x.l} className="rounded-2xl border border-border/60 bg-secondary/30 px-3 py-3 text-center">
-                      <div className="font-display text-xl font-bold text-foreground leading-none">{x.v ?? 0}</div>
-                      <div className="font-body text-[11px] text-muted-foreground mt-1">{x.l}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
-                  <div className="font-body text-[13px] font-semibold text-foreground mb-3">Origem da conta</div>
-                  <div className="space-y-2.5">
-                    {(['google', 'apple', 'email'] as const).map((p) => {
-                      const v = Number(totais.providers?.[p] || 0);
-                      const tot = Math.max(1, Number(totais.total || 1));
-                      const pct = Math.round((v / tot) * 100);
-                      return (
-                        <button
-                          key={p}
-                          type="button"
-                          onClick={() => abrirProvider(p)}
-                          className="w-full text-left rounded-xl px-1 py-1 hover:bg-secondary/60 active:bg-secondary transition-colors"
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <ProviderTag provider={p} />
-                            <span className="font-body text-[12.5px] text-foreground inline-flex items-center gap-1">
-                              {v} <span className="text-muted-foreground">({pct}%)</span>
-                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-                            </span>
-                          </div>
-                          <div className="h-1.5 rounded-full bg-border/60 overflow-hidden">
-                            <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { l: 'Premium', v: totais.premium },
-                    { l: 'Com número', v: totais.com_telefone },
-                    { l: 'Onboarding', v: totais.onboarding },
-                  ].map((x) => (
-                    <div key={x.l} className="rounded-2xl border border-border/60 bg-secondary/30 px-3 py-3 text-center">
-                      <div className="font-display text-xl font-bold text-foreground leading-none">{x.v ?? 0}</div>
-                      <div className="font-body text-[11px] text-muted-foreground mt-1">{x.l}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {Array.isArray(totais.paises) && totais.paises.length > 0 && (
-                  <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                    <div className="px-4 py-3 font-body text-[13px] font-semibold text-foreground">Países</div>
-                    {totais.paises.map((p: any) => (
-                      <div key={p.pais} className="flex items-center justify-between px-4 py-2.5">
-                        <span className="font-body text-[13px] text-foreground truncate">{p.pais}</span>
-                        <span className="font-body text-[13px] text-muted-foreground">{p.total}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={!!provOpen} onOpenChange={(v) => !v && setProvOpen(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
-          <SheetHeader className="px-4 pt-5 pb-3 border-b border-border/50 text-left">
-            <SheetTitle className="font-display text-base font-bold text-foreground">
-              Contas · {provOpen === 'google' ? 'Google' : provOpen === 'apple' ? 'Apple' : 'E-mail'}
-            </SheetTitle>
-            <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">
-              {provLoading ? 'Carregando…' : `${provRows.length} usuário${provRows.length === 1 ? '' : 's'}`}
-            </p>
-          </SheetHeader>
-          <div className="p-3">
-            {provLoading ? (
-              <div className="flex justify-center py-10 text-muted-foreground">
-                <Loader2 className="w-5 h-5 animate-spin" />
-              </div>
-            ) : provRows.length === 0 ? (
-              <p className="font-body text-sm text-muted-foreground text-center py-10">Nenhum usuário.</p>
-            ) : (
-              <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                {provRows.map((r) => (
-                  <button
-                    key={r.key}
-                    type="button"
-                    onClick={() => setDossie(r)}
-                    className="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 active:bg-secondary transition-colors"
-                  >
-                    {r.avatarUrl && r.avatarUrl !== 'null' ? (
-                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
-                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
-                        <img src={r.avatarUrl} alt={r.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-body text-sm font-semibold text-foreground truncate">{r.title}</div>
-                      {r.subtitle && (
-                        <div className="font-body text-[11px] text-muted-foreground truncate">{r.subtitle}</div>
-                      )}
-                    </div>
-                    <ProviderTag provider={r.provider} />
-                    <div className="font-body text-[11px] text-muted-foreground shrink-0">{r.meta}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-
-      <UserDossieSheet
-        userId={dossie?.userId || null}
-        nome={dossie?.title}
-        email={dossie?.email}
-        provider={dossie?.provider}
-        avatarUrl={dossie?.avatarUrl}
-        onClose={() => setDossie(null)}
-      />
+        {dossie && (
+          <UserDossieSheet
+            userId={dossie.userId || null}
+            nome={dossie.title}
+            email={dossie.email}
+            provider={dossie.provider}
+            avatarUrl={dossie.avatarUrl}
+            onClose={() => setDossie(null)}
+          />
+        )}
+      </Suspense>
     </>
   );
 }
