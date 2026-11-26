@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -59,138 +59,26 @@ import {
   AiFeatureDefinition,
   AiProviderType
 } from '@/services/aiGatewayService';
+import {
+  STORAGE_KEYS,
+  DEFAULT_BASE_URL,
+  DEFAULT_API_KEY,
+  normalizeEndpointUrl,
+  ANTIGRAVITY_TEXT_MODELS,
+  POPULAR_IMAGE_MODELS,
+  POPULAR_VISION_MODELS,
+  POPULAR_AUDIO_MODELS,
+  FEATURE_STYLES,
+  type AntigravityModelInfo,
+} from '@/components/admin/omniroute/omnirouteConfig';
+import { OmniRouteTextoTab } from '@/components/admin/omniroute/OmniRouteTextoTab';
 
-const STORAGE_KEYS = {
-  BASE_URL: 'omniroute_test_base_url',
-  API_KEY: 'omniroute_test_api_key',
-  LAST_MODEL: 'omniroute_test_model',
-};
+const OmniRouteImagemTab = lazy(() => import('@/components/admin/omniroute/OmniRouteImagemTab'));
+const OmniRouteVisaoTab = lazy(() => import('@/components/admin/omniroute/OmniRouteVisaoTab'));
+const OmniRouteAudioTab = lazy(() => import('@/components/admin/omniroute/OmniRouteAudioTab'));
 
-const DEFAULT_BASE_URL = 'http://147.224.236.150:20128/v1';
-const DEFAULT_API_KEY = 'sk-9d114c31bbf54179-6947cb-36742343';
-
-export const normalizeEndpointUrl = (url: string) => {
-  let u = (url || '').trim().replace(/\/+$/, '');
-  if (!u) return DEFAULT_BASE_URL;
-  if (!u.endsWith('/v1')) u += '/v1';
-  return u;
-};
-
-export interface AntigravityModelInfo {
-  id: string;
-  name: string;
-  group: 'Google Gemini' | 'Anthropic Claude' | 'OpenAI GPT' | 'Auto Roteado';
-}
-
-const ANTIGRAVITY_TEXT_MODELS: AntigravityModelInfo[] = [
-  { id: 'antigravity/gemini-3.8-flash-tiered', name: 'Gemini 3.8 Flash Tiered', group: 'Google Gemini' },
-];
-
-const POPULAR_IMAGE_MODELS = [
-  'antigravity/gemini-3.1-flash-image',
-];
-
-const POPULAR_VISION_MODELS = [
-  'antigravity/gemini-3.8-flash-tiered',
-];
-
-const POPULAR_AUDIO_MODELS = [
-  'antigravity/gemini-3.8-flash-tiered',
-  'whisper-1',
-];
-
-interface FeatureStyle {
-  iconBg: string;
-  iconBorder: string;
-  iconColor: string;
-  badgeBg: string;
-  badgeBorder: string;
-  badgeText: string;
-  accentHex: string;
-}
-
-const FEATURE_STYLES: Record<string, FeatureStyle> = {
-  // 1. Chat Jurídico / Me Explique / Mentor: Azul Tecnológico / Royal Blue
-  chat_juridico: {
-    iconBg: 'bg-[#3B82F6]/15',
-    iconBorder: 'border-[#3B82F6]/35',
-    iconColor: 'text-[#60A5FA]',
-    badgeBg: 'bg-[#3B82F6]/15',
-    badgeBorder: 'border-[#3B82F6]/30',
-    badgeText: 'text-[#93C5FD]',
-    accentHex: '#3B82F6',
-  },
-  // 2. Resumos Inteligentes & Sínteses: Laranja / Âmbar Quente
-  resumo_inteligente: {
-    iconBg: 'bg-[#F97316]/15',
-    iconBorder: 'border-[#F97316]/35',
-    iconColor: 'text-[#FB923C]',
-    badgeBg: 'bg-[#F97316]/15',
-    badgeBorder: 'border-[#F97316]/30',
-    badgeText: 'text-[#FDBA74]',
-    accentHex: '#F97316',
-  },
-  // 3. Visão Computacional & OCR de Documentos: Violeta / Roxo
-  visao_documentos: {
-    iconBg: 'bg-[#8B5CF6]/15',
-    iconBorder: 'border-[#8B5CF6]/35',
-    iconColor: 'text-[#A78BFA]',
-    badgeBg: 'bg-[#8B5CF6]/15',
-    badgeBorder: 'border-[#8B5CF6]/30',
-    badgeText: 'text-[#C4B5FD]',
-    accentHex: '#8B5CF6',
-  },
-  // 4. Transcrição de Áudio (Speech-to-Text): Esmeralda / Verde Neon
-  transcricao_audio: {
-    iconBg: 'bg-[#10B981]/15',
-    iconBorder: 'border-[#10B981]/35',
-    iconColor: 'text-[#34D399]',
-    badgeBg: 'bg-[#10B981]/15',
-    badgeBorder: 'border-[#10B981]/30',
-    badgeText: 'text-[#6EE7B7]',
-    accentHex: '#10B981',
-  },
-  // 5. Geração de Imagens & Capas Editoriais: Rosa / Magenta Vibrante
-  geracao_imagens: {
-    iconBg: 'bg-[#EC4899]/15',
-    iconBorder: 'border-[#EC4899]/35',
-    iconColor: 'text-[#F472B6]',
-    badgeBg: 'bg-[#EC4899]/15',
-    badgeBorder: 'border-[#EC4899]/30',
-    badgeText: 'text-[#F9A8D4]',
-    accentHex: '#EC4899',
-  },
-  // 6. Narração de Leis e Artigos (TTS): Ciano / Turquesa
-  narracao_vademecum: {
-    iconBg: 'bg-[#06B6D4]/15',
-    iconBorder: 'border-[#06B6D4]/35',
-    iconColor: 'text-[#22D3EE]',
-    badgeBg: 'bg-[#06B6D4]/15',
-    badgeBorder: 'border-[#06B6D4]/30',
-    badgeText: 'text-[#67E8F9]',
-    accentHex: '#06B6D4',
-  },
-  // 7. Horus WhatsApp: Verde Esmeralda (WhatsApp)
-  horus_whatsapp: {
-    iconBg: 'bg-[#22C55E]/15',
-    iconBorder: 'border-[#22C55E]/35',
-    iconColor: 'text-[#4ADE80]',
-    badgeBg: 'bg-[#22C55E]/15',
-    badgeBorder: 'border-[#22C55E]/30',
-    badgeText: 'text-[#86EFAC]',
-    accentHex: '#22C55E',
-  },
-  // 8. Ligação Live: Vermelho Rosa
-  ligacao_live: {
-    iconBg: 'bg-[#F43F5E]/15',
-    iconBorder: 'border-[#F43F5E]/35',
-    iconColor: 'text-[#FB7185]',
-    badgeBg: 'bg-[#F43F5E]/15',
-    badgeBorder: 'border-[#F43F5E]/30',
-    badgeText: 'text-[#FDA4AF]',
-    accentHex: '#F43F5E',
-  },
-};
+export { normalizeEndpointUrl };
+export type { AntigravityModelInfo };
 
 export default function AdminOmniRouteTeste() {
   const navigate = useNavigate();
@@ -1469,581 +1357,81 @@ export default function AdminOmniRouteTeste() {
 
         {/* TAB 1: TESTE DE TEXTO */}
         {mainTab === 'texto' && (
-          <div className="space-y-4">
-            <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
-              <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
-                      <Bot className="w-5 h-5 text-amber-400" />
-                      <span>Geração de Texto e Raciocínio (Chat)</span>
-                    </h2>
-                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
-                      Roteamento inteligente para Google Gemini / Antigravity com fallback automático
-                    </p>
-                  </div>
-
-                  {/* Seletor de Modelo */}
-                  <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10">
-                    <span className="text-xs text-white/60">Modelo:</span>
-                    <select
-                      value={textModel}
-                      onChange={(e) => {
-                        setTextModel(e.target.value);
-                        localStorage.setItem(STORAGE_KEYS.LAST_MODEL, e.target.value);
-                      }}
-                      className="bg-transparent text-xs text-amber-400 font-mono focus:outline-none cursor-pointer"
-                    >
-                      {ANTIGRAVITY_TEXT_MODELS.map((m) => (
-                        <option key={m.id} value={m.id} className="bg-zinc-900 text-white">
-                          {m.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4 px-4 sm:px-6 pb-6">
-                {/* Prompts Rápidos Sugeridos */}
-                <div className="flex flex-wrap gap-2 items-center">
-                  <span className="text-[11.5px] text-white/40 mr-1 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    Sugestões:
-                  </span>
-                  {[
-                    'Explicar HC para leigo',
-                    'Resumo Art. 121 CP',
-                    'Princípios Constitucionais',
-                    'Diferença dolo e culpa',
-                    'Recurso Especial vs Extraordinário',
-                  ].map((sug) => (
-                    <button
-                      key={sug}
-                      type="button"
-                      onClick={() => setTextPrompt(sug)}
-                      className="text-xs bg-white/5 hover:bg-white/10 active:opacity-70 border border-white/10 px-2.5 py-1.5 rounded-lg text-white/80 hover:text-white transition-all"
-                    >
-                      {sug}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Prompt do Sistema */}
-                <div className="space-y-1.5">
-                  <label className="text-xs text-white/60 font-medium">Instrução de Sistema (Opcional):</label>
-                  <Input
-                    value={textSystem}
-                    onChange={(e) => setTextSystem(e.target.value)}
-                    placeholder="Instruções de sistema..."
-                    className="bg-black/50 border-white/10 text-xs h-10 rounded-xl"
-                  />
-                </div>
-
-                {/* Prompt Principal */}
-                <div className="space-y-1.5">
-                  <label className="text-xs text-white/80 font-medium">Prompt do Usuário:</label>
-                  <Textarea
-                    rows={4}
-                    value={textPrompt}
-                    onChange={(e) => setTextPrompt(e.target.value)}
-                    placeholder="Digite sua dúvida, caso ou instrução jurídica para testar o modelo..."
-                    className="bg-black/50 border-white/10 text-sm leading-relaxed rounded-xl p-3.5 focus-visible:ring-amber-500/50"
-                  />
-                </div>
-
-                {/* Slider de Temperatura & Botão de Executar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-                  <div className="flex-1 min-w-[200px] max-w-sm space-y-1.5">
-                    <div className="flex justify-between text-xs text-white/60">
-                      <span className="flex items-center gap-1">
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-white/40" />
-                        Temperatura (Criatividade):
-                      </span>
-                      <span className="font-mono text-amber-400 font-semibold">{temperature.toFixed(2)}</span>
-                    </div>
-                    <Slider
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={[temperature]}
-                      onValueChange={([val]) => setTemperature(val)}
-                      className="w-full"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={handleRunTextTest}
-                    disabled={textLoading}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 shrink-0 gap-2 transition-all active:opacity-70"
-                  >
-                    {textLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                    {textLoading ? 'Gerando Resposta...' : 'Executar Teste'}
-                  </Button>
-                </div>
-
-                {/* Exibição da Resposta com Markdown Lapidado */}
-                {textResponse && (
-                  <div className="mt-5 pt-5 border-t border-white/10 space-y-3">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Resposta do Modelo ({textModel})
-                      </span>
-                      <div className="flex items-center gap-3">
-                        {textMeta && (
-                          <div className="flex items-center gap-3 text-xs text-white/50 font-mono">
-                            <span className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                              <Clock className="w-3.5 h-3.5 text-amber-400" />
-                              {textMeta.durationMs}ms
-                            </span>
-                            {textMeta.tokens && (
-                              <span className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                                <Layers className="w-3.5 h-3.5 text-sky-400" />
-                                {textMeta.tokens.total} tokens
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyToClipboard(textResponse)}
-                          className="h-8 text-xs border-white/15 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 gap-1.5 rounded-xl"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                          Copiar
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Container Markdown Formatado */}
-                    <div className="bg-[#0e0e10] p-4 sm:p-6 rounded-2xl border border-white/10 text-sm leading-relaxed text-zinc-100 max-h-[600px] overflow-y-auto select-text prose prose-invert max-w-none shadow-inner">
-                      <PremiumMarkdown>{textResponse}</PremiumMarkdown>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <OmniRouteTextoTab
+            textModel={textModel}
+            setTextModel={setTextModel}
+            textPrompt={textPrompt}
+            setTextPrompt={setTextPrompt}
+            textSystem={textSystem}
+            setTextSystem={setTextSystem}
+            temperature={temperature}
+            setTemperature={setTemperature}
+            textLoading={textLoading}
+            textResponse={textResponse}
+            textMeta={textMeta}
+            handleRunTextTest={handleRunTextTest}
+            copyToClipboard={copyToClipboard}
+          />
         )}
 
         {/* TAB 2: TESTE DE IMAGEM */}
         {mainTab === 'imagem' && (
-          <div className="space-y-4">
-            <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
-              <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-amber-400" />
-                      <span>Geração de Imagens (Texto para Imagem)</span>
-                    </h2>
-                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
-                      Geração de ilustrações e arte com IA através do modelo Antigravity / Gemini
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4 px-4 sm:px-6 pb-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-white/70 font-medium !font-sans">Modelo de Imagem:</label>
-                    <select
-                      value={imageModel}
-                      onChange={(e) => setImageModel(e.target.value)}
-                      className="w-full bg-black/50 border border-white/15 text-xs rounded-xl px-3 py-2.5 text-amber-400 font-mono focus:outline-none cursor-pointer"
-                    >
-                      {POPULAR_IMAGE_MODELS.map((m) => (
-                        <option key={m} value={m} className="bg-zinc-900 text-white">
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-white/70 font-medium !font-sans">Resolução:</label>
-                    <select
-                      value={imageSize}
-                      onChange={(e) => setImageSize(e.target.value)}
-                      className="w-full bg-black/50 border border-white/15 text-xs rounded-xl px-3 py-2.5 text-white focus:outline-none cursor-pointer"
-                    >
-                      <option value="1024x1024" className="bg-zinc-900 text-white">1024x1024 (Quadrado - Padrão)</option>
-                      <option value="1024x1792" className="bg-zinc-900 text-white">1024x1792 (Vertical / Story)</option>
-                      <option value="1792x1024" className="bg-zinc-900 text-white">1792x1024 (Horizontal / Banner)</option>
-                      <option value="512x512" className="bg-zinc-900 text-white">512x512 (Rápido)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs text-white/80 font-medium !font-sans">Prompt de Imagem:</label>
-                  <Textarea
-                    rows={3}
-                    value={imagePrompt}
-                    onChange={(e) => setImagePrompt(e.target.value)}
-                    placeholder="Descreva a ilustração jurídica que deseja criar..."
-                    className="bg-black/50 border-white/10 text-sm leading-relaxed rounded-xl p-3.5 focus-visible:ring-amber-500/50 !font-sans"
-                  />
-                </div>
-
-                <div className="flex justify-end pt-1">
-                  <Button
-                    onClick={handleRunImageGeneration}
-                    disabled={imageLoading}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
-                  >
-                    {imageLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
-                    {imageLoading ? 'Gerando Imagem...' : 'Gerar Imagem'}
-                  </Button>
-                </div>
-
-                {/* Exibição da Imagem Gerada */}
-                {imageUrl && (
-                  <div className="mt-5 p-4 sm:p-5 bg-black/60 rounded-2xl border border-white/10 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 !font-sans">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Imagem Gerada com Sucesso
-                      </span>
-                      {imageMeta && (
-                        <span className="text-xs text-white/50 font-mono bg-white/5 px-2.5 py-0.5 rounded border border-white/10">
-                          <Clock className="w-3.5 h-3.5 inline mr-1 text-amber-400" />
-                          {imageMeta.durationMs}ms
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="relative group max-w-lg mx-auto overflow-hidden rounded-xl border border-white/15 bg-black shadow-2xl">
-                      <img
-                        src={imageUrl}
-                        alt="Resultado do teste de imagem"
-                        className="w-full h-auto object-cover max-h-[500px] transition-transform duration-300 group-hover:scale-[1.02]"
-                      />
-                    </div>
-
-                    <div className="flex justify-center gap-3 pt-2">
-                      <a
-                        href={imageUrl}
-                        download={`omniroute-${Date.now()}.jpg`}
-                        className="inline-flex items-center gap-1.5 text-xs text-white font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl border border-white/15 transition-all active:opacity-70 !font-sans"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        Baixar Imagem
-                      </a>
-                      <a
-                        href={imageUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-amber-400 font-medium bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2 rounded-xl border border-amber-500/20 transition-all active:opacity-70 !font-sans"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Abrir em Nova Aba
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <Suspense fallback={null}>
+            <OmniRouteImagemTab
+              imageModel={imageModel}
+              setImageModel={setImageModel}
+              imageSize={imageSize}
+              setImageSize={setImageSize}
+              imagePrompt={imagePrompt}
+              setImagePrompt={setImagePrompt}
+              imageLoading={imageLoading}
+              imageUrl={imageUrl}
+              imageMeta={imageMeta}
+              handleRunImageGeneration={handleRunImageGeneration}
+            />
+          </Suspense>
         )}
 
         {/* TAB 3: ANÁLISE & VISÃO */}
         {mainTab === 'visao' && (
-          <div className="space-y-4">
-            <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
-              <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
-                      <Eye className="w-5 h-5 text-amber-400" />
-                      <span>Análise Visual & Multimodal (Visão / OCR)</span>
-                    </h2>
-                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
-                      Envie uma foto ou documento para a IA analisar elementos, transcrever texto ou responder dúvidas
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4 px-4 sm:px-6 pb-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-white/70 font-medium !font-sans">Modelo de Visão:</label>
-                    <select
-                      value={visionModel}
-                      onChange={(e) => setVisionModel(e.target.value)}
-                      className="w-full bg-black/50 border border-white/15 text-xs rounded-xl px-3 py-2.5 text-amber-400 font-mono focus:outline-none cursor-pointer"
-                    >
-                      {POPULAR_VISION_MODELS.map((m) => (
-                        <option key={m} value={m} className="bg-zinc-900 text-white">
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs text-white/70 font-medium !font-sans">Carregar Imagem para Análise:</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleVisionImageUpload}
-                      className="block w-full text-xs text-white/60 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                {visionImageBase64 && (
-                  <div className="flex items-center gap-3 p-3 bg-black/40 rounded-xl border border-white/10">
-                    <img
-                      src={visionImageBase64}
-                      alt="Preview da análise"
-                      className="w-16 h-16 object-cover rounded-lg border border-white/10"
-                    />
-                    <div className="text-xs text-white/70">
-                      <span className="text-emerald-400 font-medium flex items-center gap-1 !font-sans">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Imagem carregada com sucesso
-                      </span>
-                      <p className="text-[11px] text-white/40 mt-0.5 !font-sans">Pronta para envio ao modelo de visão multimodal</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-1.5">
-                  <label className="text-xs text-white/80 font-medium !font-sans">Pergunta ou Instrução sobre a Imagem:</label>
-                  <Input
-                    value={visionPrompt}
-                    onChange={(e) => setVisionPrompt(e.target.value)}
-                    placeholder="Ex: O que está escrito neste documento? Descreva a cena."
-                    className="bg-black/50 border-white/10 text-xs h-10 rounded-xl !font-sans"
-                  />
-                </div>
-
-                <div className="flex justify-end pt-1">
-                  <Button
-                    onClick={handleRunVisionAnalysis}
-                    disabled={visionLoading || !visionImageBase64}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
-                  >
-                    {visionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
-                    {visionLoading ? 'Analisando Imagem...' : 'Analisar Imagem'}
-                  </Button>
-                </div>
-
-                {visionResponse && (
-                  <div className="mt-5 p-4 sm:p-6 bg-[#0e0e10] rounded-2xl border border-white/10 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 !font-sans">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Análise Multimodal da IA
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => copyToClipboard(visionResponse)}
-                        className="h-8 text-xs border-white/15 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 gap-1.5 rounded-xl !font-sans cursor-pointer"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                        Copiar
-                      </Button>
-                    </div>
-                    <div className="text-sm leading-relaxed text-zinc-100 prose prose-invert max-w-none !font-sans">
-                      <PremiumMarkdown>{visionResponse}</PremiumMarkdown>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <Suspense fallback={null}>
+            <OmniRouteVisaoTab
+              visionModel={visionModel}
+              setVisionModel={setVisionModel}
+              visionImageBase64={visionImageBase64}
+              visionPrompt={visionPrompt}
+              setVisionPrompt={setVisionPrompt}
+              visionLoading={visionLoading}
+              visionResponse={visionResponse}
+              handleVisionImageUpload={handleVisionImageUpload}
+              handleRunVisionAnalysis={handleRunVisionAnalysis}
+              copyToClipboard={copyToClipboard}
+            />
+          </Suspense>
         )}
 
         {/* TAB 4: TRANSCRIÇÃO DE ÁUDIO */}
         {mainTab === 'audio' && (
-          <div className="space-y-4">
-            <Card className="bg-[#141416] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
-              <CardHeader className="pb-3 px-4 sm:px-6 pt-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="!font-sans text-base sm:text-lg font-semibold text-white tracking-normal normal-case flex items-center gap-2">
-                      <Mic className="w-5 h-5 text-amber-400" />
-                      <span>Transcrição de Áudio & Reconhecimento de Voz</span>
-                    </h2>
-                    <p className="!font-sans text-xs text-white/50 mt-1 font-normal tracking-normal normal-case">
-                      Grave diretamente pelo microfone ou envie um arquivo de áudio (.mp3, .wav, .m4a, .webm) para transcrever
-                    </p>
-                  </div>
-
-                  {/* Seletor de Modelo de Áudio */}
-                  <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10">
-                    <span className="text-xs text-white/60 !font-sans">Modelo:</span>
-                    <select
-                      value={audioModel}
-                      onChange={(e) => setAudioModel(e.target.value)}
-                      className="bg-transparent text-xs text-amber-400 font-mono focus:outline-none cursor-pointer"
-                    >
-                      {POPULAR_AUDIO_MODELS.map((m) => (
-                        <option key={m} value={m} className="bg-zinc-900 text-white">
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-5 px-4 sm:px-6 pb-6">
-                {/* Opções de Entrada de Áudio: Gravação vs Upload */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Bloco 1: Microfone */}
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-white flex items-center gap-2 !font-sans">
-                          <Mic className="w-4 h-4 text-amber-400" />
-                          Gravar Microfone ao Vivo
-                        </span>
-                        {isRecording && (
-                          <span className="flex items-center gap-1.5 text-xs text-rose-400 font-mono animate-pulse">
-                            <span className="w-2 h-2 rounded-full bg-rose-500" />
-                            {Math.floor(recordingSeconds / 60).toString().padStart(2, '0')}:
-                            {(recordingSeconds % 60).toString().padStart(2, '0')}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-white/50 !font-sans">
-                        Fale uma dúvida, ementa jurídica ou depoimento
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {!isRecording ? (
-                        <Button
-                          onClick={startRecording}
-                          type="button"
-                          className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs h-10 rounded-xl gap-2 !font-sans cursor-pointer shadow-md shadow-amber-500/10"
-                        >
-                          <Mic className="w-4 h-4" />
-                          Iniciar Gravação
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={stopRecording}
-                          type="button"
-                          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs h-10 rounded-xl gap-2 !font-sans cursor-pointer animate-pulse"
-                        >
-                          <Square className="w-4 h-4" />
-                          Parar Gravação
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bloco 2: Upload de Arquivo */}
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-4">
-                    <div className="space-y-1">
-                      <span className="text-xs font-semibold text-white flex items-center gap-2 !font-sans">
-                        <Upload className="w-4 h-4 text-amber-400" />
-                        Carregar Arquivo de Áudio
-                      </span>
-                      <p className="text-[11px] text-white/50 !font-sans">
-                        Formatos suportados: .mp3, .wav, .m4a, .ogg, .webm
-                      </p>
-                    </div>
-
-                    <div>
-                      <input
-                        type="file"
-                        accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.flac,.aac"
-                        onChange={handleAudioFileUpload}
-                        className="block w-full text-xs text-white/60 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Player de Reprodução do Áudio Carregado/Gravado */}
-                {audioUrl && (
-                  <div className="p-3.5 bg-black/60 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        <Volume2 className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="text-xs font-medium text-white !font-sans truncate max-w-[200px] sm:max-w-xs">
-                          {audioFileName || 'Áudio gravado'}
-                        </div>
-                        <div className="text-[10.5px] text-white/40 !font-sans">
-                          {audioBlob ? `${(audioBlob.size / 1024).toFixed(1)} KB` : ''}
-                        </div>
-                      </div>
-                    </div>
-
-                    <audio controls src={audioUrl} className="h-8 max-w-[280px]" />
-                  </div>
-                )}
-
-                {/* Botão de Transcrição */}
-                <div className="flex justify-end pt-1">
-                  <Button
-                    onClick={handleTranscribeAudio}
-                    disabled={audioLoading || !audioBlob}
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs sm:text-sm px-6 h-11 rounded-xl shadow-lg shadow-amber-500/20 gap-2 active:opacity-70 transition-all !font-sans cursor-pointer"
-                  >
-                    {audioLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileAudio className="w-4 h-4" />}
-                    {audioLoading ? 'Transcrevendo Áudio...' : 'Transcrever Áudio com IA'}
-                  </Button>
-                </div>
-
-                {/* Exibição da Transcrição */}
-                {audioTranscription && (
-                  <div className="mt-5 p-4 sm:p-6 bg-[#0e0e10] rounded-2xl border border-white/10 space-y-4">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 !font-sans">
-                          <CheckCircle2 className="w-4 h-4" />
-                          Áudio Transcrito com Sucesso
-                        </span>
-                        {audioMeta && (
-                          <span className="text-xs text-white/50 font-mono bg-white/5 px-2.5 py-0.5 rounded border border-white/10">
-                            <Clock className="w-3.5 h-3.5 inline mr-1 text-amber-400" />
-                            {audioMeta.durationMs}ms
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyToClipboard(audioTranscription)}
-                          className="h-8 text-xs border-white/15 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 gap-1.5 rounded-xl !font-sans cursor-pointer"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                          Copiar
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={useTranscriptionInChat}
-                          className="h-8 text-xs bg-amber-500 hover:bg-amber-600 text-black font-semibold px-3 gap-1.5 rounded-xl !font-sans cursor-pointer shadow-md shadow-amber-500/20"
-                        >
-                          <span>Usar no Teste de Texto</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="text-sm leading-relaxed text-zinc-100 prose prose-invert max-w-none !font-sans bg-black/40 p-4 rounded-xl border border-white/5">
-                      <PremiumMarkdown>{audioTranscription}</PremiumMarkdown>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <Suspense fallback={null}>
+            <OmniRouteAudioTab
+              audioModel={audioModel}
+              setAudioModel={setAudioModel}
+              isRecording={isRecording}
+              recordingSeconds={recordingSeconds}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
+              handleAudioFileUpload={handleAudioFileUpload}
+              audioUrl={audioUrl}
+              audioFileName={audioFileName}
+              audioBlob={audioBlob}
+              audioLoading={audioLoading}
+              handleTranscribeAudio={handleTranscribeAudio}
+              audioTranscription={audioTranscription}
+              audioMeta={audioMeta}
+              copyToClipboard={copyToClipboard}
+              useTranscriptionInChat={useTranscriptionInChat}
+            />
+          </Suspense>
         )}
 
         {/* Histórico Recente de Execuções */}
