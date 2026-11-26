@@ -1,18 +1,19 @@
-import { useState, useMemo } from 'react';
+import { lazy, Suspense, useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
+import {
+  RotateCcw, BarChart3, ChevronRight, NotebookPen,
   Filter, History, BookOpen
 } from 'lucide-react';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
-import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
 import QuestoesMasterDeck from '@/components/questoes/QuestoesMasterDeck';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
+
+const QuestoesFiltroSheet = lazy(() => import('@/components/questoes/QuestoesFiltroSheet'));
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -216,20 +217,24 @@ const Questoes = () => {
       </div>
 
       {/* Filtro completo e Filtro Dedicado por Área */}
-      <QuestoesFiltroSheet
-        aberto={filtroAberto || Boolean(areaFiltroSelecionada)}
-        disciplinaFixa={areaFiltroSelecionada || undefined}
-        onFechar={() => {
-          setFiltroAberto(false);
-          setAreaFiltroSelecionada(null);
-        }}
-        onAplicar={(f) => {
-          const areaParam = areaFiltroSelecionada ? `&area=${encodeURIComponent(areaFiltroSelecionada)}` : '';
-          setFiltroAberto(false);
-          setAreaFiltroSelecionada(null);
-          navigate(`/questoes/praticar?filtro=1${areaParam}`);
-        }}
-      />
+      {(filtroAberto || Boolean(areaFiltroSelecionada)) && (
+        <Suspense fallback={null}>
+          <QuestoesFiltroSheet
+            aberto={filtroAberto || Boolean(areaFiltroSelecionada)}
+            disciplinaFixa={areaFiltroSelecionada || undefined}
+            onFechar={() => {
+              setFiltroAberto(false);
+              setAreaFiltroSelecionada(null);
+            }}
+            onAplicar={() => {
+              const areaParam = areaFiltroSelecionada ? `&area=${encodeURIComponent(areaFiltroSelecionada)}` : '';
+              setFiltroAberto(false);
+              setAreaFiltroSelecionada(null);
+              navigate(`/questoes/praticar?filtro=1${areaParam}`);
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

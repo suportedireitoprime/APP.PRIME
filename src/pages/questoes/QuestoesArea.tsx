@@ -22,66 +22,15 @@ import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
 import { haptic } from '@/lib/nativeHaptics';
+import { lazy, Suspense } from 'react';
 import { cn } from '@/lib/utils';
 import { getAllProgressoArea, TopicoProgresso } from '@/lib/questoesTrilhaProgress';
-import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO } from '@/components/questoes/QuestoesFiltroSheet';
+import { FILTRO_KEY, FILTRO_VAZIO } from '@/lib/questoesFiltro';
+import { CURATED_BOOK_COVERS, type TrilhaItem } from '@/lib/questoesCuratedCovers';
 import GalaxyBackground from '@/components/questoes/GalaxyBackground';
 
-// ── CAPAS DE LIVROS CLÁSSICOS & JURÍDICOS (PADRÃO DRUNO) ──
-import capaDosDelitos from '@/assets/covers/dos_delitos_e_das_penas_manual.webp';
-import capaVigiarEPunir from '@/assets/covers/vigiar_e_punir_nascimento_da_prisao_manual.webp';
-import capaCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
-import capaOProcesso from '@/assets/covers/o_processo_manual.webp';
-import capaTeoriaPura from '@/assets/covers/teoria_pura_do_direito_manual.webp';
-import capaVademecumJudge from '@/assets/covers/vademecum-judge.webp';
-import capaAdvogadosTribunal from '@/assets/covers/hero-advogados-tribunal.webp';
-import capaSocratesThemis from '@/assets/covers/socrates-themis-hero.webp';
-import capaALutaPeloDireito from '@/assets/covers/a_luta_pelo_direito_manual.webp';
-import capaOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.webp';
-import capaHistoriaLegislacao from '@/assets/covers/historia-da-legislacao.webp';
-import capaFundamentosDaLei from '@/assets/covers/fundamentos-da-lei.webp';
-import capaEstruturaEstado from '@/assets/covers/estrutura-do-estado.webp';
-import capaEticaNicomaco from '@/assets/covers/etica_a_nicomaco_manual.webp';
-import capaOPrincipe from '@/assets/covers/o_principe_manual.webp';
-import capaAcessoJustica from '@/assets/covers/acesso_a_justica_manual.webp';
-import capaSobreLiberdade from '@/assets/covers/sobre_a_liberdade_manual.webp';
-import capaExploradoresCavernas from '@/assets/covers/o_caso_dos_exploradores_de_cavernas_manual.webp';
-
-const CURATED_BOOK_COVERS = [
-  capaDosDelitos,
-  capaVigiarEPunir,
-  capaCpArtigos,
-  capaOProcesso,
-  capaTeoriaPura,
-  capaVademecumJudge,
-  capaAdvogadosTribunal,
-  capaSocratesThemis,
-  capaALutaPeloDireito,
-  capaOEspiritoDasLeis,
-  capaHistoriaLegislacao,
-  capaFundamentosDaLei,
-  capaEstruturaEstado,
-  capaEticaNicomaco,
-  capaOPrincipe,
-  capaAcessoJustica,
-  capaSobreLiberdade,
-  capaExploradoresCavernas,
-];
-
-interface TrilhaItem {
-  key: string;
-  titulo: string;
-  ordemStr: string;
-  badgeLabel: string;
-  displayTotal: number;
-  displayConcluidas: number;
-  displayPct: number;
-  coverImage: string;
-  isConcluido: boolean;
-  isEmAndamento: boolean;
-  isBloqueado: boolean;
-  onClick: () => void;
-}
+const QuestoesFiltroSheet = lazy(() => import('@/components/questoes/QuestoesFiltroSheet'));
+const QuestaoLivroModal = lazy(() => import('@/components/questoes/QuestaoLivroModal'));
 
 const QuestoesArea = () => {
   useTrackArea("questoes_area_aberta");
@@ -731,71 +680,28 @@ const QuestoesArea = () => {
           MODAL DE DETALHES DO LIVRO AO TOCAR NA TRILHA (DRUNO SHEET)
       ════════════════════════════════════════════════════════════════ */}
       {livroSelecionado && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div 
-            className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#161228] border border-white/15 p-6 shadow-2xl space-y-5 animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start gap-4">
-              {/* Miniatura 3D do Livro Limpa */}
-              <div className="relative w-20 h-28 rounded-xl overflow-hidden shrink-0 border-2 border-white/30 shadow-xl">
-                <img src={livroSelecionado.coverImage} alt={livroSelecionado.titulo} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-              </div>
-
-              <div className="space-y-1.5 min-w-0 flex-1">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#E11D48]/20 text-[#FB7185] border border-[#E11D48]/40">
-                  {livroSelecionado.badgeLabel}
-                </span>
-                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-base sm:text-lg font-bold text-white leading-snug">
-                  {livroSelecionado.titulo}
-                </p>
-                <p className="text-xs text-zinc-400">
-                  {livroSelecionado.displayTotal} questões oficiais comentadas
-                </p>
-                <div className="flex items-center gap-2 pt-1 text-xs font-bold text-emerald-400">
-                  <Check className="w-4 h-4" />
-                  <span>{livroSelecionado.displayConcluidas} resolvidas ({livroSelecionado.displayPct}%)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Ações do Modal */}
-            <div className="space-y-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setLivroSelecionado(null);
-                  livroSelecionado.onClick();
-                }}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#E11D48] to-[#BE123C] hover:from-[#BE123C] hover:to-[#9F1239] text-white font-extrabold text-sm uppercase tracking-wider shadow-[0_0_22px_rgba(225,29,72,0.7)] transition-all flex items-center justify-center gap-2 active:scale-95"
-              >
-                <Play className="w-4 h-4 fill-current" />
-                <span>Começar Tema</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setLivroSelecionado(null)}
-                className="w-full py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-xs transition-colors"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
+        <Suspense fallback={null}>
+          <QuestaoLivroModal
+            livro={livroSelecionado}
+            onClose={() => setLivroSelecionado(null)}
+          />
+        </Suspense>
       )}
 
       {/* Sheet de Filtro da Área */}
-      <QuestoesFiltroSheet
-        aberto={filtroAberto}
-        onFechar={() => setFiltroAberto(false)}
-        disciplinaFixa={effectiveAreaName || area?.nome || 'Direito'}
-        onAplicar={() => {
-          setFiltroAberto(false);
-          navigate('/questoes/praticar?filtro=1');
-        }}
-      />
+      {filtroAberto && (
+        <Suspense fallback={null}>
+          <QuestoesFiltroSheet
+            aberto={filtroAberto}
+            onFechar={() => setFiltroAberto(false)}
+            disciplinaFixa={effectiveAreaName || area?.nome || 'Direito'}
+            onAplicar={() => {
+              setFiltroAberto(false);
+              navigate('/questoes/praticar?filtro=1');
+            }}
+          />
+        </Suspense>
+      )}
     </DesktopPageLayout>
   );
 };

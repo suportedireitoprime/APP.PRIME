@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { type PanInfo } from 'framer-motion';
 import { Sparkles, Grid2X2, Plus } from 'lucide-react';
@@ -10,7 +10,6 @@ import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-import { CartaoRespostaSheet } from './CartaoRespostaSheet';
 import { CartaoRespostaGrid } from './CartaoRespostaGrid';
 import { getSessaoById, saveSessao } from '@/lib/questoesSessoes';
 import { getDisciplinaColors } from '@/lib/disciplinaColors';
@@ -19,11 +18,17 @@ import {
   QuestaoHeader,
   QuestaoEnunciadoCard,
   QuestaoFeedbackDrawer,
-  ComentarioSheet,
   QuestaoReportDrawer,
 } from './chunks';
 import { QuestaoAcoesBar } from './QuestaoAcoesBar';
 import { playPaperSlideSound, preloadPaperSlideSound } from '@/lib/paperSound';
+
+const ComentarioSheet = lazy(() =>
+  import('./chunks/QuestaoComentarioSheet').then((m) => ({ default: m.ComentarioSheet }))
+);
+const CartaoRespostaSheet = lazy(() =>
+  import('./CartaoRespostaSheet').then((m) => ({ default: m.CartaoRespostaSheet }))
+);
 
 const db = supabase as any;
 
@@ -541,24 +546,32 @@ const ResolverPadrao = ({
         onNovoBloco={onNovoBloco}
       />
 
-      <ComentarioSheet
-        aberto={comentarioAberto && !!resp}
-        source={atual}
-        onClose={() => setComentarioAberto(false)}
-      />
+      {comentarioAberto && !!resp && (
+        <Suspense fallback={null}>
+          <ComentarioSheet
+            aberto={comentarioAberto && !!resp}
+            source={atual}
+            onClose={() => setComentarioAberto(false)}
+          />
+        </Suspense>
+      )}
 
-      <CartaoRespostaSheet
-        aberto={gradeAberta}
-        onClose={() => setGradeAberta(false)}
-        questoesCount={questoes.length}
-        idxAtual={idx}
-        respostas={respostas}
-        questoesIdMap={questoes.map((q) => q.id)}
-        onSelect={(i) => {
-          setIdx(i);
-          playPaperSlideSound();
-        }}
-      />
+      {gradeAberta && (
+        <Suspense fallback={null}>
+          <CartaoRespostaSheet
+            aberto={gradeAberta}
+            onClose={() => setGradeAberta(false)}
+            questoesCount={questoes.length}
+            idxAtual={idx}
+            respostas={respostas}
+            questoesIdMap={questoes.map((q) => q.id)}
+            onSelect={(i) => {
+              setIdx(i);
+              playPaperSlideSound();
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

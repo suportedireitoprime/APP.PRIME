@@ -1,13 +1,14 @@
-// @ts-nocheck
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, NotebookPen, Trash2, ChevronRight, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useCadernos } from '@/hooks/useQuestoesExtras';
-import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO, type QuestoesFiltro } from '@/components/questoes/QuestoesFiltroSheet';
+import { FILTRO_KEY, FILTRO_VAZIO, type QuestoesFiltro } from '@/lib/questoesFiltro';
 import { toast } from 'sonner';
 import { useGoBack } from '@/hooks/useGoBack';
+
+const QuestoesFiltroSheet = lazy(() => import('@/components/questoes/QuestoesFiltroSheet'));
 
 type Modelo = { nome: string; descricao: string; cor: string; filtros: Partial<QuestoesFiltro> };
 
@@ -16,7 +17,7 @@ const MODELOS: Modelo[] = [
   { nome: 'Caderno da faculdade', descricao: 'Só questões conceituais da matéria', cor: '#22C55E', filtros: { segmentos: ['conceituais'] } },
   { nome: 'Caderno de concurso', descricao: 'Questões de concursos de todas as bancas', cor: '#3B82F6', filtros: { segmentos: ['concursos'] } },
   { nome: 'Caderno da OAB', descricao: 'Exame de Ordem (FGV)', cor: '#8B5CF6', filtros: { segmentos: ['oab'] } },
-  { nome: 'Meus erros', descricao: 'Volte no que você errou', cor: '#F59E0B', filtros: { status: 'errei' } },
+  { nome: 'Meus erros', descricao: 'Volte no que você errou', cor: '#F59E0B', filtros: { status: ['errei'] } },
 ];
 
 const QuestoesCadernos = () => {
@@ -155,21 +156,25 @@ const QuestoesCadernos = () => {
         </div>
       </div>
 
-      <QuestoesFiltroSheet
-        aberto={filtroAberto}
-        onFechar={() => setFiltroAberto(false)}
-        onAplicar={async () => {
-          setFiltroAberto(false);
-          let filtros: QuestoesFiltro = FILTRO_VAZIO;
-          try {
-            const raw = sessionStorage.getItem(FILTRO_KEY);
-            if (raw) filtros = { ...FILTRO_VAZIO, ...JSON.parse(raw) };
-          } catch { /* noop */ }
-          await criar({ nome: nomeNovo.trim(), filtros });
-          setNomeNovo('');
-          toast.success('Caderno salvo');
-        }}
-      />
+      {filtroAberto && (
+        <Suspense fallback={null}>
+          <QuestoesFiltroSheet
+            aberto={filtroAberto}
+            onFechar={() => setFiltroAberto(false)}
+            onAplicar={async () => {
+              setFiltroAberto(false);
+              let filtros: QuestoesFiltro = FILTRO_VAZIO;
+              try {
+                const raw = sessionStorage.getItem(FILTRO_KEY);
+                if (raw) filtros = { ...FILTRO_VAZIO, ...JSON.parse(raw) };
+              } catch { /* noop */ }
+              await criar({ nome: nomeNovo.trim(), filtros });
+              setNomeNovo('');
+              toast.success('Caderno salvo');
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

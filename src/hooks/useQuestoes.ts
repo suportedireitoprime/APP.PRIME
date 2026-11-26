@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessaoById } from '@/lib/questoesSessoes';
 import { useAuth } from '@/hooks/useAuth';
+import { bundle, withBundleFallback } from '@/services/offlineBundle';
 
 export type Questao = {
   id: string;
@@ -84,7 +85,6 @@ export function useQuestoesCargos() {
   }, [cargos.length]);
   return { cargos, loading };
 }
-import { bundle, withBundleFallback } from '@/services/offlineBundle';
 
 export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null) {
   const cacheKey = `questoes_areas_cache:${nivel ?? 'todos'}:${cargoId ?? 'todos'}`;

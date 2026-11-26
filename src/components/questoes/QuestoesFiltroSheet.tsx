@@ -7,54 +7,24 @@ import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { StepRow, SelecaoSheet } from './chunks';
+import {
+  FILTRO_KEY,
+  FILTRO_VAZIO,
+  lerFiltroSalvo,
+  STATUS,
+  type QuestoesFiltro,
+} from '@/lib/questoesFiltro';
 
-export { StepRow, SelecaoSheet };
+export { StepRow, SelecaoSheet, FILTRO_KEY, FILTRO_VAZIO, lerFiltroSalvo, STATUS };
+export type { QuestoesFiltro };
 
 const db = supabase as any;
-
-export type QuestoesFiltro = {
-  segmentos: string[];
-  disciplinas: string[];
-  assuntos: string[];
-  anos: string[];
-  status: string[];
-  ordem: 'embaralhado' | 'original';
-  quantidade: number | null;
-};
-
-export const FILTRO_KEY = 'questoes:filtro';
-
-export const FILTRO_VAZIO: QuestoesFiltro = {
-  segmentos: [],
-  disciplinas: [],
-  assuntos: [],
-  anos: [],
-  status: [],
-  ordem: 'embaralhado',
-  quantidade: null,
-};
-
-export function lerFiltroSalvo(): QuestoesFiltro | null {
-  try {
-    const raw = sessionStorage.getItem(FILTRO_KEY);
-    return raw ? { ...FILTRO_VAZIO, ...JSON.parse(raw) } : null;
-  } catch {
-    return null;
-  }
-}
 
 const SEGMENTOS = [
   { id: 'conceituais', label: 'Conceituais', desc: 'Teoria e fundamentos.' },
   { id: 'concursos', label: 'Concursos', desc: 'Concursos de todas as bancas.' },
   { id: 'policiais', label: 'Carreiras policiais', desc: 'Polícia Civil, Federal, PRF e afins.' },
   { id: 'oab', label: 'OAB', desc: 'Exame de Ordem (FGV).' },
-];
-
-export const STATUS = [
-  { id: 'nao_resolvidas', label: 'Não resolvi' },
-  { id: 'resolvidas', label: 'Resolvi' },
-  { id: 'acertei', label: 'Acertei' },
-  { id: 'errei', label: 'Errei' },
 ];
 
 const QUANTIDADES = [null, 10, 20, 50, 100] as const;
