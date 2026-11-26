@@ -1,6 +1,5 @@
-// @ts-nocheck
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gavel, ShieldCheck, ShieldAlert, ChevronRight } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
@@ -49,33 +48,9 @@ export function HorusMainTab({
         <div
           className="absolute -right-10 top-6 w-[320px] h-[280px] rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 60% 55%, hsl(0 0% 100% / 0.22) 0%, hsl(0 0% 100% / 0.08) 35%, transparent 70%)',
-            filter: 'blur(8px)',
+            background: 'radial-gradient(circle at 60% 55%, hsl(0 0% 100% / 0.20) 0%, hsl(0 0% 100% / 0.06) 40%, transparent 72%)',
           }}
         />
-        <div
-          className="absolute -right-6 top-14 w-[220px] h-[200px] rounded-full pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle at 55% 55%, hsl(0 0% 100% / 0.18) 0%, transparent 65%)',
-            filter: 'blur(4px)',
-          }}
-        />
-
-        {/* Floating juridical icons */}
-        {[
-          { className: 'top-3 left-4', delay: 0 },
-          { className: 'bottom-3 left-8', delay: 0.8 },
-          { className: 'top-8 left-1/2', delay: 1.4 },
-        ].map((f, i) => (
-          <motion.div
-            key={i}
-            className={`absolute ${f.className} pointer-events-none text-white/10`}
-            animate={{ y: [0, -6, 0], rotate: [0, 6, 0] }}
-            transition={{ duration: 4, repeat: Infinity, delay: f.delay, ease: 'easeInOut' }}
-          >
-            <Gavel className="w-5 h-5" />
-          </motion.div>
-        ))}
 
         {/* Owl mascot */}
         <motion.img
@@ -85,7 +60,7 @@ export function HorusMainTab({
           height={400}
           loading="eager"
           decoding="sync"
-          fetchpriority="high"
+          fetchPriority="high"
           className="absolute -right-3 -bottom-10 w-[160px] h-[160px] object-contain drop-shadow-xl pointer-events-none select-none z-10"
           initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}

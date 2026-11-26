@@ -1,5 +1,4 @@
-// @ts-nocheck
-﻿import React from 'react';
+import React from 'react';
 import {
   AbsoluteFill,
   useCurrentFrame,
@@ -17,6 +16,7 @@ import { fade } from '@remotion/transitions/fade';
 import { wipe } from '@remotion/transitions/wipe';
 
 import { INK } from './chunks/shared';
+import { WhatsMock, DocMock, OCRMock, AudioMock, RadarMock } from './chunks/mocks';
 import { SceneAbertura, SceneApresentacao, FeatureScene, SceneChecklist, SceneLimites, ScenePerguntaNome, SceneSaudacao } from './chunks/scenes';
 /* ------------------------------------------------------------------ */
 /*  ComposiÃ§Ã£o principal                                              */

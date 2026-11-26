@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, ShieldCheck, MessageCircle, PartyPopper, ChevronDown, Check } from 'lucide-react';
@@ -395,7 +394,7 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified }: Pro
                   {digits.map((d, i) => (
                     <input
                       key={i}
-                      ref={(el) => (inputsRef.current[i] = el)}
+                      ref={(el) => { inputsRef.current[i] = el; }}
                       value={d}
                       onChange={(e) => setDigit(i, e.target.value)}
                       onKeyDown={(e) => onKeyDown(i, e)}

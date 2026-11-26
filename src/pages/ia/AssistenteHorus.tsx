@@ -7,7 +7,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 import { track } from '@/lib/analyticsEvents';
 import { abrirLink } from '@/lib/nativo';
-import { useGoBack } from '@/hooks/useGoBack';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
 import { useSubscription } from '@/hooks/useSubscription';
 
 import HorusVerifyPhoneSheet from '@/components/horus/HorusVerifyPhoneSheet';
@@ -30,8 +30,7 @@ const WHATSAPP_MSG = 'Olá Horus! Preciso da sua ajuda com uma dúvida jurídica
 
 const AssistenteHorus = () => {
   const navigate = useNavigate();
-  const goBack = useGoBack();
-  
+
   const { loading: onbLoading, onboarded } = useHorusOnboarding();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [tab, setTab] = useState<HorusTab>('main');
@@ -52,28 +51,15 @@ const AssistenteHorus = () => {
 
   // Garante que a tela sempre inicie posicionada no topo absoluto
   useEffect(() => {
-    const scrollToTop = () => {
-      try {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      } catch {}
-      if (document.documentElement) document.documentElement.scrollTop = 0;
-      if (document.body) document.body.scrollTop = 0;
-      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-    };
-
-    scrollToTop();
-    const t1 = setTimeout(scrollToTop, 20);
-    const t2 = setTimeout(scrollToTop, 100);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    resetGlobalScroll();
   }, [tab]);
 
-  // Show onboarding logic
-  if (!onbLoading && !onboarded && !showOnboarding) {
-    setShowOnboarding(true);
-  }
+  // Exibe onboarding fora do ciclo de renderização
+  useEffect(() => {
+    if (!onbLoading && !onboarded) {
+      setShowOnboarding(true);
+    }
+  }, [onbLoading, onboarded]);
 
   const openWhatsApp = () => {
     track('horus_whatsapp_redirect', { verified: isVerified, source: 'horus_page' });
@@ -148,7 +134,7 @@ const AssistenteHorus = () => {
       
       {/* Header */}
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-md">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg lg:max-w-3xl mx-auto">
           <PageHeader
             title={titles[tab]}
             onBack={back}
@@ -165,7 +151,7 @@ const AssistenteHorus = () => {
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto">
+      <div className="max-w-lg lg:max-w-3xl mx-auto">
         <AnimatePresence mode="wait">
           {tab === 'main' && (
             <HorusMainTab

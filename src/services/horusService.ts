@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 export type NotifPrefs = {
   radar_leis: boolean;
@@ -46,7 +47,7 @@ export const horusService = {
     ]);
 
     const linked = (data as unknown as HorusLinkedStatus) || null;
-    const profileName = ((prof as any)?.display_name || '').trim();
+    const profileName = (prof?.display_name ?? '').trim();
 
     return { user, linked, profileName };
   },
@@ -54,12 +55,12 @@ export const horusService = {
   async updatePrefs(userId: string, nextPrefs: NotifPrefs) {
     return supabase
       .from('horus_whatsapp_users')
-      .update({ notif_prefs: nextPrefs as any })
+      .update({ notif_prefs: nextPrefs as unknown as Json })
       .eq('user_id', userId);
   },
 
   async updateNome(userId: string, phone_e164: string | undefined, finalName: string) {
-    const ops: PromiseLike<any>[] = [
+    const ops: PromiseLike<unknown>[] = [
       supabase.from('profiles').update({ display_name: finalName }).eq('id', userId),
     ];
     if (phone_e164) {
