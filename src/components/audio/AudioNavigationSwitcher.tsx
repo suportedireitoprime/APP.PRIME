@@ -26,10 +26,10 @@ export const AudioNavigationSwitcher: React.FC<AudioNavigationSwitcherProps> = (
     >
       <button
         type="button"
-        onPointerEnter={() => (prefetchRoute as any)('audioLeis')}
-        onPointerDown={() => (prefetchRoute as any)('audioLeis')}
-        onFocus={() => (prefetchRoute as any)('audioLeis')}
-        onClick={() => navigate('/audio-leis')}
+        onPointerEnter={() => prefetchRoute('audioLeis')}
+        onPointerDown={() => prefetchRoute('audioLeis')}
+        onFocus={() => prefetchRoute('audioLeis')}
+        onClick={() => navigate('/audioleis')}
         className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
           active === 'leis'
             ? 'bg-purple-600 text-white shadow-md shadow-purple-600/40'

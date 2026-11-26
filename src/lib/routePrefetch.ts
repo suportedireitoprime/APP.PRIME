@@ -37,6 +37,7 @@ export const routePrefetch = {
   resumosJuridicosSubtemas: () => import("@/pages/resumos-juridicos/ResumosJuridicosSubtemas.tsx"),
   resumosJuridicosLista: () => import("@/pages/resumos-juridicos/ResumosJuridicosLista.tsx"),
   audioaulas: () => import("@/pages/audioaulas/Audioaulas.tsx"),
+  audioLeis: () => import("@/pages/audioleis/Audioleis.tsx"),
   bibliotecaCategoria: () => import("@/pages/biblioteca/BibliotecaCategoria.tsx"),
   bibliotecaOffline: () => import("@/pages/offline/ModoOfflineLivros.tsx"),
   videoaulas: () => import("@/pages/videoaulas/Videoaulas.tsx"),
