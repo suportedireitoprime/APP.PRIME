@@ -33,6 +33,16 @@ const AudioleiFollowPlayer = React.lazy(
   () => import('@/components/audioleis/AudioleiFollowPlayer')
 );
 
+const CATEGORIAS_CONFIG: Array<{ id: string; label: string }> = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'constituicao', label: 'Constituição' },
+  { id: 'codigo', label: 'Códigos' },
+  { id: 'estatuto', label: 'Estatutos' },
+  { id: 'lei-especial', label: 'Leis Especiais' },
+  { id: 'previdenciario', label: 'Previdenciário' },
+  { id: 'lei-ordinaria', label: 'Outras Leis' },
+];
+
 const Audioleis: React.FC = () => {
   const navigate = useNavigate();
   const { leiId: leiIdParam } = useParams<{ leiId?: string }>();
@@ -47,6 +57,7 @@ const Audioleis: React.FC = () => {
   const [ultimoOuvido, setUltimoOuvido] = useState<UltimoAudiolei | null>(null);
 
   const [busca, setBusca] = useState('');
+  const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [filtroTopProvas, setFiltroTopProvas] = useState(false);
   const [leiSelecionadaId, setLeiSelecionadaId] = useState<string | null>(leiIdParam || null);
   const [artigoAtivo, setArtigoAtivo] = useState<ArtigoNarradoItem | null>(null);
@@ -99,9 +110,33 @@ const Audioleis: React.FC = () => {
   const queryNorm = busca.trim().toLowerCase();
   const buscaNumerica = queryNorm.replace(/\D/g, '');
 
+  const categoriasDisponiveis = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const l of leis) {
+      const tipoKey = CATEGORIAS_CONFIG.some((c) => c.id === l.tipo) ? l.tipo : 'lei-ordinaria';
+      counts.set(tipoKey, (counts.get(tipoKey) || 0) + 1);
+    }
+    return CATEGORIAS_CONFIG.filter((c) => c.id === 'todas' || (counts.get(c.id) || 0) > 0).map(
+      (c) => ({
+        ...c,
+        count: c.id === 'todas' ? leis.length : counts.get(c.id) || 0,
+      })
+    );
+  }, [leis]);
+
   const leisFiltradas = useMemo(() => {
-    if (!queryNorm) return leis;
-    return leis.filter(
+    const base =
+      categoriaAtiva === 'todas'
+        ? leis
+        : leis.filter((l) => {
+            const tipoKey = CATEGORIAS_CONFIG.some((c) => c.id === l.tipo)
+              ? l.tipo
+              : 'lei-ordinaria';
+            return tipoKey === categoriaAtiva;
+          });
+
+    if (!queryNorm) return base;
+    return base.filter(
       (l) =>
         l.nome.toLowerCase().includes(queryNorm) ||
         l.sigla.toLowerCase().includes(queryNorm) ||
@@ -111,7 +146,7 @@ const Audioleis: React.FC = () => {
             : a.artigoNumero.toLowerCase().includes(queryNorm)
         )
     );
-  }, [leis, queryNorm, buscaNumerica]);
+  }, [leis, categoriaAtiva, queryNorm, buscaNumerica]);
 
   const artigosBuscaDireta = useMemo(() => {
     if (!queryNorm || queryNorm.length < 1 || leiSelecionada) return [];
@@ -343,15 +378,40 @@ const Audioleis: React.FC = () => {
                 </section>
               )}
 
-              {/* Atalhos rápidos */}
-              <section className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-                    Atalhos Rápidos
-                  </h2>
-                </div>
+              {/* Categorias para acesso rápido */}
+              {categoriasDisponiveis.length > 1 && (
+                <section className="space-y-2">
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                    {categoriasDisponiveis.map((cat) => {
+                      const ativa = categoriaAtiva === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            setCategoriaAtiva(cat.id);
+                          }}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 border transition-all ${
+                            ativa
+                              ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/25'
+                              : 'bg-white/5 hover:bg-white/10 text-zinc-300 border-white/10'
+                          }`}
+                        >
+                          {cat.label}{' '}
+                          <span className={ativa ? 'text-purple-100' : 'text-zinc-500'}>
+                            ({cat.count})
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
 
-                {ultimoOuvido && (
+              {/* Atalhos rápidos */}
+              {ultimoOuvido && (
+                <section className="space-y-2.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -393,32 +453,12 @@ const Audioleis: React.FC = () => {
                     </div>
                     <Play className="w-5 h-5 text-purple-300 shrink-0" />
                   </button>
-                )}
+                </section>
+              )}
 
-                {leis.length > 0 && (
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-                    {leis.slice(0, 8).map((lei) => (
-                      <button
-                        key={lei.id}
-                        type="button"
-                        onClick={() => abrirLei(lei.id)}
-                        className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-zinc-200 whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-colors"
-                      >
-                        <span
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ backgroundColor: lei.iconColor }}
-                        />
-                        <span>{lei.sigla}</span>
-                        <span className="text-zinc-500">({lei.totalNarracoes})</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </section>
-
-              {/* Ranking dos Mais Acessados */}
+              {/* Ranking dos Mais Acessados (compacto horizontal no mobile) */}
               {ranking.length > 0 && (
-                <section ref={rankingSectionRef} className="space-y-3">
+                <section ref={rankingSectionRef} className="space-y-2.5">
                   <div className="flex items-center gap-2">
                     <Flame className="w-4 h-4 text-amber-400" />
                     <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-300">
@@ -426,17 +466,17 @@ const Audioleis: React.FC = () => {
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2.5">
+                  <div className="flex lg:grid lg:grid-cols-5 gap-2.5 overflow-x-auto pb-1 no-scrollbar snap-x">
                     {ranking.map((item) => (
                       <button
                         key={`rank_${item.tabelaNome}_${item.artigoNumero}`}
                         type="button"
                         onClick={() => iniciarArtigo(item)}
-                        className="group flex items-center justify-between gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-left transition-all"
+                        className="group min-w-[165px] lg:min-w-0 snap-start flex items-center justify-between gap-2.5 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-left transition-all shrink-0 lg:shrink"
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
                           <span
-                            className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0 ${
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 ${
                               item.rank === 1
                                 ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40'
                                 : 'bg-white/5 text-zinc-400 border border-white/10'
@@ -445,16 +485,16 @@ const Audioleis: React.FC = () => {
                             #{item.rank}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-xs font-bold text-purple-300 truncate">
+                            <p className="text-[11px] font-bold text-purple-300 truncate">
                               {item.leiSigla}
                             </p>
-                            <p className="text-sm font-semibold text-white truncate">
+                            <p className="text-xs font-semibold text-white truncate">
                               Art. {item.artigoNumero}
                             </p>
                           </div>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-white/5 group-hover:bg-purple-600 text-zinc-300 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-                          <Play className="w-3.5 h-3.5 ml-0.5" />
+                        <div className="w-7 h-7 rounded-full bg-white/5 group-hover:bg-purple-600 text-zinc-300 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                          <Play className="w-3 h-3 ml-0.5" />
                         </div>
                       </button>
                     ))}

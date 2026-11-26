@@ -296,7 +296,7 @@ export async function carregarRankingMaisAcessados(
     // Fallback silencioso para ranking por relevância em provas
   }
 
-  const ranked = [...todosArtigos]
+  const sorted = [...todosArtigos]
     .map((art) => {
       const dig = art.artigoNumero.replace(/\D/g, '') || art.artigoNumero;
       const key = `${art.tabelaNome}::${dig}`;
@@ -306,15 +306,31 @@ export async function carregarRankingMaisAcessados(
     .sort((a, b) => {
       if (b.acessos !== a.acessos) return b.acessos - a.acessos;
       return b.art.scoreProva - a.art.scoreProva;
-    })
-    .slice(0, limite)
-    .map((item, idx) => ({
-      ...item.art,
-      acessos: item.acessos,
-      rank: idx + 1,
-    }));
+    });
 
-  return ranked;
+  // Garante diversidade entre leis quando ainda não há histórico de acessos suficiente
+  const selecionados: typeof sorted = [];
+  const porLei = new Map<string, number>();
+  for (const item of sorted) {
+    if (selecionados.length >= limite) break;
+    const countLei = porLei.get(item.art.tabelaNome) || 0;
+    if (item.acessos === 0 && countLei >= 1) continue;
+    selecionados.push(item);
+    porLei.set(item.art.tabelaNome, countLei + 1);
+  }
+
+  if (selecionados.length < limite) {
+    for (const item of sorted) {
+      if (selecionados.length >= limite) break;
+      if (!selecionados.includes(item)) selecionados.push(item);
+    }
+  }
+
+  return selecionados.map((item, idx) => ({
+    ...item.art,
+    acessos: item.acessos,
+    rank: idx + 1,
+  }));
 }
 
 export async function buscarArtigoTexto(
