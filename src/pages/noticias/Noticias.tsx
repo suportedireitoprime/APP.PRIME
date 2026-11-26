@@ -1,97 +1,29 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Landmark, Clock, ExternalLink, Loader2, X, Share2, Scale, MessageCircle, Calendar, Info } from 'lucide-react';
+import { Clock, Scale, Calendar, Info, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useIsDesktop } from '@/hooks/use-desktop';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { getNoticiasCache, prefetchNoticias, subscribeNoticias, fetchNoticiaConteudo, type Noticia, type NoticiaFonte } from '@/services/noticiasService';
 import { useReadNoticias } from '@/hooks/useNoticiaTracking';
 import { newsImg } from '@/lib/cdnImg';
-import NoticiaComentarios from '@/components/vademecum/blog/NoticiaComentarios';
-import NoticiaViewerSheet from '@/components/vademecum/blog/NoticiaViewerSheet';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { LoadingState, EmptyState } from '@/components/ui/states';
-import { Newspaper } from 'lucide-react';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
-import { copiarTexto } from '@/lib/nativo/copiar';
-import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
+import { MONTHS, formatDateParts, getDayList, dayLabel, formatFullDate, toYMD } from '@/lib/noticiasDateUtils';
 
-
-
-
-const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-
-function formatDateParts(dateStr: string) {
-  const d = new Date(dateStr);
-  const day = d.getDate();
-  const month = MONTHS[d.getMonth()];
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  return { day, month, time: `${hours}:${minutes}` };
-}
-
-function formatDateFull(dateStr: string) {
-  const d = new Date(dateStr);
-  const day = d.getDate();
-  const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  return `${day} ${months[d.getMonth()]} · ${hours}:${minutes}`;
-}
-
-function getDayList(centerDate: Date, count = 5): Date[] {
-  // Most recent day first (esquerda), datas passadas à direita.
-  const days: Date[] = [];
-  for (let i = 0; i < count; i++) {
-    const d = new Date(centerDate);
-    d.setDate(d.getDate() - i);
-    days.push(d);
-  }
-  return days;
-}
-
-
-function dayLabel(date: Date): string {
-  const today = new Date();
-  if (date.toDateString() === today.toDateString()) return 'HOJE';
-  return WEEKDAYS[date.getDay()];
-}
-
-function formatFullDate(date: Date): string {
-  const weekdayFull = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
-  const monthFull = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${weekdayFull[date.getDay()]}, ${date.getDate()} de ${monthFull[date.getMonth()]} de ${date.getFullYear()}`;
-}
+const NoticiaViewerSheet = lazy(() => import('@/components/vademecum/blog/NoticiaViewerSheet'));
 
 const Noticias = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const location = useLocation();
-  const isMobile = useIsMobile();
-  const isDesktop = useIsDesktop();
   const [noticias, setNoticias] = useState<Noticia[]>(() => getNoticiasCache() ?? []);
-  
-
 
   const { isRead, markRead } = useReadNoticias();
   const [loading, setLoading] = useState<boolean>(() => getNoticiasCache() === null);
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
   const [dataFiltro, setDataFiltro] = useState<string>(''); // '' = todas, 'YYYY-MM-DD' = dia
   const [fonteFiltro, setFonteFiltro] = useState<'todas' | NoticiaFonte>('todas');
-  const [comentariosOpen, setComentariosOpen] = useState(false);
-  const [comentariosCount, setComentariosCount] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
 
   // Abre a notícia e lazy-carrega o conteúdo markdown (a lista não traz mais o corpo completo)
@@ -150,31 +82,6 @@ const Noticias = () => {
     return () => { cancel = true; };
   }, [noticias, location.state, location.search, selectedNoticia?.id]);
 
-  // Contagem de comentários ao abrir notícia
-  useEffect(() => {
-    if (!selectedNoticia) {
-      setComentariosCount(0);
-      setComentariosOpen(false);
-      return;
-    }
-    let cancel = false;
-    supabase
-      .from('noticias_comentarios')
-      .select('*', { count: 'exact', head: true })
-      .eq('noticia_ref', selectedNoticia.id)
-      .then(({ count }) => {
-        if (!cancel) setComentariosCount(count ?? 0);
-      });
-    return () => { cancel = true; };
-  }, [selectedNoticia]);
-
-  const toYMD = (d: Date) => {
-    const y = d.getFullYear();
-    const m = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
-
   const todayYMD = toYMD(new Date());
   const yesterdayYMD = toYMD(new Date(Date.now() - 86400000));
 
@@ -219,78 +126,12 @@ const Noticias = () => {
   const listNoticias = finalFiltered;
 
 
-  const compartilhar = async (n: Noticia) => {
-    const shareData = {
-      title: n.titulo,
-      text: n.resumo || n.titulo,
-      url: n.link,
-    };
-    try {
-      if (podeCompartilhar()) {
-        await compartilharNativo(shareData);
-      } else {
-        await copiarTexto(`${n.titulo}\n${n.link}`);
-        toast.success('Link copiado');
-      }
-    } catch {
-      /* user cancelled */
-    }
-  };
-
   const fonteLabel = (f: Noticia['fonte']) => {
     if (f === 'gran_oab') return 'Gran OAB';
     if (f === 'gran_concursos') return 'Gran Concursos';
     return 'Migalhas';
   };
   const FonteIcon = (_props: { fonte: Noticia['fonte'] }) => <Scale className="w-3 h-3" />;
-
-  const ContentViewer = ({ noticia }: { noticia: Noticia }) => (
-    <div className="space-y-4">
-      {noticia.imagem_url && (
-        <img
-          src={newsImg(noticia.imagem_url!, 960)}
-          alt={noticia.titulo}
-          className="w-full max-h-52 object-cover rounded-xl -mx-1"
-          decoding="async"
-        />
-      )}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground uppercase tracking-wide">
-          <FonteIcon fonte={noticia.fonte} />
-          {fonteLabel(noticia.fonte)}
-        </span>
-        {noticia.categoria && (
-          <span className="px-2 py-0.5 rounded-md bg-primary/15 text-primary text-[10px] font-bold">
-            {noticia.categoria}
-          </span>
-        )}
-      </div>
-      <h2 className="font-display text-xl text-foreground leading-tight font-bold">
-        {noticia.titulo}
-      </h2>
-      <p className="text-muted-foreground text-[13px] sm:text-sm font-body flex items-center gap-1.5">
-        <Clock className="w-3.5 h-3.5" />
-        {new Date(noticia.data_publicacao).toLocaleDateString('pt-BR')} –{' '}
-        {new Date(noticia.data_publicacao).toLocaleTimeString('pt-BR', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })}
-      </p>
-
-      {noticia.conteudo_md ? (
-        <div className="prose prose-sm max-w-none dark:prose-invert font-body prose-headings:font-display prose-headings:text-foreground prose-p:text-foreground/90 prose-p:my-3 prose-p:leading-relaxed prose-a:text-primary prose-strong:text-foreground prose-img:rounded-lg prose-img:my-4">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{noticia.conteudo_md}</ReactMarkdown>
-        </div>
-      ) : (
-        <div className="text-[15px] font-body leading-relaxed text-foreground whitespace-pre-line">
-          {noticia.conteudo || noticia.resumo || 'Conteúdo não disponível.'}
-        </div>
-      )}
-
-      {/* espaço para não ficar sob os FABs */}
-      <div className="h-24" />
-    </div>
-  );
 
   // Faixa de dias: hoje à esquerda, passado à direita.
   const centerDate = useMemo(() => new Date(), []);
@@ -517,16 +358,19 @@ const Noticias = () => {
         </div>
       </div>
 
-      <NoticiaViewerSheet
-        noticia={selectedNoticia}
-        onClose={() => {
-          setSelectedNoticia(null);
-          // Limpa ?item= da URL para não reabrir ao voltar/atualizar
-          if (new URLSearchParams(location.search).get('item')) {
-            navigate('/noticias', { replace: true });
-          }
-        }}
-      />
+      {selectedNoticia && (
+        <Suspense fallback={null}>
+          <NoticiaViewerSheet
+            noticia={selectedNoticia}
+            onClose={() => {
+              setSelectedNoticia(null);
+              if (new URLSearchParams(location.search).get('item')) {
+                navigate('/noticias', { replace: true });
+              }
+            }}
+          />
+        </Suspense>
+      )}
 
     </div>
   );
