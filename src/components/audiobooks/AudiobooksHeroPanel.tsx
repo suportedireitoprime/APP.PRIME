@@ -5,7 +5,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { AudiobookQuickActionType } from './AudiobooksQuickActionSheet';
 import { AudiobooksHeroWave } from './AudiobooksHeroWave';
 import heroCoverWebp from '@/assets/covers/audiobooks-hero-cover.webp';
-import heroCoverJpg from '@/assets/covers/audiobooks-hero-cover.jpg';
+import heroCoverJpg from '@/assets/covers/audiobooks-hero-cover.webp';
 
 interface AudiobooksHeroPanelProps {
   onBack?: () => void;
