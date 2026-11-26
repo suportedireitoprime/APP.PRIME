@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Scale, Pill, ChevronRight } from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
@@ -22,6 +24,7 @@ const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/S
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 import HomeHeaderHero from '@/components/vademecum/home/HomeHeaderHero';
+import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
 
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
@@ -94,6 +97,42 @@ const IndexMobile = () => {
           <main ref={contentRef} className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-9 pb-2 space-y-8">
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
+
+            {/* Atalhos compactos vermelhos abaixo de Em Alta (Vade Mecum e Pílulas) */}
+            <section className="flex flex-col gap-3">
+              <HomeSectionHeader title="LEIS E PÍLULAS" />
+
+              <div className="grid grid-cols-2 gap-2.5 md:gap-4">
+                {[
+                  { id: 'vade-mecum-atalho', label: 'Vade Mecum', route: '/vade-mecum', icon: Scale },
+                  { id: 'pilulas-atalho', label: 'Pílulas', route: '/pilulas', icon: Pill },
+                ].map(({ id, label, route, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      navigate(route);
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, #BE123C 0%, #881337 55%, #4C0519 100%)',
+                    }}
+                    className="group relative flex items-center justify-between w-full min-h-[68px] sm:min-h-[72px] px-3.5 sm:px-4 py-3 rounded-2xl border border-white/15 hover:border-white/30 shadow-md shadow-rose-950/40 active:scale-[0.98] transition-all duration-300 text-left overflow-hidden"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Icon
+                        className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white/90 shrink-0 transition-transform duration-300 group-hover:scale-105"
+                        strokeWidth={1.6}
+                      />
+                      <span className="font-card text-white font-semibold text-[14px] sm:text-[15px] tracking-[-0.01em] leading-snug truncate">
+                        {label}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/75 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </button>
+                ))}
+              </div>
+            </section>
 
             <MobileHomeSections />
           </main>
