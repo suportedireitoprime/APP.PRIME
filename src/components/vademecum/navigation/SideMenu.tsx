@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
@@ -18,11 +18,77 @@ import AvaliarAppSheet from '@/components/vademecum/sheets/AvaliarAppSheet';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { haptic } from '@/lib/nativeHaptics';
 
+type UserMeta = {
+  display_name?: string;
+  full_name?: string;
+  avatar_url?: string;
+  picture?: string;
+};
+
 interface SideMenuProps {
   open: boolean;
   onClose: () => void;
   onNavigate?: (section: string) => void;
 }
+
+// Extraído fora do componente — evita recriar o objeto a cada click
+const DIRECT_ROUTES: Record<string, string> = {
+  // 1. IA & Chat
+  'horus': '/assistente-horus',
+  'assistente-horus': '/assistente-horus',
+  'me-explique': '/me-explique',
+  'chat-juridico': '/chat-juridico',
+
+  // 2. Vade Mecum
+  'vademecum': '/vade-mecum',
+  'constituicao': '/legislacao/constituicao',
+  'codigos': '/vade-mecum/codigos',
+  'estatutos': '/legislacao/estatuto',
+  'jurisprudencia': '/jurisprudencia',
+  'leis-ordinarias': '/legislacao/lei-ordinaria',
+  'legislacao-especial': '/vade-mecum/especiais',
+  'legislacao-estadual': '/legislacao-estadual',
+
+  // 3. Biblioteca
+  'biblioteca': '/bibliotecas',
+  'biblioteca-todas': '/bibliotecas',
+  'biblioteca-em-alta': '/bibliotecas/em-alta',
+  'biblioteca-classicos': '/bibliotecas/classicos',
+  'biblioteca-meus-livros': '/pessoal/livros',
+  'biblioteca-offline': '/modo-offline/livros',
+
+  // 4. Estudos & Prática
+  'questoes': '/questoes',
+  'simulados': '/simulados',
+  'flashcards': '/flashcards',
+  'videoaulas': '/videoaulas',
+  'audioaulas': '/audioaulas',
+  'audiobooks': '/audiobooks',
+  'mapas-mentais': '/mapas-mentais',
+  'lei-seca': '/lei-seca',
+  'pilulas': '/pilulas',
+  'resumos-juridicos': '/resumos-juridicos',
+  'aulas-interativas': '/aulas',
+
+  // 5. Ferramentas & Consulta
+  'dicionario': '/ferramentas/dicionario',
+  'radares': '/radares',
+  'noticias': '/noticias',
+  'lembretes': '/lembretes',
+  'modo-offline': '/modo-offline',
+  'ferramentas': '/ferramentas',
+
+  // 6. Conta & Sistema
+  'perfil': '/perfil',
+  'planos': '/assinatura',
+  'suporte': '/suporte',
+  'sobre': '/sobre',
+
+  // 7. Admin
+  'admin-funcoes': '/admin-funcoes',
+  'admin-assinantes': '/admin-assinantes',
+  'admin-push': '/admin-push',
+};
 
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
@@ -48,7 +114,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         } else {
           setAppVersion('v1.0.0');
         }
-      } catch (err) {
+      } catch {
         if (!cancel) setAppVersion('v1.0.0');
       }
     };
@@ -56,43 +122,51 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     return () => { cancel = true; };
   }, []);
 
+  // Consolidado: open state → body dataset + CustomEvent + preload + cleanup
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('sidemenu-state', { detail: { open } }));
     if (open) {
       document.body.dataset.sideMenuOpen = 'true';
-      import('@/pages/assinatura/Assinatura.tsx').catch(() => {});
-      import('@/pages/perfil/Perfil.tsx').catch(() => {});
-    } else delete document.body.dataset.sideMenuOpen;
-    return () => { delete document.body.dataset.sideMenuOpen; };
-  }, [open]);
-
-  useEffect(() => {
+      void import('@/pages/assinatura/Assinatura.tsx').catch(() => {});
+      void import('@/pages/perfil/Perfil.tsx').catch(() => {});
+    } else {
+      delete document.body.dataset.sideMenuOpen;
+    }
     return () => {
       window.dispatchEvent(new CustomEvent('sidemenu-state', { detail: { open: false } }));
       delete document.body.dataset.sideMenuOpen;
     };
-  }, []);
+  }, [open]);
 
-  const displayName =
-    (user?.user_metadata as any)?.display_name ||
-    (user?.user_metadata as any)?.full_name ||
-    user?.email?.split('@')[0] ||
-    'Usuário';
-  const userEmail = user?.email || '';
   const { data: profileSummary } = useProfileSummary();
-  const rawAvatarUrl =
-    (profileSummary?.avatarUrl || undefined) ||
-    (user?.user_metadata?.avatar_url as string | undefined) ||
-    (user?.user_metadata?.picture as string | undefined);
+
+  // Memoizado: evita recalcular displayName/iniciais/avatarUrl a cada render
+  const { displayName, iniciais, avatarUrl: rawAvatarUrl } = useMemo(() => {
+    const meta = user?.user_metadata as UserMeta | undefined;
+    const rawName =
+      meta?.display_name ||
+      meta?.full_name ||
+      user?.email?.split('@')[0] ||
+      'Usuário';
+    const rawAvatar =
+      profileSummary?.avatarUrl ||
+      meta?.avatar_url ||
+      meta?.picture;
+    const inics =
+      String(rawName)
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((n: string) => n[0]?.toUpperCase())
+        .join('') || 'U';
+    return { displayName: rawName, iniciais: inics, avatarUrl: rawAvatar };
+  }, [user, profileSummary]);
+
   const [avatarBroken, setAvatarBroken] = useState(false);
   useEffect(() => { setAvatarBroken(false); }, [rawAvatarUrl]);
   const avatarUrl = avatarBroken ? undefined : rawAvatarUrl;
-  const iniciais = (String(displayName)
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n: string) => n[0]?.toUpperCase())
-    .join('') || 'U');
+
+  const userEmail = user?.email || '';
   const isAdmin = isAdminEmail(userEmail);
 
   const handleItemClick = async (id: string) => {
@@ -117,66 +191,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       return;
     }
 
-    const directRoutes: Record<string, string> = {
-      // 1. IA & Chat
-      'horus': '/assistente-horus',
-      'assistente-horus': '/assistente-horus',
-      'me-explique': '/me-explique',
-      'chat-juridico': '/chat-juridico',
-
-      // 2. Vade Mecum
-      'vademecum': '/vade-mecum',
-      'constituicao': '/legislacao/constituicao',
-      'codigos': '/vade-mecum/codigos',
-      'estatutos': '/legislacao/estatuto',
-      'jurisprudencia': '/jurisprudencia',
-      'leis-ordinarias': '/legislacao/lei-ordinaria',
-      'legislacao-especial': '/vade-mecum/especiais',
-      'legislacao-estadual': '/legislacao-estadual',
-
-      // 3. Biblioteca
-      'biblioteca': '/bibliotecas',
-      'biblioteca-todas': '/bibliotecas',
-      'biblioteca-em-alta': '/bibliotecas/em-alta',
-      'biblioteca-classicos': '/bibliotecas/classicos',
-      'biblioteca-meus-livros': '/pessoal/livros',
-      'biblioteca-offline': '/modo-offline/livros',
-
-      // 4. Estudos & Prática
-      'questoes': '/questoes',
-      'simulados': '/simulados',
-      'flashcards': '/flashcards',
-      'videoaulas': '/videoaulas',
-      'audioaulas': '/audioaulas',
-      'audiobooks': '/audiobooks',
-      'mapas-mentais': '/mapas-mentais',
-      'lei-seca': '/lei-seca',
-      'pilulas': '/pilulas',
-      'resumos-juridicos': '/resumos-juridicos',
-      'aulas-interativas': '/aulas',
-
-      // 4. Ferramentas & Consulta
-      'dicionario': '/ferramentas/dicionario',
-      'radares': '/radares',
-      'noticias': '/noticias',
-      'lembretes': '/lembretes',
-      'modo-offline': '/modo-offline',
-      'ferramentas': '/ferramentas',
-
-      // 5. Conta & Sistema
-      'perfil': '/perfil',
-      'planos': '/assinatura',
-      'suporte': '/suporte',
-      'sobre': '/sobre',
-
-      // 6. Admin
-      'admin-funcoes': '/admin-funcoes',
-      'admin-assinantes': '/admin-assinantes',
-      'admin-push': '/admin-push',
-    };
-
-    if (directRoutes[id]) {
-      navigate(directRoutes[id]);
+    if (DIRECT_ROUTES[id]) {
+      navigate(DIRECT_ROUTES[id]);
       onClose();
       return;
     }
@@ -193,7 +209,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         {/* Profile card */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary/80 to-secondary/40 border border-border p-4">
           <div className="flex items-center justify-between gap-3">
-            {/* Lado Esquerdo: Avatar + Identificação Completa (Sem abreviar o nome) */}
+            {/* Lado Esquerdo: Avatar + Identificação Completa */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={() => { navigate('/perfil'); onClose(); }}
@@ -228,7 +244,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               </div>
             </div>
 
-            {/* Lado Direito: Tag Premium (se for assinante pago definitivo) */}
+            {/* Lado Direito: Tag Premium */}
             {!isTrial && isPremium && (
               <div className="shrink-0 -mt-1 flex items-center">
                 <div className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 text-[10.5px] font-body font-black uppercase tracking-wider text-amber-300 shadow-md shadow-amber-500/15">
@@ -252,8 +268,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   Free
                 </span>
                 <button
-                  onMouseEnter={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
-                  onPointerDown={() => { import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+                  onMouseEnter={() => { void import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+                  onPointerDown={() => { void import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
                   onClick={() => { navigate('/assinatura'); onClose(); }}
                   className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform shadow-sm"
                 >
@@ -263,7 +279,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             )}
           </div>
 
-          {/* Faixa Minimalista de Teste: 100% da largura, sem espremer ou abreviar o nome */}
+          {/* Faixa Minimalista de Teste */}
           {isTrial && (
             <TrialStrip
               expiresAt={expiresAt}
@@ -285,12 +301,12 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
-        {/* Card com as funções principais: Minha assinatura, Avaliar aplicativo, Suporte, Sobre o app */}
+        {/* Conta & Suporte */}
         <GroupCard title="Conta & Suporte">
           <MenuRow
             icon={Gem}
             iconColor="text-red-400"
-            label={isPremium ? "Minha assinatura" : "Minha assinatura / Planos"}
+            label={isPremium ? 'Minha assinatura' : 'Minha assinatura / Planos'}
             onClick={() => handleItemClick('planos')}
           />
           <MenuRow
@@ -314,7 +330,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
-        {/* Card Exclusivo do Administrador */}
+        {/* Admin exclusivo */}
         {isAdmin && (
           <GroupCard title="Admin">
             <MenuRow
@@ -326,7 +342,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           </GroupCard>
         )}
 
-        {/* Card de Sessão: Sair */}
+        {/* Sair */}
         <GroupCard>
           <MenuRow
             icon={LogOut}
@@ -477,7 +493,6 @@ function TrialStrip({
         onClick={onAssinar}
         className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-400/70 bg-gradient-to-r from-amber-500/40 via-amber-400/25 to-amber-500/40 text-[10.5px] font-black uppercase tracking-wider text-amber-200 shadow-md shadow-amber-500/25 active:scale-95 transition-all cursor-pointer shrink-0"
       >
-        {/* Faixa de reflexo luminoso dinâmico (Shine reflection sweep) */}
         <span
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 -left-full w-full -skew-x-12 animate-[planos-shine_2.8s_ease-in-out_infinite]"

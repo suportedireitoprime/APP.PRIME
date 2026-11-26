@@ -1,6 +1,11 @@
-import { useState, useEffect, memo } from 'react';
-import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu, Camera, Speech } from 'lucide-react';
+import { useState, useEffect, useMemo, memo, type ElementType } from 'react';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+import {
+  Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel,
+  Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock,
+  User as UserIcon, BookOpenText, CloudDownload, CreditCard, LifeBuoy,
+  Library, Route as RouteIcon, FileUp, Heart, Speech,
+} from 'lucide-react';
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
@@ -9,10 +14,9 @@ import SuporteSheet from '@/components/vademecum/sheets/SuporteSheet';
 import DesktopCategoriaSheet from '@/components/vademecum/desktop/DesktopCategoriaSheet';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { isAdminEmail } from '@/lib/adminEmails';
 import {
   AlertDialog,
@@ -25,11 +29,23 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
+
 type Tab = 'legislacao' | 'noticias' | 'ferramentas' | 'biblioteca';
 
 interface DesktopSidebarProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
+}
+
+interface SidebarNavItem {
+  readonly id: string;
+  readonly label: string;
+  readonly icon: ElementType;
+  readonly route?: string;
+  readonly color?: string;
+  readonly disabled?: boolean;
+  readonly onClick?: () => void;
 }
 
 const CATEGORIAS = [
@@ -41,62 +57,79 @@ const CATEGORIAS = [
   { id: 'sumula', tipo: 'sumula', label: 'Súmulas', icon: Gavel, color: 'hsl(348 78% 38%)' },
   { id: 'lei-especial', tipo: 'lei-especial', label: 'Leis Especiais', icon: BookMarked, color: '#A855F7' },
   { id: 'previdenciario', tipo: 'previdenciario', label: 'Previdenciário', icon: HeartPulse, color: '#14B8A6' },
-];
+] as const;
 
+const SECOES_NAV = [
+  { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
+  { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626', route: '/' },
+  { id: 'biblioteca' as Tab, label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
+  { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981', route: '/noticias' },
+] as const;
 
-const CONTEUDO_ITEMS = [
+const CONTEUDO_ITEMS: readonly SidebarNavItem[] = [
   { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
   { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
   { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
   { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
-];
+] as const;
 
-const FERRAMENTAS_ITEMS = [
+const FERRAMENTAS_ITEMS: readonly SidebarNavItem[] = [
   { id: 'me-explique', label: 'Me Explique (IA)', icon: Speech, route: '/me-explique', color: '#E11D48' },
   { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Gavel, route: '/ferramentas', color: '#DC2626' },
   { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
-];
+] as const;
 
-const CONTA_ITEMS = [
+const CONTA_ITEMS: readonly SidebarNavItem[] = [
   { id: 'perfil', label: 'Meu Perfil', icon: UserIcon, route: '/perfil', color: '#64748B' },
   { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
   { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
   { id: 'sobre', label: 'Sobre o App', icon: Info, route: '/sobre', color: '#06B6D4' },
   { id: 'sair', label: 'Sair', icon: LogOut, color: 'hsl(348 78% 38%)' },
-];
+] as const;
 
+const PROFISSAO_MAP: Record<string, string> = {
+  faculdade: 'Faculdade e OAB',
+  oab: 'Faculdade e OAB',
+  concurso: 'Concurseiro',
+  advogado: 'Advogado',
+};
 
 const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const { data: profileSummary } = useProfileSummary();
   const isAdmin = isAdminEmail(user?.email);
+
   const [isHovered, setIsHovered] = useState(false);
   const collapsed = !isHovered;
   const [suporteOpen, setSuporteOpen] = useState(false);
   const [catSheet, setCatSheet] = useState<{ tipo: string; label: string; color?: string } | null>(null);
-  const [profile, setProfile] = useState<{ display_name?: string; perfil_tipos?: string[] } | null>(null);
   const [avatarBroken, setAvatarBroken] = useState(false);
   const [logoutPrompt, setLogoutPrompt] = useState(false);
 
-  const rawAvatarUrl =
-    ((user?.user_metadata as any)?.avatar_url as string | undefined) ||
-    ((user?.user_metadata as any)?.picture as string | undefined) ||
-    undefined;
+  const { displayName, initial, profissao, rawAvatarUrl } = useMemo(() => {
+    const meta = user?.user_metadata as { avatar_url?: string; picture?: string } | undefined;
+    const name = profileSummary?.displayName || user?.email?.split('@')[0] || 'Visitante';
+    const tipos = profileSummary?.perfilTipos;
+    const role = (tipos?.[0] && PROFISSAO_MAP[tipos[0]]) || tipos?.[0] || 'Vade Mecum Profissional';
+    const avatar = profileSummary?.avatarUrl || meta?.avatar_url || meta?.picture || undefined;
+    return {
+      displayName: name,
+      initial: name.charAt(0).toUpperCase(),
+      profissao: role,
+      rawAvatarUrl: avatar,
+    };
+  }, [user, profileSummary]);
+
   const avatarUrl = avatarBroken ? undefined : rawAvatarUrl;
   useEffect(() => { setAvatarBroken(false); }, [rawAvatarUrl]);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('profiles')
-      .select('display_name, perfil_tipos')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => data && setProfile(data as any));
-  }, [user]);
-
-  const handleItemClick = async (item: { id: string; route?: string }) => {
+  const handleItemClick = (item: Pick<SidebarNavItem, 'id' | 'route' | 'onClick'>) => {
+    if (item.onClick) {
+      item.onClick();
+      return;
+    }
     if (item.id === 'sair') {
       setLogoutPrompt(true);
       return;
@@ -109,30 +142,24 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
     else console.warn('[DesktopSidebar] item sem rota nem handler:', item.id);
   };
 
-  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'Visitante';
-  const initial = displayName.charAt(0).toUpperCase();
-  const profissaoMap: Record<string, string> = {
-    faculdade: 'Faculdade e OAB',
-    oab: 'Faculdade e OAB',
-    concurso: 'Concurseiro',
-    advogado: 'Advogado',
-  };
-  const profissao = (profile?.perfil_tipos && profissaoMap[profile.perfil_tipos[0]]) || (profile?.perfil_tipos && profile.perfil_tipos[0]) || 'Vade Mecum Profissional';
+  const meuAcervoItems = useMemo<readonly SidebarNavItem[]>(() => [
+    { id: 'bib-leitura', label: 'Leitura', icon: BookMarked, onClick: () => abrirAtalhoBiblioteca('leitura') },
+    { id: 'bib-trilhas', label: 'Trilhas', icon: RouteIcon, route: '/bibliotecas/trilhas' },
+    { id: 'bib-favoritos', label: 'Favoritos', icon: Heart, onClick: () => abrirAtalhoBiblioteca('favoritos') },
+    { id: 'bib-personalizado', label: 'Personalizado', icon: FileUp, route: '/modo-offline' },
+  ], []);
 
-  const renderSection = (
-    title: string,
-    items: ReadonlyArray<{ id: string; label: string; icon: any; route?: string; color?: string; disabled?: boolean }>,
-  ) => (
+  const renderSection = (title: string, items: readonly SidebarNavItem[], usePrimaryTint = false) => (
     <div className="py-1 border-t border-border/50">
       {!collapsed && (
         <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
           {title}
         </p>
       )}
-      {items.map(item => {
+      {items.map((item) => {
         const Icon = item.icon;
-        const isDisabled = (item as any).disabled;
-        const color = (item as any).color || '#DC2626';
+        const isDisabled = item.disabled;
+        const color = item.color || '#DC2626';
         return (
           <button
             key={item.id}
@@ -152,15 +179,23 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
           >
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
-              style={isDisabled ? {} : { backgroundColor: `${color}33`, boxShadow: `0 2px 6px -2px ${color}55` }}
+              style={
+                isDisabled
+                  ? undefined
+                  : usePrimaryTint
+                    ? { backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }
+                    : { backgroundColor: `${color}33`, boxShadow: `0 2px 6px -2px ${color}55` }
+              }
             >
-              <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: isDisabled ? undefined : color }} />
+              {!usePrimaryTint && (
+                <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: isDisabled ? undefined : color }} />
+              )}
               <Icon
-                className="w-[16px] h-[16px] drop-shadow-sm"
-                style={isDisabled ? {} : { color, filter: 'saturate(1.4) brightness(1.15)' }}
+                className={`w-[16px] h-[16px] drop-shadow-sm ${usePrimaryTint ? 'text-primary' : ''}`}
+                style={isDisabled || usePrimaryTint ? undefined : { color, filter: 'saturate(1.4) brightness(1.15)' }}
               />
             </div>
-            {!collapsed && <span>{item.label}</span>}
+            {!collapsed && <span className="truncate">{item.label}</span>}
           </button>
         );
       })}
@@ -169,14 +204,15 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
 
   return (
     <>
-    <div className="relative w-[72px] h-full shrink-0 z-50">
-      <aside 
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`absolute top-0 left-0 h-screen ${collapsed ? 'w-[72px]' : 'w-[268px]'} bg-zinc-950 border-r border-border/50 flex flex-col overflow-hidden shrink-0 ${collapsed ? '' : 'shadow-[4px_0_24px_rgba(0,0,0,0.5)]'} z-50`} 
-        style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}>
-        {/* Header – user profile */}
-        <div className="h-[104px] flex items-center px-4 shrink-0 border-b border-border/50 bg-zinc-950">
+      <div className="relative w-[72px] h-full shrink-0 z-50">
+        <aside
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`absolute top-0 left-0 h-screen ${collapsed ? 'w-[72px]' : 'w-[268px]'} bg-zinc-950 border-r border-border/50 flex flex-col overflow-hidden shrink-0 ${collapsed ? '' : 'shadow-[4px_0_24px_rgba(0,0,0,0.5)]'} z-50`}
+          style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}
+        >
+          {/* Header – user profile */}
+          <div className="h-[104px] flex items-center px-4 shrink-0 border-b border-border/50 bg-zinc-950">
             <div className="w-12 h-12 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-transparent hover:border-primary/50 transition-colors shrink-0">
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />
@@ -190,267 +226,202 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
                 <p className="text-[11px] font-body text-muted-foreground truncate">{profissao}</p>
               </div>
             )}
-        </div>
-
-
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto py-1 overscroll-contain">
-        {/* Funções Admin - only for admin */}
-        {isAdmin && (
-          <div className="pb-1">
-            {!collapsed && (
-              <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                Admin
-              </p>
-            )}
-            <button
-              onPointerDown={() => { import('@/pages/admin/AdminFuncoes.tsx').catch(() => {}); }}
-              onClick={() => navigate('/admin-funcoes')}
-              title={collapsed ? 'Funções Admin' : undefined}
-              className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
-            >
-              <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                <Lock className="w-[16px] h-[16px] text-primary" />
-              </div>
-              {!collapsed && <span className="font-semibold">Funções Admin</span>}
-            </button>
           </div>
-        )}
 
-        {/* Main Nav */}
-        <div className={`pb-1 ${isAdmin ? 'border-t border-border/50 pt-1' : ''}`}>
-          {!collapsed && (
-            <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-              Seções
-            </p>
-          )}
-          {[
-            { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
-            { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626', route: '/' },
-            { id: 'biblioteca' as Tab, label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
-            { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981', route: '/noticias' },
-          ].map(item => {
-            const Icon = item.icon;
-            const route = (item as any).route as string | undefined;
-            const active = !route && activeTab === (item.id as Tab);
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (route) navigate(route);
-                  else onTabChange(item.id as Tab);
-                }}
-                title={collapsed ? item.label : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body transition-all ${
-                  active
-                    ? 'bg-primary text-primary-foreground font-bold shadow-md shadow-primary/25'
-                    : 'text-foreground/75 hover:bg-secondary hover:text-foreground'
-                }`}
-              >
-                <div
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden ${
-                    active ? 'bg-primary-foreground/20' : ''
-                  }`}
-                  style={active ? {} : { backgroundColor: `${item.color}33`, boxShadow: `0 2px 6px -2px ${item.color}55` }}
-                >
-                  <Icon
-                    className={`w-[16px] h-[16px] drop-shadow-sm ${active ? 'text-primary-foreground' : ''}`}
-                    style={active ? {} : { color: item.color, filter: 'saturate(1.4) brightness(1.15)' }}
-                  />
-                </div>
-                {!collapsed && <span>{item.label}</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {activeTab === 'biblioteca' ? (
-          <>
-            <div className="pb-1 border-t border-border/50 pt-1">
-              {!collapsed && (
-                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                  Meu Acervo
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={() => abrirAtalhoBiblioteca('leitura')}
-                title={collapsed ? 'Leitura' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
-              >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
-                  <BookMarked className="w-[16px] h-[16px] text-primary" />
-                </div>
-                {!collapsed && <span>Leitura</span>}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/bibliotecas/trilhas')}
-                title={collapsed ? 'Trilhas' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
-              >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
-                  <RouteIcon className="w-[16px] h-[16px] text-primary" />
-                </div>
-                {!collapsed && <span>Trilhas</span>}
-              </button>
-              <button
-                type="button"
-                onClick={() => abrirAtalhoBiblioteca('favoritos')}
-                title={collapsed ? 'Favoritos' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
-              >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
-                  <Heart className="w-[16px] h-[16px] text-primary" />
-                </div>
-                {!collapsed && <span>Favoritos</span>}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/modo-offline')}
-                title={collapsed ? 'Personalizado' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
-              >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
-                  <FileUp className="w-[16px] h-[16px] text-primary" />
-                </div>
-                {!collapsed && <span>Personalizado</span>}
-              </button>
-            </div>
-            
-            <div className="pb-1 border-t border-border/50 pt-1">
-              {!collapsed && (
-                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                  Coleções
-                </p>
-              )}
-              {COLECOES.map(cat => (
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto py-1 overscroll-contain">
+            {isAdmin && (
+              <div className="pb-1">
+                {!collapsed && (
+                  <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                    Admin
+                  </p>
+                )}
                 <button
-                  key={cat.id}
-                  type="button"
-                  title={collapsed ? cat.label : undefined}
-                  className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                  onPointerDown={() => { void import('@/pages/admin/AdminFuncoes.tsx').catch(() => {}); }}
+                  onClick={() => navigate('/admin-funcoes')}
+                  title={collapsed ? 'Funções Admin' : undefined}
+                  className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
                 >
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: '#D9770633', boxShadow: '0 2px 6px -2px #D9770655' }}>
-                    <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: '#D97706' }} />
-                    <BookOpenText className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: '#D97706' }} />
+                  <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                    <Lock className="w-[16px] h-[16px] text-primary" />
                   </div>
-                  {!collapsed && <span className="truncate">{cat.label}</span>}
+                  {!collapsed && <span className="font-semibold">Funções Admin</span>}
                 </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Categorias - book spine style */}
-            <div className="pb-1 border-t border-border/50 pt-1">
+              </div>
+            )}
+
+            {/* Main Nav */}
+            <div className={`pb-1 ${isAdmin ? 'border-t border-border/50 pt-1' : ''}`}>
               {!collapsed && (
                 <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-                  Categorias
+                  Seções
                 </p>
               )}
-              {CATEGORIAS.map(cat => {
-                const Icon = cat.icon;
+              {SECOES_NAV.map((item) => {
+                const Icon = item.icon;
+                const active = !item.route && activeTab === item.id;
                 return (
                   <button
-                    key={cat.id}
+                    key={item.id}
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Constituição é única no seu tipo    abre direto.
-                      if (cat.tipo === 'constituicao') {
-                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                        return;
-                      }
-                      // Categorias carregadas do banco (leis ordinárias, decretos,
-                      // súmulas) têm página própria; as demais abrem o painel.
-                      const doCatalogo = getLeisPorTipo(cat.tipo);
-                      if (doCatalogo.length === 0) {
-                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                        return;
-                      }
-                      setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
+                      if (item.route) navigate(item.route);
+                      else onTabChange(item.id as Tab);
                     }}
-                    title={collapsed ? cat.label : undefined}
-                    className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                    title={collapsed ? item.label : undefined}
+                    className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body transition-all ${
+                      active
+                        ? 'bg-primary text-primary-foreground font-bold shadow-md shadow-primary/25'
+                        : 'text-foreground/75 hover:bg-secondary hover:text-foreground'
+                    }`}
                   >
                     <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
-                      style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden ${
+                        active ? 'bg-primary-foreground/20' : ''
+                      }`}
+                      style={active ? undefined : { backgroundColor: `${item.color}33`, boxShadow: `0 2px 6px -2px ${item.color}55` }}
                     >
-                      <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
-                      <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
+                      <Icon
+                        className={`w-[16px] h-[16px] drop-shadow-sm ${active ? 'text-primary-foreground' : ''}`}
+                        style={active ? undefined : { color: item.color, filter: 'saturate(1.4) brightness(1.15)' }}
+                      />
                     </div>
-                    {!collapsed && <span>{cat.label}</span>}
+                    {!collapsed && <span>{item.label}</span>}
                   </button>
                 );
               })}
             </div>
 
+            {activeTab === 'biblioteca' ? (
+              <>
+                {renderSection('Meu Acervo', meuAcervoItems, true)}
+                <div className="pb-1 border-t border-border/50 pt-1">
+                  {!collapsed && (
+                    <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                      Coleções
+                    </p>
+                  )}
+                  {COLECOES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      title={collapsed ? cat.label : undefined}
+                      className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                    >
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: '#D9770633', boxShadow: '0 2px 6px -2px #D9770655' }}>
+                        <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: '#D97706' }} />
+                        <BookOpenText className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: '#D97706' }} />
+                      </div>
+                      {!collapsed && <span className="truncate">{cat.label}</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="pb-1 border-t border-border/50 pt-1">
+                  {!collapsed && (
+                    <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                      Categorias
+                    </p>
+                  )}
+                  {CATEGORIAS.map((cat) => {
+                    const Icon = cat.icon;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (cat.tipo === 'constituicao') {
+                            navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                            return;
+                          }
+                          const doCatalogo = getLeisPorTipo(cat.tipo);
+                          if (doCatalogo.length === 0) {
+                            navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                            return;
+                          }
+                          setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
+                        }}
+                        title={collapsed ? cat.label : undefined}
+                        className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                      >
+                        <div
+                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
+                          style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
+                        >
+                          <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
+                          <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
+                        </div>
+                        {!collapsed && <span>{cat.label}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
 
-            {/* Conteúdo */}
-            {renderSection('Conteúdo', CONTEUDO_ITEMS)}
+                {renderSection('Conteúdo', CONTEUDO_ITEMS)}
+                {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
+              </>
+            )}
 
-            {/* Ferramentas */}
-            {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
-          </>
-        )}
+            {renderSection('Minha conta', CONTA_ITEMS)}
+          </div>
 
-        {/* Minha conta */}
-        {renderSection('Minha conta', CONTA_ITEMS)}
+          {/* Footer */}
+          <div className="p-4 border-t border-border">
+            {collapsed ? (
+              <div className="flex justify-center">
+                <img src={primeLogo} alt="Direito Prime" className="w-5 h-5 rounded-full object-cover opacity-50" />
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <img src={primeLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
+                <p className="text-[10px] font-body text-muted-foreground">© 2026 Direito Prime</p>
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-border">
-        {collapsed ? (
-          <div className="flex justify-center">
-            <img src={primeLogo} alt="Direito Prime" className="w-5 h-5 rounded-full object-cover opacity-50" />
-          </div>
-        ) : (
-          <div className="flex items-center justify-between">
-            <img src={primeLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
-            <p className="text-[10px] font-body text-muted-foreground">© 2026 Direito Prime</p>
-          </div>
-        )}
-      </div>
-    </aside>\n    </div>
-
-    <SuporteSheet open={suporteOpen} onClose={() => setSuporteOpen(false)} />
-    <DesktopCategoriaSheet
-      open={!!catSheet}
-      tipo={catSheet?.tipo ?? null}
-      label={catSheet?.label ?? ''}
-      color={catSheet?.color}
-      onClose={() => setCatSheet(null)}
-    />
-    <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
-      <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Sair da conta</AlertDialogTitle>
-          <AlertDialogDescription>
-            Você quer realmente sair da conta?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={(e) => {
-              e.preventDefault();
-              setLogoutPrompt(false);
-              navigate('/auth', { replace: true });
-              setTimeout(() => signOut(), 50);
-            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-            Sim, sair
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <SuporteSheet open={suporteOpen} onClose={() => setSuporteOpen(false)} />
+      <DesktopCategoriaSheet
+        open={!!catSheet}
+        tipo={catSheet?.tipo ?? null}
+        label={catSheet?.label ?? ''}
+        color={catSheet?.color}
+        onClose={() => setCatSheet(null)}
+      />
+      <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
+        <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sair da conta</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você quer realmente sair da conta?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                setLogoutPrompt(false);
+                navigate('/auth', { replace: true });
+                setTimeout(() => signOut(), 50);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sim, sair
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 });
 
 export default DesktopSidebar;
-
