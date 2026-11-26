@@ -576,16 +576,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
-  // Tela de login desativada temporariamente conforme solicitação
-  const effectiveUser = user ?? DEV_MOCK_USER;
-  const effectiveSession = session ?? DEV_MOCK_SESSION;
-
   const contextValue = useMemo(() => ({
-    user: effectiveUser,
-    session: effectiveSession,
-    loading: false,
+    user,
+    session,
+    loading,
     signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword
-  }), [effectiveUser, effectiveSession, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword]);
+  }), [user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword]);
 
   return (
     <AuthContext.Provider value={contextValue}>
