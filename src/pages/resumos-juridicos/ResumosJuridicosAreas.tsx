@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2, Search, X } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
 import ResumosContinuarCard from "@/components/resumos/ResumosContinuarCard";

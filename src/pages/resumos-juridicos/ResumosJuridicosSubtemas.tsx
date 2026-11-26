@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { useEffect, useState, useMemo } from "react";
+import { cleanTitulo } from "@/components/resumos-juridicos/resumoMarkdownNormalizer";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,12 +26,6 @@ type Metodo = "conceitos" | "cornell" | "feynman";
 
 // Cache em memória para subtemas
 const subtemasCache = new Map<string, ResumoRow[]>();
-
-/** Remove prefixos numéricos redundantes ("01. ", "02 - ", etc.) já exibidos no nó lateral */
-const cleanTitulo = (raw?: string | null): string => {
-  if (!raw) return '';
-  return raw.replace(/^\d+[\.\-\s_]+\s*/i, '').trim();
-};
 
 export default function ResumosJuridicosSubtemas() {
   const { area, tema } = useParams<{ area: string; tema: string }>();
@@ -301,12 +295,9 @@ export default function ResumosJuridicosSubtemas() {
                     setOrdem(o.id);
                   }}
                   className={cn(
-                    "relative flex-1 flex justify-center items-center rounded-t-2xl transition-all duration-300 ease-out border-x border-t border-white/5 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider",
                     "relative flex-1 h-full flex justify-center items-center rounded-t-2xl border-x border-t font-bold text-[9px] sm:text-[10px] uppercase tracking-wider cursor-pointer select-none transition-colors duration-200",
-                    ativo 
-                      ? "h-full bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)]" 
-                      : "h-[75%] bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white"
-                      ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-white/10" 
+                    ativo
+                      ? "bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)] border-white/10"
                       : "bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white border-white/5 opacity-80"
                   )}
                   style={{
