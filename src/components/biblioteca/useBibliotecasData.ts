@@ -1,12 +1,10 @@
-// @ts-nocheck
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
-import { COLECOES, findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { COLECOES, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
-import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { startCapasPrefetch } from '@/services/bibliotecaCapasPrefetch';
@@ -48,7 +46,7 @@ export function useBibliotecasData() {
         await Promise.all(
           missing.map(async (c) => {
             try {
-              const { count } = await supabase.from(c.table).select('id', { count: 'exact', head: true });
+              const { count } = await supabase.from(c.table as never).select('id', { count: 'exact', head: true });
               result[c.id] = count || 0;
             } catch {
               result[c.id] = 0;
@@ -63,8 +61,9 @@ export function useBibliotecasData() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state?.openLivro) {
-      setLivroAberto(location.state.openLivro as LivroNormalizado);
+    const state = location.state as { openLivro?: LivroNormalizado } | null;
+    if (state?.openLivro) {
+      setLivroAberto(state.openLivro);
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
