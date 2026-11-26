@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { lazy, Suspense, useRef, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,12 +11,17 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useAudioaulas } from '@/hooks/useAudioaulas';
 import { AudioaulasHero } from '@/components/audioaulas/home/AudioaulasHero';
 import { AudioaulasGridAreas, type ModoVisualizacao } from '@/components/audioaulas/home/AudioaulasGridAreas';
-import { AudioaulasListaAulas } from '@/components/audioaulas/home/AudioaulasListaAulas';
 import { AudioaulasBuscaInput } from '@/components/audioaulas/home/AudioaulasBuscaInput';
 import { AudioaulasBuscaGlobal } from '@/components/audioaulas/home/AudioaulasBuscaGlobal';
-import { AudioaulasPlayerModal } from '@/components/audioaulas/home/AudioaulasPlayerModal';
 import { AudioaulasContinuarOuvindo } from '@/components/audioaulas/home/AudioaulasContinuarOuvindo';
 import { audioIdOf } from '@/contexts/AudioaulasPlayerContext';
+
+const AudioaulasListaAulas = lazy(() =>
+  import('@/components/audioaulas/home/AudioaulasListaAulas').then((m) => ({ default: m.AudioaulasListaAulas }))
+);
+const AudioaulasPlayerModal = lazy(() =>
+  import('@/components/audioaulas/home/AudioaulasPlayerModal').then((m) => ({ default: m.AudioaulasPlayerModal }))
+);
 
 const Audioaulas = () => {
   const navigate = useNavigate();
@@ -161,20 +166,28 @@ const Audioaulas = () => {
         </div>
       ) : areaAtual ? (
         /* ───────── LISTA DA ÁREA ───────── */
-        <AudioaulasListaAulas
-          areaAtual={areaAtual}
-          aba={state.aba}
-          temasDaArea={state.temasDaArea}
-          listaAba={state.listaAba}
-          busca={state.busca}
-          atualId={state.atualId}
-          tocando={state.tocando}
-          favoritos={state.favoritos}
-          alternarFavorito={state.alternarFavorito}
-          handleTocarAula={state.handleTocarAula}
-          capituloSelecionado={capituloSelecionado}
-          setCapituloSelecionado={setCapituloSelecionado}
-        />
+        <Suspense
+          fallback={
+            <div className="py-20 grid place-items-center text-muted-foreground">
+              <Loader2 className="h-7 w-7 animate-spin text-primary" />
+            </div>
+          }
+        >
+          <AudioaulasListaAulas
+            areaAtual={areaAtual}
+            aba={state.aba}
+            temasDaArea={state.temasDaArea}
+            listaAba={state.listaAba}
+            busca={state.busca}
+            atualId={state.atualId}
+            tocando={state.tocando}
+            favoritos={state.favoritos}
+            alternarFavorito={state.alternarFavorito}
+            handleTocarAula={state.handleTocarAula}
+            capituloSelecionado={capituloSelecionado}
+            setCapituloSelecionado={setCapituloSelecionado}
+          />
+        </Suspense>
       ) : state.aba === 'aulas' ? (
         /* ───────── HUB DE ÁREAS COM BUSCA INSTANTÂNEA FUZZY ───────── */
         <AudioaulasBuscaGlobal
@@ -204,40 +217,52 @@ const Audioaulas = () => {
             />
           )}
 
-          <AudioaulasListaAulas
-            areaAtual={null}
-            aba={state.aba}
-            temasDaArea={state.temasDaArea}
-            listaAba={state.listaAba}
-            busca={state.busca}
-            atualId={state.atualId}
-            tocando={state.tocando}
-            favoritos={state.favoritos}
-            alternarFavorito={state.alternarFavorito}
-            handleTocarAula={state.handleTocarAula}
-          />
+          <Suspense
+            fallback={
+              <div className="py-20 grid place-items-center text-muted-foreground">
+                <Loader2 className="h-7 w-7 animate-spin text-primary" />
+              </div>
+            }
+          >
+            <AudioaulasListaAulas
+              areaAtual={null}
+              aba={state.aba}
+              temasDaArea={state.temasDaArea}
+              listaAba={state.listaAba}
+              busca={state.busca}
+              atualId={state.atualId}
+              tocando={state.tocando}
+              favoritos={state.favoritos}
+              alternarFavorito={state.alternarFavorito}
+              handleTocarAula={state.handleTocarAula}
+            />
+          </Suspense>
         </>
       )}
 
       {/* Player Completo Expandido — Adaptado como Modal Centralizado em Desktop */}
-      <AudioaulasPlayerModal
-        aberto={state.aberto}
-        setAberto={state.setAberto}
-        atual={state.atual}
-        atualIdx={state.atualIdx}
-        fila={state.fila}
-        tempo={state.tempo}
-        dur={state.dur}
-        tocando={state.tocando}
-        velocidade={state.velocidade}
-        favoritos={state.favoritos}
-        alternarFavorito={state.alternarFavorito}
-        togglePlay={state.togglePlay}
-        seek={state.seek}
-        pular={state.pular}
-        setVelocidade={state.setVelocidade}
-        tocandoIntro={state.tocandoIntro}
-      />
+      {state.aberto && (
+        <Suspense fallback={null}>
+          <AudioaulasPlayerModal
+            aberto={state.aberto}
+            setAberto={state.setAberto}
+            atual={state.atual}
+            atualIdx={state.atualIdx}
+            fila={state.fila}
+            tempo={state.tempo}
+            dur={state.dur}
+            tocando={state.tocando}
+            velocidade={state.velocidade}
+            favoritos={state.favoritos}
+            alternarFavorito={state.alternarFavorito}
+            togglePlay={state.togglePlay}
+            seek={state.seek}
+            pular={state.pular}
+            setVelocidade={state.setVelocidade}
+            tocandoIntro={state.tocandoIntro}
+          />
+        </Suspense>
+      )}
       </div>
     </div>
   );
