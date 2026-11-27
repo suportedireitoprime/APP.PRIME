@@ -8,6 +8,7 @@ import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosSearchSheet } from "@/components/resumos/ResumosSearchSheet";
+import ResumosBreadcrumbTimeline, { getMetodoLabel } from "@/components/resumos/ResumosBreadcrumbTimeline";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
@@ -54,7 +55,15 @@ export default function ResumosJuridicosAreas() {
       />
 
       {/* Conteúdo Principal com Margens Laterais e Layout Fluido */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-7 sm:mt-8 space-y-6">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-5 sm:mt-6 space-y-5">
+        {/* Linha do tempo com setas */}
+        <ResumosBreadcrumbTimeline
+          steps={[
+            { label: getMetodoLabel(metodo) },
+            { label: activeTab === "Todos" ? "Matérias" : activeTab },
+          ]}
+        />
+
         {/* Banner Continuar Estudando Dinâmico */}
         <ResumosContinuarCard />
 

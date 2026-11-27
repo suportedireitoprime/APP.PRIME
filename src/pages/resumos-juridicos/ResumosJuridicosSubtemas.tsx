@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import { resumosLocal } from "@/lib/resumosLocal";
+import ResumosBreadcrumbTimeline, { getMetodoLabel } from "@/components/resumos/ResumosBreadcrumbTimeline";
 import { haptic } from "@/lib/nativeHaptics";
 import { toast } from "@/hooks/use-toast";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
@@ -258,6 +259,17 @@ export default function ResumosJuridicosSubtemas() {
           />
           
           <div className="max-w-5xl mx-auto px-4 mt-2 space-y-3">
+          <ResumosBreadcrumbTimeline
+            accentColor={materiaColor}
+            steps={[
+              { label: getMetodoLabel(metodoParam), to: `/resumos-juridicos${metodoQuery}` },
+              {
+                label: decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, ''),
+                to: `/resumos-juridicos/${encodeURIComponent(decodedArea)}${metodoQuery}`,
+              },
+              { label: decodedTema },
+            ]}
+          />
           <div className="relative flex items-center group">
             <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" style={{ color: materiaColor }} />
             <Input 
