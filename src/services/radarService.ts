@@ -378,9 +378,28 @@ function fotoDeputadoUrl(id?: number): string | undefined {
   return `https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg`;
 }
 
+function normName(s?: string | null): string {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+async function mapInBatches<T, R>(items: T[], batchSize: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const chunk = items.slice(i, i + batchSize);
+    const res = await Promise.all(chunk.map(fn));
+    out.push(...res);
+  }
+  return out;
+}
+
 async function enriquecerAutoresCamara(
   propId: string,
-  deputadosMap: Map<number, any>
+  deputadosMap: Map<number, any>,
+  deputadosByName?: Map<string, any>
 ): Promise<{ autores: RadarAutor[]; situacao?: string; despacho?: string; urlInteiroTeor?: string }> {
   try {
     const [detRes, autRes] = await Promise.all([
@@ -400,14 +419,17 @@ async function enriquecerAutoresCamara(
     const autoresRaw: any[] = autJson?.dados || [];
     const autores: RadarAutor[] = autoresRaw.slice(0, 3).map((a) => {
       const depId = extrairIdDeputadoUri(a.uri);
-      const depCache = depId ? deputadosMap.get(depId) : undefined;
+      const depCache =
+        (depId ? deputadosMap.get(depId) : undefined) ||
+        (deputadosByName && a.nome ? deputadosByName.get(normName(a.nome)) : undefined);
+      const resolvedId = depId || (depCache?.id ? Number(depCache.id) : undefined);
       return {
-        id: depId,
-        nome: a.nome || depCache?.nome || 'Parlamentar',
+        id: resolvedId,
+        nome: a.nome || depCache?.nome || 'Câmara dos Deputados',
         tipo: a.tipo,
         partido: depCache?.sigla_partido,
         uf: depCache?.sigla_uf,
-        foto_url: depCache?.foto_url || fotoDeputadoUrl(depId),
+        foto_url: depCache?.foto_url || fotoDeputadoUrl(resolvedId),
         casa: 'camara',
       };
     });
@@ -427,18 +449,19 @@ export async function fetchUltimasProposicoesCamara(opts?: {
   pagina?: number;
 }): Promise<RadarProposicao[]> {
   const siglaTipo = opts?.siglaTipo || 'PL,PEC,PLP,MPV';
-  const itens = opts?.itens ?? 14;
+  const itens = opts?.itens ?? 10;
   const pagina = opts?.pagina ?? 1;
   const cacheKey = `radar_v2:camara:${siglaTipo}:${itens}:${pagina}`;
   const hit = cached<RadarProposicao[]>(cacheKey);
   if (hit) return hit;
 
   try {
-    // Carrega mapa de deputados do Supabase para enriquecer partido/UF rapidamente
     const deps = await fetchDeputados();
     const depMap = new Map<number, any>();
+    const depByName = new Map<string, any>();
     deps.forEach((d: any) => {
       if (d.id) depMap.set(Number(d.id), d);
+      if (d.nome) depByName.set(normName(d.nome), d);
     });
 
     const anoAtual = new Date().getFullYear();
@@ -448,26 +471,24 @@ export async function fetchUltimasProposicoesCamara(opts?: {
     const json = await res.json();
     const rawList: any[] = json?.dados || [];
 
-    const enriched = await Promise.all(
-      rawList.map(async (p) => {
-        const idStr = String(p.id);
-        const extra = await enriquecerAutoresCamara(idStr, depMap);
-        return {
-          id: idStr,
-          casa: 'camara' as const,
-          siglaTipo: p.siglaTipo,
-          numero: p.numero,
-          ano: p.ano,
-          ementa: p.ementa || 'Sem ementa disponível.',
-          situacao: extra.situacao || 'Em tramitação na Câmara',
-          triagem: classificarTriagem(extra.situacao, extra.despacho),
-          autores: extra.autores,
-          urlInteiroTeor: extra.urlInteiroTeor,
-          urlOficial: `https://www.camara.leg.br/propostas-legislativas/${idStr}`,
-          tags: extractTags(p.ementa),
-        } satisfies RadarProposicao;
-      })
-    );
+    const enriched = await mapInBatches(rawList, 4, async (p) => {
+      const idStr = String(p.id);
+      const extra = await enriquecerAutoresCamara(idStr, depMap, depByName);
+      return {
+        id: idStr,
+        casa: 'camara' as const,
+        siglaTipo: p.siglaTipo,
+        numero: p.numero,
+        ano: p.ano,
+        ementa: p.ementa || 'Sem ementa disponível.',
+        situacao: extra.situacao || 'Em tramitação na Câmara',
+        triagem: classificarTriagem(extra.situacao, extra.despacho),
+        autores: extra.autores,
+        urlInteiroTeor: extra.urlInteiroTeor,
+        urlOficial: `https://www.camara.leg.br/propostas-legislativas/${idStr}`,
+        tags: extractTags(p.ementa),
+      } satisfies RadarProposicao;
+    });
 
     setCache(cacheKey, enriched);
     return enriched;
@@ -561,12 +582,20 @@ export async function fetchProposicoesSenado(limit = 12): Promise<RadarProposica
   if (hit) return hit;
 
   try {
-    const res = await fetch(`${SENADO_API}/materia/atualizadas.json?numdias=15`, {
-      headers: { Accept: 'application/json' },
-    });
+    const [res, sens] = await Promise.all([
+      fetch(`${SENADO_API}/materia/atualizadas.json?numdias=15`, {
+        headers: { Accept: 'application/json' },
+      }),
+      fetchSenadores(),
+    ]);
     if (!res.ok) return [];
     const json = await res.json();
     const materiasRaw: any[] = json?.ListaMateriasAtualizadas?.Materias?.Materia || [];
+
+    const senByName = new Map<string, any>();
+    sens.forEach((s: any) => {
+      if (s.nome) senByName.set(normName(s.nome), s);
+    });
 
     const mapped: RadarProposicao[] = materiasRaw.slice(0, limit).map((m: any) => {
       const id = String(m.Codigo || m.IdentificacaoMateria?.CodigoMateria || '');
@@ -576,6 +605,10 @@ export async function fetchProposicoesSenado(limit = 12): Promise<RadarProposica
       const ementa = m.Ementa || m.DadosBasicosMateria?.EmentaMateria || 'Matéria legislativa do Senado Federal.';
       const sit = m.SituacaoAtual?.Autuacoes?.Autuacao?.Situacao?.DescricaoSituacao || 'Em tramitação no Senado';
       const autorNome = m.Autor || m.DadosBasicosMateria?.AutorPrincipal || 'Senado Federal';
+
+      // Tenta encontrar foto do senador cruzando pelo nome
+      const firstAuthor = String(autorNome).split(',')[0].replace(/Senador(a)?\s+/i, '').trim();
+      const senMatch = senByName.get(normName(firstAuthor));
 
       return {
         id: `sen-${id}`,
@@ -587,7 +620,16 @@ export async function fetchProposicoesSenado(limit = 12): Promise<RadarProposica
         dataApresentacao: m.DataUltimaAtualizacao,
         situacao: sit,
         triagem: classificarTriagem(sit),
-        autores: [{ nome: autorNome, casa: 'senado' }],
+        autores: [
+          {
+            id: senMatch?.codigo,
+            nome: firstAuthor || autorNome,
+            partido: senMatch?.sigla_partido,
+            uf: senMatch?.sigla_uf,
+            foto_url: senMatch?.foto_url,
+            casa: 'senado',
+          },
+        ],
         urlOficial: id ? `https://www25.senado.leg.br/web/atividade/materias/-/materia/${id}` : undefined,
         tags: extractTags(ementa),
       };

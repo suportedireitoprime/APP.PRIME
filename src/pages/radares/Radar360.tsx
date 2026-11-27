@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Sparkles,
   Flame,
-  Scale,
   CheckCircle2,
   Clock,
   Gavel,
@@ -20,6 +20,13 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import brasaoImgAsset from '@/assets/brasao-republica.webp';
+import {
+  getResenhaCache,
+  getResenhaOfflineOrCache,
+  prefetchResenha,
+  type ResenhaItem,
+} from '@/services/atualizacaoService';
 import {
   fetchUltimasProposicoesCamara,
   fetchEmendasRecentes,
@@ -63,9 +70,9 @@ const TRIAGEM_CONFIG: Record<
 };
 
 function AutorAvatar({ autor, size = 'md' }: { autor?: RadarAutor; size?: 'sm' | 'md' | 'lg' }) {
-  const [imgErr, setImgErr] = useState(false);
+  const [fallbackIdx, setFallbackIdx] = useState(0);
   const dim =
-    size === 'lg' ? 'w-14 h-14 text-base' : size === 'sm' ? 'w-8 h-8 text-[11px]' : 'w-10 h-10 text-xs';
+    size === 'lg' ? 'w-14 h-14 text-base' : size === 'sm' ? 'w-9 h-9 text-[11px]' : 'w-10 h-10 text-xs';
   const initials = (autor?.nome || 'P')
     .split(' ')
     .filter(Boolean)
@@ -74,14 +81,23 @@ function AutorAvatar({ autor, size = 'md' }: { autor?: RadarAutor; size?: 'sm' |
     .join('')
     .toUpperCase();
 
-  if (autor?.foto_url && !imgErr) {
+  const candidates = [
+    autor?.foto_url,
+    autor?.casa === 'camara' && autor?.id
+      ? `https://www.camara.leg.br/internet/deputado/bandep/${autor.id}.jpg`
+      : undefined,
+  ].filter(Boolean) as string[];
+
+  const activeSrc = candidates[fallbackIdx];
+
+  if (activeSrc) {
     return (
       <img
-        src={autor.foto_url}
-        alt={autor.nome}
+        src={activeSrc}
+        alt={autor?.nome || 'Parlamentar'}
         loading="lazy"
         decoding="async"
-        onError={() => setImgErr(true)}
+        onError={() => setFallbackIdx((i) => i + 1)}
         className={`${dim} rounded-full object-cover border border-white/15 bg-zinc-800 shrink-0`}
       />
     );
@@ -97,6 +113,7 @@ function AutorAvatar({ autor, size = 'md' }: { autor?: RadarAutor; size?: 'sm' |
 }
 
 export default function Radar360() {
+  const navigate = useNavigate();
   const goBack = useGoBack();
   const isDesktop = useIsDesktop();
 
@@ -109,10 +126,12 @@ export default function Radar360() {
   const [emendas, setEmendas] = useState<RadarProposicao[]>([]);
   const [proximasLei, setProximasLei] = useState<RadarProposicao[]>([]);
   const [senadoProps, setSenadoProps] = useState<RadarProposicao[]>([]);
+  const [douItems, setDouItems] = useState<ResenhaItem[]>([]);
   const [deputados, setDeputados] = useState<any[]>([]);
   const [senadores, setSenadores] = useState<any[]>([]);
 
   // Filtros de seção
+  const [triagemFonte, setTriagemFonte] = useState<'camara' | 'senado' | 'dou'>('camara');
   const [triagemAtiva, setTriagemAtiva] = useState<RadarTriagemStage>('sanction_veto');
   const [tipoAlta, setTipoAlta] = useState<'TODAS' | 'PL' | 'PEC' | 'PLP' | 'EMD' | 'SENADO'>('TODAS');
   const [casaParlamentar, setCasaParlamentar] = useState<'camara' | 'senado'>('camara');
@@ -135,13 +154,14 @@ export default function Radar360() {
 
   const carregarTudo = async () => {
     try {
-      const [cam, emd, prox, sen, deps, sens] = await Promise.all([
-        fetchUltimasProposicoesCamara({ itens: 12 }),
-        fetchEmendasRecentes(8),
+      const [cam, emd, prox, sen, deps, sens, douOffline] = await Promise.all([
+        fetchUltimasProposicoesCamara({ itens: 10 }),
+        fetchEmendasRecentes(6),
         fetchProposicoesProximasLei(),
-        fetchProposicoesSenado(10),
+        fetchProposicoesSenado(12),
         fetchDeputados(),
         fetchSenadores(),
+        getResenhaOfflineOrCache().catch(() => []),
       ]);
 
       setUltimasCamara(cam);
@@ -150,12 +170,19 @@ export default function Radar360() {
       setSenadoProps(sen);
       setDeputados(deps.slice(0, 40));
       setSenadores(sens.slice(0, 40));
+      if (douOffline && douOffline.length > 0) setDouItems(douOffline.slice(0, 12));
 
-      // Seleciona automaticamente a aba de triagem que tiver itens primeiro
-      const allTriagem = [...prox, ...cam, ...sen];
-      if (allTriagem.some((p) => p.triagem === 'sanction_veto')) {
+      prefetchResenha()
+        .then(() => {
+          const fresh = getResenhaCache();
+          if (fresh && fresh.length > 0) setDouItems(fresh.slice(0, 12));
+        })
+        .catch(() => {});
+
+      const allCam = [...prox, ...cam];
+      if (allCam.some((p) => p.triagem === 'sanction_veto')) {
         setTriagemAtiva('sanction_veto');
-      } else if (allTriagem.some((p) => p.triagem === 'approved_house')) {
+      } else if (allCam.some((p) => p.triagem === 'approved_house')) {
         setTriagemAtiva('approved_house');
       } else {
         setTriagemAtiva('in_progress');
@@ -233,11 +260,16 @@ export default function Radar360() {
     );
   }, [ultimasCamara, emendas, q]);
 
-  // Triagem consolidada (Próximas a acontecer)
+  // Triagem filtrada pela fonte selecionada (Câmara ou Senado)
   const triagemMap = useMemo(() => {
-    const all = [...proximasLei, ...ultimasCamara, ...senadoProps];
+    const sourceList =
+      triagemFonte === 'camara'
+        ? [...proximasLei, ...ultimasCamara]
+        : triagemFonte === 'senado'
+        ? senadoProps
+        : [];
     const unique = new Map<string, RadarProposicao>();
-    all.forEach((p) => {
+    sourceList.forEach((p) => {
       if (!unique.has(p.id)) unique.set(p.id, p);
     });
     const list = Array.from(unique.values()).filter((p) => {
@@ -254,7 +286,19 @@ export default function Radar360() {
       approved_house: list.filter((p) => p.triagem === 'approved_house'),
       in_progress: list.filter((p) => p.triagem === 'in_progress'),
     };
-  }, [proximasLei, ultimasCamara, senadoProps, q]);
+  }, [triagemFonte, proximasLei, ultimasCamara, senadoProps, q]);
+
+  const douFiltrados = useMemo(() => {
+    if (!q) return douItems.slice(0, 8);
+    return douItems
+      .filter(
+        (d) =>
+          (d.numero_ato || '').toLowerCase().includes(q) ||
+          (d.ementa || '').toLowerCase().includes(q) ||
+          (d.tipo_ato || '').toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [douItems, q]);
 
   // Leis em alta filtradas
   const leisEmAlta = useMemo(() => {
@@ -411,89 +455,162 @@ export default function Radar360() {
               </div>
             </section>
 
-            {/* ── 2. TRIAGEM: PODE ACONTECER / PRÓXIMAS A VIRAR LEI ── */}
+            {/* ── 2. TRIAGEM: PODE ACONTECER (CÂMARA | SENADO | DOU) ── */}
             <section className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <span className="h-4 w-1 rounded-full bg-amber-400" />
                   <h2 className="text-xs font-extrabold uppercase tracking-widest text-zinc-300">
                     Triagem • Pode Acontecer
                   </h2>
                 </div>
-              </div>
 
-              {/* Abas de Triagem */}
-              <div className="grid grid-cols-3 gap-2">
-                {(Object.keys(TRIAGEM_CONFIG) as RadarTriagemStage[]).map((stage) => {
-                  const cfg = TRIAGEM_CONFIG[stage];
-                  const Icon = cfg.icon;
-                  const count = triagemMap[stage].length;
-                  const active = triagemAtiva === stage;
-                  return (
+                {/* Menu de Alternância Câmara | Senado | DOU */}
+                <div className="flex rounded-xl bg-zinc-900 p-1 border border-white/10">
+                  {(
+                    [
+                      { id: 'camara', label: 'Câmara' },
+                      { id: 'senado', label: 'Senado' },
+                      { id: 'dou', label: 'DOU' },
+                    ] as const
+                  ).map((tab) => (
                     <button
-                      key={stage}
+                      key={tab.id}
                       type="button"
                       onClick={() => {
                         haptic.selection();
-                        setTriagemAtiva(stage);
+                        setTriagemFonte(tab.id);
                       }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                        active
-                          ? 'bg-white/10 border-rose-500/50 shadow-md'
-                          : 'bg-zinc-900/60 border-white/10 hover:bg-zinc-900'
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                        triagemFonte === tab.id
+                          ? 'bg-rose-600 text-white shadow-sm'
+                          : 'text-zinc-400 hover:text-white'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <Icon className={`w-4 h-4 ${active ? 'text-amber-400' : 'text-zinc-400'}`} />
-                        <span className="text-xs font-mono font-bold text-white">{count}</span>
-                      </div>
-                      <p className="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-1">
-                        {cfg.shortLabel}
-                      </p>
+                      {tab.label}
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
 
-              <p className="text-xs text-zinc-400 px-1">
-                {TRIAGEM_CONFIG[triagemAtiva].desc}
-              </p>
-
-              <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
-                {triagemMap[triagemAtiva].length === 0 ? (
-                  <div className="p-6 text-center text-xs text-zinc-500">
-                    Nenhuma proposição classificada neste estágio no momento.
-                  </div>
-                ) : (
-                  triagemMap[triagemAtiva].slice(0, 6).map((prop) => {
-                    const autor = prop.autores[0];
-                    return (
+              {triagemFonte === 'dou' ? (
+                <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
+                  {douFiltrados.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-zinc-500">
+                      Nenhuma publicação recente do Diário Oficial da União encontrada.
+                    </div>
+                  ) : (
+                    douFiltrados.map((item) => (
                       <button
-                        key={prop.id}
+                        key={item.id}
                         type="button"
-                        onClick={() => abrirProposicao(prop)}
+                        onClick={() => {
+                          haptic.selection();
+                          navigate(`/novidades?lei=${encodeURIComponent(item.id)}`);
+                        }}
                         className="w-full flex items-start gap-3 p-4 hover:bg-white/[0.03] text-left transition-colors cursor-pointer"
                       >
-                        <AutorAvatar autor={autor} size="sm" />
+                        <img
+                          src={brasaoImgAsset}
+                          alt="Brasão da República"
+                          className="w-9 h-9 rounded-full object-contain bg-white/5 p-1 border border-white/10 shrink-0"
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
                             <span className="text-xs font-bold text-white">
-                              {prop.siglaTipo} {prop.numero}/{prop.ano}
+                              {item.numero_ato}
                             </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/10 truncate max-w-[200px]">
-                              {prop.situacao}
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                              {item.tipo_ato} • DOU
                             </span>
                           </div>
-                          <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                            {prop.ementa}
-                          </p>
+                          {item.ementa && (
+                            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                              {item.ementa}
+                            </p>
+                          )}
                         </div>
                         <ChevronRight className="w-4 h-4 text-zinc-500 shrink-0 mt-1" />
                       </button>
-                    );
-                  })
-                )}
-              </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <>
+                  {/* Abas de Estágio da Triagem */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {(Object.keys(TRIAGEM_CONFIG) as RadarTriagemStage[]).map((stage) => {
+                      const cfg = TRIAGEM_CONFIG[stage];
+                      const Icon = cfg.icon;
+                      const count = triagemMap[stage].length;
+                      const active = triagemAtiva === stage;
+                      return (
+                        <button
+                          key={stage}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            setTriagemAtiva(stage);
+                          }}
+                          className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                            active
+                              ? 'bg-white/10 border-rose-500/50 shadow-md'
+                              : 'bg-zinc-900/60 border-white/10 hover:bg-zinc-900'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <Icon className={`w-4 h-4 ${active ? 'text-amber-400' : 'text-zinc-400'}`} />
+                            <span className="text-xs font-mono font-bold text-white">{count}</span>
+                          </div>
+                          <p className="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-1">
+                            {cfg.shortLabel}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-xs text-zinc-400 px-1">
+                    {TRIAGEM_CONFIG[triagemAtiva].desc}
+                  </p>
+
+                  <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
+                    {triagemMap[triagemAtiva].length === 0 ? (
+                      <div className="p-6 text-center text-xs text-zinc-500">
+                        Nenhuma proposição da {triagemFonte === 'camara' ? 'Câmara' : 'Senado'} neste estágio no momento.
+                      </div>
+                    ) : (
+                      triagemMap[triagemAtiva].slice(0, 6).map((prop) => {
+                        const autor = prop.autores[0];
+                        return (
+                          <button
+                            key={prop.id}
+                            type="button"
+                            onClick={() => abrirProposicao(prop)}
+                            className="w-full flex items-start gap-3 p-4 hover:bg-white/[0.03] text-left transition-colors cursor-pointer"
+                          >
+                            <AutorAvatar autor={autor} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <span className="text-xs font-bold text-white">
+                                  {prop.siglaTipo} {prop.numero}/{prop.ano}
+                                </span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/10 truncate max-w-[200px]">
+                                  {prop.situacao}
+                                </span>
+                              </div>
+                              <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                                {prop.ementa}
+                              </p>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-zinc-500 shrink-0 mt-1" />
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </>
+              )}
             </section>
 
             {/* ── 3. LEIS EM ALTA & EMENDAS ── */}
