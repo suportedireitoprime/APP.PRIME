@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, AlertTriangle, Radar, Headphones, Lightbulb, Newspaper, ChevronRight } from 'lucide-react';
+import { Scale, AlertTriangle, Radar, Lightbulb, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
@@ -102,7 +102,7 @@ const IndexMobile = () => {
             <section className="flex flex-col gap-3">
               <HomeSectionHeader title="LEGISLAÇÃO 360°" />
 
-              {/* Linha 1: Vade Mecum e Ouça a Lei lado a lado em tamanho normal */}
+              {/* Linha 1: Vade Mecum e Novidades lado a lado em tamanho normal */}
               <div className="grid grid-cols-2 gap-2.5 md:gap-4">
                 <button
                   type="button"
@@ -133,12 +133,12 @@ const IndexMobile = () => {
                   type="button"
                   onClick={() => {
                     haptic.selection();
-                    navigate('/audioleis');
+                    navigate('/novidades');
                   }}
                   className="group relative flex flex-col justify-between w-full min-h-[118px] sm:min-h-[124px] p-3.5 sm:p-4 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 hover:border-rose-500/40 shadow-sm hover:shadow-xl active:scale-[0.98] transition-all duration-300 text-left overflow-hidden"
                 >
                   <div className="flex items-center justify-between w-full">
-                    <Headphones
+                    <AlertTriangle
                       className="w-7 h-7 sm:w-[30px] sm:h-[30px] text-[#E11D48] shrink-0 transition-transform duration-300 group-hover:scale-105"
                       strokeWidth={1.5}
                     />
@@ -146,22 +146,20 @@ const IndexMobile = () => {
                   </div>
                   <div className="mt-auto pt-2">
                     <p className="font-card text-foreground font-semibold text-[14px] sm:text-[15px] tracking-[-0.01em] leading-snug line-clamp-1">
-                      Ouça a Lei
+                      Novidades
                     </p>
                     <p className="font-body text-muted-foreground text-[11px] sm:text-[11.5px] leading-tight line-clamp-1 mt-0.5">
-                      Áudios dos artigos
+                      Alterações legislativas
                     </p>
                   </div>
                 </button>
               </div>
 
-              {/* Linha 2 e 3: Novidades, Radar, Descomplica e Boletins compactos */}
+              {/* Linha 2: Radar e Descomplica compactos */}
               <div className="grid grid-cols-2 gap-2.5 md:gap-4">
                 {[
-                  { id: 'novidades-atalho', label: 'Novidades', route: '/novidades', icon: AlertTriangle },
                   { id: 'radar-atalho', label: 'Radar', route: '/radar-360', icon: Radar },
                   { id: 'descomplica-atalho', label: 'Descomplica', route: '/me-explique', icon: Lightbulb },
-                  { id: 'boletins-atalho', label: 'Boletins', route: '/boletins', icon: Newspaper },
                 ].map(({ id, label, route, icon: Icon }) => (
                   <button
                     key={id}
