@@ -20,6 +20,7 @@ import {
 } from "@/components/lei-seca/chunks";
 import { LeiSecaRankingSheet } from "@/components/lei-seca/chunks/LeiSecaRankingSheet";
 import ShapeGrid from "@/components/ui/ShapeGrid";
+import { useIsDesktop } from "@/hooks/use-desktop";
 import { BookOpen, Scale, Sparkles, AlertCircle, Landmark, Library, FileBadge } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -27,6 +28,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 export default function LeiSecaIndex() {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const isDesktop = useIsDesktop();
 
   const { data: trilhas = fallbackTrilhas as any[], isLoading } = useQuery({
     queryKey: ["lei-seca-trilhas"],
@@ -97,19 +99,21 @@ export default function LeiSecaIndex() {
   const recentePrincipal = listaRecentes[0];
 
   return (
-    <div className="min-h-screen bg-background text-white relative overflow-x-hidden animate-ls-enter" style={{ backgroundColor: '#0D0D0D' }}>
-      {/* Fundo ShapeGrid animado (padrão oficial do app) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+    <div className="min-h-screen bg-[#09090B] text-white relative overflow-x-hidden animate-ls-enter">
+      {/* Fundo ShapeGrid animado apenas no mobile/tablet */}
+      {!isDesktop && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <ShapeGrid
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
 
       <div className="relative z-10">
         {/* Chunk 1: Hero com Progresso e Estatísticas */}
