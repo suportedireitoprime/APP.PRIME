@@ -15,6 +15,7 @@ import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { cn } from "@/lib/utils";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
 import { recordAreaActivity } from "@/lib/continuity";
+import { ResumosTemaSheet, type SelectedTemaInfo } from "@/components/resumos/ResumosTemaSheet";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 type Ordem = "crono" | "alpha" | "fav";
@@ -37,6 +38,7 @@ export default function ResumosJuridicosTemas() {
   }, [decodedArea]);
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
+  const [selectedTema, setSelectedTema] = useState<SelectedTemaInfo | null>(null);
 
   // Registra acesso por área para continuidade (BottomNav → Resumos)
   useEffect(() => {
@@ -325,7 +327,11 @@ export default function ResumosJuridicosTemas() {
                   type="button"
                   onClick={() => {
                     haptic.selection();
-                    navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}${metodoQuery}`);
+                    setSelectedTema({
+                      tema: r.tema,
+                      ordemStr,
+                      total: r.total,
+                    });
                   }}
                   className="w-full group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-white/25 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]"
                 >
@@ -356,6 +362,14 @@ export default function ResumosJuridicosTemas() {
         )}
       </div>
       </div>
+
+      <ResumosTemaSheet
+        area={decodedArea}
+        tema={selectedTema}
+        metodo={metodo}
+        accentColor={palette.primary}
+        onClose={() => setSelectedTema(null)}
+      />
     </div>
   );
 }
