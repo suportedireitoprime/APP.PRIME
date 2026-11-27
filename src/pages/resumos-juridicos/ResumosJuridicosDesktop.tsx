@@ -1,4 +1,3 @@
-import ShapeGrid from "@/components/ui/ShapeGrid";
 import { useResumosDesktopData } from "@/components/resumos/hooks/useResumosDesktopData";
 import { ResumosDesktopColAreas } from "@/components/resumos/desktop/ResumosDesktopColAreas";
 import { ResumosDesktopColTemas } from "@/components/resumos/desktop/ResumosDesktopColTemas";
@@ -38,11 +37,7 @@ export default function ResumosJuridicosDesktop() {
   } = useResumosDesktopData();
 
   return (
-    <div className="flex h-dvh bg-[#0D0D0D] text-white overflow-hidden relative">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
-        <ShapeGrid />
-      </div>
-
+    <div className="flex h-[calc(100dvh-56px)] bg-[#09090B] text-white overflow-hidden relative">
       <div className="relative z-10 flex w-full h-full">
         {/* COL 1: Áreas */}
         <ResumosDesktopColAreas

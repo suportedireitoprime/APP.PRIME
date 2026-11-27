@@ -11,6 +11,7 @@ import { recordActivity } from "@/lib/continuity";
 import { blogThumb, blogHero } from "@/lib/blogImg";
 import { prefetchImage, prefetchImages } from "@/lib/cdnImg";
 import ShapeGrid from "@/components/ui/ShapeGrid";
+import { useIsDesktop } from "@/hooks/use-desktop";
 import { blogTracking } from "@/lib/blogTracking";
 import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
 import { useBlogTrending } from "@/hooks/useBlogTrending";
@@ -134,6 +135,7 @@ function readRecentsFromStorage(): string[] {
 const Blog = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isDesktop = useIsDesktop();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [activeCategory, setActiveCategory] = useState<string>("todos");
@@ -323,11 +325,13 @@ const Blog = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-      {/* Fundo Oficial com Tonalidade Idêntica ao Início do App */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShapeGrid />
-      </div>
+    <div className="min-h-dvh bg-[#09090B] text-white relative overflow-x-hidden pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:pb-10">
+      {/* Fundo Oficial apenas no mobile/tablet */}
+      {!isDesktop && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <ShapeGrid />
+        </div>
+      )}
 
       {/* ── Painel de Topo Idêntico ao de Áudio Aulas com Capa de Roma Antiga & Céu Azul Claro ── */}
       <BlogHero

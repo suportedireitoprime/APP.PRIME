@@ -220,23 +220,25 @@ const Audioleis: React.FC = () => {
 
   return (
     <div
-      className={`w-full bg-zinc-950 text-foreground relative overflow-x-hidden ${
+      className={`w-full bg-[#09090B] text-foreground relative overflow-x-hidden ${
         isDesktop
-          ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5'
+          ? 'min-h-full pb-10'
           : 'min-h-screen pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
       }`}
     >
-      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+      {!isDesktop && (
+        <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+          <ShapeGrid
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
 
       <div className="relative z-10">
         <main className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] space-y-6">

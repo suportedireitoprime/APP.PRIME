@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
@@ -8,16 +7,14 @@ import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
-import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import DesktopBibliotecaHero from '@/components/desktop/DesktopBibliotecaHero';
 import DesktopBibliotecaGrid from '@/components/desktop/DesktopBibliotecaGrid';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
-import { DesktopBibliotecaTabsBar, DESKTOP_TABS } from '@/components/desktop/DesktopBibliotecaTabsBar';
+import { DesktopBibliotecaTabsBar } from '@/components/desktop/DesktopBibliotecaTabsBar';
 import { DesktopBibliotecaModals } from '@/components/desktop/DesktopBibliotecaModals';
 import { DesktopColecaoCard } from '@/components/desktop/DesktopColecaoCard';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const BibliotecasDesktop = () => {
   const navigate = useNavigate();
@@ -37,98 +34,64 @@ const BibliotecasDesktop = () => {
     }
   }, []);
 
-  const handleTabChange = useCallback((t: string) => {
-    const tab = DESKTOP_TABS.find((x) => x.id === t);
-    if (tab) navigate(tab.path);
-  }, [navigate]);
-
   return (
-    <div className="h-[calc(100dvh-104px)] bg-[#0D0D0D] flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <ShapeGrid />
-      </div>
+    <div className="w-full max-w-[1380px] mx-auto px-6 lg:px-10 py-6 space-y-8">
       <DesktopOnboardingOverlay />
+      <DesktopBibliotecaTabsBar />
 
-      <div className="flex flex-1 min-h-0 relative z-10">
-        <DesktopSidebar activeTab="biblioteca" onTabChange={handleTabChange} />
+      <div>
+        <DesktopBibliotecaHero onSearchClick={() => setSearchOpen(true)} />
+      </div>
 
-        <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">
-          <DesktopBibliotecaTabsBar />
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key="biblioteca-desktop"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="px-8 py-6 2xl:px-14"
-            >
-              <div className="mb-6 -mx-8 -mt-6 2xl:-mx-14">
-                <DesktopBibliotecaHero onSearchClick={() => setSearchOpen(true)} />
-              </div>
-
-              <div className="mb-8">
-                <DesktopBibliotecaGrid
-                  onScrollToAcervo={scrollToAcervo}
-                  onUploadPdf={() => {}}
-                />
-              </div>
-
-              <div className="mb-10 space-y-6">
-                <ContinuarLeituraCarousel onAbrirLivro={setLivroAberto} />
-                <RecomendacoesCarousel onAbrirLivro={setLivroAberto} />
-              </div>
-
-              <section className="pb-16" ref={acervoRef}>
-                <div className="flex items-end justify-between mb-5">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
-                      Acervo
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="w-1 h-7 rounded-full bg-primary" />
-                      <h2 className="font-display text-2xl text-foreground leading-tight">
-                        Explore todas as coleções
-                      </h2>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground hidden md:block">
-                    {colecoesVisiveis.length} coleções
-                  </p>
-                </div>
-
-                <motion.div
-                  className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
-                  }}
-                  initial="hidden"
-                  animate="show"
-                >
-                  {colecoesVisiveis.map((c) => (
-                    <DesktopColecaoCard
-                      key={c.id}
-                      c={c}
-                      onClick={() => navigate(`/bibliotecas/${c.id}`)}
-                    />
-                  ))}
-                </motion.div>
-              </section>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <DesktopBibliotecaModals
-          searchOpen={searchOpen}
-          onCloseSearch={() => setSearchOpen(false)}
-          assistenteOpen={assistenteOpen}
-          onCloseAssistente={() => setAssistenteOpen(false)}
-          livroAberto={livroAberto}
-          onCloseLivro={() => setLivroAberto(null)}
+      <div>
+        <DesktopBibliotecaGrid
+          onScrollToAcervo={scrollToAcervo}
+          onUploadPdf={() => {}}
         />
       </div>
+
+      <div className="space-y-6">
+        <ContinuarLeituraCarousel onAbrirLivro={setLivroAberto} />
+        <RecomendacoesCarousel onAbrirLivro={setLivroAberto} />
+      </div>
+
+      <section className="pb-12" ref={acervoRef}>
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-semibold">
+              Acervo
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="w-1 h-6 rounded-full bg-rose-500" />
+              <h2 className="font-display text-2xl text-white leading-tight">
+                Explore todas as coleções
+              </h2>
+            </div>
+          </div>
+          <p className="text-sm text-zinc-400 hidden md:block">
+            {colecoesVisiveis.length} coleções
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
+          {colecoesVisiveis.map((c) => (
+            <DesktopColecaoCard
+              key={c.id}
+              c={c}
+              onClick={() => navigate(`/bibliotecas/${c.id}`)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <DesktopBibliotecaModals
+        searchOpen={searchOpen}
+        onCloseSearch={() => setSearchOpen(false)}
+        assistenteOpen={assistenteOpen}
+        onCloseAssistente={() => setAssistenteOpen(false)}
+        livroAberto={livroAberto}
+        onCloseLivro={() => setLivroAberto(null)}
+      />
 
       <BibliotecaAtalhosBar onAbrirLivro={setLivroAberto} />
     </div>
