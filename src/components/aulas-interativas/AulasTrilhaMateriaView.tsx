@@ -1,15 +1,10 @@
-import React from 'react';
-import { ArrowLeft, Home, Search, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ArrowLeft, CheckCircle2, ChevronRight, Home, Play, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { MateriaItem, AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
-import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
-import { areaIconFor } from '@/lib/areasDireitoIcons';
-import { assetUrl } from '@/lib/assetUrl';
-import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
-import { FlashcardDeckItem } from '@/components/flashcards/FlashcardDeckItem';
-import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 
 interface AulasTrilhaMateriaViewProps {
   disciplinaAtual: DisciplinaItem;
@@ -30,6 +25,8 @@ interface AulasTrilhaMateriaViewProps {
     cicloCompleto: boolean;
   };
 }
+
+type FiltroStatus = 'todas' | 'andamento' | 'concluidas';
 
 function formatarTituloMateriaCurto(titulo: string): string {
   if (!titulo) return '';
@@ -52,316 +49,291 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
   calcularProgressoCiclo,
 }) => {
   const navigate = useNavigate();
+  const [filtro, setFiltro] = useState<FiltroStatus>('todas');
 
-  const aulasDaDisc = aulasCatalogo.filter(a => a.disciplinaId === disciplinaAtual.id);
-  const totalAulasDisc = aulasDaDisc.length;
-  const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-  const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
+  const { totalAulasDisc, pctDisc, materiasComStats, materiaContinuar } = useMemo(() => {
+    const aulasPorMateria = new Map<string, AulaItem[]>();
+    let totalAulas = 0;
+    let somaPct = 0;
+
+    for (const a of aulasCatalogo) {
+      if (a.disciplinaId !== disciplinaAtual.id) continue;
+      totalAulas++;
+      somaPct += calcularProgressoCiclo(a).porcentagemTotal;
+      const list = aulasPorMateria.get(a.materiaId);
+      if (list) list.push(a);
+      else aulasPorMateria.set(a.materiaId, [a]);
+    }
+
+    const comStats = materiasDaDisc.map((mat, idx) => {
+      const aulasDaMat = aulasPorMateria.get(mat.id) || [];
+      const total = aulasDaMat.length;
+      const somaMat = aulasDaMat.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
+      const pct = total > 0 ? Math.round(somaMat / total) : 0;
+      const concluidas = aulasDaMat.filter((a) => calcularProgressoCiclo(a).cicloCompleto).length;
+      return {
+        mat,
+        idx,
+        tituloCurto: formatarTituloMateriaCurto(mat.titulo) || mat.titulo,
+        aulasDaMat,
+        total,
+        pct,
+        concluidas,
+      };
+    });
+
+    const emAndamento = comStats.find((m) => m.pct > 0 && m.pct < 100);
+    const primeiraNaoConcluida = comStats.find((m) => m.pct < 100);
+    const continuar = emAndamento || primeiraNaoConcluida || comStats[0] || null;
+
+    return {
+      totalAulasDisc: totalAulas,
+      pctDisc: totalAulas > 0 ? Math.round(somaPct / totalAulas) : 0,
+      materiasComStats: comStats,
+      materiaContinuar: continuar,
+    };
+  }, [aulasCatalogo, calcularProgressoCiclo, disciplinaAtual.id, materiasDaDisc]);
 
   const termoBuscaNorm = buscaTermo.toLowerCase().trim();
-  const materiasFiltradas = materiasDaDisc.filter(mat => {
-    if (!termoBuscaNorm) return true;
-    const matchNome = (mat.titulo || '').toLowerCase().includes(termoBuscaNorm);
-    const matchAula = aulasCatalogo.some(a => a.materiaId === mat.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
-    return matchNome || matchAula;
-  });
-
-  const theme = getDisciplinaVisualTheme(disciplinaAtual.id);
-  const AreaIconComponent = areaIconFor(disciplinaAtual.id).Icon;
-  const fundoAreaOficial = theme.isCustomFundo 
-    ? theme.fundoAssetUrl 
-    : (assetUrl(disciplinaAtual.capaHeroUrl) || greciaFilosofosFundo);
+  const materiasFiltradas = useMemo(() => {
+    return materiasComStats.filter((item) => {
+      if (filtro === 'andamento' && (item.pct <= 0 || item.pct >= 100)) return false;
+      if (filtro === 'concluidas' && item.pct < 100) return false;
+      if (!termoBuscaNorm) return true;
+      const matchNome =
+        item.mat.titulo.toLowerCase().includes(termoBuscaNorm) ||
+        item.tituloCurto.toLowerCase().includes(termoBuscaNorm);
+      const matchAula = item.aulasDaMat.some((a) =>
+        a.titulo.toLowerCase().includes(termoBuscaNorm)
+      );
+      return matchNome || matchAula;
+    });
+  }, [filtro, materiasComStats, termoBuscaNorm]);
 
   return (
-    <>
-      {/* Fundo Oficial Fixo da Área */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0705]">
-        <img
-          src={fundoAreaOficial}
-          alt={disciplinaAtual.nome}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[0.5px] brightness-[0.98] contrast-[1.02] transition-opacity duration-500"
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-zinc-950 text-white relative">
+      {/* Fundo padrão oficial ShapeGrid */}
+      <div className="fixed inset-0 z-0 opacity-60 pointer-events-none">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
+          hoverTrailAmount={5}
         />
-        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       </div>
 
-      {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
-      <FallingLotusPetals />
-
-      {/* Top Bar Fixa de Navegação da Disciplina */}
-      <div 
-        className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/90 border-b border-white/10 px-3.5 sm:px-6 py-2.5 transition-all shadow-xl"
-        style={{
-          paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
-        }}
-      >
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      {/* Header fixo minimalista */}
+      <header className="sticky top-0 z-30 w-full bg-zinc-950/90 backdrop-blur-md border-b border-white/10 px-3.5 sm:px-6 pb-3 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
           <button
             type="button"
-            onClick={handleVoltar}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0 cursor-pointer"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              handleVoltar();
+            }}
             aria-label="Voltar para áreas"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white active:scale-95 transition-colors shrink-0 cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
 
-          {/* Título Centralizado com Barra de Progresso */}
-          <div className="flex-1 min-w-0 max-w-md mx-auto flex flex-col items-center justify-center text-center px-2">
-            <div className="flex items-center gap-1.5 max-w-full truncate">
-              <span 
-                className="w-1.5 h-1.5 rounded-full shrink-0" 
-                style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
-              />
-              <span 
-                className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider truncate text-white"
-                style={{ color: theme.highlight }}
-              >
-                {disciplinaAtual.nome}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base sm:text-xl font-bold text-white tracking-tight truncate">
+              {disciplinaAtual.nome}
+            </h1>
+            <div className="flex items-center gap-2 text-[11px] sm:text-xs text-zinc-400 mt-0.5">
+              <span className="truncate">
+                {materiasDaDisc.length} matérias • {totalAulasDisc} aulas
+              </span>
+              <span className="text-zinc-600">•</span>
+              <span className="font-semibold text-amber-400 tabular-nums shrink-0">
+                {pctDisc}% concluído
               </span>
             </div>
-            <div className="w-full max-w-[200px] sm:max-w-[240px] flex items-center gap-2 mt-1">
-              <div 
-                className="flex-1 h-1.5 rounded-full bg-black/60 overflow-hidden"
-                style={{ border: `1px solid ${theme.borderSubtle}` }}
-              >
-                <div
-                  className="h-full rounded-full transition-all duration-700 ease-out"
-                  style={{
-                    width: `${Math.max(pctDisc, totalAulasDisc > 0 ? 4 : 0)}%`,
-                    background: theme.progressGradient,
-                    boxShadow: theme.progressShadow,
-                  }}
-                />
-              </div>
-              <span 
-                className="text-[10px] sm:text-[10.5px] font-mono font-bold tabular-nums shrink-0"
-                style={{ color: theme.accent }}
-              >
-                {pctDisc}%
-              </span>
+            <div className="w-full max-w-xs h-1 rounded-full bg-white/10 overflow-hidden mt-1.5">
+              <div
+                className="h-full rounded-full bg-amber-400 transition-all duration-500"
+                style={{ width: `${pctDisc}%` }}
+              />
             </div>
           </div>
 
-          {/* Botão de Atalho para o Início do Aplicativo (Home) */}
           <button
             type="button"
-            onClick={() => navigate('/')}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0 cursor-pointer"
-            aria-label="Voltar para o Início do aplicativo"
-            title="Início do aplicativo"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              navigate('/');
+            }}
+            aria-label="Voltar para o Início"
+            className="w-11 h-11 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-200 active:scale-95 transition-colors shrink-0 cursor-pointer"
           >
-            <Home className="w-5.5 h-5.5 sm:w-6 sm:h-6" strokeWidth={2.2} />
+            <Home className="w-5 h-5" strokeWidth={2} />
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Conteúdo da Trilha Serpenteante */}
-      <div className="relative z-10 w-full max-w-[720px] mx-auto px-2 xs:px-3 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
-        {/* Barra de Pesquisa Rápida das Matérias */}
-        <div className="w-full max-w-[360px] xs:max-w-[460px] sm:max-w-xl mx-auto px-2 my-2.5 z-20">
-          <div className="relative w-full">
-            <div 
-              className="absolute left-3.5 xs:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
-              style={{ color: theme.accent }}
-            >
-              <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[2.2]" />
-            </div>
+      {/* Conteúdo principal */}
+      <main className="relative z-10 max-w-5xl mx-auto px-3.5 sm:px-6 pt-3 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-3.5">
+        {/* Busca + Filtros */}
+        <div className="space-y-2.5">
+          <div className="relative">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={buscaTermo}
               onChange={(e) => setBuscaTermo(e.target.value)}
-              placeholder={`Buscar matéria em ${disciplinaAtual.nome}...`}
-              className="w-full h-12 xs:h-12.5 sm:h-13.5 pl-11 xs:pl-12 pr-11 xs:pr-12 rounded-full text-xs xs:text-sm sm:text-base text-white placeholder:text-zinc-400/75 focus:outline-none transition-all shadow-inner"
-              style={{
-                background: 'rgba(15, 6, 10, 0.85)',
-                backdropFilter: 'blur(16px)',
-                border: `1px solid ${buscaTermo ? theme.accent : theme.borderSubtle}`,
-                boxShadow: buscaTermo 
-                  ? `0 0 16px ${theme.glowSoft}, inset 0 2px 4px rgba(0,0,0,0.7)` 
-                  : 'inset 0 2px 4px rgba(0,0,0,0.6)',
-              }}
+              placeholder={`Buscar matéria ou aula em ${disciplinaAtual.nome}...`}
+              className="w-full h-11 pl-10 pr-10 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/60 transition-colors"
             />
             {buscaTermo && (
               <button
                 type="button"
                 onClick={() => setBuscaTermo('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
                 aria-label="Limpar busca"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-zinc-400 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
-        </div>
 
-        {/* Trilha Serpenteante Oficial de Matérias */}
-        <div className="relative py-2 sm:py-4 w-full min-w-0 max-w-full overflow-hidden">
-          <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
-            {/* ── CUME DA TRILHA: O TEMPLO DA ACRÓPOLE ── */}
-            <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
-              <div className="relative flex flex-col items-center">
-                {/* Halo solar suave atrás do Parthenon */}
-                <div 
-                  className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
-                  style={{
-                    background: `radial-gradient(ellipse at center, ${theme.glow} 0%, ${theme.glowSoft} 60%, transparent 100%)`,
-                    filter: 'blur(16px)',
-                  }}
-                />
-
-                {/* Ícone Monumental Oficial da Disciplina */}
-                <div 
-                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
-                  style={{
-                    background: theme.bgCard,
-                    borderColor: theme.border,
-                    boxShadow: `0 0 24px ${theme.glowSoft}, inset 0 2px 4px rgba(255, 255, 255, 0.15)`,
-                  }}
-                >
-                  <AreaIconComponent 
-                    className="w-9 h-9 sm:w-11 sm:h-11 drop-shadow-md" 
-                    style={{ color: theme.accent, filter: `drop-shadow(0 2px 8px ${theme.glow})` }}
-                  />
-                </div>
-
-                {/* Placa com o Nome da Disciplina */}
-                <div 
-                  className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
-                  style={{
-                    background: theme.bgCard,
-                    borderColor: theme.border,
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1)',
-                  }}
-                >
-                  <span 
-                    className="w-1.5 h-1.5 rounded-full" 
-                    style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
-                  />
-                  <span 
-                    className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase"
-                    style={{ color: theme.highlight }}
-                  >
-                    {disciplinaAtual.nome}
-                  </span>
-                </div>
-
-                {/* Descrição: Matérias → Aulas → Progresso */}
-                <div 
-                  className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-serif font-semibold mt-2 px-3 py-1 rounded-full border backdrop-blur-md"
-                  style={{
-                    background: theme.bgCard,
-                    borderColor: theme.borderSubtle,
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.08)',
-                    color: theme.highlight,
-                  }}
-                >
-                  <span>{materiasDaDisc.length} matérias</span>
-                  <span className="font-bold" style={{ color: theme.accent }}>→</span>
-                  <span>{totalAulasDisc} aulas</span>
-                  <span className="font-bold" style={{ color: theme.accent }}>→</span>
-                  <span className="font-mono font-bold" style={{ color: theme.accent }}>{pctDisc}% concluído</span>
-                </div>
-
-                {/* Início da Estrada saindo do templo */}
-                <div 
-                  className="w-1.5 h-6 my-2 rounded-full"
-                  style={{
-                    background: theme.roadGradient,
-                    boxShadow: theme.roadShadow,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Nós Serpenteantes: Cada Nó é uma Matéria Oficial com FlashcardDeckItem */}
-            {materiasFiltradas.map((mat, matIdx) => {
-              const isLast = matIdx === materiasFiltradas.length - 1;
-              const aulasDaMat = aulasCatalogo.filter(a => a.materiaId === mat.id);
-              const totalAulasMat = aulasDaMat.length;
-              const somaPctMat = aulasDaMat.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-              const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
-              const concluidasMat = aulasDaMat.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
-              const isActive = matIdx === 0;
-              const isLocked = false;
-              const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
-
-              const itemData = {
-                key: mat.id,
-                titulo: tituloCurto,
-                badgeLabel: `Matéria ${String(matIdx + 1).padStart(2, '0')}`,
-                ordemStr: String(matIdx + 1).padStart(2, '0'),
-                displayTotal: totalAulasMat,
-                temasCount: totalAulasMat,
-                displayConcluidas: concluidasMat,
-                displayPct: pctMat,
-                subtituloCustom: `${totalAulasMat} ${totalAulasMat === 1 ? 'aula' : 'aulas'}${pctMat > 0 ? ` • ${pctMat}% concluído` : ''}`,
-                isLocked,
-                capaUrl: mat.capaUrl || aulasDaMat[0]?.capaUrl,
-                onClick: () => {
-                  try { haptic.selection(); } catch {}
-                  onSelecionarMateria(mat.id);
-                },
-              };
-
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 no-scrollbar">
+            {[
+              { id: 'todas', label: `Todas (${materiasComStats.length})` },
+              { id: 'andamento', label: 'Em andamento' },
+              { id: 'concluidas', label: 'Concluídas' },
+            ].map((chip) => {
+              const ativo = filtro === chip.id;
               return (
-                <div
-                  key={mat.id}
-                  id={`materia-section-${mat.id}`}
-                  className="w-full flex flex-col items-center"
+                <button
+                  key={chip.id}
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setFiltro(chip.id as FiltroStatus);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
+                    ativo
+                      ? 'bg-white text-zinc-950 border-white'
+                      : 'bg-white/5 hover:bg-white/10 text-zinc-300 border-white/10'
+                  }`}
                 >
-                  <FlashcardDeckItem
-                    item={itemData}
-                    i={matIdx}
-                    isLast={isLast}
-                    isActive={isActive}
-                    theme={theme}
-                  />
-                </div>
+                  {chip.label}
+                </button>
               );
             })}
-
-            {materiasFiltradas.length === 0 && (
-              <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                <Search className="w-9 h-9 text-zinc-500 stroke-[1.5]" />
-                <p className="text-zinc-300 text-sm">
-                  Nenhuma matéria encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setBuscaTermo('')}
-                  className="text-xs font-semibold underline cursor-pointer"
-                  style={{ color: theme.accent }}
-                >
-                  Limpar pesquisa
-                </button>
-              </div>
-            )}
-
-            {/* Louros da Vitória Clássicos no Rodapé da Trilha */}
-            <div className="w-full flex items-center justify-between px-6 pt-8 pb-4" style={{ color: theme.borderSubtle }}>
-              <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-              </svg>
-              <span 
-                className="text-[10px] font-serif font-semibold tracking-widest uppercase text-center"
-                style={{ color: theme.accent, opacity: 0.85 }}
-              >
-                Trilha do Saber • {disciplinaAtual.nome}
-              </span>
-              <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-              </svg>
-            </div>
           </div>
         </div>
-      </div>
-    </>
+
+        {/* Atalho rápido: Continuar / Próxima matéria */}
+        {!termoBuscaNorm && filtro === 'todas' && materiaContinuar && (
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              onSelecionarMateria(materiaContinuar.mat.id);
+            }}
+            className="w-full p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer"
+          >
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block">
+                {materiaContinuar.pct > 0 && materiaContinuar.pct < 100 ? 'Continuar de onde parou' : 'Começar rápido'}
+              </span>
+              <p className="text-sm sm:text-base font-bold text-white truncate mt-0.5">
+                {materiaContinuar.tituloCurto}
+              </p>
+              <span className="text-xs text-zinc-400">
+                {materiaContinuar.total} {materiaContinuar.total === 1 ? 'aula' : 'aulas'} • {materiaContinuar.pct}% concluído
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-amber-400 text-zinc-950 flex items-center justify-center shrink-0">
+              <Play className="w-4 h-4 fill-current ml-0.5" />
+            </div>
+          </button>
+        )}
+
+        {/* Lista prática / Grid responsivo de matérias */}
+        {materiasFiltradas.length === 0 ? (
+          <div className="py-12 px-4 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-2">
+            <p className="text-sm text-zinc-300">
+              Nenhuma matéria encontrada.
+            </p>
+            {(buscaTermo || filtro !== 'todas') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setBuscaTermo('');
+                  setFiltro('todas');
+                }}
+                className="text-xs font-semibold text-amber-400 underline cursor-pointer"
+              >
+                Limpar filtros
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {materiasFiltradas.map((item) => {
+              const concluida = item.pct >= 100;
+              return (
+                <button
+                  key={item.mat.id}
+                  id={`materia-section-${item.mat.id}`}
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    onSelecionarMateria(item.mat.id);
+                  }}
+                  className="group w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-amber-500/40 flex items-center gap-3 text-left transition-all active:scale-[0.99] cursor-pointer"
+                >
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold tabular-nums shrink-0 border ${
+                      concluida
+                        ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                        : item.pct > 0
+                        ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                        : 'bg-white/5 border-white/10 text-zinc-400'
+                    }`}
+                  >
+                    {concluida ? (
+                      <CheckCircle2 className="w-5 h-5" />
+                    ) : (
+                      String(item.idx + 1).padStart(2, '0')
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-snug">
+                      {item.tituloCurto}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-[11px] text-zinc-400 shrink-0">
+                        {item.total} {item.total === 1 ? 'aula' : 'aulas'}
+                      </span>
+                      <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden max-w-[90px]">
+                        <div
+                          className={`h-full rounded-full ${
+                            concluida ? 'bg-emerald-400' : 'bg-amber-400'
+                          }`}
+                          style={{ width: `${item.pct}%` }}
+                        />
+                      </div>
+                      <span className="text-[11px] font-medium text-zinc-400 tabular-nums shrink-0">
+                        {item.pct}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white shrink-0 transition-colors" />
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
   );
 };
-
