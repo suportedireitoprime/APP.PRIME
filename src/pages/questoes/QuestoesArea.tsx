@@ -13,8 +13,8 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { 
-  Filter, SlidersHorizontal, Sparkles, 
-  ChevronRight, ArrowLeft, BookOpen, Layers, Award, Shield
+  SlidersHorizontal, 
+  BookOpen, Play, Star
 } from 'lucide-react';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -24,13 +24,10 @@ import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
 import { haptic } from '@/lib/nativeHaptics';
 import { lazy, Suspense } from 'react';
 import { getAllProgressoArea, TopicoProgresso } from '@/lib/questoesTrilhaProgress';
-import { FILTRO_KEY, FILTRO_VAZIO } from '@/lib/questoesFiltro';
 import { CURATED_BOOK_COVERS, type TrilhaItem } from '@/lib/questoesCuratedCovers';
-import GalaxyBackground from '@/components/questoes/GalaxyBackground';
-import QuestoesTrilhaMapa from '@/components/questoes/QuestoesTrilhaMapa';
+import { recordAreaActivity } from '@/lib/continuity';
 
 const QuestoesFiltroSheet = lazy(() => import('@/components/questoes/QuestoesFiltroSheet'));
-const QuestaoLivroModal = lazy(() => import('@/components/questoes/QuestaoLivroModal'));
 
 const QuestoesArea = () => {
   useTrackArea("questoes_area_aberta");
@@ -48,9 +45,6 @@ const QuestoesArea = () => {
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
   const [filtroAberto, setFiltroAberto] = useState(false);
-
-  // Modal para detalhe do Livro / Tópico selecionado
-  const [livroSelecionado, setLivroSelecionado] = useState<TrilhaItem | null>(null);
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
@@ -355,26 +349,23 @@ const QuestoesArea = () => {
       wide
       activeId="aprender"
       title={officialFlashcardArea || area?.nome || effectiveAreaName}
-      subtitle="Trilha de Questões"
+      subtitle="Temas para Praticar"
       mobileHeader={mobileHeader}
     >
-      {/* ── Fundo Cósmico Galáxia com Cometas e Estrelas ── */}
-      <GalaxyBackground />
-
-      <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-3 sm:px-6 pb-32 pt-2 min-w-0 overflow-x-hidden box-border">
+      <div className="relative z-10 w-full max-w-[600px] md:max-w-[720px] mx-auto px-3.5 sm:px-6 pb-28 pt-2 min-w-0 overflow-x-hidden box-border">
         
-        {/* ── Barra Superior com Indicador da Área & Barra de Progresso Oficial ── */}
-        <div className="flex flex-col gap-2.5 mb-5 p-3.5 sm:p-4 rounded-2xl bg-[#17122B]/85 border border-white/10 backdrop-blur-md shadow-xl">
+        {/* ── Barra Superior com Indicador da Área, Filtros & Progresso ── */}
+        <div className="flex flex-col gap-3 mb-6 p-4 sm:p-5 rounded-2xl bg-zinc-900/85 border border-white/10 backdrop-blur-md shadow-xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-[#E11D48]/20 text-[#FB7185] border border-[#E11D48]/30 shadow-inner shrink-0">
-                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#E11D48]/15 text-[#FB7185] border border-[#E11D48]/30 shrink-0">
+                <BookOpen className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
-                  {effectiveAreaName || area?.nome || 'Direito'}
+                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-sm sm:text-base font-bold text-white truncate">
+                  {officialFlashcardArea || effectiveAreaName || area?.nome || 'Direito'}
                 </p>
-                <p className="text-[10px] sm:text-[11px] text-zinc-300">
+                <p className="text-[11px] sm:text-xs text-zinc-400">
                   {totalRespondidasArea} de {totalQuestoesArea} questões ({progressoPctArea}%)
                 </p>
               </div>
@@ -386,47 +377,143 @@ const QuestoesArea = () => {
                 try { haptic.selection(); } catch {}
                 setFiltroAberto(true);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#E11D48] to-[#BE123C] hover:from-[#BE123C] hover:to-[#9F1239] shadow-[0_0_18px_rgba(225,29,72,0.6)] transition-all shrink-0 active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#E11D48] to-[#BE123C] hover:from-[#BE123C] hover:to-[#9F1239] shadow-[0_0_16px_rgba(225,29,72,0.45)] transition-all shrink-0 active:scale-95 cursor-pointer"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>Filtros</span>
             </button>
           </div>
 
-          {/* Barra de Progresso Oficial da Área (Estilo Questões) */}
+          {/* Barra de Progresso */}
           <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden border border-white/5">
             <div 
               className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
                 width: `${Math.max(progressoPctArea, 1)}%`,
                 background: 'linear-gradient(90deg, #E11D48, #FB7185)',
-                boxShadow: '0 0 10px rgba(225, 29, 72, 0.8)',
+                boxShadow: '0 0 10px rgba(225, 29, 72, 0.7)',
               }}
             />
           </div>
         </div>
 
         {/* ════════════════════════════════════════════════════════════════
-            TRILHA ESPACIAL DRUNO COM LIVROS 3D SOBRE PEDESTAIS
+            LISTA DE TEMAS DA MATÉRIA (ESTILO TRILHA LIMPA COM PRATICAR)
         ════════════════════════════════════════════════════════════════ */}
-        <QuestoesTrilhaMapa
-          items={itemsToRender}
-          avatarUrl={user?.user_metadata?.avatar_url}
-          onSelectItem={setLivroSelecionado}
-        />
-      </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">
+              Temas ({itemsToRender.length})
+            </h2>
+            <span className="text-[11px] text-zinc-400 font-medium">
+              Escolha um tema para praticar
+            </span>
+          </div>
 
-      {/* ════════════════════════════════════════════════════════════════
-          MODAL DE DETALHES DO LIVRO AO TOCAR NA TRILHA (DRUNO SHEET)
-      ════════════════════════════════════════════════════════════════ */}
-      {livroSelecionado && (
-        <Suspense fallback={null}>
-          <QuestaoLivroModal
-            livro={livroSelecionado}
-            onClose={() => setLivroSelecionado(null)}
-          />
-        </Suspense>
-      )}
+          {loadingQuestoesTemas && itemsToRender.length === 0 ? (
+            <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3.5 px-4 py-4 animate-pulse">
+                  <div className="w-9 h-9 rounded-xl bg-white/10 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-3/4 rounded bg-white/10" />
+                    <div className="h-3 w-1/3 rounded bg-white/5" />
+                  </div>
+                  <div className="w-24 h-9 rounded-full bg-white/10 shrink-0" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden shadow-xl">
+              {itemsToRender.map((item, idx) => {
+                const prog = progressoLocal[item.titulo] || { respondidas: 0, acertos: 0 };
+                const respondidas = prog.respondidas || 0;
+                const acertos = prog.acertos || 0;
+                const pctTema = respondidas > 0 ? Math.round((acertos / respondidas) * 100) : 0;
+                const estrelas = respondidas === 0 ? 0 : pctTema >= 80 ? 3 : pctTema >= 50 ? 2 : 1;
+                const areaLabel = officialFlashcardArea || effectiveAreaName || area?.nome || 'Direito';
+
+                const handlePraticarTema = () => {
+                  recordAreaActivity({
+                    path: `/questoes/praticar?area=${encodeURIComponent(areaLabel)}&assunto=${encodeURIComponent(item.titulo)}&areaSlug=${slug || ''}`,
+                    label: `${areaLabel} — ${item.titulo}`,
+                    sublabel: `${item.displayTotal} questões`,
+                    kind: 'questoes',
+                  });
+                  item.onClick();
+                };
+
+                return (
+                  <div
+                    key={item.key}
+                    onClick={handlePraticarTema}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handlePraticarTema();
+                      }
+                    }}
+                    className="group flex items-center gap-3.5 px-4 py-4 sm:px-5 hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-white/[0.05]"
+                  >
+                    {/* Número do tema */}
+                    <div
+                      className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm ${
+                        respondidas > 0 || idx === 0
+                          ? 'bg-amber-400 text-zinc-950 shadow-sm shadow-amber-400/20'
+                          : 'bg-zinc-800/90 text-zinc-400 border border-zinc-700/50'
+                      }`}
+                    >
+                      {idx + 1}
+                    </div>
+
+                    {/* Título + Estrelas + Status */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm sm:text-[15px] font-bold text-white leading-snug group-hover:text-primary transition-colors">
+                        {item.titulo}
+                      </p>
+
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3].map((starIdx) => (
+                            <Star
+                              key={starIdx}
+                              className={`w-3.5 h-3.5 ${
+                                starIdx <= estrelas
+                                  ? 'text-amber-400 fill-amber-400'
+                                  : 'text-zinc-600'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[11px] text-zinc-400 font-medium">
+                          {respondidas > 0
+                            ? `${pctTema}% • ${respondidas}/${item.displayTotal} q.`
+                            : `Não iniciado • ${item.displayTotal} q.`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Botão Pill Praticar */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePraticarTema();
+                      }}
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs sm:text-[13px] font-bold shadow-md shadow-primary/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      Praticar
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Sheet de Filtro da Área */}
       {filtroAberto && (
