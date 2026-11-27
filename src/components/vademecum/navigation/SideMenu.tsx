@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
   LifeBuoy, Lock, Gem,
-  Pencil, Crown, Timer, Star, User,
+  Pencil, Crown, Timer, User,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,7 +14,6 @@ import { isAdminEmail } from '@/lib/adminEmails';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
-import AvaliarAppSheet from '@/components/vademecum/sheets/AvaliarAppSheet';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -92,7 +91,6 @@ const DIRECT_ROUTES: Record<string, string> = {
 
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
-  const [avaliarOpen, setAvaliarOpen] = useState(false);
   const [appVersion, setAppVersion] = useState<string>('v1.0.0');
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
@@ -178,11 +176,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       setTimeout(() => {
         signOut().catch(() => {});
       }, 50);
-      return;
-    }
-
-    if (id === 'avaliar') {
-      setAvaliarOpen(true);
       return;
     }
 
@@ -310,12 +303,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             onClick={() => handleItemClick('planos')}
           />
           <MenuRow
-            icon={Star}
-            iconColor="text-yellow-400 fill-yellow-400/25"
-            label="Avaliar aplicativo"
-            onClick={() => handleItemClick('avaliar')}
-          />
-          <MenuRow
             icon={LifeBuoy}
             iconColor="text-red-400"
             label="Suporte"
@@ -369,13 +356,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     <>
       {sheet}
       <OpiniaoSheet open={opiniaoOpen} onClose={() => setOpiniaoOpen(false)} />
-      <AvaliarAppSheet
-        open={avaliarOpen}
-        onClose={() => setAvaliarOpen(false)}
-        onFeedback={() => {
-          setOpiniaoOpen(true);
-        }}
-      />
     </>,
     document.body,
   );
