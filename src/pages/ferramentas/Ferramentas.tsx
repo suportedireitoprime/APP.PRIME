@@ -33,7 +33,7 @@ const Ferramentas = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0 lg:hidden">
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}
