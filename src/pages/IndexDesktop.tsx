@@ -84,19 +84,9 @@ const IndexDesktop = () => {
   }, [activeTab]);
 
   return (
-    <div className="h-dvh bg-zinc-950 flex flex-col relative overflow-hidden">
-      <div className="relative z-10 flex h-full w-full min-h-0 overflow-hidden">
-        <DesktopOnboardingOverlay />
-
-        <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex flex-col flex-1 h-full min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          <div className="border-b border-white/5 bg-transparent">
-            <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
-            <DesktopBreadcrumb />
-          </div>
-
-          <div className="px-4 lg:px-6 py-5 relative z-20">
-            {activeTab === 'legislacao' && (
+    <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-10 py-6">
+      <DesktopOnboardingOverlay />
+      {activeTab === 'legislacao' && (
               <>
                 <div className="mb-7 relative z-0 pointer-events-auto">
                   <DesktopHeroBanner
@@ -179,15 +169,11 @@ const IndexDesktop = () => {
                 </div>
               </div>
             )}
-          </div>
-
           <Suspense fallback={null}>
             <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
             <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
           </Suspense>
           <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
-        </div>
-      </div>
     </div>
   );
 };

@@ -293,7 +293,7 @@ const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
 const Assinatura = lazyWithRetry(() => import("./pages/assinatura/Assinatura.tsx"));
 const PlanosAtivos = lazyWithRetry(() => import("./pages/assinatura/PlanosAtivos.tsx"));
 const NovidadesRadarOverlay = lazyWithRetry(() => import("./components/NovidadesRadarOverlay.tsx"));
-const GlobalDesktopHeader = lazyWithRetry(() => import("./components/layout/GlobalDesktopHeader.tsx"));
+const DesktopAppShell = lazyWithRetry(() => import("./components/desktop/shell/DesktopAppShell.tsx"));
 const DesktopFileDropOverlay = lazyWithRetry(() => import("./components/desktop/DesktopFileDropOverlay.tsx"));
 const ModoOffline = lazy(() => import("./pages/offline/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/offline/ModoOfflineLeis.tsx"));
@@ -784,12 +784,12 @@ function AnimatedRoutes() {
       <DeepLinkBootstrap />
       {user && <PresenceWrapper />}
       {user && <NovidadesRadarOverlay />}
-      <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
-      <PersistentHome />
       <GlobalTrialGate />
       <Suspense fallback={<LazyFallback />}>
-        <Routes>
+        <DesktopAppShell>
+          <PersistentHome />
+          <Routes>
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
 
@@ -987,6 +987,7 @@ function AnimatedRoutes() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>
+        </DesktopAppShell>
       </Suspense>
   </div>
   );
