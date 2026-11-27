@@ -121,17 +121,5 @@ function pickTrigger(u: any, horaBRT: number): Trigger | null {
     }
   }
 
-  // 3) Assinatura expirando
-  if (u.plano_atual === "pro" && u.plano_expira_em) {
-    const diasRestantes = (new Date(u.plano_expira_em).getTime() - Date.now()) / 86400000;
-    if (diasRestantes > 0 && diasRestantes <= 3) {
-      return {
-        motivo: "assinatura_expirando",
-        mensagem: `${oi}! Só um heads-up: sua assinatura Vade Mecum Pro expira em ${Math.ceil(diasRestantes)} dia(s). Renovando pelo app você não perde a sequência 🙂`,
-        meta: { dias: Math.ceil(diasRestantes) },
-      };
-    }
-  }
-
   return null;
 }

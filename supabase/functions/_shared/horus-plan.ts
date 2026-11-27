@@ -530,23 +530,6 @@ export async function syncHorusSubscriptionStatus(
       planLabel,
     });
 
-    // 4. Enviar mensagem de boas-vindas / aviso de plano ativado no WhatsApp (se solicitado)
-    if (notifyWhatsapp && isPremium) {
-      try {
-        const primeiroNome = displayName.split(" ")[0];
-        const defaultMsg =
-          `Olá, ${primeiroNome}! 🦉✨\n\n` +
-          `Seu plano *Pro* no *Vade Mecum* está ativo! Agora você tem acesso ilimitado para tirar dúvidas comigo aqui no WhatsApp, enviar áudios, imagens e PDFs.\n\n` +
-          `Em que posso te ajudar hoje nos seus estudos ou trabalho? ⚖️`;
-
-        const msgToSend = params.notifyMessage || defaultMsg;
-        await evolution.sendText(phone, msgToSend);
-        console.log("syncHorusSubscriptionStatus: WhatsApp notification sent", { phone });
-      } catch (wErr) {
-        console.warn("syncHorusSubscriptionStatus: sendText failed (non-blocking)", wErr);
-      }
-    }
-
     return { ok: true, synced: true, phone };
   } catch (err) {
     console.error("syncHorusSubscriptionStatus fatal error", err);

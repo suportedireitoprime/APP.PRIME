@@ -168,13 +168,7 @@ Deno.serve(async (req) => {
           const planoLabel = (planFinal === 'anual') ? 'Anual' : planFinal === 'vitalicio' ? 'Vitalício' : 'Mensal';
           const notifyTasks: Promise<any>[] = [];
 
-          // 1. Mensagem de confirmação para o Cliente
-          if (phone) {
-            const msgCliente = `${nome}, seu pagamento${valorFormatado ? ` de ${valorFormatado}` : ''} do plano *${planoLabel}* foi confirmado via PIX! ✅\n\nSeu acesso ao *Direito Prime* está liberado. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
-            notifyTasks.push(evolution.sendText(phone, msgCliente).catch(e => console.warn('Erro envio WhatsApp cliente:', e)));
-          }
-
-          // 2. Alerta imediato de venda para o Administrador (+5511991897603)
+          // Alerta imediato de venda para o WhatsApp do Administrador (+5511991897603)
           const ADMIN_PHONE = Deno.env.get('ADMIN_PHONE') || '+5511991897603';
           const clienteNomeCompleto = profile?.display_name || (userEmail ? userEmail.split('@')[0] : 'Cliente');
           const msgAdmin = `🔔 *NOVA ASSINATURA CONFIRMADA!* 💰🦉\n\n👤 *Cliente:* ${clienteNomeCompleto}\n📧 *E-mail:* ${userEmail || 'Não informado'}\n💎 *Plano:* ${planoLabel}\n💵 *Valor:* ${valorFormatado}\n⚡ *Método:* PIX (Asaas)\n\nAcesso liberado instantaneamente com sucesso!`;

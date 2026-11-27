@@ -396,12 +396,6 @@ Deno.serve(async (req) => {
         const planoLabel = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 'Anual' : effectivePlan === 'vitalicio' ? 'Vitalício' : 'Mensal';
         const userEmail = payment?.customerEmail || profile?.email || 'E-mail não informado';
 
-        // 1. Mensagem de confirmação para o Cliente
-        if (phone) {
-          const msg = `${nome}, seu pagamento${valor ? ` de ${valor}` : ''} do plano *${planoLabel}* foi confirmado! ✅\n\nSeu acesso ao *Direito Prime* está ativo. Bons estudos! 📚\n\nAcesse: https://app.suportedireitoprimeoficial.com`;
-          await evolution.sendText(phone, msg).catch(err => console.warn('Falha envio recibo cliente:', err));
-        }
-
         // 2. Alerta imediato de venda para o WhatsApp do Administrador (+5511991897603)
         const ADMIN_PHONE = Deno.env.get('ADMIN_PHONE') || '+5511991897603';
         const clienteNomeCompleto = profile?.display_name || userEmail.split('@')[0];
