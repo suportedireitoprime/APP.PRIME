@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
@@ -147,6 +147,8 @@ export function PlayerAulaNativo({
   const [aulaData, setAulaData] = useState<AulaData | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [idx, setIdx] = useState(etapaInicial !== undefined ? etapaInicial : 0);
+  const [navDir, setNavDir] = useState<1 | -1>(1);
+  const shouldReduceMotion = useReducedMotion();
   const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
 
   // Estados de Áudio e Karaokê
@@ -184,45 +186,39 @@ export function PlayerAulaNativo({
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
 
-  // Cores e tema dinâmicos por disciplina
+  // Cores e tema dinâmicos por disciplina sobre base grafite limpa (#09090B)
   const tema = useMemo(() => {
+    const base = {
+      bg: '#09090B',
+      headerBg: 'rgba(9, 9, 11, 0.92)',
+      headerBorder: 'rgba(255, 255, 255, 0.07)',
+      footerBg: 'rgba(17, 17, 20, 0.94)',
+    };
     switch (aula.disciplinaId) {
       case 'administrativo':
         return {
-          bg: '#120d04',
-          headerBg: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
-          headerBorder: 'rgba(217,160,10,0.35)',
-          footerBg: '#181206',
+          ...base,
           destaque: '#d9a00a',
           accentGradient: 'linear-gradient(135deg, #d9a00a, #b45309)',
         };
       case 'constitucional':
         return {
-          bg: '#051208',
-          headerBg: 'linear-gradient(180deg, #0e2916 0%, #08170c 100%)',
-          headerBorder: 'rgba(34,197,94,0.35)',
-          footerBg: '#08170d',
+          ...base,
           destaque: '#22c55e',
           accentGradient: 'linear-gradient(135deg, #22c55e, #15803d)',
         };
       case 'trabalho':
         return {
-          bg: '#0e0618',
-          headerBg: 'linear-gradient(180deg, #25123d 0%, #150924 100%)',
-          headerBorder: 'rgba(168,85,247,0.35)',
-          footerBg: '#150924',
+          ...base,
           destaque: '#a855f7',
           accentGradient: 'linear-gradient(135deg, #a855f7, #7e22ce)',
         };
       case 'penal':
       default:
         return {
-          bg: '#120409',
-          headerBg: 'linear-gradient(180deg, #280611 0%, #16040a 100%)',
-          headerBorder: 'rgba(226,62,87,0.35)',
-          footerBg: '#18060c',
-          destaque: '#ff8296',
-          accentGradient: 'linear-gradient(135deg, #e23e57, #c8102e)',
+          ...base,
+          destaque: '#fb7185',
+          accentGradient: 'linear-gradient(135deg, #e11d48, #be123c)',
         };
     }
   }, [aula.disciplinaId]);
@@ -862,6 +858,7 @@ export function PlayerAulaNativo({
   const avancarEtapa = () => {
     if (idx < total - 1) {
       haptic.light();
+      setNavDir(1);
       setIdx(prev => prev + 1);
     } else {
       haptic.success();
@@ -872,6 +869,7 @@ export function PlayerAulaNativo({
   const voltarEtapa = () => {
     if (idx > 0) {
       haptic.light();
+      setNavDir(-1);
       setIdx(prev => prev - 1);
     }
   };
@@ -1979,21 +1977,109 @@ export function PlayerAulaNativo({
         </div>
       </header>
 
-      {/* BARRA DE PROGRESSO DECORATIVA NO TOPO */}
-      <div className="w-full h-1 bg-white/5 overflow-hidden">
-        <div 
-          className="h-full transition-all duration-500 ease-out"
-          style={{ 
-            width: `${((idx + 1) / total) * 100}%`,
-            background: tema.accentGradient
-          }}
-        />
+      {/* BARRA DE PROGRESSO SEGMENTADA / DINÂMICA NO TOPO */}
+      <div className="w-full px-3 sm:px-6 py-1.5 bg-[#09090B]/90 border-b border-white/[0.05] shrink-0">
+        {total <= 16 ? (
+          <div className="max-w-5xl mx-auto flex items-center gap-1.5">
+            {slides.map((_, sIdx) => {
+              const done = sIdx < idx;
+              const current = sIdx === idx;
+              return (
+                <button
+                  key={sIdx}
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setNavDir(sIdx >= idx ? 1 : -1);
+                    setIdx(sIdx);
+                  }}
+                  aria-label={`Ir para etapa ${sIdx + 1}`}
+                  className="h-1.5 flex-1 rounded-full overflow-hidden bg-white/10 transition-all cursor-pointer hover:bg-white/20"
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: done || current ? '100%' : '0%',
+                      background: done || current ? tema.accentGradient : 'transparent',
+                      opacity: done ? 0.65 : 1,
+                    }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="max-w-5xl mx-auto h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500 ease-out"
+              style={{
+                width: `${((idx + 1) / total) * 100}%`,
+                background: tema.accentGradient,
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* ÁREA CENTRAL DE CONTEÚDO (ROLAGEM SUAVE SEM SCROLLBAR VISÍVEL COM PADDING SEGURO NO RODAPÉ) */}
-      <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-56 sm:pb-64 max-w-3xl mx-auto scroll-smooth">
-        {slideAtual && (
-          <div key={idx} className="space-y-4 sm:space-y-5 animate-page-turn">
+      {/* CORPO PRINCIPAL: SIDEBAR DE ETAPAS NO DESKTOP + PALCO CENTRAL FLUIDO */}
+      <div className="flex-1 min-h-0 flex w-full max-w-6xl mx-auto">
+        <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-white/[0.06] bg-[#0B0B0E] py-4 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+          <p className="px-2.5 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+            Etapas da aula ({idx + 1}/{total})
+          </p>
+          <div className="space-y-1">
+            {slides.map((s, sIdx) => {
+              const isAtual = sIdx === idx;
+              const isPassada = sIdx < idx;
+              const label = s.titulo || s.tipo || `Etapa ${sIdx + 1}`;
+              return (
+                <button
+                  key={sIdx}
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setNavDir(sIdx >= idx ? 1 : -1);
+                    setIdx(sIdx);
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left text-xs transition-colors cursor-pointer ${
+                    isAtual
+                      ? 'bg-white/[0.08] text-white font-semibold'
+                      : isPassada
+                      ? 'text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200'
+                      : 'text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300'
+                  }`}
+                >
+                  <span
+                    className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 border ${
+                      isAtual
+                        ? 'border-white/25 text-white'
+                        : isPassada
+                        ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                        : 'bg-white/[0.03] border-white/[0.06] text-zinc-500'
+                    }`}
+                    style={isAtual ? { background: tema.accentGradient } : undefined}
+                  >
+                    {isPassada ? <Check className="w-3 h-3" /> : sIdx + 1}
+                  </span>
+                  <span className="truncate flex-1">{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* ÁREA CENTRAL DE CONTEÚDO COM TRANSIÇÃO DIRECIONAL FLUIDA */}
+        <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 pb-56 sm:pb-64 lg:pb-32 max-w-3xl mx-auto scroll-smooth">
+          {slideAtual && (
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={idx}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: navDir * 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: navDir * -20 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="space-y-4 sm:space-y-5"
+              >
             {/* Tag / Kicker da Etapa limpo e elegante (Sem redundâncias de tags na direita) */}
             <div className="flex items-center justify-between gap-2">
               <span 
@@ -2475,9 +2561,11 @@ export function PlayerAulaNativo({
                 </p>
               </div>
             )}
-          </div>
-        )}
-      </main>
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </main>
+      </div>
 
       {/* RODAPÉ NATIVO COMPLETO, ENCORPADO (ALTO) E 100% RESPONSIVO COM SAFE AREA INSET BOTTOM */}
       <footer 
@@ -2511,7 +2599,9 @@ export function PlayerAulaNativo({
           >
             <button
               type="button"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-black/50 transition active:scale-90"
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-black/50 transition active:scale-90 ${
+                tocando ? 'ring-2 ring-white/40 animate-pulse' : ''
+              }`}
               style={{ background: tema.accentGradient }}
               aria-label={tocando ? 'Pausar narração' : 'Tocar narração'}
             >
