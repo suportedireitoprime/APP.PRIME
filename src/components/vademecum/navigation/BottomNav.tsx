@@ -70,7 +70,9 @@ const RESUMOS_ITENS: Array<{
   colorClass: string;
   prefetch?: PrefetchKey;
 }> = [
-  { id: 'resumos', label: 'Resumos', desc: 'Sínteses e anotações jurídicas', to: '/resumos-juridicos', icon: NotebookPen, colorClass: 'text-amber-400' },
+  { id: 'resumos-conceitual', label: 'Resumo Conceitual', desc: 'Síntese direta e estruturada por tópicos', to: '/resumos-juridicos?metodo=conceitos', icon: NotebookPen, colorClass: 'text-emerald-400' },
+  { id: 'resumos-cornell', label: 'Método Cornell', desc: 'Tópicos, palavras-chave e resumo final', to: '/resumos-juridicos?metodo=cornell', icon: FileText, colorClass: 'text-amber-400' },
+  { id: 'resumos-feynman', label: 'Método Feynman', desc: 'Explicação simples como para um leigo', to: '/resumos-juridicos?metodo=feynman', icon: GraduationCap, colorClass: 'text-sky-400' },
   { id: 'mapas-mentais', label: 'Mapas Mentais', desc: 'Esquemas visuais para revisão rápida', to: '/mapas-mentais', icon: Brain, colorClass: 'text-violet-400' },
 ];
 

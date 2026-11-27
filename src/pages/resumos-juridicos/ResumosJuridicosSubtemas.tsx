@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { cleanTitulo } from "@/components/resumos-juridicos/resumoMarkdownNormalizer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, FileText, Bookmark, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown } from "lucide-react";
@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import { resumosLocal } from "@/lib/resumosLocal";
 import { haptic } from "@/lib/nativeHaptics";
-import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
@@ -32,6 +31,11 @@ export default function ResumosJuridicosSubtemas() {
   const decodedArea = decodeURIComponent(area || "");
   const decodedTema = decodeURIComponent(tema || "");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const metodoParam = searchParams.get("metodo");
+  const urlMetodo: Metodo =
+    metodoParam === "cornell" || metodoParam === "feynman" ? metodoParam : "conceitos";
+  const metodoQuery = metodoParam ? `?metodo=${encodeURIComponent(metodoParam)}` : "";
   
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
   const visualTheme = useMemo(() => getDisciplinaVisualTheme(decodedArea), [decodedArea]);
@@ -53,7 +57,7 @@ export default function ResumosJuridicosSubtemas() {
   const [q, setQ] = useState("");
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
-  const [selectedMetodo, setSelectedMetodo] = useState<Metodo>("conceitos");
+  const [selectedMetodo, setSelectedMetodo] = useState<Metodo>(urlMetodo);
   const [modalResumo, setModalResumo] = useState<ResumoRow | null>(null);
   
   const [ordem, setOrdem] = useState<Ordem>("crono");
@@ -243,17 +247,13 @@ export default function ResumosJuridicosSubtemas() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-35">
-        <ShapeGrid />
-      </div>
-
+    <div className="min-h-dvh bg-[#09090B] text-white pb-20 relative overflow-x-hidden flex flex-col">
       <div className="relative z-10">
-        <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
+        <div className="sticky top-0 z-10 bg-[#09090B]/95 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
           <PageHeader
             title={decodedTema}
             subtitle={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
-            onBack={() => navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}`)}
+            onBack={() => navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}${metodoQuery}`)}
             className="border-b-0 pb-1"
           />
           
@@ -360,17 +360,21 @@ export default function ResumosJuridicosSubtemas() {
                 const isFav = favs.includes(r.id);
                 const isLocked = !isPremium && i >= 2;
                 
+                const isLeft = i % 2 === 0;
                 return (
                   <motion.div
                     layout
                     key={r.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: isLeft ? -10 : 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="flex items-center gap-3 sm:gap-4"
+                    className={cn(
+                      "flex items-center gap-3 sm:gap-4 w-[92%] sm:w-[82%]",
+                      isLeft ? "mr-auto" : "ml-auto flex-row-reverse"
+                    )}
                   >
-                    {/* Nó da Linha do Tempo: Fundo Cinza da cor da lista e Número na cor da Matéria (Laranja para ADM) */}
+                    {/* Nó da Linha do Tempo */}
                     <div
                       className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border bg-[#141416] flex items-center justify-center text-xs font-bold shrink-0 transition-all z-10"
                       style={{
@@ -399,7 +403,7 @@ export default function ResumosJuridicosSubtemas() {
                           return;
                         }
                         haptic.selection();
-                        openReader(r, "conceitos");
+                        openReader(r, urlMetodo);
                       }}
                       className={cn(
                         'relative h-[76px] sm:h-[82px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-3.5 px-3.5 sm:px-4 rounded-2xl border transition-all text-left group shadow-md active:scale-[0.99] cursor-pointer select-none',

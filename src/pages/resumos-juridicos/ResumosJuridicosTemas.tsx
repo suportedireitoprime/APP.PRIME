@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Search, ChevronRight, Mic, Layers, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,7 +7,6 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
 import { resumosLocal } from "@/lib/resumosLocal";
-import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { getAreaCover } from "@/lib/areasDireitoCovers";
@@ -26,6 +25,9 @@ export default function ResumosJuridicosTemas() {
   const { area } = useParams<{ area: string }>();
   const decodedArea = decodeURIComponent(area || "");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const metodo = searchParams.get("metodo") || "";
+  const metodoQuery = metodo ? `?metodo=${encodeURIComponent(metodo)}` : "";
   
   const areaCover = useMemo(() => {
     const visualTheme = getDisciplinaVisualTheme(decodedArea);
@@ -201,17 +203,13 @@ export default function ResumosJuridicosTemas() {
   }, [rows, q, ordem, favoritosGlobais, decodedArea]);
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-35">
-        <ShapeGrid />
-      </div>
-
+    <div className="min-h-dvh bg-[#09090B] text-white pb-20 relative overflow-x-hidden flex flex-col">
       <div className="relative z-10">
-        <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
+        <div className="sticky top-0 z-10 bg-[#09090B]/95 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
           <PageHeader
             title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
             subtitle={rows.length > 0 ? `Área • ${rows.reduce((acc, row) => acc + row.total, 0)} tópicos` : "Área"}
-            onBack={() => navigate("/resumos-juridicos")}
+            onBack={() => navigate(`/resumos-juridicos${metodoQuery}`)}
             className="border-b-0 pb-1"
           />
           
@@ -327,7 +325,7 @@ export default function ResumosJuridicosTemas() {
                       <div
                         onClick={() => {
                           haptic.selection();
-                          navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}`);
+                          navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}${metodoQuery}`);
                         }}
                         className="relative shrink-0 w-[145px] xs:w-[160px] sm:w-[185px] md:w-[210px] aspect-[3/4] h-auto cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                       >
@@ -446,7 +444,7 @@ export default function ResumosJuridicosTemas() {
                       <div
                         onClick={() => {
                           haptic.selection();
-                          navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}`);
+                          navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}${metodoQuery}`);
                         }}
                         className={cn(
                           "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
