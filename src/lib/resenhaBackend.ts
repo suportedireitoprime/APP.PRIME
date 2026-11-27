@@ -15,7 +15,7 @@ export const RESENHA_SELECT =
   'id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao,created_at';
 
 export const RESENHA_LIST_SELECT =
-  'id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,created_at';
+  'id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao,created_at';
 
 /** SELECT genérico em `resenha_diaria` via PostgREST (backend de legislação). */
 export async function resenhaSelect<T = any>(
@@ -75,8 +75,18 @@ export async function invokeResenhaFn<T = any>(
 export async function garantirTextoIntegral(
   id: string,
 ): Promise<{ texto_completo: string | null; explicacao: string | null } | null> {
+  // 1) Sempre consulta primeiro o banco para evitar scraping desnecessário
+  const existing = await resenhaById<{ texto_completo: string | null; explicacao: string | null }>(
+    id,
+    'texto_completo,explicacao',
+  );
+  if (existing?.texto_completo && existing.texto_completo.trim().length >= 100) {
+    return existing;
+  }
+
+  // 2) Só aciona a Edge Function se realmente não houver texto pronto no banco
   try {
-    await invokeResenhaFn('popular-texto-resenha', { id, force: true });
+    await invokeResenhaFn('popular-texto-resenha', { id, force: false });
   } catch (e) {
     console.warn('[resenha] popular-texto-resenha falhou, relendo do banco:', e);
   }
@@ -84,5 +94,5 @@ export async function garantirTextoIntegral(
     id,
     'texto_completo,explicacao',
   );
-  return row;
+  return row ?? existing;
 }

@@ -66,6 +66,7 @@ export default function Novidades() {
   const initialTipo = searchParams.get('tipo');
   const [tipoFiltro, setTipoFiltro] = useState(initialTipo && TIPO_FILTERS.includes(initialTipo) ? initialTipo : 'Todos');
   const [detailItem, setDetailItem] = useState<LeiOrdinaria | null>(null);
+  const [loadingTexto, setLoadingTexto] = useState(false);
   const autoReextractedRef = useRef(false);
 
   const centerDate = useMemo(() => getLatestDate() || new Date(), [items]);
@@ -184,17 +185,17 @@ export default function Novidades() {
     };
     setDetailItem(lei);
     if (!texto || texto.length < 200) {
-      getPersistedResumo<{ texto_completo: string | null; explicacao: string | null }>(`radar-artigo:${item.id}`)
-        .then((cachedRow) => {
-          if (cachedRow?.texto_completo) {
-            item.texto_completo = cachedRow.texto_completo;
-            item.explicacao = cachedRow.explicacao ?? item.explicacao;
-            setDetailItem({ ...lei, texto_completo: cachedRow.texto_completo, explicacao: item.explicacao });
-          }
-        })
-        .catch(() => {});
-
+      setLoadingTexto(true);
       try {
+        const cachedRow = await getPersistedResumo<{ texto_completo: string | null; explicacao: string | null }>(`radar-artigo:${item.id}`).catch(() => null);
+        if (cachedRow?.texto_completo && cachedRow.texto_completo.length >= 100) {
+          item.texto_completo = cachedRow.texto_completo;
+          item.explicacao = cachedRow.explicacao ?? item.explicacao;
+          setDetailItem({ ...lei, texto_completo: cachedRow.texto_completo, explicacao: item.explicacao });
+          setLoadingTexto(false);
+          return;
+        }
+
         const data = await withOnlineGuard(
           () => garantirTextoIntegral(item.id),
           { message: 'Sem internet — o texto integral desta publicação será carregado quando você reconectar.' },
@@ -209,7 +210,11 @@ export default function Novidades() {
             explicacao: item.explicacao,
           }).catch(() => {});
         }
-      } catch { /* silencioso */ }
+      } catch { /* silencioso */ } finally {
+        setLoadingTexto(false);
+      }
+    } else {
+      setLoadingTexto(false);
     }
   };
 
@@ -284,6 +289,7 @@ export default function Novidades() {
       <div className="min-h-dvh bg-background">
         <LeiOrdinariaDetail
           lei={detailItem}
+          loadingTexto={loadingTexto}
           onBack={() => {
             setDetailItem(null);
             if (searchParams.get('lei')) {
@@ -328,6 +334,15 @@ export default function Novidades() {
             </div>
           }
         />
+
+        {/* Texto explicativo sobre Novidades Legislativas */}
+        <div className="px-4 pt-1 pb-2 lg:mx-auto lg:max-w-[1100px]">
+          <div className="rounded-2xl bg-card/50 border border-white/[0.08] px-4 py-3 backdrop-blur-sm">
+            <p className="text-xs sm:text-[13px] text-foreground/85 font-body leading-relaxed">
+              Acompanhe diariamente as novas <span className="font-semibold text-white">leis, decretos e medidas provisórias</span> sancionados e publicados no Diário Oficial da União (Planalto). Selecione uma data abaixo para ler o texto integral.
+            </p>
+          </div>
+        </div>
 
         <div className="flex justify-between gap-1.5 px-3 py-3 lg:mx-auto lg:max-w-[1100px]">
           {dayList.map((day, idx) => {

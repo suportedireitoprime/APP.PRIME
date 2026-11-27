@@ -214,9 +214,10 @@ interface LeiOrdinariaDetailProps {
   lei: LeiOrdinaria;
   onBack: () => void;
   isEmbedded?: boolean;
+  loadingTexto?: boolean;
 }
 
-const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDetailProps) => {
+const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false, loadingTexto = false }: LeiOrdinariaDetailProps) => {
   const [openArtigo, setOpenArtigo] = useState<{ numero: string; texto: string } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   
@@ -422,18 +423,26 @@ const LeiOrdinariaDetail = ({ lei, onBack, isEmbedded = false }: LeiOrdinariaDet
                   </p>
                 </div>
                 
-                <div className="rounded-2xl bg-card/40 p-8 flex flex-col items-center justify-center space-y-4 border border-border/30 border-dashed">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-                    <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center relative z-10">
-                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                {loadingTexto ? (
+                  <div className="rounded-2xl bg-card/40 p-8 flex flex-col items-center justify-center space-y-4 border border-border/30 border-dashed">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                      <div className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center relative z-10">
+                        <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                      </div>
+                    </div>
+                    <div className="text-center space-y-1">
+                      <p className="text-sm font-semibold text-foreground font-display">Buscando texto oficial...</p>
+                      <p className="text-xs text-muted-foreground font-body">Conectando ao Diário Oficial da União</p>
                     </div>
                   </div>
-                  <div className="text-center space-y-1">
-                    <p className="text-sm font-semibold text-foreground font-display">Buscando texto oficial...</p>
-                    <p className="text-xs text-muted-foreground font-body">Conectando ao Diário Oficial da União</p>
+                ) : (
+                  <div className="rounded-2xl bg-card/40 p-6 flex flex-col items-center justify-center space-y-2 border border-border/30 border-dashed text-center">
+                    <FileText className="w-6 h-6 text-muted-foreground" />
+                    <p className="text-sm font-semibold text-foreground font-display">Texto integral ainda não disponível aqui</p>
+                    <p className="text-xs text-muted-foreground font-body">Você pode consultar a publicação completa diretamente no portal do Planalto abaixo.</p>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
