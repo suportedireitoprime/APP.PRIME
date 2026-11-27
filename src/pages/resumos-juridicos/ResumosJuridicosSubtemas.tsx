@@ -360,19 +360,15 @@ export default function ResumosJuridicosSubtemas() {
                 const isFav = favs.includes(r.id);
                 const isLocked = !isPremium && i >= 2;
                 
-                const isLeft = i % 2 === 0;
                 return (
                   <motion.div
                     layout
                     key={r.id}
-                    initial={{ opacity: 0, x: isLeft ? -10 : 10 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={cn(
-                      "flex items-center gap-3 sm:gap-4 w-[92%] sm:w-[82%]",
-                      isLeft ? "mr-auto" : "ml-auto flex-row-reverse"
-                    )}
+                    className="flex items-center gap-3 sm:gap-4"
                   >
                     {/* Nó da Linha do Tempo */}
                     <div

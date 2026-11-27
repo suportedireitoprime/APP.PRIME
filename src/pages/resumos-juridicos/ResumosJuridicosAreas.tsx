@@ -113,42 +113,32 @@ export default function ResumosJuridicosAreas() {
                   )}
                 </div>
               ) : (
-                <div className="space-y-4 py-2">
+                <div className="space-y-2.5 py-2">
                   {filteredAreas.map((r, index) => {
-                    const isLeft = index % 2 === 0;
                     const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
                     return (
-                      <div key={r.area} className="flex flex-col">
-                        <div className={cn("flex w-full", isLeft ? "justify-start" : "justify-end")}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              haptic.selection();
-                              navigate(`${basePath}/${encodeURIComponent(r.area)}${metodoQuery}`);
-                            }}
-                            className={cn(
-                              "w-[88%] sm:w-[78%] group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-emerald-500/40 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]",
-                              !isLeft && "flex-row-reverse text-right"
-                            )}
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center shrink-0">
-                              {String(index + 1).padStart(2, '0')}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm sm:text-[15px] font-bold text-white truncate group-hover:text-emerald-300 transition-colors">
-                                {r.area}
-                              </p>
-                              <p className="text-[11px] text-zinc-400 mt-0.5">
-                                {r.total} {r.total === 1 ? 'resumo' : 'resumos'}
-                              </p>
-                            </div>
-                            <ChevronRight className={cn("w-4 h-4 text-zinc-500 group-hover:text-emerald-300 shrink-0 transition-transform", !isLeft && "rotate-180")} />
-                          </button>
+                      <button
+                        key={r.area}
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          navigate(`${basePath}/${encodeURIComponent(r.area)}${metodoQuery}`);
+                        }}
+                        className="w-full group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-emerald-500/40 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                          {String(index + 1).padStart(2, '0')}
                         </div>
-                        {index < filteredAreas.length - 1 && (
-                          <div className={cn("h-4 w-px bg-white/10 my-0.5", isLeft ? "ml-10" : "mr-10 self-end")} />
-                        )}
-                      </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm sm:text-[15px] font-bold text-white truncate group-hover:text-emerald-300 transition-colors">
+                            {r.area}
+                          </p>
+                          <p className="text-[11px] text-zinc-400 mt-0.5">
+                            {r.total} {r.total === 1 ? 'resumo' : 'resumos'}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-emerald-300 shrink-0 transition-transform group-hover:translate-x-0.5" />
+                      </button>
                     );
                   })}
                 </div>
@@ -166,39 +156,29 @@ export default function ResumosJuridicosAreas() {
                 )}
               </div>
             ) : (
-              <div className="space-y-4 py-2">
+              <div className="space-y-2.5 py-2">
                 {filteredTemas.map((tema, index) => {
-                  const isLeft = index % 2 === 0;
                   const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
                   return (
-                    <div key={tema} className="flex flex-col">
-                      <div className={cn("flex w-full", isLeft ? "justify-start" : "justify-end")}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            haptic.selection();
-                            navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}${metodoQuery}`);
-                          }}
-                          className={cn(
-                            "w-[88%] sm:w-[78%] group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-emerald-500/40 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]",
-                            !isLeft && "flex-row-reverse text-right"
-                          )}
-                        >
-                          <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center shrink-0">
-                            {String(index + 1).padStart(2, '0')}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm sm:text-[15px] font-bold text-white leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors">
-                              {tema}
-                            </p>
-                          </div>
-                          <ChevronRight className={cn("w-4 h-4 text-zinc-500 group-hover:text-emerald-300 shrink-0 transition-transform", !isLeft && "rotate-180")} />
-                        </button>
+                    <button
+                      key={tema}
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}${metodoQuery}`);
+                      }}
+                      className="w-full group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-emerald-500/40 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                        {String(index + 1).padStart(2, '0')}
                       </div>
-                      {index < filteredTemas.length - 1 && (
-                        <div className={cn("h-4 w-px bg-white/10 my-0.5", isLeft ? "ml-10" : "mr-10 self-end")} />
-                      )}
-                    </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm sm:text-[15px] font-bold text-white leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors">
+                          {tema}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-emerald-300 shrink-0 transition-transform group-hover:translate-x-0.5" />
+                    </button>
                   );
                 })}
               </div>
