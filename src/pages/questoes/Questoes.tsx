@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   RotateCcw, BarChart3, ChevronRight, NotebookPen,
-  Filter, History, BookOpen
+  Filter, History, BookOpen, Play
 } from 'lucide-react';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import { haptic } from '@/lib/nativeHaptics';
@@ -163,64 +163,88 @@ const Questoes = () => {
           </motion.div>
           </motion.div>
 
-          {/* ── Áreas do Direito (Lista de Trilhas) ───────────────────── */}
+          {/* ── Áreas do Direito — Lista Direta para Praticar ───────────────────── */}
           <motion.section 
             variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
             className="space-y-3 pt-2"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="h-4 w-1 rounded-full bg-primary" />
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   Áreas do Direito ({materiasAreas.length})
                 </p>
               </div>
-              <span className="text-[10px] text-muted-foreground font-medium">
-                Toque para filtrar por área
+              <span className="text-[11px] text-zinc-400 font-medium">
+                Toque para praticar
               </span>
             </div>
 
-            <div className="flex flex-col gap-2.5 sm:gap-3">
-              {materiasAreas.map((area) => {
-                const iconInfo = areaIconFor(area.slug || area.area);
-                const AreaIcon = iconInfo?.Icon || BookOpen;
+            <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/80 backdrop-blur-md divide-y divide-white/[0.06] overflow-hidden shadow-lg">
+              {materiasAreas.map((area, idx) => {
+                const startAreaPractice = () => {
+                  haptic.medium();
+                  const targetPath = `/questoes/praticar?area=${encodeURIComponent(area.area)}`;
+                  recordAreaActivity({
+                    path: targetPath,
+                    label: `Questões — ${area.area}`,
+                    sublabel: area.total_questoes > 0
+                      ? `${area.total_questoes.toLocaleString('pt-BR')} questões disponíveis`
+                      : 'Praticar por área',
+                    kind: 'questoes',
+                  });
+                  navigate(targetPath);
+                };
 
                 return (
-                  <motion.button
+                  <div
                     key={area.slug || area.area}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => {
-                      haptic.selection();
-                      setAreaFiltroSelecionada(area.area);
+                    onClick={startAreaPractice}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        startAreaPractice();
+                      }
                     }}
-                    className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-primary/50 hover:bg-zinc-850/90 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md focus-visible:outline-none w-full cursor-pointer"
+                    className="group flex items-center gap-3.5 px-4 py-3.5 sm:px-5 sm:py-4 hover:bg-white/[0.03] active:bg-white/[0.05] transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-white/[0.05]"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-3">
-                      <div className="shrink-0 flex items-center justify-center pl-1">
-                        <AreaIcon
-                          className="w-6 h-6 sm:w-7 sm:h-7 text-rose-500 group-hover:scale-110 transition-transform duration-200"
-                          strokeWidth={2.2}
-                        />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug truncate group-hover:text-white transition-colors">
-                          {area.area}
-                        </p>
-                        <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 group-hover:text-red-400 transition-colors flex items-center gap-1 font-medium">
-                          <span>Filtrar questões</span>
-                        </p>
-                      </div>
+                    {/* Número da trilha */}
+                    <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm ${
+                      idx === 0 ? 'bg-amber-400 text-zinc-950 shadow-sm shadow-amber-400/20' :
+                      idx === 1 ? 'bg-zinc-800 text-zinc-200 border border-zinc-700/70' :
+                      idx === 2 ? 'bg-zinc-800 text-zinc-200 border border-zinc-700/70' :
+                      'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50'
+                    }`}>
+                      {idx + 1}
                     </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0">
-                      <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800/90 text-zinc-300 border border-zinc-700/50 shrink-0 font-mono">
-                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Filtrar'}
-                      </span>
-                      <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-primary transition-transform group-hover:translate-x-0.5 shrink-0" />
+                    {/* Nome e contagem */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm sm:text-[15px] font-bold text-white leading-snug group-hover:text-primary transition-colors">
+                        {area.area}
+                      </p>
+                      <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 font-medium">
+                        {area.total_questoes > 0
+                          ? `${area.total_questoes.toLocaleString('pt-BR')} questões`
+                          : 'Questões disponíveis'}
+                      </p>
                     </div>
-                  </motion.button>
+
+                    {/* Botão Pill Praticar */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startAreaPractice();
+                      }}
+                      className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs sm:text-[13px] font-bold shadow-md shadow-primary/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      Praticar
+                    </button>
+                  </div>
                 );
               })}
             </div>
