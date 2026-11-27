@@ -294,7 +294,7 @@ export default function ResumosJuridicosTemas() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-0 pt-4">
+      <div className="max-w-5xl mx-auto px-4 pt-4 w-full">
         {loading ? (
           <div className="flex items-center justify-center py-24 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando matérias...
@@ -313,7 +313,7 @@ export default function ResumosJuridicosTemas() {
             )}
           </div>
         ) : (
-          <div className="space-y-2.5 py-4 max-w-4xl mx-auto">
+          <div className="space-y-2.5 py-4">
             {filteredTemas.map((r, i) => {
               const lidosCount = recentes.filter(x => x.area === decodedArea && x.tema === r.tema).length;
               const pct = r.total > 0 ? Math.min(100, Math.round((lidosCount / r.total) * 100)) : 0;
