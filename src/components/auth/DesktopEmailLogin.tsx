@@ -3,12 +3,13 @@ import { Eye, EyeOff, Loader2, Lock, Mail, User, ArrowRight, ArrowLeft } from 'l
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { toastErroAuth } from './authUtils';
+import { SocialButtons } from './SocialButtons';
 import { track } from '@/lib/analyticsEvents';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
 const DesktopEmailLogin: React.FC = () => {
-  const { signIn, signUp, resetPassword, verifyOtp, updatePassword } = useAuth();
+  const { signIn, signUp, resetPassword, verifyOtp, updatePassword, signInWithGoogle, signInWithApple } = useAuth();
 
   const [mode, setMode] = useState<Mode>('login');
   const [displayName, setDisplayName] = useState('');
@@ -19,6 +20,24 @@ const DesktopEmailLogin: React.FC = () => {
   const [resetCode, setResetCode] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
+
+  const handleSocial = async (provider: 'google' | 'apple') => {
+    if (submitting || googleLoading || appleLoading) return;
+    if (provider === 'google') setGoogleLoading(true);
+    else setAppleLoading(true);
+    track(`${mode}_${provider}_attempted`, { platform: 'desktop' });
+    try {
+      const { error } = provider === 'google' ? await signInWithGoogle() : await signInWithApple();
+      if (error) throw error;
+    } catch (err: unknown) {
+      toastErroAuth((err as Error)?.message);
+    } finally {
+      setGoogleLoading(false);
+      setAppleLoading(false);
+    }
+  };
 
   const switchMode = (next: Mode) => {
     setMode(next);
@@ -255,6 +274,23 @@ const DesktopEmailLogin: React.FC = () => {
           </button>
         )}
       </form>
+
+      {mode !== 'forgot' && (
+        <div className="space-y-3 pt-1">
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-[11px] uppercase tracking-wider text-zinc-400">ou continue com</span>
+            <div className="h-px flex-1 bg-white/10" />
+          </div>
+          <SocialButtons
+            onGoogle={() => void handleSocial('google')}
+            onApple={() => void handleSocial('apple')}
+            googleLoading={googleLoading}
+            appleLoading={appleLoading}
+            mode={mode}
+          />
+        </div>
+      )}
     </div>
   );
 };
