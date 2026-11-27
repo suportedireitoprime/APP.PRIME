@@ -1,13 +1,11 @@
 import React, { useState, useMemo, lazy, Suspense } from 'react';
 import {
-  ArrowLeft,
-  Search,
-  X,
   BarChart3,
   History,
   Bookmark,
   Flame,
   ChevronRight,
+  X,
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
@@ -20,6 +18,7 @@ import {
 } from '@/data/aulasTrilhasCronologicas';
 import { AulasContinuarAulaBanner } from './AulasContinuarAulaBanner';
 import { AulasTrilhasCarousel } from './AulasTrilhasCarousel';
+import { AulasHero } from './AulasHero';
 import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
 
 const AulasRecentesModal = lazy(() =>
@@ -125,9 +124,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
     return aulasCatalogo[0] || null;
   }, [aulasCatalogo, calcularProgressoCiclo]);
 
-  const totalEmAndamento = useMemo(() => {
-    if (!calcularProgressoCiclo) return 0;
-    return aulasCatalogo.filter((a) => calcularProgressoCiclo(a).porcentagemTotal > 0).length;
+  const { totalEmAndamento, totalConcluidas } = useMemo(() => {
+    if (!calcularProgressoCiclo) return { totalEmAndamento: 0, totalConcluidas: 0 };
+    let andamento = 0;
+    let concluidas = 0;
+    for (const a of aulasCatalogo) {
+      const p = calcularProgressoCiclo(a);
+      if (p.cicloCompleto || p.porcentagemTotal >= 100) concluidas++;
+      else if (p.porcentagemTotal > 0) andamento++;
+    }
+    return { totalEmAndamento: andamento, totalConcluidas: concluidas };
   }, [aulasCatalogo, calcularProgressoCiclo]);
 
   const disciplinasExibidas = useMemo(() => {
@@ -143,12 +149,17 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   }, [faseSelecionadaId]);
 
   const aulasPorDisciplina = useMemo(() => {
-    const counts = new Map<string, number>();
+    const stats = new Map<string, { total: number; somaPct: number }>();
     for (const a of aulasCatalogo) {
-      counts.set(a.disciplinaId, (counts.get(a.disciplinaId) || 0) + 1);
+      const cur = stats.get(a.disciplinaId) || { total: 0, somaPct: 0 };
+      cur.total += 1;
+      if (calcularProgressoCiclo) {
+        cur.somaPct += calcularProgressoCiclo(a).porcentagemTotal;
+      }
+      stats.set(a.disciplinaId, cur);
     }
-    return counts;
-  }, [aulasCatalogo]);
+    return stats;
+  }, [aulasCatalogo, calcularProgressoCiclo]);
 
   const handleOpenDisciplina = (discId: string) => {
     try { haptic.selection(); } catch {}
@@ -165,72 +176,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
   return (
     <div className="relative z-10 w-full min-h-screen flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overflow-x-hidden">
-      {/* Header Minimalista e Compacto */}
-      <header className="sticky top-0 z-30 bg-[#0D0F12]/90 backdrop-blur-xl border-b border-white/10 pt-[calc(0.65rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
-        <div className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 pb-3 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <button
-                type="button"
-                onClick={handleVoltar}
-                className="w-11 h-11 shrink-0 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors active:scale-95 cursor-pointer"
-                aria-label="Voltar para o início"
-              >
-                <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
-              </button>
-              <div className="min-w-0">
-                <h1 className="font-display text-base sm:text-lg font-semibold text-white tracking-tight truncate">
-                  Aulas em Trilha
-                </h1>
-                <p className="font-body text-xs text-white/50 truncate">
-                  {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'} aulas · 106 módulos
-                </p>
-              </div>
-            </div>
+      {/* Painel Principal estilo Questões adaptado para Aulas */}
+      <AulasHero
+        porcentagemGeral={porcentagemGeral}
+        totalEmAndamento={totalEmAndamento}
+        totalConcluidas={totalConcluidas}
+        totalAulas={totalAulas}
+        buscaAberta={buscaAberta}
+        buscaTermo={buscaTermo}
+        onToggleBusca={() => setBuscaAberta((prev) => !prev)}
+        setBuscaTermo={setBuscaTermo}
+        onBack={handleVoltar}
+        onOpenRecentes={() => setRecentesModalOpen(true)}
+        onOpenProgresso={() => setAbaAtiva('estatisticas')}
+        onOpenTrilhas={() => setTrilhasListaModalOpen(true)}
+      />
 
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.light(); } catch {}
-                setBuscaAberta((prev) => !prev);
-              }}
-              className={`w-11 h-11 shrink-0 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
-                buscaAberta || buscaTermo
-                  ? 'bg-white text-zinc-950 border-white'
-                  : 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
-              }`}
-              aria-label="Buscar área ou matéria"
-            >
-              {buscaAberta ? <X className="w-5 h-5" strokeWidth={1.8} /> : <Search className="w-5 h-5" strokeWidth={1.8} />}
-            </button>
-          </div>
-
-          {(buscaAberta || buscaTermo) && (
-            <div className="relative">
-              <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={buscaTermo}
-                onChange={(e) => setBuscaTermo(e.target.value)}
-                placeholder="Buscar disciplina ou aula..."
-                className="w-full h-11 pl-10 pr-10 rounded-xl text-sm text-white placeholder:text-white/35 bg-white/[0.04] border border-white/10 focus:border-white/30 focus:outline-none"
-                autoFocus
-              />
-              {buscaTermo && (
-                <button
-                  type="button"
-                  onClick={() => setBuscaTermo('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-white/50 hover:text-white cursor-pointer"
-                  aria-label="Limpar busca"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Barra Minimalista de 4 Ações Rápidas */}
-          <div className="grid grid-cols-4 gap-1.5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
+      {/* Barra Minimalista de 4 Ações Rápidas */}
+      <div className="max-w-5xl lg:max-w-7xl mx-auto w-full px-4 sm:px-6 pt-3">
+        <div className="grid grid-cols-4 gap-1.5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
             <button
               type="button"
               onClick={() => {
@@ -284,7 +248,6 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             </button>
           </div>
         </div>
-      </header>
 
       {/* Conteúdo Principal Minimalista */}
       <main className="w-full max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 pt-4 space-y-6">
@@ -364,7 +327,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               {disciplinasExibidas.map((disc, idx) => {
                 const discTheme = getDisciplinaVisualTheme(disc.id);
-                const qtdAulas = aulasPorDisciplina.get(disc.id) || 0;
+                const discStats = aulasPorDisciplina.get(disc.id) || { total: 0, somaPct: 0 };
+                const qtdAulas = discStats.total;
+                const pctDisc = qtdAulas > 0 ? Math.round(discStats.somaPct / qtdAulas) : 0;
                 const capaUrl = discTheme.fundoAssetUrl || disc.capaHeroUrl;
                 const nomeExibicao = NOMES_DISCIPLINA[disc.nome] || disc.nome;
 
@@ -373,9 +338,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                     key={disc.id}
                     type="button"
                     onClick={() => handleOpenDisciplina(disc.id)}
-                    className="w-full min-h-[68px] flex items-center gap-3 rounded-2xl bg-zinc-900/75 hover:bg-zinc-900 border border-white/10 hover:border-white/20 px-3.5 py-3 text-left active:scale-[0.99] transition-all cursor-pointer group"
+                    className="w-full min-h-[80px] flex items-center gap-3.5 rounded-2xl bg-zinc-900/75 hover:bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3.5 text-left active:scale-[0.99] transition-all cursor-pointer group"
                   >
-                    <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-white/10">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-zinc-950 border border-white/10">
                       <img
                         src={capaUrl}
                         alt={nomeExibicao}
@@ -385,12 +350,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-sans text-sm font-semibold text-white truncate">
-                        {nomeExibicao}
-                      </h3>
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-sans text-sm font-semibold text-white truncate">
+                          {nomeExibicao}
+                        </h3>
+                        <span className="font-mono text-[11px] font-semibold text-white/60 tabular-nums shrink-0">
+                          {pctDisc}%
+                        </span>
+                      </div>
                       <p className="font-mono text-xs text-white/45 mt-0.5">
                         {qtdAulas} aulas
                       </p>
+                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            pctDisc >= 100 ? 'bg-emerald-400' : 'bg-rose-500'
+                          }`}
+                          style={{ width: `${pctDisc}%` }}
+                        />
+                      </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-white/35 group-hover:text-white/70 shrink-0 transition-colors" />
                   </button>
