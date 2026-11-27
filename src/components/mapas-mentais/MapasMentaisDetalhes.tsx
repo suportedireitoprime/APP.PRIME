@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Search, X, Bookmark, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { CATEGORIA_COR, getCorParaItem } from './mapasConstants';
+import { CATEGORIA_COR, getCorParaItem, formatarTituloMapa } from './mapasConstants';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
@@ -129,8 +129,8 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                         <TemaIcon className="w-8 h-8" strokeWidth={1.5} />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-medium text-white group-hover:text-purple-300 transition-colors truncate">
-                          {t.tema}
+                        <p className="font-sans text-[14px] sm:text-[15px] font-semibold leading-snug text-white group-hover:text-purple-300 transition-colors truncate">
+                          {formatarTituloMapa(t.tema)}
                         </p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">
                           {t.total} {t.total === 1 ? 'subtema' : 'subtemas'}
@@ -170,7 +170,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
         <div className="space-y-3">
           <div className="flex items-center justify-between pb-1 border-b border-white/5">
             <span className="text-xs text-zinc-400 font-medium">
-              Subtemas de <strong className="text-white">{tema.tema}</strong> ({subtemas.length})
+              Subtemas de <strong className="text-white">{formatarTituloMapa(tema.tema)}</strong> ({subtemas.length})
             </span>
           </div>
 
@@ -193,18 +193,18 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                 return (
                   <div
                     key={s.subtema}
-                    className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all min-h-[64px]"
+                    className="p-3.5 sm:p-4 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-center justify-between gap-3 transition-all min-h-[64px]"
                   >
                     <div 
-                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 border"
                       style={{ backgroundColor: `${corCategoria}20`, borderColor: `${corCategoria}30` }}
                     >
-                      <span className="text-xs font-bold" style={{ color: corCategoria }}>{index + 1}</span>
+                      <span className="text-xs font-bold font-mono" style={{ color: corCategoria }}>{index + 1}</span>
                     </div>
                     
                     <div className="min-w-0 flex-1">
-                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-medium text-white">
-                        {s.subtema}
+                      <p className="font-sans text-[14px] sm:text-[15px] font-semibold leading-snug text-white">
+                        {formatarTituloMapa(s.subtema)}
                       </p>
                     </div>
 
@@ -292,12 +292,12 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                     <div className="p-3.5 sm:p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-white/5 hover:border-white/15 flex items-start justify-between gap-3 transition-all h-full">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-bold text-white">
+                          <span className="font-sans text-[14px] sm:text-[15px] font-semibold text-white">
                             Art. {a.numero.replace(/^art\.?\s*/i, '')}
                           </span>
                           {a.titulo && (
-                            <span className="text-xs font-medium text-purple-300">
-                              · {a.titulo}
+                            <span className="font-sans text-xs sm:text-[13px] font-medium text-purple-300">
+                              · {formatarTituloMapa(a.titulo)}
                             </span>
                           )}
                         </div>
