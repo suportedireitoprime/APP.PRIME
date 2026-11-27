@@ -51,11 +51,11 @@ const DesktopEstudosGrid = (_props: Props) => {
 
   const renderGrid = (titulo: string, items: Item[]) => (
     <section>
-      <p className="mb-3 flex items-center gap-2.5 font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-        <span className="h-3.5 w-[3px] rounded-full bg-amber-400" />
+      <p className="mb-3 flex items-center gap-2 font-body text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+        <span className="h-3 w-[2px] rounded-full bg-rose-500" />
         {titulo}
       </p>
-      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((it) => {
           const Icon = it.icon;
           return (
@@ -64,16 +64,16 @@ const DesktopEstudosGrid = (_props: Props) => {
               type="button"
               onClick={() => navigate(it.route)}
               data-track-name={it.label}
-              className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-amber-500/40 px-4 py-4 text-left transition-all"
+              className="group flex items-center gap-3.5 rounded-xl border border-white/[0.06] bg-[#111114] hover:bg-[#151519] hover:border-white/[0.16] px-4 py-3.5 text-left transition-all"
             >
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Icon className="h-5 w-5 text-amber-400" strokeWidth={1.8} />
+              <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] group-hover:border-rose-500/30 group-hover:bg-rose-500/10 flex items-center justify-center shrink-0 transition-colors">
+                <Icon className="h-4 w-4 text-zinc-300 group-hover:text-rose-400 transition-colors" strokeWidth={1.8} />
               </div>
               <span className="min-w-0">
-                <span className="block truncate font-display text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+                <span className="block truncate font-display text-sm font-semibold text-white transition-colors">
                   {it.label}
                 </span>
-                <span className="block truncate text-xs text-zinc-400 mt-0.5">
+                <span className="block truncate text-xs text-zinc-500 mt-0.5">
                   {it.sublabel}
                 </span>
               </span>

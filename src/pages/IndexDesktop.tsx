@@ -1,179 +1,317 @@
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import { useNavigate } from 'react-router-dom';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  Search,
+  Scale,
+  GraduationCap,
+  ListChecks,
+  Layers,
+  Library,
+  Bird,
+  ArrowRight,
+  Clock,
+  BookOpen,
+} from 'lucide-react';
 
-import DesktopHeroBanner from '@/components/vademecum/desktop/DesktopHeroBanner';
 import DesktopRadarLeisCarousel from '@/components/vademecum/desktop/DesktopRadarLeisCarousel';
-import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
-import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
-import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
-import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
-import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
-import { pushRecente } from '@/lib/leisRecentes';
+import { pushRecente, getRecentes, type LeiRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
-import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
-import { resetGlobalScroll } from '@/lib/scrollUtils';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfileSummary } from '@/hooks/useProfileSummary';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 
-type Tab = 'legislacao' | 'noticias' | 'ferramentas' | 'biblioteca';
+const QUICK_ACCESS = [
+  {
+    id: 'vademecum',
+    label: 'Vade Mecum',
+    desc: 'Constituição, Códigos e Leis atualizadas',
+    icon: Scale,
+    route: '/vade-mecum',
+  },
+  {
+    id: 'aulas',
+    label: 'Aulas em Trilha',
+    desc: 'Estudo guiado por etapas e progresso',
+    icon: GraduationCap,
+    route: '/aulas',
+  },
+  {
+    id: 'questoes',
+    label: 'Questões Comentadas',
+    desc: 'Pratique por disciplina e banca',
+    icon: ListChecks,
+    route: '/questoes',
+  },
+  {
+    id: 'flashcards',
+    label: 'Flashcards',
+    desc: 'Memorização ativa e revisão espaçada',
+    icon: Layers,
+    route: '/flashcards',
+  },
+  {
+    id: 'biblioteca',
+    label: 'Biblioteca',
+    desc: 'Livros, doutrina e obras clássicas',
+    icon: Library,
+    route: '/bibliotecas',
+  },
+  {
+    id: 'horus',
+    label: 'Assistente Hórus',
+    desc: 'Tire dúvidas jurídicas com IA',
+    icon: Bird,
+    route: null,
+  },
+] as const;
+
+const ESSENTIAL_LAWS = [
+  {
+    tipo: 'constituicao',
+    leiId: 'cf-88',
+    nome: 'Constituição Federal',
+    descricao: 'CRFB/1988 — Texto constitucional atualizado',
+    tabela_nome: 'CF88',
+  },
+  {
+    tipo: 'codigo',
+    leiId: 'codigo-civil',
+    nome: 'Código Civil',
+    descricao: 'Lei nº 10.406/2002',
+    tabela_nome: 'CC_2002',
+  },
+  {
+    tipo: 'codigo',
+    leiId: 'codigo-penal',
+    nome: 'Código Penal',
+    descricao: 'Decreto-Lei nº 2.848/1940',
+    tabela_nome: 'CP_1940',
+  },
+];
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Bom dia';
+  if (h < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
 
 const IndexDesktop = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: profileSummary } = useProfileSummary();
 
-  const [activeTab, setActiveTab] = useState<Tab>('legislacao');
   const [searchOpen, setSearchOpen] = useState(false);
   const [assistenteOpen, setAssistenteOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [typingHint, setTypingHint] = useState('');
-  const unreadCount = useUnreadNotifCount();
-
-  useHotkeys('mod+k', (e) => { e.preventDefault(); setSearchOpen(true); }, { enableOnFormTags: true });
-  useHotkeys('escape', () => { setSearchOpen(false); setAssistenteOpen(false); });
-
-  useEffect(() => { warmCoverCache(); }, []);
-  useHomeWarmup([heroImageAsset], queryClient, true);
+  const [recentes, setRecentes] = useState<LeiRecente[]>(() => getRecentes().slice(0, 3));
 
   useEffect(() => {
-    const hints = ['Buscar lei...', 'Ler artigo...', 'Consultar código...', 'Pesquisar jurisprudência...'];
-    let hintIndex = 0;
-    let charIndex = 0;
-    let direction = 1;
-    let pauseCounter = 0;
-
-    const interval = setInterval(() => {
-      if (pauseCounter > 0) { pauseCounter--; return; }
-      const current = hints[hintIndex];
-      if (direction === 1) {
-        charIndex++;
-        setTypingHint(current.slice(0, charIndex));
-        if (charIndex === current.length) { direction = -1; pauseCounter = 15; }
-      } else {
-        charIndex--;
-        setTypingHint(current.slice(0, charIndex));
-        if (charIndex === 0) { direction = 1; hintIndex = (hintIndex + 1) % hints.length; pauseCounter = 5; }
-      }
-    }, 80);
-
-    return () => clearInterval(interval);
+    warmCoverCache();
+    const onRecentesUpdated = () => setRecentes(getRecentes().slice(0, 3));
+    window.addEventListener('recentes-updated', onRecentesUpdated);
+    return () => window.removeEventListener('recentes-updated', onRecentesUpdated);
   }, []);
 
-  const handleSearchSelectLei = useCallback((lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
-    pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
-    const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
-    const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
-    navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-  }, [navigate]);
+  useHomeWarmup([heroImageAsset], queryClient, true);
 
-  const handleSearchClose = useCallback(() => setSearchOpen(false), []);
-  const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
+  const handleSearchSelectLei = useCallback(
+    (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
+      pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
+      const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
+      const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
+      navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
+    },
+    [navigate]
+  );
 
-  useEffect(() => {
-    resetGlobalScroll();
-  }, [activeTab]);
+  const firstName = useMemo(() => {
+    const full = profileSummary?.displayName || user?.email?.split('@')[0] || '';
+    return full.trim().split(' ')[0];
+  }, [profileSummary?.displayName, user?.email]);
+
+  const greeting = useMemo(() => getGreeting(), []);
+
+  const continueItems = recentes.length > 0 ? recentes : ESSENTIAL_LAWS;
 
   return (
-    <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-10 py-6">
+    <div className="w-full max-w-[1380px] mx-auto px-6 lg:px-10 py-8 space-y-10">
       <DesktopOnboardingOverlay />
-      {activeTab === 'legislacao' && (
+
+      {/* 1. Cabeçalho Minimalista + Ações */}
+      <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 pb-6 border-b border-white/[0.06]">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-500 mb-1.5">
+            Direito Prime · Workspace
+          </p>
+          <h2 className="font-display text-2xl lg:text-3xl font-bold text-white tracking-tight">
+            {firstName ? `${greeting}, ${firstName}` : greeting}
+          </h2>
+          <p className="text-sm text-zinc-400 mt-1">
+            Acesse códigos, aulas, questões e jurisprudência em segundos.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="h-10 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-sm text-zinc-300 flex items-center gap-2.5 transition-colors"
+          >
+            <Search className="w-4 h-4 text-zinc-400" />
+            <span>Buscar na legislação e acervo</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAssistenteOpen(true)}
+            className="h-10 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
+          >
+            <Bird className="w-4 h-4" />
+            <span>Hórus IA</span>
+          </button>
+        </div>
+      </section>
+
+      {/* 2. Continuar de onde parou / Leis Essenciais */}
+      <section>
+        <div className="flex items-center justify-between mb-3.5">
+          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
+            {recentes.length > 0 ? (
               <>
-                <div className="mb-7 relative z-0 pointer-events-auto">
-                  <DesktopHeroBanner
-                    typingHint={typingHint}
-                    onSearchClick={() => setSearchOpen(true)}
-                    onNotifClick={() => setNotifOpen(true)}
-                    unreadCount={unreadCount}
-                  />
-                </div>
-
-                <div className="relative z-30 mb-7 w-full mx-auto">
-                  <DesktopRadarLeisCarousel />
-                </div>
-
-                <div className="relative z-30 mb-7 w-full mx-auto">
-                  <NoticiasJuridicasCarousel />
-                </div>
-
-                <div className="mb-10">
-                  <DesktopEstudosGrid
-                    onChatClick={() => setAssistenteOpen(true)}
-                    onFerramentasClick={() => setActiveTab('ferramentas')}
-                  />
-                </div>
+                <Clock className="w-3.5 h-3.5 text-rose-400" />
+                <span>Continuar de onde parou</span>
+              </>
+            ) : (
+              <>
+                <BookOpen className="w-3.5 h-3.5 text-rose-400" />
+                <span>Leis essenciais</span>
               </>
             )}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/vade-mecum')}
+            className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
+          >
+            <span>Abrir Vade Mecum</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-            {activeTab === 'noticias' && <AtualizacaoTab searchQuery="" />}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {continueItems.map((item) => {
+            const slug = leiToSlug({ id: item.leiId, nome: item.nome });
+            const url = `/legislacao/${tipoToSlug(item.tipo)}/${slug}`;
+            return (
+              <button
+                key={item.leiId}
+                type="button"
+                onClick={() => {
+                  pushRecente({
+                    tipo: item.tipo,
+                    leiId: item.leiId,
+                    nome: item.nome,
+                    descricao: item.descricao,
+                    tabela_nome: item.tabela_nome,
+                  });
+                  navigate(url);
+                }}
+                className="group flex items-center justify-between gap-3 p-4 rounded-xl bg-[#111114] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#151519] text-left transition-all"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white truncate group-hover:text-rose-300 transition-colors">
+                    {item.nome}
+                  </p>
+                  <p className="text-xs text-zinc-500 truncate mt-0.5">
+                    {item.descricao || item.tipo}
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-            {activeTab === 'ferramentas' && (
-              <div className="mx-auto w-full">
-                <div className="mb-6 flex items-end justify-between gap-4">
-                  <div>
-                    <h2 className="font-display text-xl text-foreground mb-1">Ferramentas</h2>
-                    <p className="text-muted-foreground text-sm font-body">Recursos do Direito Prime em um só lugar</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/ferramentas')}
-                    className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-foreground/70 hover:border-primary/40 hover:text-foreground transition-colors"
-                  >
-                    Abrir página completa
-                  </button>
+      {/* 3. Acesso Rápido Principal */}
+      <section>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400 mb-3.5">
+          Acesso rápido
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {QUICK_ACCESS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  if (item.route) {
+                    navigate(item.route);
+                  } else {
+                    setAssistenteOpen(true);
+                  }
+                }}
+                className="group flex items-start gap-3.5 p-4 rounded-xl bg-[#111114] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#151519] text-left transition-all"
+              >
+                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 group-hover:border-rose-500/30 group-hover:bg-rose-500/10 transition-colors">
+                  <Icon className="w-4 h-4 text-zinc-300 group-hover:text-rose-400 transition-colors" strokeWidth={1.8} />
                 </div>
-                <div className="space-y-8">
-                  {DESKTOP_TOOL_GROUPS.map((group) => (
-                    <section key={group.id}>
-                      <p className="mb-3 border-b border-border pb-2 text-[11px] font-body font-semibold uppercase tracking-widest text-muted-foreground">
-                        {group.label}
-                      </p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
-                        {group.tools.map((tool) => {
-                          const Icon = tool.icon;
-                          return (
-                            <button
-                              key={tool.id}
-                              type="button"
-                              onClick={() => {
-                                if (tool.id === 'assistente') { setAssistenteOpen(true); return; }
-                                navigate(tool.route);
-                              }}
-                              className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 hover:-translate-y-0.5 transition-all text-left group cursor-pointer"
-                            >
-                              <span
-                                className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center"
-                                style={{ backgroundColor: `${tool.color}20` }}
-                              >
-                                <Icon className="w-5 h-5" style={{ color: tool.color }} strokeWidth={1.7} />
-                              </span>
-                              <span className="min-w-0">
-                                <span className="block font-display text-[13px] font-bold text-foreground group-hover:text-primary transition-colors truncate">{tool.label}</span>
-                                <span className="block text-[11px] text-muted-foreground leading-tight line-clamp-1">{tool.desc}</span>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  ))}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-white group-hover:text-white transition-colors">
+                    {item.label}
+                  </p>
+                  <p className="text-xs text-zinc-500 mt-0.5 line-clamp-1">{item.desc}</p>
                 </div>
-              </div>
-            )}
-          <Suspense fallback={null}>
-            <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
-            <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
-          </Suspense>
-          <NotificationsSheet open={notifOpen} onClose={() => setNotifOpen(false)} />
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4. Radar Legislativo & Notícias Jurídicas */}
+      <div className="space-y-8">
+        <DesktopRadarLeisCarousel />
+        <NoticiasJuridicasCarousel />
+      </div>
+
+      {/* 5. Catálogo Completo de Estudos & Prática */}
+      <DesktopEstudosGrid
+        onChatClick={() => setAssistenteOpen(true)}
+        onFerramentasClick={() => navigate('/ferramentas')}
+      />
+
+      {/* Overlays */}
+      {searchOpen && (
+        <Suspense fallback={null}>
+          <SearchOverlay
+            open={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            onSelectLei={handleSearchSelectLei}
+          />
+        </Suspense>
+      )}
+
+      {assistenteOpen && (
+        <Suspense fallback={null}>
+          <AssistenteOverlay
+            open={assistenteOpen}
+            onClose={() => setAssistenteOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };
