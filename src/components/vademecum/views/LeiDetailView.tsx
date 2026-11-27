@@ -884,8 +884,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   return (
     <div className="theme-vademecum min-h-dvh bg-zinc-950 pb-28 lg:pb-0 relative overflow-x-hidden">
-      {/* Fundo com ShapeGrid idêntico ao do Vade Mecum (fixed na viewport para não esticar) */}
-      {gridReady && (
+      {/* Fundo com ShapeGrid apenas no mobile/tablet; no Desktop mantém superfície limpa #09090B */}
+      {!isDesktop && gridReady && (
         <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
           <ShapeGrid 
             speed={0.5} 

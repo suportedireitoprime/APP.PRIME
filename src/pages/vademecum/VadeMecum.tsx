@@ -6,8 +6,7 @@ import VadeMecumFavoritos from './VadeMecumFavoritos';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
-import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
+import { VadeMecumDesktopView } from '@/components/vademecum/desktop/VadeMecumDesktopView';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
@@ -98,55 +97,15 @@ const VadeMecum = () => {
 
   if (isDesktop) {
     return (
-      <div className="min-h-dvh bg-hero-panel flex flex-col theme-vademecum relative overflow-hidden">
-        <div className="fixed inset-0 z-0">
-          <ShapeGrid />
-        </div>
-        <div className="flex flex-1 min-h-0 relative z-10">
-          <DesktopSidebar 
-            activeTab={'vademecum' as never} 
-            onTabChange={(tab) => {
-              const routes: Record<string, string> = {
-                legislacao: '/',
-                noticias: '/noticias',
-                ferramentas: '/ferramentas',
-                biblioteca: '/bibliotecas',
-                aprender: '/aprender',
-                chat: '/assistente-horus',
-                vademecum: '/vade-mecum',
-              };
-              if (routes[tab]) navigate(routes[tab]);
-            }} 
-          />
-          <div className="flex-1 min-w-0 overflow-y-auto">
-            <div className="px-8 py-6 2xl:px-14">
-              <VadeMecumDesktopHeroBanner 
-                typingHint="Buscar na legislação..."
-                onSearchClick={() => setBuscaOpen(true)}
-                onSelectQuickAction={(action) => setActiveQuickSheet(action)}
-              />
-              <div className="mt-8">
-                {renderContent()}
-              </div>
-            </div>
-          </div>
-        </div>
-        
+      <>
+        <VadeMecumDesktopView onOpenSearch={() => setBuscaOpen(true)} />
         {buscaOpen && (
           <Suspense fallback={null}>
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-
-        <Suspense fallback={null}>
-          <VadeMecumQuickActionSheet
-            activeSheet={activeQuickSheet}
-            onClose={() => setActiveQuickSheet(null)}
-          />
-        </Suspense>
-      </div>
+      </>
     );
-
   }
 
   return (
