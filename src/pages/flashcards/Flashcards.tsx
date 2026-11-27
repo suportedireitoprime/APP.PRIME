@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import FlashcardsHero from '@/components/flashcards/FlashcardsHero';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { useIsDesktop } from '@/hooks/use-desktop';
 
 export { formatarNomeArea };
 
@@ -26,6 +27,7 @@ const ATALHOS_4 = [
 
 const Flashcards = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { data: dash } = useFlashcardsDashboard();
   const { data: areasRaw } = useFlashcardsResumoAreas();
 
@@ -97,21 +99,23 @@ const Flashcards = () => {
   }, []);
 
   return (
-    <div className="theme-flashcards min-h-screen bg-background relative overflow-hidden pb-12">
-      {/* ── Fundo Animado com Quadradinhos (ShapeGrid Oficial do App) ── */}
-      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+    <div className="theme-flashcards min-h-screen bg-[#09090B] relative overflow-hidden pb-12">
+      {/* ── Fundo Animado com Quadradinhos apenas no mobile/tablet ── */}
+      {!isDesktop && (
+        <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
 
-      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
+      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-[1380px] px-0 lg:px-10 lg:pt-6 pb-12">
         <div className="space-y-6">
           {/* ── Banner de Desempenho / Hero Oficial (Azul) ───────────────── */}
           <div className="w-full">
