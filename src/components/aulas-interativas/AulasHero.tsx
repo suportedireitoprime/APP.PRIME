@@ -1,11 +1,19 @@
 import React from 'react';
-import { ArrowLeft, ChevronRight, GraduationCap, Search, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  BarChart3,
+  Bookmark,
+  Flame,
+  GraduationCap,
+  History,
+  Search,
+  X,
+} from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface AulasHeroProps {
   porcentagemGeral: number;
   totalEmAndamento: number;
-  totalConcluidas: number;
   totalAulas: number;
   buscaAberta: boolean;
   buscaTermo: string;
@@ -13,14 +21,14 @@ interface AulasHeroProps {
   setBuscaTermo: (val: string) => void;
   onBack: () => void;
   onOpenRecentes: () => void;
+  onOpenFavoritos: () => void;
+  onOpenEmAlta: () => void;
   onOpenProgresso: () => void;
-  onOpenTrilhas: () => void;
 }
 
 export const AulasHero: React.FC<AulasHeroProps> = ({
   porcentagemGeral,
   totalEmAndamento,
-  totalConcluidas,
   totalAulas,
   buscaAberta,
   buscaTermo,
@@ -28,8 +36,9 @@ export const AulasHero: React.FC<AulasHeroProps> = ({
   setBuscaTermo,
   onBack,
   onOpenRecentes,
+  onOpenFavoritos,
+  onOpenEmAlta,
   onOpenProgresso,
-  onOpenTrilhas,
 }) => {
   const pct = Math.max(0, Math.min(100, Math.round(porcentagemGeral)));
   const r = 22;
@@ -142,7 +151,7 @@ export const AulasHero: React.FC<AulasHeroProps> = ({
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-rose-200 backdrop-blur-sm border border-white/10">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                TRILHAS DE ESTUDO
+                {totalAulas > 0 ? `${totalAulas.toLocaleString('pt-BR')} AULAS` : 'TRILHAS DE ESTUDO'}
               </div>
               <h2 className="font-display text-xl sm:text-2xl font-black italic text-white tracking-wide mt-1 drop-shadow-sm leading-tight">
                 AULAS <span className="font-light not-italic text-rose-200">INTERATIVAS</span>
@@ -154,23 +163,48 @@ export const AulasHero: React.FC<AulasHeroProps> = ({
           </div>
         </div>
 
-        {/* 3 Métricas na Barra Inferior */}
-        <div className="relative z-10 grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-black/40 backdrop-blur-md">
+        {/* 4 Funções Rápidas integradas na barra inferior do painel */}
+        <div className="relative z-10 grid grid-cols-4 divide-x divide-white/10 border-t border-white/10 bg-black/40 backdrop-blur-md">
           <button
             type="button"
             onClick={() => {
               try { haptic.selection(); } catch {}
               onOpenRecentes();
             }}
-            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
+            className="min-h-[54px] py-2.5 px-1.5 flex flex-col items-center justify-center gap-1 text-white/85 hover:text-white hover:bg-white/5 active:bg-white/10 transition cursor-pointer"
           >
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
-              <span>EM ANDAMENTO</span>
-              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
-            </div>
-            <div className="font-display text-base sm:text-lg font-black text-white mt-0.5 tabular-nums">
-              {totalEmAndamento.toLocaleString('pt-BR')}
-            </div>
+            <History className="w-4 h-4" strokeWidth={1.9} />
+            <span className="text-[10.5px] font-semibold tracking-wide truncate max-w-full">
+              Recentes{totalEmAndamento > 0 ? ` (${totalEmAndamento})` : ''}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              onOpenFavoritos();
+            }}
+            className="min-h-[54px] py-2.5 px-1.5 flex flex-col items-center justify-center gap-1 text-white/85 hover:text-white hover:bg-white/5 active:bg-white/10 transition cursor-pointer"
+          >
+            <Bookmark className="w-4 h-4" strokeWidth={1.9} />
+            <span className="text-[10.5px] font-semibold tracking-wide truncate max-w-full">
+              Favoritos
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              onOpenEmAlta();
+            }}
+            className="min-h-[54px] py-2.5 px-1.5 flex flex-col items-center justify-center gap-1 text-white/85 hover:text-white hover:bg-white/5 active:bg-white/10 transition cursor-pointer"
+          >
+            <Flame className="w-4 h-4" strokeWidth={1.9} />
+            <span className="text-[10.5px] font-semibold tracking-wide truncate max-w-full">
+              Em Alta
+            </span>
           </button>
 
           <button
@@ -179,32 +213,12 @@ export const AulasHero: React.FC<AulasHeroProps> = ({
               try { haptic.selection(); } catch {}
               onOpenProgresso();
             }}
-            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
+            className="min-h-[54px] py-2.5 px-1.5 flex flex-col items-center justify-center gap-1 text-white/85 hover:text-white hover:bg-white/5 active:bg-white/10 transition cursor-pointer"
           >
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
-              <span>CONCLUÍDAS</span>
-              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
-            </div>
-            <div className={`font-display text-base sm:text-lg font-black mt-0.5 tabular-nums ${totalConcluidas > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {totalConcluidas.toLocaleString('pt-BR')}
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              try { haptic.selection(); } catch {}
-              onOpenTrilhas();
-            }}
-            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
-          >
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
-              <span>TOTAL DE AULAS</span>
-              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
-            </div>
-            <div className="font-display text-base sm:text-lg font-black text-white mt-0.5 tabular-nums">
-              {totalAulas > 0 ? totalAulas.toLocaleString('pt-BR') : '3.003'}
-            </div>
+            <BarChart3 className="w-4 h-4" strokeWidth={1.9} />
+            <span className="text-[10.5px] font-semibold tracking-wide truncate max-w-full">
+              Progresso{pct > 0 ? ` ${pct}%` : ''}
+            </span>
           </button>
         </div>
       </section>

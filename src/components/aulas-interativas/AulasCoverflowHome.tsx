@@ -1,9 +1,5 @@
 import React, { useState, useMemo, lazy, Suspense } from 'react';
 import {
-  BarChart3,
-  History,
-  Bookmark,
-  Flame,
   ChevronRight,
   X,
 } from 'lucide-react';
@@ -176,11 +172,10 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
 
   return (
     <div className="relative z-10 w-full min-h-screen flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overflow-x-hidden">
-      {/* Painel Principal estilo Questões adaptado para Aulas */}
+      {/* Painel Principal estilo Questões com as 4 funções integradas */}
       <AulasHero
         porcentagemGeral={porcentagemGeral}
         totalEmAndamento={totalEmAndamento}
-        totalConcluidas={totalConcluidas}
         totalAulas={totalAulas}
         buscaAberta={buscaAberta}
         buscaTermo={buscaTermo}
@@ -188,66 +183,10 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
         setBuscaTermo={setBuscaTermo}
         onBack={handleVoltar}
         onOpenRecentes={() => setRecentesModalOpen(true)}
+        onOpenFavoritos={() => setAbaAtiva('favoritos')}
+        onOpenEmAlta={() => setEmAltaModalOpen(true)}
         onOpenProgresso={() => setAbaAtiva('estatisticas')}
-        onOpenTrilhas={() => setTrilhasListaModalOpen(true)}
       />
-
-      {/* Barra Minimalista de 4 Ações Rápidas */}
-      <div className="max-w-5xl lg:max-w-7xl mx-auto w-full px-4 sm:px-6 pt-3">
-        <div className="grid grid-cols-4 gap-1.5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.selection(); } catch {}
-                setRecentesModalOpen(true);
-              }}
-              className="min-h-[44px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-xl text-white/75 hover:text-white hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
-            >
-              <History className="w-4 h-4" strokeWidth={1.7} />
-              <span className="text-[10.5px] font-medium truncate">
-                Recentes{totalEmAndamento > 0 ? ` (${totalEmAndamento})` : ''}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.selection(); } catch {}
-                setAbaAtiva('favoritos');
-              }}
-              className="min-h-[44px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-xl text-white/75 hover:text-white hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
-            >
-              <Bookmark className="w-4 h-4" strokeWidth={1.7} />
-              <span className="text-[10.5px] font-medium truncate">Favoritos</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.selection(); } catch {}
-                setEmAltaModalOpen(true);
-              }}
-              className="min-h-[44px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-xl text-white/75 hover:text-white hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
-            >
-              <Flame className="w-4 h-4" strokeWidth={1.7} />
-              <span className="text-[10.5px] font-medium truncate">Em Alta</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                try { haptic.selection(); } catch {}
-                setAbaAtiva('estatisticas');
-              }}
-              className="min-h-[44px] flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-xl text-white/75 hover:text-white hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
-            >
-              <BarChart3 className="w-4 h-4" strokeWidth={1.7} />
-              <span className="text-[10.5px] font-medium truncate">
-                Progresso{porcentagemGeral > 0 ? ` ${porcentagemGeral}%` : ''}
-              </span>
-            </button>
-          </div>
-        </div>
 
       {/* Conteúdo Principal Minimalista */}
       <main className="w-full max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 pt-4 space-y-6">
