@@ -275,19 +275,7 @@ export default function AdminAulasInterativas() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
-      {/* Fundo minimalista com grade sutil */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0D0D0D]">
-        <ShapeGrid 
-          speed={0.25} 
-          squareSize={42} 
-          direction="diagonal" 
-          borderColor="rgba(255, 255, 255, 0.035)" 
-          hoverFillColor="rgba(255, 255, 255, 0.06)" 
-          shape="square" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 pointer-events-none" />
-      </div>
+    <div className="min-h-screen bg-[#09090B] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
 
       {/* Toast Flutuante de Alerta */}
       {toastAviso && (
@@ -411,6 +399,8 @@ export default function AdminAulasInterativas() {
             setBuscaTermoAulas('');
             resetScrollToTop();
           }}
+          onIniciarAula={handleIniciarAula}
+          onAbrirDetalheAula={(aula) => setAulaSheetDetalhe(aula)}
           calcularProgressoCiclo={calcularProgressoCiclo}
         />
       )}

@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle2, ChevronRight, Home, Play, Search, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronDown, ChevronRight, Home, Layers, Play, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import ShapeGrid from '@/components/ui/ShapeGrid';
-import { useIsDesktop } from '@/hooks/use-desktop';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { MateriaItem, AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
@@ -15,6 +13,8 @@ interface AulasTrilhaMateriaViewProps {
   setBuscaTermo: (val: string) => void;
   handleVoltar: () => void;
   onSelecionarMateria: (materiaId: string) => void;
+  onIniciarAula?: (aula: AulaItem) => void;
+  onAbrirDetalheAula?: (aula: AulaItem) => void;
   calcularProgressoCiclo: (aula: AulaItem) => {
     etapaAtual: number;
     totalEtapas: number;
@@ -47,10 +47,12 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
   setBuscaTermo,
   handleVoltar,
   onSelecionarMateria,
+  onIniciarAula,
+  onAbrirDetalheAula,
   calcularProgressoCiclo,
 }) => {
   const navigate = useNavigate();
-  const isDesktop = useIsDesktop();
+  const [expandedMateriaId, setExpandedMateriaId] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<FiltroStatus>('todas');
 
   const { totalAulasDisc, pctDisc, materiasComStats, materiaContinuar } = useMemo(() => {
@@ -114,21 +116,6 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#09090B] text-white relative">
-      {/* Fundo padrão oficial ShapeGrid apenas no mobile/tablet */}
-      {!isDesktop && (
-        <div className="fixed inset-0 z-0 opacity-60 pointer-events-none">
-          <ShapeGrid
-            speed={0.5}
-            squareSize={40}
-            direction="diagonal"
-            borderColor="rgba(255, 255, 255, 0.05)"
-            hoverFillColor="rgba(255, 255, 255, 0.1)"
-            shape="square"
-            hoverTrailAmount={5}
-          />
-        </div>
-      )}
-
       {/* Header fixo minimalista */}
       <header className="sticky top-0 z-30 w-full bg-[#09090B]/90 backdrop-blur-md border-b border-white/[0.06] px-3.5 sm:px-6 lg:px-10 pb-3 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <div className="max-w-5xl lg:max-w-[1380px] mx-auto flex items-center justify-between gap-3">
@@ -282,57 +269,172 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
             {materiasFiltradas.map((item) => {
               const concluida = item.pct >= 100;
+              const isExpanded = expandedMateriaId === item.mat.id;
               return (
-                <button
+                <div
                   key={item.mat.id}
                   id={`materia-section-${item.mat.id}`}
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    onSelecionarMateria(item.mat.id);
-                  }}
-                  className="group w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-amber-500/40 flex items-center gap-3 text-left transition-all active:scale-[0.99] cursor-pointer"
+                  className={`rounded-2xl border transition-all overflow-hidden ${
+                    isExpanded
+                      ? 'col-span-full bg-white/[0.05] border-amber-500/40'
+                      : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/10 hover:border-amber-500/40'
+                  }`}
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold tabular-nums shrink-0 border ${
-                      concluida
-                        ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                        : item.pct > 0
-                        ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                        : 'bg-white/5 border-white/10 text-zinc-400'
-                    }`}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      if (onIniciarAula || onAbrirDetalheAula) {
+                        setExpandedMateriaId((prev) => (prev === item.mat.id ? null : item.mat.id));
+                      } else {
+                        onSelecionarMateria(item.mat.id);
+                      }
+                    }}
+                    className="group w-full p-3.5 flex items-center gap-3 text-left active:scale-[0.99] transition-all cursor-pointer"
                   >
-                    {concluida ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                      String(item.idx + 1).padStart(2, '0')
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-snug">
-                      {item.tituloCurto}
-                    </h2>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-[11px] text-zinc-400 shrink-0">
-                        {item.total} {item.total === 1 ? 'aula' : 'aulas'}
-                      </span>
-                      <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden max-w-[90px]">
-                        <div
-                          className={`h-full rounded-full ${
-                            concluida ? 'bg-emerald-400' : 'bg-amber-400'
-                          }`}
-                          style={{ width: `${item.pct}%` }}
-                        />
-                      </div>
-                      <span className="text-[11px] font-medium text-zinc-400 tabular-nums shrink-0">
-                        {item.pct}%
-                      </span>
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold tabular-nums shrink-0 border ${
+                        concluida
+                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                          : item.pct > 0
+                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                          : 'bg-white/5 border-white/10 text-zinc-400'
+                      }`}
+                    >
+                      {concluida ? (
+                        <CheckCircle2 className="w-5 h-5" />
+                      ) : (
+                        String(item.idx + 1).padStart(2, '0')
+                      )}
                     </div>
-                  </div>
 
-                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white shrink-0 transition-colors" />
-                </button>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-snug">
+                        {item.tituloCurto}
+                      </h2>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="text-[11px] text-zinc-400 shrink-0">
+                          {item.total} {item.total === 1 ? 'aula' : 'aulas'}
+                        </span>
+                        <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden max-w-[90px]">
+                          <div
+                            className={`h-full rounded-full ${
+                              concluida ? 'bg-emerald-400' : 'bg-amber-400'
+                            }`}
+                            style={{ width: `${item.pct}%` }}
+                          />
+                        </div>
+                        <span className="text-[11px] font-medium text-zinc-400 tabular-nums shrink-0">
+                          {item.pct}%
+                        </span>
+                      </div>
+                    </div>
+
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4 text-amber-400 shrink-0 transition-transform" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white shrink-0 transition-colors" />
+                    )}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="border-t border-white/10 px-3.5 py-3 space-y-2 bg-black/25">
+                      {item.aulasDaMat.map((aula, aIdx) => {
+                        const prog = calcularProgressoCiclo(aula);
+                        const aulaConcluida = prog.cicloCompleto || prog.porcentagemTotal >= 100;
+                        return (
+                          <div
+                            key={aula.id}
+                            className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.07] transition-colors"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                try { haptic.selection(); } catch {}
+                                if (onIniciarAula) {
+                                  onIniciarAula(aula);
+                                } else {
+                                  onSelecionarMateria(item.mat.id);
+                                }
+                              }}
+                              className="flex-1 min-w-0 flex items-center gap-3 text-left cursor-pointer"
+                            >
+                              <div
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-bold tabular-nums shrink-0 border ${
+                                  aulaConcluida
+                                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                                    : prog.porcentagemTotal > 0
+                                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                                    : 'bg-white/5 border-white/10 text-zinc-400'
+                                }`}
+                              >
+                                {aulaConcluida ? (
+                                  <CheckCircle2 className="w-4 h-4" />
+                                ) : (
+                                  String(aIdx + 1).padStart(2, '0')
+                                )}
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-medium text-white truncate">
+                                  {aula.titulo}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="w-20 h-1 rounded-full bg-white/10 overflow-hidden">
+                                    <div
+                                      className={`h-full rounded-full ${
+                                        aulaConcluida ? 'bg-emerald-400' : 'bg-amber-400'
+                                      }`}
+                                      style={{ width: `${prog.porcentagemTotal}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[11px] text-zinc-400 tabular-nums">
+                                    {prog.porcentagemTotal}%
+                                  </span>
+                                </div>
+                              </div>
+                            </button>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {onAbrirDetalheAula && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    try { haptic.selection(); } catch {}
+                                    onAbrirDetalheAula(aula);
+                                  }}
+                                  title="Etapas, flashcards e questões"
+                                  aria-label="Etapas da aula"
+                                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                                >
+                                  <Layers className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  try { haptic.selection(); } catch {}
+                                  if (onIniciarAula) {
+                                    onIniciarAula(aula);
+                                  } else {
+                                    onSelecionarMateria(item.mat.id);
+                                  }
+                                }}
+                                aria-label={`Iniciar ${aula.titulo}`}
+                                className="h-8 px-3 rounded-lg bg-amber-400 hover:bg-amber-300 text-zinc-950 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                              >
+                                <Play className="w-3 h-3 fill-current" />
+                                <span className="hidden sm:inline">
+                                  {prog.porcentagemTotal > 0 && !aulaConcluida ? 'Continuar' : 'Iniciar'}
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

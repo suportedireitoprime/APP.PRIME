@@ -124,7 +124,7 @@ export const AulasHero: React.FC<AulasHeroProps> = ({
           <div className="flex items-center gap-4">
             {/* Rosca de Progresso */}
             <div className="relative flex shrink-0 items-center justify-center">
-              <div className="w-[72px] h-[72px] rounded-2xl bg-white/10 border-2 border-white/20 flex flex-col items-center justify-center text-center shadow-lg backdrop-blur-sm relative">
+              <div className="w-[64px] h-[64px] flex flex-col items-center justify-center text-center relative">
                 <svg width={56} height={56} className="-rotate-90">
                   <circle cx={28} cy={28} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={4.5} fill="none" />
                   <circle
