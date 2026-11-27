@@ -390,7 +390,17 @@ export default function MapasMentaisView({
         },
       });
 
-      if (error) throw new Error(error.message || 'Erro ao gerar o mapa');
+      if (error) {
+        let detailed = error.message || 'Erro ao gerar o mapa';
+        try {
+          const ctx = (error as { context?: Response }).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const errBody = await ctx.json().catch(() => null);
+            if (errBody?.error) detailed = String(errBody.error);
+          }
+        } catch { /* ignora falha ao ler contexto */ }
+        throw new Error(detailed);
+      }
       const registro = (data as Record<string, unknown>)?.visual as VisualRecord | undefined;
       if (!registro) throw new Error('Resposta vazia');
 
