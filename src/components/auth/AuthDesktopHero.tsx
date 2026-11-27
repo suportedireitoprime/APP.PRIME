@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
+import DesktopEmailLogin from '@/components/auth/DesktopEmailLogin';
 import heroLeisecaEstudante from '@/assets/covers/hero-leiseca-estudante.webp';
 import logoCoruja from '@/assets/logo-coruja.webp';
 
@@ -55,14 +55,14 @@ export const AuthDesktopHero: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Lado Direito: QR Code Login */}
+        {/* Lado Direito: Login com E-mail */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-          className="w-[450px] shrink-0 flex flex-col items-center justify-center p-8 bg-black/30 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl"
+          className="w-[450px] shrink-0 flex flex-col items-center justify-center p-8 bg-black/35 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl"
         >
-          <DesktopQrLogin />
+          <DesktopEmailLogin />
         </motion.div>
       </div>
     </>
