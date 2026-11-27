@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useMemo } from 'react';
+import { lazy, Suspense, useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -13,6 +13,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { recordAreaActivity } from '@/lib/continuity';
 
 const QuestoesFiltroSheet = lazy(() => import('@/components/questoes/QuestoesFiltroSheet'));
 
@@ -33,6 +34,16 @@ const Questoes = () => {
 
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [areaFiltroSelecionada, setAreaFiltroSelecionada] = useState<string | null>(null);
+
+  // Registra acesso para continuidade (BottomNav)
+  useEffect(() => {
+    recordAreaActivity({
+      path: '/questoes',
+      label: 'Questões',
+      sublabel: 'Banco completo por matéria e banca',
+      kind: 'questoes',
+    });
+  }, []);
 
   const materiasAreas = useMemo(() => {
     const counts: Record<string, number> = {};

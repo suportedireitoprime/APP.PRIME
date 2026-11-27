@@ -14,6 +14,7 @@ import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
 import { cn } from "@/lib/utils";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
+import { recordAreaActivity } from "@/lib/continuity";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 type Ordem = "crono" | "alpha" | "fav";
@@ -33,6 +34,17 @@ export default function ResumosJuridicosTemas() {
   }, [decodedArea]);
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
+
+  // Registra acesso por área para continuidade (BottomNav → Resumos)
+  useEffect(() => {
+    if (!decodedArea) return;
+    recordAreaActivity({
+      path: `/resumos-juridicos/${encodeURIComponent(decodedArea)}`,
+      label: `Resumos — ${decodedArea}`,
+      sublabel: 'Sínteses e anotações jurídicas',
+      kind: 'resumos',
+    });
+  }, [decodedArea]);
 
   const [rows, setRows] = useState<Row[]>(() => {
     if (temasCache.has(decodedArea)) return temasCache.get(decodedArea)!;

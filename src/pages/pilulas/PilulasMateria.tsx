@@ -9,6 +9,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 import { getMateriaMeta, type PilulaMateriaMeta } from './data/pilulasMateriasConfig';
 import { loadPilulasCatalog, type ModuloItem, type TopicoItem } from './data/pilulasCatalogLoader';
+import { recordAreaActivity } from '@/lib/continuity';
 
 type AbaTipo = 'materias' | 'favoritos' | 'recentes';
 
@@ -72,6 +73,13 @@ export default function PilulasMateria() {
   useEffect(() => {
     let active = true;
     setLoading(true);
+    // Registra acesso para continuidade (BottomNav → Em Áudio)
+    recordAreaActivity({
+      path: `/pilulas/${meta.slug}`,
+      label: `Pílulas — ${meta.nome}`,
+      sublabel: meta.descricao?.slice(0, 60) || 'Conceitos essenciais em minutos',
+      kind: 'pilulas',
+    });
     loadPilulasCatalog(meta.slug)
       .then((data) => {
         if (active) {

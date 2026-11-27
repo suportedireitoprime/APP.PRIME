@@ -18,7 +18,6 @@ import {
   Pill,
   Clock,
   Play,
-  Sparkles,
 } from 'lucide-react';
 
 import { haptic } from '@/lib/nativeHaptics';
@@ -28,6 +27,7 @@ import { startAppMetrics } from '@/lib/appMetrics';
 import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { prefetchRoute, prefetchMainTabsIdle, type PrefetchKey } from '@/lib/routePrefetch';
+import { getAreaContinuityAny, type ContinuityKind, type AreaContinuityEntry } from '@/lib/continuity';
 
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
@@ -86,26 +86,15 @@ interface SheetNavItem {
   prefetch?: PrefetchKey;
 }
 
-function getAreaLastItem(area: SheetAreaKey, items: SheetNavItem[]): { item: SheetNavItem; isRecent: boolean } {
-  try {
-    const raw = localStorage.getItem(`bottomnav:last:${area}`);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { id?: string };
-      const found = items.find((i) => i.id === parsed.id);
-      if (found) return { item: found, isRecent: true };
-    }
-  } catch {
-    /* ignore */
-  }
-  return { item: items[0], isRecent: false };
-}
+// Mapeamento de área do sheet → kinds de continuidade relevantes
+const AREA_KINDS: Record<SheetAreaKey, ContinuityKind[]> = {
+  praticar: ['questoes', 'flashcards', 'leiseca'],
+  audioaulas: ['audioaulas', 'pilulas'],
+  resumos: ['resumos'],
+};
 
-function saveAreaLastItem(area: SheetAreaKey, itemId: string) {
-  try {
-    localStorage.setItem(`bottomnav:last:${area}`, JSON.stringify({ id: itemId, at: Date.now() }));
-  } catch {
-    /* ignore */
-  }
+function getContinuityForArea(area: SheetAreaKey): AreaContinuityEntry | null {
+  return getAreaContinuityAny(AREA_KINDS[area]);
 }
 
 interface BottomNavAreaSheetProps {
@@ -117,6 +106,7 @@ interface BottomNavAreaSheetProps {
   items: SheetNavItem[];
   onClose: () => void;
   onSelect: (area: SheetAreaKey, item: SheetNavItem) => void;
+  navigate: ReturnType<typeof useNavigate>;
 }
 
 function BottomNavAreaSheet({
@@ -128,10 +118,40 @@ function BottomNavAreaSheet({
   items,
   onClose,
   onSelect,
-}: BottomNavAreaSheetProps) {
-  if (!open) return null;
-  const { item: lastItem, isRecent } = getAreaLastItem(area, items);
-  const LastIcon = lastItem.icon;
+  navigate,
+}: BottomNavAreaSheetProps) {  if (!open) return null;
+
+  // Último conteúdo real acessado nessa área (via continuity)
+  const continuityEntry = getContinuityForArea(area);
+
+  // Ícone da categoria do último acesso (mapeado pelo kind)
+  const KIND_ICON_MAP: Partial<Record<ContinuityKind, typeof items[0]['icon']>> = {
+    questoes: items.find((i) => i.id === 'questoes')?.icon ?? items[0].icon,
+    flashcards: items.find((i) => i.id === 'flashcards')?.icon ?? items[0].icon,
+    leiseca: items.find((i) => i.id === 'licoes')?.icon ?? items[0].icon,
+    audioaulas: items.find((i) => i.id === 'audioaulas')?.icon ?? items[0].icon,
+    pilulas: items.find((i) => i.id === 'pilulas')?.icon ?? items[0].icon,
+    resumos: items.find((i) => i.id === 'resumos')?.icon ?? items[0].icon,
+  };
+  const KIND_COLOR_MAP: Partial<Record<ContinuityKind, string>> = {
+    questoes: 'text-emerald-400',
+    flashcards: 'text-amber-400',
+    leiseca: 'text-violet-400',
+    audioaulas: 'text-rose-400',
+    pilulas: 'text-cyan-400',
+    resumos: 'text-amber-400',
+  };
+
+  const ContinuityIcon = continuityEntry
+    ? (KIND_ICON_MAP[continuityEntry.kind] ?? items[0].icon)
+    : items[0].icon;
+  const continuityColor = continuityEntry
+    ? (KIND_COLOR_MAP[continuityEntry.kind] ?? items[0].colorClass)
+    : items[0].colorClass;
+
+  // Fallback: primeiro item da lista
+  const fallbackItem = items[0];
+  const FallbackIcon = fallbackItem.icon;
 
   return (
     <>
@@ -163,44 +183,64 @@ function BottomNavAreaSheet({
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
-          {/* Último acesso / Continuar */}
+          {/* Card de Último acesso real */}
           <div>
             <p className="px-1 mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
-              {isRecent ? (
-                <>
-                  <Clock className="w-3 h-3 text-rose-400" />
-                  <span>Último acesso em {title}</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>Recomendado para começar</span>
-                </>
-              )}
+              <Clock className="w-3 h-3 text-rose-400" />
+              <span>{continuityEntry ? 'Continuar de onde parou' : 'Começar por aqui'}</span>
             </p>
-            <button
-              type="button"
-              onPointerEnter={() => {
-                if (lastItem.prefetch) prefetchRoute(lastItem.prefetch);
-              }}
-              onClick={() => onSelect(area, lastItem)}
-              className="w-full flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-white/[0.06] to-white/[0.02] hover:from-white/[0.1] hover:to-white/[0.04] border border-white/15 active:scale-[0.99] transition-all text-left cursor-pointer"
-            >
-              <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
-                <LastIcon className={`w-6 h-6 ${lastItem.colorClass}`} strokeWidth={1.9} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-body text-[15px] font-semibold text-white truncate">
-                  {lastItem.label}
-                </p>
-                <p className="font-body text-xs text-white/55 truncate mt-0.5">
-                  {lastItem.desc}
-                </p>
-              </div>
-              <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center shrink-0">
-                <Play className="w-4 h-4 fill-current ml-0.5" />
-              </div>
-            </button>
+            {continuityEntry ? (
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.medium();
+                  onClose();
+                  startTransition(() => navigate(continuityEntry.path));
+                }}
+                className="w-full flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-white/[0.06] to-white/[0.02] hover:from-white/[0.1] hover:to-white/[0.04] border border-white/15 active:scale-[0.99] transition-all text-left cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
+                  <ContinuityIcon className={`w-6 h-6 ${continuityColor}`} strokeWidth={1.9} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-body text-[15px] font-semibold text-white truncate">
+                    {continuityEntry.label}
+                  </p>
+                  {continuityEntry.sublabel && (
+                    <p className="font-body text-xs text-white/55 truncate mt-0.5">
+                      {continuityEntry.sublabel}
+                    </p>
+                  )}
+                </div>
+                <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center shrink-0">
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                </div>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onPointerEnter={() => {
+                  if (fallbackItem.prefetch) prefetchRoute(fallbackItem.prefetch);
+                }}
+                onClick={() => onSelect(area, fallbackItem)}
+                className="w-full flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-white/[0.06] to-white/[0.02] hover:from-white/[0.1] hover:to-white/[0.04] border border-white/15 active:scale-[0.99] transition-all text-left cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
+                  <FallbackIcon className={`w-6 h-6 ${fallbackItem.colorClass}`} strokeWidth={1.9} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-body text-[15px] font-semibold text-white truncate">
+                    {fallbackItem.label}
+                  </p>
+                  <p className="font-body text-xs text-white/55 truncate mt-0.5">
+                    {fallbackItem.desc}
+                  </p>
+                </div>
+                <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center shrink-0">
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                </div>
+              </button>
+            )}
           </div>
 
           {/* Lista ampliada de opções */}
@@ -361,7 +401,6 @@ const BottomNav = () => {
 
   const navigateFromSheet = (area: SheetAreaKey, item: SheetNavItem) => {
     haptic.selection();
-    saveAreaLastItem(area, item.id);
     setPraticarOpen(false);
     setAudioaulasOpen(false);
     setResumosOpen(false);
@@ -500,6 +539,7 @@ const BottomNav = () => {
         items={PRATICAR_ITENS}
         onClose={() => setPraticarOpen(false)}
         onSelect={navigateFromSheet}
+        navigate={navigate}
       />
 
       <BottomNavAreaSheet
@@ -511,6 +551,7 @@ const BottomNav = () => {
         items={AUDIOAULAS_ITENS}
         onClose={() => setAudioaulasOpen(false)}
         onSelect={navigateFromSheet}
+        navigate={navigate}
       />
 
       <BottomNavAreaSheet
@@ -522,6 +563,7 @@ const BottomNav = () => {
         items={RESUMOS_ITENS}
         onClose={() => setResumosOpen(false)}
         onSelect={navigateFromSheet}
+        navigate={navigate}
       />
 
       {sideMenuOpen && (

@@ -14,6 +14,7 @@ import FlashcardsHero from '@/components/flashcards/FlashcardsHero';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import { recordAreaActivity } from '@/lib/continuity';
 
 export { formatarNomeArea };
 
@@ -96,6 +97,12 @@ const Flashcards = () => {
   // SEO & Título dinâmico
   useEffect(() => {
     document.title = 'Praticar Flashcards | Vade Mecum PRIME';
+    recordAreaActivity({
+      path: '/flashcards',
+      label: 'Flashcards',
+      sublabel: 'Memorização ativa com repetição espaçada',
+      kind: 'flashcards',
+    });
   }, []);
 
   return (

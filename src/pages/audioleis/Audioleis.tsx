@@ -28,6 +28,7 @@ import {
   type RankingAudioleiItem,
   type UltimoAudiolei,
 } from '@/services/audioleisService';
+import { recordAreaActivity } from '@/lib/continuity';
 
 const AudioleiFollowPlayer = React.lazy(
   () => import('@/components/audioleis/AudioleiFollowPlayer')
@@ -65,6 +66,16 @@ const Audioleis: React.FC = () => {
   useEffect(() => {
     setLeiSelecionadaId(leiIdParam || null);
   }, [leiIdParam]);
+
+  // Registra acesso inicial à tela de Audioaulas
+  useEffect(() => {
+    recordAreaActivity({
+      path: '/audioaulas',
+      label: 'Audioaulas',
+      sublabel: 'Aulas narradas por área do Direito',
+      kind: 'audioaulas',
+    });
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -106,6 +117,17 @@ const Audioleis: React.FC = () => {
       setArtigoAtivo(leiSelecionada.artigos[0]);
     }
   }, [isDesktop, leiSelecionada, artigoAtivo]);
+
+  // Registra acesso para continuidade (BottomNav → Em Áudio) quando uma lei é aberta
+  useEffect(() => {
+    if (!leiSelecionada) return;
+    recordAreaActivity({
+      path: `/audioaulas/${leiSelecionada.id}`,
+      label: leiSelecionada.nome,
+      sublabel: `Audioaulas — ${leiSelecionada.sigla}`,
+      kind: 'audioaulas',
+    });
+  }, [leiSelecionada?.id]);
 
   const queryNorm = busca.trim().toLowerCase();
   const buscaNumerica = queryNorm.replace(/\D/g, '');

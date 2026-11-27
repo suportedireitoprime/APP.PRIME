@@ -14,7 +14,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { getCurrentSessionUser } from '@/lib/authSessionCache';
 import { get, set } from 'idb-keyval';
 
-export type ContinuityKind = 'blog' | 'noticia' | 'artigo' | 'radar' | 'biblioteca' | 'other';
+export type ContinuityKind =
+  | 'blog'
+  | 'noticia'
+  | 'artigo'
+  | 'radar'
+  | 'biblioteca'
+  | 'other'
+  | 'questoes'
+  | 'flashcards'
+  | 'leiseca'
+  | 'resumos'
+  | 'audioaulas'
+  | 'pilulas';
 
 export interface ContinuityEntry {
   path: string;
@@ -153,6 +165,49 @@ export function recordActivity(input: {
 
 export function getLocalContinuity(): ContinuityEntry | null {
   return readLocal();
+}
+
+// ---------------------------------------------------------------------------
+// Per-area last access — para o BottomNav mostrar o conteúdo real acessado
+// ---------------------------------------------------------------------------
+const AREA_LS_PREFIX = 'continuity:area:';
+
+export interface AreaContinuityEntry {
+  path: string;
+  label: string;
+  sublabel?: string; // ex: "Direito Penal"
+  kind: ContinuityKind;
+  updated_at: string;
+}
+
+export function recordAreaActivity(entry: Omit<AreaContinuityEntry, 'updated_at'>) {
+  if (typeof window === 'undefined') return;
+  try {
+    const full: AreaContinuityEntry = { ...entry, updated_at: new Date().toISOString() };
+    localStorage.setItem(`${AREA_LS_PREFIX}${entry.kind}`, JSON.stringify(full));
+  } catch { /* ignore quota */ }
+  // also record in global continuity so cross-device sync works
+  recordActivity({ path: entry.path, label: entry.label, kind: entry.kind });
+}
+
+export function getAreaContinuity(kind: ContinuityKind): AreaContinuityEntry | null {
+  try {
+    const raw = localStorage.getItem(`${AREA_LS_PREFIX}${kind}`);
+    if (!raw) return null;
+    return JSON.parse(raw) as AreaContinuityEntry;
+  } catch {
+    return null;
+  }
+}
+
+/** Retorna o último acesso em qualquer dos kinds fornecidos (o mais recente) */
+export function getAreaContinuityAny(kinds: ContinuityKind[]): AreaContinuityEntry | null {
+  const entries = kinds
+    .map((k) => getAreaContinuity(k))
+    .filter(Boolean) as AreaContinuityEntry[];
+  if (entries.length === 0) return null;
+  entries.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
+  return entries[0];
 }
 
 /**
