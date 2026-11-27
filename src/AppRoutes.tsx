@@ -128,6 +128,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Noticias = lazy(routePrefetch.noticias);
 const Boletins = lazy(() => import("./pages/noticias/Boletins.tsx"));
 const Novidades = lazy(() => import("./pages/noticias/Novidades.tsx"));
+const AtualizacoesApp = lazy(() => import("./pages/noticias/AtualizacoesApp.tsx"));
 const AvaliacaoInteligente = lazy(() => import("./pages/graficos/AvaliacaoInteligente.tsx"));
 const PessoalGrifos = lazy(() => import("./pages/pessoal/Grifos.tsx"));
 const PessoalArtigos = lazy(() => import("./pages/pessoal/Artigos.tsx"));
@@ -809,6 +810,7 @@ function AnimatedRoutes() {
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition instant><Boletins /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
+          <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition><AtualizacoesApp /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />

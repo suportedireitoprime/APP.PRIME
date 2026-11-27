@@ -306,3 +306,374 @@ export const UFS = [
   'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA',
   'PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'
 ];
+
+// ============================================================================
+// NOVO RADAR LEGISLATIVO (Câmara dos Deputados + Senado Federal)
+// ============================================================================
+
+export type RadarTriagemStage = 'sanction_veto' | 'approved_house' | 'in_progress';
+
+export interface RadarAutor {
+  id?: number | string;
+  nome: string;
+  tipo?: string;
+  partido?: string;
+  uf?: string;
+  foto_url?: string;
+  casa: 'camara' | 'senado';
+}
+
+export interface RadarProposicao {
+  id: string;
+  casa: 'camara' | 'senado';
+  siglaTipo: string;
+  numero: string | number;
+  ano: number;
+  ementa: string;
+  dataApresentacao?: string;
+  situacao?: string;
+  triagem: RadarTriagemStage;
+  autores: RadarAutor[];
+  urlInteiroTeor?: string;
+  urlOficial?: string;
+  tags: string[];
+}
+
+export function classificarTriagem(situacao?: string | null, despacho?: string | null): RadarTriagemStage {
+  const txt = `${situacao || ''} ${despacho || ''}`.toLowerCase();
+  if (
+    txt.includes('sanção') ||
+    txt.includes('sancao') ||
+    txt.includes('veto') ||
+    txt.includes('transformada no') ||
+    txt.includes('aguardando sanção') ||
+    txt.includes('enviada à sanção') ||
+    txt.includes('promulgação') ||
+    txt.includes('pronta para sanção')
+  ) {
+    return 'sanction_veto';
+  }
+  if (
+    txt.includes('aprovad') ||
+    txt.includes('remetida ao senado') ||
+    txt.includes('remetida à câmara') ||
+    txt.includes('apreciad') ||
+    txt.includes('pronta para pauta') ||
+    txt.includes('urgência') ||
+    txt.includes('plenário')
+  ) {
+    return 'approved_house';
+  }
+  return 'in_progress';
+}
+
+function extrairIdDeputadoUri(uri?: string | null): number | undefined {
+  if (!uri) return undefined;
+  const match = uri.match(/\/deputados\/(\d+)/);
+  return match ? Number(match[1]) : undefined;
+}
+
+function fotoDeputadoUrl(id?: number): string | undefined {
+  if (!id) return undefined;
+  return `https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg`;
+}
+
+async function enriquecerAutoresCamara(
+  propId: string,
+  deputadosMap: Map<number, any>
+): Promise<{ autores: RadarAutor[]; situacao?: string; despacho?: string; urlInteiroTeor?: string }> {
+  try {
+    const [detRes, autRes] = await Promise.all([
+      fetch(`${CAMARA_API}/proposicoes/${propId}`, { headers: { Accept: 'application/json' } }),
+      fetch(`${CAMARA_API}/proposicoes/${propId}/autores`, { headers: { Accept: 'application/json' } }),
+    ]);
+
+    const detJson = detRes.ok ? await detRes.json() : null;
+    const autJson = autRes.ok ? await autRes.json() : null;
+
+    const det = detJson?.dados;
+    const statusProp = det?.statusProposicao;
+    const situacao = statusProp?.descricaoSituacao || statusProp?.descricaoTramitacao || undefined;
+    const despacho = statusProp?.despacho || undefined;
+    const urlInteiroTeor = det?.urlInteiroTeor || undefined;
+
+    const autoresRaw: any[] = autJson?.dados || [];
+    const autores: RadarAutor[] = autoresRaw.slice(0, 3).map((a) => {
+      const depId = extrairIdDeputadoUri(a.uri);
+      const depCache = depId ? deputadosMap.get(depId) : undefined;
+      return {
+        id: depId,
+        nome: a.nome || depCache?.nome || 'Parlamentar',
+        tipo: a.tipo,
+        partido: depCache?.sigla_partido,
+        uf: depCache?.sigla_uf,
+        foto_url: depCache?.foto_url || fotoDeputadoUrl(depId),
+        casa: 'camara',
+      };
+    });
+
+    return { autores, situacao, despacho, urlInteiroTeor };
+  } catch {
+    return { autores: [] };
+  }
+}
+
+/**
+ * Busca últimas proposições na Câmara dos Deputados com autores, fotos e triagem.
+ */
+export async function fetchUltimasProposicoesCamara(opts?: {
+  siglaTipo?: string;
+  itens?: number;
+  pagina?: number;
+}): Promise<RadarProposicao[]> {
+  const siglaTipo = opts?.siglaTipo || 'PL,PEC,PLP,MPV';
+  const itens = opts?.itens ?? 14;
+  const pagina = opts?.pagina ?? 1;
+  const cacheKey = `radar_v2:camara:${siglaTipo}:${itens}:${pagina}`;
+  const hit = cached<RadarProposicao[]>(cacheKey);
+  if (hit) return hit;
+
+  try {
+    // Carrega mapa de deputados do Supabase para enriquecer partido/UF rapidamente
+    const deps = await fetchDeputados();
+    const depMap = new Map<number, any>();
+    deps.forEach((d: any) => {
+      if (d.id) depMap.set(Number(d.id), d);
+    });
+
+    const anoAtual = new Date().getFullYear();
+    const url = `${CAMARA_API}/proposicoes?siglaTipo=${encodeURIComponent(siglaTipo)}&ano=${anoAtual}&ordem=DESC&ordenarPor=id&itens=${itens}&pagina=${pagina}`;
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const rawList: any[] = json?.dados || [];
+
+    const enriched = await Promise.all(
+      rawList.map(async (p) => {
+        const idStr = String(p.id);
+        const extra = await enriquecerAutoresCamara(idStr, depMap);
+        return {
+          id: idStr,
+          casa: 'camara' as const,
+          siglaTipo: p.siglaTipo,
+          numero: p.numero,
+          ano: p.ano,
+          ementa: p.ementa || 'Sem ementa disponível.',
+          situacao: extra.situacao || 'Em tramitação na Câmara',
+          triagem: classificarTriagem(extra.situacao, extra.despacho),
+          autores: extra.autores,
+          urlInteiroTeor: extra.urlInteiroTeor,
+          urlOficial: `https://www.camara.leg.br/propostas-legislativas/${idStr}`,
+          tags: extractTags(p.ementa),
+        } satisfies RadarProposicao;
+      })
+    );
+
+    setCache(cacheKey, enriched);
+    return enriched;
+  } catch (err) {
+    console.warn('[radarService] Erro em fetchUltimasProposicoesCamara:', err);
+    return [];
+  }
+}
+
+/**
+ * Busca emendas recentes apresentadas na Câmara dos Deputados.
+ */
+export async function fetchEmendasRecentes(itens = 10): Promise<RadarProposicao[]> {
+  return fetchUltimasProposicoesCamara({
+    siglaTipo: 'EMD,EMC,EMP',
+    itens,
+    pagina: 1,
+  });
+}
+
+/**
+ * Busca proposições em estágio avançado (Aprovadas / Aguardando Sanção ou Veto) via tramitação recente.
+ */
+export async function fetchProposicoesProximasLei(): Promise<RadarProposicao[]> {
+  const cacheKey = 'radar_v2:proximas_lei';
+  const hit = cached<RadarProposicao[]>(cacheKey);
+  if (hit) return hit;
+
+  try {
+    const deps = await fetchDeputados();
+    const depMap = new Map<number, any>();
+    deps.forEach((d: any) => {
+      if (d.id) depMap.set(Number(d.id), d);
+    });
+
+    // Busca votações recentes na Câmara para encontrar proposições que avançaram / foram aprovadas
+    const votRes = await fetch(`${CAMARA_API}/votacoes?ordem=DESC&ordenarPor=dataHoraRegistro&itens=20`, {
+      headers: { Accept: 'application/json' },
+    });
+    const votJson = votRes.ok ? await votRes.json() : { dados: [] };
+    const votacoes: any[] = votJson?.dados || [];
+
+    const propIds = new Set<string>();
+    for (const v of votacoes) {
+      const uri = v.uriProposicaoObjeto as string | undefined;
+      const m = uri?.match(/\/proposicoes\/(\d+)/);
+      if (m) propIds.add(m[1]);
+      if (propIds.size >= 10) break;
+    }
+
+    const list = await Promise.all(
+      Array.from(propIds).map(async (idStr) => {
+        const extra = await enriquecerAutoresCamara(idStr, depMap);
+        const detRes = await fetch(`${CAMARA_API}/proposicoes/${idStr}`, { headers: { Accept: 'application/json' } });
+        const det = detRes.ok ? (await detRes.json())?.dados : null;
+        if (!det) return null;
+        const statusProp = det.statusProposicao;
+        const sit = extra.situacao || statusProp?.descricaoSituacao || 'Votada em Plenário';
+        return {
+          id: idStr,
+          casa: 'camara' as const,
+          siglaTipo: det.siglaTipo,
+          numero: det.numero,
+          ano: det.ano,
+          ementa: det.ementa || 'Proposição em fase decisória.',
+          situacao: sit,
+          triagem: classificarTriagem(sit, statusProp?.despacho),
+          autores: extra.autores,
+          urlInteiroTeor: det.urlInteiroTeor,
+          urlOficial: `https://www.camara.leg.br/propostas-legislativas/${idStr}`,
+          tags: extractTags(det.ementa),
+        } satisfies RadarProposicao;
+      })
+    );
+
+    const valid = list.filter(Boolean) as RadarProposicao[];
+    setCache(cacheKey, valid);
+    return valid;
+  } catch (err) {
+    console.warn('[radarService] Erro em fetchProposicoesProximasLei:', err);
+    return [];
+  }
+}
+
+/**
+ * Busca matérias recentes atualizadas no Senado Federal.
+ */
+export async function fetchProposicoesSenado(limit = 12): Promise<RadarProposicao[]> {
+  const cacheKey = `radar_v2:senado:${limit}`;
+  const hit = cached<RadarProposicao[]>(cacheKey);
+  if (hit) return hit;
+
+  try {
+    const res = await fetch(`${SENADO_API}/materia/atualizadas.json?numdias=15`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const materiasRaw: any[] = json?.ListaMateriasAtualizadas?.Materias?.Materia || [];
+
+    const mapped: RadarProposicao[] = materiasRaw.slice(0, limit).map((m: any) => {
+      const id = String(m.Codigo || m.IdentificacaoMateria?.CodigoMateria || '');
+      const sigla = m.Sigla || m.IdentificacaoMateria?.SiglaSubtipoMateria || 'PLS';
+      const num = m.Numero || m.IdentificacaoMateria?.NumeroMateria || '';
+      const ano = Number(m.Ano || m.IdentificacaoMateria?.AnoMateria || new Date().getFullYear());
+      const ementa = m.Ementa || m.DadosBasicosMateria?.EmentaMateria || 'Matéria legislativa do Senado Federal.';
+      const sit = m.SituacaoAtual?.Autuacoes?.Autuacao?.Situacao?.DescricaoSituacao || 'Em tramitação no Senado';
+      const autorNome = m.Autor || m.DadosBasicosMateria?.AutorPrincipal || 'Senado Federal';
+
+      return {
+        id: `sen-${id}`,
+        casa: 'senado',
+        siglaTipo: sigla,
+        numero: num,
+        ano,
+        ementa,
+        dataApresentacao: m.DataUltimaAtualizacao,
+        situacao: sit,
+        triagem: classificarTriagem(sit),
+        autores: [{ nome: autorNome, casa: 'senado' }],
+        urlOficial: id ? `https://www25.senado.leg.br/web/atividade/materias/-/materia/${id}` : undefined,
+        tags: extractTags(ementa),
+      };
+    });
+
+    setCache(cacheKey, mapped);
+    return mapped;
+  } catch (err) {
+    console.warn('[radarService] Erro em fetchProposicoesSenado:', err);
+    return [];
+  }
+}
+
+/**
+ * Busca proposições apresentadas por um deputado específico na Câmara.
+ */
+export async function fetchProposicoesDoDeputado(camaraId: number): Promise<RadarProposicao[]> {
+  const cacheKey = `radar_v2:dep_props:${camaraId}`;
+  const hit = cached<RadarProposicao[]>(cacheKey);
+  if (hit) return hit;
+
+  try {
+    const url = `${CAMARA_API}/proposicoes?idDeputadoAutor=${camaraId}&ordem=DESC&ordenarPor=id&itens=15`;
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const raw: any[] = json?.dados || [];
+
+    const mapped: RadarProposicao[] = raw.map((p) => ({
+      id: String(p.id),
+      casa: 'camara',
+      siglaTipo: p.siglaTipo,
+      numero: p.numero,
+      ano: p.ano,
+      ementa: p.ementa || 'Proposição legislativa.',
+      situacao: 'Proposição do parlamentar',
+      triagem: 'in_progress',
+      autores: [{ id: camaraId, nome: 'Autor', foto_url: fotoDeputadoUrl(camaraId), casa: 'camara' }],
+      urlOficial: `https://www.camara.leg.br/propostas-legislativas/${p.id}`,
+      tags: extractTags(p.ementa),
+    }));
+
+    setCache(cacheKey, mapped);
+    return mapped;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Busca matérias de autoria de um senador específico no Senado Federal.
+ */
+export async function fetchProposicoesDoSenador(codigoSenador: string | number): Promise<RadarProposicao[]> {
+  const cacheKey = `radar_v2:sen_props:${codigoSenador}`;
+  const hit = cached<RadarProposicao[]>(cacheKey);
+  if (hit) return hit;
+
+  try {
+    const res = await fetch(`${SENADO_API}/senador/${codigoSenador}/autorias.json`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const autorias: any[] = json?.MateriasAutoriaParlamentar?.Parlamentar?.Autorias?.Autoria || [];
+
+    const mapped: RadarProposicao[] = autorias.slice(0, 15).map((a: any) => {
+      const m = a.Materia || {};
+      const id = String(m.Codigo || '');
+      return {
+        id: `sen-${id}`,
+        casa: 'senado',
+        siglaTipo: m.Sigla || 'PLS',
+        numero: m.Numero || '',
+        ano: Number(m.Ano || new Date().getFullYear()),
+        ementa: m.Ementa || 'Matéria de autoria do senador.',
+        situacao: a.IndicadorAutorPrincipal === 'Sim' ? 'Autor principal' : 'Coautor / Emenda',
+        triagem: 'in_progress',
+        autores: [{ id: codigoSenador, nome: 'Senador(a)', casa: 'senado' }],
+        urlOficial: id ? `https://www25.senado.leg.br/web/atividade/materias/-/materia/${id}` : undefined,
+        tags: extractTags(m.Ementa),
+      };
+    });
+
+    setCache(cacheKey, mapped);
+    return mapped;
+  } catch {
+    return [];
+  }
+}

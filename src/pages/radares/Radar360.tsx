@@ -1,456 +1,855 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { Calendar, ChevronRight, Loader2, RefreshCw, Info, ExternalLink, FileDown, Flame } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
-import { withOnlineGuard, assertOnline } from '@/lib/onlineGuard';
-import { getResenhaCache, getResenhaOfflineOrCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
-import LeiOrdinariaDetail from '@/components/vademecum/artigo/LeiOrdinariaDetail';
-import { resenhaSelect, RESENHA_SELECT, RESENHA_LIST_SELECT, garantirTextoIntegral, invokeResenhaFn } from '@/lib/resenhaBackend';
-import { getPersistedResumo, setPersistedResumo, setListSnapshot } from '@/services/offlineDb';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Search,
+  Sparkles,
+  Flame,
+  Scale,
+  CheckCircle2,
+  Clock,
+  Gavel,
+  Users,
+  FileText,
+  ExternalLink,
+  ChevronRight,
+  X,
+  Loader2,
+  RefreshCw,
+  Landmark,
+} from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import type { LeiOrdinaria } from '@/services/legislacaoService';
-import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import { useGoBack } from '@/hooks/useGoBack';
-const brasaoImg = brasaoImgAsset;
+import { haptic } from '@/lib/nativeHaptics';
+import { useIsDesktop } from '@/hooks/use-desktop';
+import {
+  fetchUltimasProposicoesCamara,
+  fetchEmendasRecentes,
+  fetchProposicoesProximasLei,
+  fetchProposicoesSenado,
+  fetchDeputados,
+  fetchSenadores,
+  fetchProposicoesDoDeputado,
+  fetchProposicoesDoSenador,
+  fetchProposicaoTramitacoes,
+  type RadarProposicao,
+  type RadarTriagemStage,
+  type RadarAutor,
+} from '@/services/radarService';
 
-const TIPO_COLORS: Record<string, { badge: string; border: string; card: string }> = {
-  'Lei': { badge: 'bg-primary/15 text-primary border-primary/20', border: 'border-l-primary', card: 'from-primary/10 to-transparent' },
-  'Lei Complementar': { badge: 'bg-copper-light/15 text-copper-light border-copper-light/20', border: 'border-l-copper-light', card: 'from-copper-light/10 to-transparent' },
-  'Decreto': { badge: 'bg-copper/15 text-copper border-copper/20', border: 'border-l-copper', card: 'from-copper/10 to-transparent' },
-  'Medida Provisória': { badge: 'bg-copper-dark/15 text-copper-dark border-copper-dark/20', border: 'border-l-copper-dark', card: 'from-copper-dark/10 to-transparent' },
-  'Outro': { badge: 'bg-muted text-muted-foreground border-border', border: 'border-l-muted-foreground', card: 'from-muted/10 to-transparent' },
+const TRIAGEM_CONFIG: Record<
+  RadarTriagemStage,
+  { label: string; shortLabel: string; desc: string; badgeClass: string; icon: typeof Gavel }
+> = {
+  sanction_veto: {
+    label: 'Aguardando Sanção / Veto',
+    shortLabel: 'Sanção / Veto',
+    desc: 'Aprovadas no Congresso, dependendo apenas da decisão presidencial',
+    badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+    icon: Gavel,
+  },
+  approved_house: {
+    label: 'Aprovado na Casa',
+    shortLabel: 'Aprovadas',
+    desc: 'Avançaram em plenário ou comissões e seguem para a etapa final',
+    badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    icon: CheckCircle2,
+  },
+  in_progress: {
+    label: 'Em Tramitação',
+    shortLabel: 'Em Análise',
+    desc: 'Projetos e emendas recentes em discussão nas comissões',
+    badgeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+    icon: Clock,
+  },
 };
 
-const TIPO_FILTERS = ['Todos', 'Lei', 'Lei Complementar', 'Decreto', 'Medida Provisória'];
-const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+function AutorAvatar({ autor, size = 'md' }: { autor?: RadarAutor; size?: 'sm' | 'md' | 'lg' }) {
+  const [imgErr, setImgErr] = useState(false);
+  const dim =
+    size === 'lg' ? 'w-14 h-14 text-base' : size === 'sm' ? 'w-8 h-8 text-[11px]' : 'w-10 h-10 text-xs';
+  const initials = (autor?.nome || 'P')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase();
 
-function getDayList(centerDate: Date, range = 3): Date[] {
-  const days: Date[] = [];
-  // Today on the left, past days going to the right
-  const total = range * 2 + 1;
-  for (let i = 0; i < total; i++) {
-    const d = new Date(centerDate);
-    d.setDate(d.getDate() - i);
-    days.push(d);
+  if (autor?.foto_url && !imgErr) {
+    return (
+      <img
+        src={autor.foto_url}
+        alt={autor.nome}
+        loading="lazy"
+        decoding="async"
+        onError={() => setImgErr(true)}
+        className={`${dim} rounded-full object-cover border border-white/15 bg-zinc-800 shrink-0`}
+      />
+    );
   }
-  return days;
-}
-function toDateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-function formatFullDate(date: Date): string {
-  const wf = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
-  const mf = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${wf[date.getDay()]}, ${date.getDate()} de ${mf[date.getMonth()]} de ${date.getFullYear()}`;
-}
-function cleanText(t: string | null): string | null {
-  if (!t) return null;
-  return t.replace(/\\n/g, '\n').replace(/\\r/g, '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/\u00A0/g, ' ').replace(/\r/g, '').trim();
+
+  return (
+    <div
+      className={`${dim} rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 font-bold flex items-center justify-center shrink-0`}
+    >
+      {initials}
+    </div>
+  );
 }
 
 export default function Radar360() {
-  const navigate = useNavigate();
   const goBack = useGoBack();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [items, setItems] = useState<ResenhaItem[]>([]);
+  const isDesktop = useIsDesktop();
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [reextracting, setReextracting] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const initialTipo = searchParams.get('tipo');
-  const [tipoFiltro, setTipoFiltro] = useState(initialTipo && TIPO_FILTERS.includes(initialTipo) ? initialTipo : 'Todos');
-  const [detailItem, setDetailItem] = useState<LeiOrdinaria | null>(null);
-  const autoReextractedRef = useRef(false);
+  const [busca, setBusca] = useState('');
 
-  const centerDate = useMemo(() => getLatestDate() || new Date(), [items]);
-  const dayList = useMemo(() => getDayList(centerDate, 3), [centerDate]);
+  // Dados principais
+  const [ultimasCamara, setUltimasCamara] = useState<RadarProposicao[]>([]);
+  const [emendas, setEmendas] = useState<RadarProposicao[]>([]);
+  const [proximasLei, setProximasLei] = useState<RadarProposicao[]>([]);
+  const [senadoProps, setSenadoProps] = useState<RadarProposicao[]>([]);
+  const [deputados, setDeputados] = useState<any[]>([]);
+  const [senadores, setSenadores] = useState<any[]>([]);
 
-  const reload = useCallback(async () => {
+  // Filtros de seção
+  const [triagemAtiva, setTriagemAtiva] = useState<RadarTriagemStage>('sanction_veto');
+  const [tipoAlta, setTipoAlta] = useState<'TODAS' | 'PL' | 'PEC' | 'PLP' | 'EMD' | 'SENADO'>('TODAS');
+  const [casaParlamentar, setCasaParlamentar] = useState<'camara' | 'senado'>('camara');
+
+  // Modais
+  const [propSelecionada, setPropSelecionada] = useState<RadarProposicao | null>(null);
+  const [tramitacoes, setTramitacoes] = useState<any[]>([]);
+  const [loadingTram, setLoadingTram] = useState(false);
+
+  const [parlamentarSelecionado, setParlamentarSelecionado] = useState<{
+    id: string | number;
+    nome: string;
+    partido?: string;
+    uf?: string;
+    foto_url?: string;
+    casa: 'camara' | 'senado';
+  } | null>(null);
+  const [propsParlamentar, setPropsParlamentar] = useState<RadarProposicao[]>([]);
+  const [loadingParlamentar, setLoadingParlamentar] = useState(false);
+
+  const carregarTudo = async () => {
     try {
-      const data = await resenhaSelect<ResenhaItem>({
-        select: RESENHA_LIST_SELECT,
-        order: 'data_dou.desc',
-        limit: '150',
-      });
-      if (data && data.length) {
-        setItems(data);
-        setListSnapshot('radar-360:resenha', data).catch(() => {});
+      const [cam, emd, prox, sen, deps, sens] = await Promise.all([
+        fetchUltimasProposicoesCamara({ itens: 12 }),
+        fetchEmendasRecentes(8),
+        fetchProposicoesProximasLei(),
+        fetchProposicoesSenado(10),
+        fetchDeputados(),
+        fetchSenadores(),
+      ]);
+
+      setUltimasCamara(cam);
+      setEmendas(emd);
+      setProximasLei(prox);
+      setSenadoProps(sen);
+      setDeputados(deps.slice(0, 40));
+      setSenadores(sens.slice(0, 40));
+
+      // Seleciona automaticamente a aba de triagem que tiver itens primeiro
+      const allTriagem = [...prox, ...cam, ...sen];
+      if (allTriagem.some((p) => p.triagem === 'sanction_veto')) {
+        setTriagemAtiva('sanction_veto');
+      } else if (allTriagem.some((p) => p.triagem === 'approved_house')) {
+        setTriagemAtiva('approved_house');
+      } else {
+        setTriagemAtiva('in_progress');
       }
-    } catch (e) {
-      console.warn('[Radar360] Erro ao recarregar:', e);
-    }
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-
-    // 1) Offline-first: tenta exibir imediatamente do cache de memória ou IndexedDB (0ms)
-    const initData = async () => {
-      const offline = await getResenhaOfflineOrCache();
-      if (active && offline && offline.length > 0) {
-        setItems(offline);
-        setLoading(false);
-      }
-
-      // 2) Sincroniza em segundo plano com o backend
-      try {
-        await prefetchResenha();
-        if (!active) return;
-        const fresh = getResenhaCache();
-        if (fresh && fresh.length > 0) {
-          setItems(fresh);
-        }
-      } catch (e) {
-        console.warn('[Radar360] Sincronização em background falhou:', e);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    initData();
-
-    // Timeout de segurança: nunca deixa a tela presa em loading por mais de 2.5 segundos
-    const timeout = setTimeout(() => {
-      if (active) setLoading(false);
-    }, 2500);
-
-    try { localStorage.setItem('radar_leis_last_seen', new Date().toISOString()); } catch { /* ignore */ }
-
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  const targetLeiId = searchParams.get('lei');
-  const handledLeiIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!targetLeiId || items.length === 0) return;
-    if (handledLeiIdRef.current === targetLeiId) return;
-
-    const found = items.find((i) => i.id === targetLeiId);
-    if (found) {
-      handledLeiIdRef.current = targetLeiId;
-      // Sincroniza a data selecionada com a data da publicação
-      const dStr = found.data_dou || found.data_publicacao;
-      if (dStr) {
-        const [y, m, d] = dStr.slice(0, 10).split('-').map(Number);
-        if (y && m && d) setSelectedDate(new Date(y, m - 1, d));
-      }
-      openDetail(found);
-    }
-  }, [targetLeiId, items]);
-
-  const availableDates = useMemo(() => {
-    const set = new Set<string>();
-    items.forEach(i => { const d = i.data_dou || i.data_publicacao; if (d) set.add(d.slice(0, 10)); });
-    return set;
-  }, [items]);
-
-  useEffect(() => {
-    if (availableDates.size === 0) return;
-    const sorted = Array.from(availableDates).sort().reverse();
-    const most = sorted[0];
-    if (most && toDateKey(selectedDate) !== most) {
-      const [y, m, d] = most.split('-').map(Number);
-      setSelectedDate(new Date(y, m - 1, d));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableDates]);
-
-  const filtered = useMemo(() => {
-    const dk = toDateKey(selectedDate);
-    let r = items.filter(i => (i.data_dou || i.data_publicacao || '').slice(0, 10) === dk);
-    if (tipoFiltro !== 'Todos') r = r.filter(i => i.tipo_ato === tipoFiltro);
-    return r;
-  }, [items, selectedDate, tipoFiltro]);
-
-  const openDetail = async (item: ResenhaItem) => {
-    const texto = cleanText(item.texto_completo);
-    const explicacao = item.explicacao;
-    const lei: LeiOrdinaria = {
-      id: item.id,
-      numero_lei: item.numero_ato,
-      ementa: item.ementa,
-      ano: parseInt(item.data_publicacao?.slice(0, 4) || '2026'),
-      data_publicacao: item.data_publicacao,
-      texto_completo: texto,
-      url: item.url,
-      ordem: 0,
-      explicacao,
-    };
-    setDetailItem(lei);
-    // Fallback silencioso caso o texto ainda não esteja populado no cache
-    if (!texto || texto.length < 200) {
-      // 1) Tenta ler do IndexedDB primeiro para abertura 100% offline
-      getPersistedResumo<{ texto_completo: string | null; explicacao: string | null }>(`radar-artigo:${item.id}`)
-        .then((cachedRow) => {
-          if (cachedRow?.texto_completo) {
-            item.texto_completo = cachedRow.texto_completo;
-            item.explicacao = cachedRow.explicacao ?? item.explicacao;
-            setDetailItem({ ...lei, texto_completo: cachedRow.texto_completo, explicacao: item.explicacao });
-          }
-        })
-        .catch(() => {});
-
-      // 2) Se estiver online, busca o texto integral atualizado e grava no IndexedDB
-      try {
-        const data = await withOnlineGuard(
-          () => garantirTextoIntegral(item.id),
-          { message: 'Sem internet — o texto integral desta publicação será carregado quando você reconectar.' },
-        );
-        const novoTexto = cleanText((data as any)?.texto_completo);
-        if (novoTexto) {
-          item.texto_completo = novoTexto;
-          item.explicacao = (data as any)?.explicacao ?? item.explicacao;
-          setDetailItem({ ...lei, texto_completo: novoTexto, explicacao: item.explicacao });
-          setPersistedResumo(`radar-artigo:${item.id}`, {
-            texto_completo: novoTexto,
-            explicacao: item.explicacao,
-          }).catch(() => {});
-        }
-      } catch { /* silencioso */ }
-    }
-  };
-
-  const doRefresh = async () => {
-    if (refreshing) return;
-    setRefreshing(true);
-    toast.loading('Buscando novas leis no Planalto...', { id: 'radar-scrape' });
-    try {
-      assertOnline('Você está offline. Conecte-se para buscar novas publicações.');
-      const data = await invokeResenhaFn('scrape-resenha-diaria', { origem: 'manual', notify: false });
-      const n = (data as any)?.novos ?? 0;
-      toast.success(n > 0 ? `${n} nova(s) publicação(ões) encontrada(s)` : 'Nenhuma novidade agora', { id: 'radar-scrape' });
-      await reload();
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Falha ao atualizar', { id: 'radar-scrape' });
+    } catch (err) {
+      console.warn('[Radar360] Falha ao carregar dados legislativos:', err);
     } finally {
+      setLoading(false);
       setRefreshing(false);
     }
   };
 
-  const reextrairFaltantes = useCallback(async (silent = false) => {
-    const dk = toDateKey(selectedDate);
-    const faltantes = items.filter(i => {
-      const dataItem = (i.data_dou || i.data_publicacao || '').slice(0, 10);
-      if (dataItem !== dk) return false;
-      const t = cleanText(i.texto_completo);
-      return !t || t.length < 200;
-    });
-    if (faltantes.length === 0) {
-      if (!silent) toast.info('Todos os atos deste dia já têm texto integral');
-      return;
-    }
-    setReextracting(true);
-    const toastId = 'radar-reextrair';
-    if (!silent) toast.loading(`Reextraindo 0 de ${faltantes.length}...`, { id: toastId });
-    let done = 0;
-    for (const item of faltantes) {
+  useEffect(() => {
+    carregarTudo();
+  }, []);
+
+  const handleRefresh = () => {
+    if (refreshing) return;
+    haptic.selection();
+    setRefreshing(true);
+    carregarTudo();
+  };
+
+  // Abrir detalhe de proposição + buscar tramitações
+  const abrirProposicao = async (prop: RadarProposicao) => {
+    haptic.selection();
+    setPropSelecionada(prop);
+    setTramitacoes([]);
+    if (prop.casa === 'camara') {
+      setLoadingTram(true);
       try {
-        await invokeResenhaFn('popular-texto-resenha', { id: item.id, force: true });
-      } catch { /* segue */ }
-      done += 1;
-      if (!silent) toast.loading(`Reextraindo ${done} de ${faltantes.length}...`, { id: toastId });
-    }
-    await reload();
-    setReextracting(false);
-    if (!silent) toast.success(`${done} ato(s) reextraído(s)`, { id: toastId });
-  }, [items, selectedDate, reload]);
-
-  // Auto-reextrai silenciosamente uma vez ao entrar, se houver itens sem texto no dia mais recente
-  useEffect(() => {
-    if (autoReextractedRef.current || loading || items.length === 0) return;
-    autoReextractedRef.current = true;
-    reextrairFaltantes(true);
-  }, [loading, items, reextrairFaltantes]);
-
-  // Sincroniza filtro de tipo com querystring (?tipo=Lei etc.)
-  useEffect(() => {
-    if (tipoFiltro === 'Todos') {
-      if (searchParams.get('tipo')) {
-        const sp = new URLSearchParams(searchParams);
-        sp.delete('tipo');
-        setSearchParams(sp, { replace: true });
+        const list = await fetchProposicaoTramitacoes(prop.id);
+        setTramitacoes(list.slice(-8).reverse());
+      } finally {
+        setLoadingTram(false);
       }
-    } else if (searchParams.get('tipo') !== tipoFiltro) {
-      const sp = new URLSearchParams(searchParams);
-      sp.set('tipo', tipoFiltro);
-      setSearchParams(sp, { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tipoFiltro]);
+  };
 
-  if (detailItem) {
-    return (
-      <div className="min-h-dvh bg-background">
-        <LeiOrdinariaDetail
-          lei={detailItem}
-          onBack={() => {
-            setDetailItem(null);
-            if (searchParams.get('lei')) {
-              const sp = new URLSearchParams(searchParams);
-              sp.delete('lei');
-              setSearchParams(sp, { replace: true });
-            }
-          }}
-        />
-      </div>
+  // Abrir perfil do parlamentar + propostas dele
+  const abrirParlamentar = async (p: {
+    id: string | number;
+    nome: string;
+    partido?: string;
+    uf?: string;
+    foto_url?: string;
+    casa: 'camara' | 'senado';
+  }) => {
+    haptic.selection();
+    setParlamentarSelecionado(p);
+    setPropsParlamentar([]);
+    setLoadingParlamentar(true);
+    try {
+      const list =
+        p.casa === 'camara'
+          ? await fetchProposicoesDoDeputado(Number(p.id))
+          : await fetchProposicoesDoSenador(p.id);
+      setPropsParlamentar(list);
+    } finally {
+      setLoadingParlamentar(false);
+    }
+  };
+
+  const q = busca.trim().toLowerCase();
+
+  // Carrossel de últimas propostas + emendas com foto dos autores
+  const carrosselUltimas = useMemo(() => {
+    const combined = [...ultimasCamara, ...emendas];
+    if (!q) return combined.slice(0, 14);
+    return combined.filter(
+      (p) =>
+        p.ementa.toLowerCase().includes(q) ||
+        `${p.siglaTipo} ${p.numero}`.toLowerCase().includes(q) ||
+        p.autores.some((a) => a.nome.toLowerCase().includes(q))
     );
-  }
+  }, [ultimasCamara, emendas, q]);
 
-  // Detail view de lei selecionada
+  // Triagem consolidada (Próximas a acontecer)
+  const triagemMap = useMemo(() => {
+    const all = [...proximasLei, ...ultimasCamara, ...senadoProps];
+    const unique = new Map<string, RadarProposicao>();
+    all.forEach((p) => {
+      if (!unique.has(p.id)) unique.set(p.id, p);
+    });
+    const list = Array.from(unique.values()).filter((p) => {
+      if (!q) return true;
+      return (
+        p.ementa.toLowerCase().includes(q) ||
+        `${p.siglaTipo} ${p.numero}`.toLowerCase().includes(q) ||
+        p.autores.some((a) => a.nome.toLowerCase().includes(q))
+      );
+    });
 
-  const selectedDateKey = toDateKey(selectedDate);
+    return {
+      sanction_veto: list.filter((p) => p.triagem === 'sanction_veto'),
+      approved_house: list.filter((p) => p.triagem === 'approved_house'),
+      in_progress: list.filter((p) => p.triagem === 'in_progress'),
+    };
+  }, [proximasLei, ultimasCamara, senadoProps, q]);
+
+  // Leis em alta filtradas
+  const leisEmAlta = useMemo(() => {
+    let base: RadarProposicao[] = [];
+    if (tipoAlta === 'SENADO') base = senadoProps;
+    else if (tipoAlta === 'EMD') base = emendas;
+    else if (tipoAlta === 'TODAS') base = [...proximasLei, ...ultimasCamara, ...senadoProps];
+    else base = [...proximasLei, ...ultimasCamara].filter((p) => p.siglaTipo === tipoAlta);
+
+    const unique = new Map<string, RadarProposicao>();
+    base.forEach((p) => {
+      if (!unique.has(p.id)) unique.set(p.id, p);
+    });
+
+    let list = Array.from(unique.values());
+    if (q) {
+      list = list.filter(
+        (p) =>
+          p.ementa.toLowerCase().includes(q) ||
+          `${p.siglaTipo} ${p.numero}`.toLowerCase().includes(q) ||
+          p.autores.some((a) => a.nome.toLowerCase().includes(q))
+      );
+    }
+    return list.slice(0, 12);
+  }, [tipoAlta, proximasLei, ultimasCamara, senadoProps, emendas, q]);
+
+  // Parlamentares filtrados
+  const parlamentaresFiltrados = useMemo(() => {
+    const raw = casaParlamentar === 'camara' ? deputados : senadores;
+    if (!q) return raw.slice(0, 18);
+    return raw
+      .filter(
+        (p: any) =>
+          (p.nome || '').toLowerCase().includes(q) ||
+          (p.sigla_partido || '').toLowerCase().includes(q) ||
+          (p.sigla_uf || '').toLowerCase().includes(q)
+      )
+      .slice(0, 18);
+  }, [casaParlamentar, deputados, senadores, q]);
 
   return (
-    <div className="min-h-dvh bg-background pb-20">
-      <div className="bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
+    <div className="min-h-dvh bg-[#09090B] text-white pb-24 overflow-x-hidden">
+      <div className="bg-gradient-to-b from-rose-950/35 via-[#09090B] to-[#09090B] pb-4 border-b border-white/[0.06]">
         <PageHeader
-          title="Radar de Leis"
-          subtitle="Resenha diária do Planalto"
+          title="Radar Legislativo"
+          subtitle="Câmara dos Deputados & Senado Federal"
           onBack={() => goBack()}
           rightAction={
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => reextrairFaltantes(false)}
-                disabled={reextracting || loading}
-                className="min-w-[44px] min-h-[44px] rounded-full bg-muted flex items-center justify-center text-muted-foreground disabled:opacity-50"
-                aria-label="Reextrair textos faltantes"
-                title="Reextrair textos faltantes"
-              >
-                {reextracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={doRefresh}
-                disabled={refreshing}
-                className="min-w-[44px] min-h-[44px] rounded-full bg-muted flex items-center justify-center text-muted-foreground disabled:opacity-50"
-                aria-label="Atualizar"
-              >
-                {refreshing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="min-w-[44px] min-h-[44px] rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 disabled:opacity-50 cursor-pointer"
+              aria-label="Atualizar Radar"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </button>
           }
         />
 
-        <div className="flex justify-between gap-1.5 px-3 py-3 lg:mx-auto lg:max-w-[1100px]">
-          {dayList.map((day, idx) => {
-            const key = toDateKey(day);
-            const isSelected = key === selectedDateKey;
-            const hasData = availableDates.has(key);
-            const prev = dayList[idx - 1];
-            const monthChanged = !prev || prev.getMonth() !== day.getMonth();
-            return (
+        {/* Barra de Busca */}
+        <div className="px-4 pt-2 max-w-5xl mx-auto">
+          <div className="relative">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por PL, PEC, emenda, tema ou deputado/senador..."
+              className="w-full h-11 pl-10 pr-9 rounded-2xl bg-zinc-900/90 border border-white/10 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-rose-500/50"
+            />
+            {busca && (
               <button
-                key={key}
-                onClick={() => setSelectedDate(day)}
-                className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[64px] rounded-2xl transition-all shadow-lg shadow-black/20 ${
-                  isSelected ? 'bg-primary shadow-primary/30' : 'bg-card/40 text-foreground hover:bg-card/60'
-                }`}
+                type="button"
+                onClick={() => setBusca('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer"
+                aria-label="Limpar busca"
               >
-                {monthChanged && (
-                  <span
-                    className={`absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-[1px] rounded-full text-[9px] font-body font-semibold uppercase tracking-wider ${
-                      isSelected ? 'bg-primary text-primary-foreground' : 'bg-primary/20 text-primary'
-                    }`}
-                  >
-                    {MONTHS[day.getMonth()]}
-                  </span>
-                )}
-                <span className={`text-xs font-body font-semibold uppercase tracking-wide ${isSelected ? 'text-primary-foreground' : 'text-foreground/85'}`}>
-                  {WEEKDAYS[day.getDay()]}
-                </span>
-                <span className={`text-2xl font-display font-bold leading-none ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>
-                  {day.getDate()}
-                </span>
-                {hasData && !isSelected && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                <X className="w-4 h-4" />
               </button>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-2 px-5 pb-1">
-          <Calendar className="w-4 h-4 text-primary" />
-          <span className="text-sm font-display text-primary">
-            {formatFullDate(selectedDate)}
-          </span>
-        </div>
-        <div className="px-5 pb-2">
-          <Badge className="bg-primary/15 text-primary border-primary/20 text-xs">
-            {filtered.length} {filtered.length === 1 ? 'ato' : 'atos'}
-          </Badge>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-        <ScrollArea className="w-full">
-          <div className="flex gap-2 px-4 py-3 lg:mx-auto lg:max-w-[1500px] lg:px-12 2xl:px-16">
-            {TIPO_FILTERS.map(t => (
-              <button
-                key={t}
-                onClick={() => setTipoFiltro(t)}
-                className={`whitespace-nowrap flex items-center gap-1.5 text-sm font-body px-4 py-2.5 min-h-[40px] rounded-full transition-colors ${
-                  tipoFiltro === t 
-                    ? 'bg-primary text-primary-foreground font-semibold' 
-                    : 'bg-secondary text-foreground hover:bg-secondary/80'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+      <main className={`mx-auto px-4 pt-5 space-y-8 ${isDesktop ? 'max-w-[1380px] px-8' : 'max-w-3xl'}`}>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-zinc-400">
+            <Loader2 className="w-7 h-7 animate-spin text-rose-500" />
+            <p className="text-sm font-medium">Conectando à Câmara dos Deputados e Senado Federal...</p>
           </div>
-        </ScrollArea>
-      </div>
-
-      <main className="max-w-5xl mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom))] space-y-2.5 lg:max-w-[1500px] lg:px-12 lg:py-6 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 2xl:grid-cols-3 2xl:px-16">
-        {loading && (
-          <div className="flex items-center justify-center py-12 lg:col-span-full">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
-        )}
-        {!loading && filtered.length === 0 && (
-          <div className="text-center py-12 space-y-3 lg:col-span-full">
-            <Info className="w-8 h-8 mx-auto text-muted-foreground" />
-            <p className="text-muted-foreground text-sm font-body">Nenhuma publicação nesta data.</p>
-          </div>
-        )}
-        {!loading && filtered.map((item, i) => {
-          const c = TIPO_COLORS[item.tipo_ato] || TIPO_COLORS['Outro'];
-          return (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              onClick={() => openDetail(item)}
-              className="border border-border rounded-2xl px-4 py-4 bg-card hover:border-primary/30 transition-colors cursor-pointer flex gap-3 items-start h-[140px] overflow-hidden"
-            >
-              <img src={brasaoImg} alt="" className="w-10 h-10 flex-shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge className={`${c.badge} border text-[11px] px-2 py-0.5 font-semibold`}>
-                    {item.tipo_ato}
-                  </Badge>
+        ) : (
+          <>
+            {/* ── 1. CARROSSEL: ÚLTIMAS PROPOSTAS & EMENDAS COM FOTO DOS AUTORES ── */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-1 rounded-full bg-rose-500" />
+                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-zinc-300 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    Últimas Propostas & Emendas
+                  </h2>
                 </div>
-                <h3 className="font-display text-[15px] leading-snug text-foreground font-semibold break-words">
-                  {item.numero_ato}
-                </h3>
-                {item.ementa && (
-                  <p className="text-muted-foreground text-[13px] font-body leading-relaxed line-clamp-3 break-words">
-                    {item.ementa}
-                  </p>
+                <span className="text-[11px] text-zinc-500 font-medium">
+                  {carrosselUltimas.length} recentes
+                </span>
+              </div>
+
+              <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+                {carrosselUltimas.map((prop) => {
+                  const autorPrincipal = prop.autores[0];
+                  const tri = TRIAGEM_CONFIG[prop.triagem];
+                  return (
+                    <button
+                      key={prop.id}
+                      type="button"
+                      onClick={() => abrirProposicao(prop)}
+                      className="snap-start shrink-0 w-[285px] sm:w-[310px] rounded-2xl bg-zinc-900/90 border border-white/10 hover:border-rose-500/40 p-4 flex flex-col justify-between gap-3 text-left transition-all active:scale-[0.98] cursor-pointer shadow-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <AutorAvatar autor={autorPrincipal} size="md" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-white truncate">
+                            {autorPrincipal?.nome || 'Parlamentar'}
+                          </p>
+                          <p className="text-[11px] text-zinc-400 truncate">
+                            {autorPrincipal?.partido && autorPrincipal?.uf
+                              ? `${autorPrincipal.partido}-${autorPrincipal.uf}`
+                              : prop.casa === 'camara'
+                              ? 'Câmara dos Deputados'
+                              : 'Senado Federal'}
+                          </p>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[11px] font-bold shrink-0">
+                          {prop.siglaTipo} {prop.numero}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-zinc-300 leading-relaxed line-clamp-3">
+                        {prop.ementa}
+                      </p>
+
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/[0.06]">
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tri.badgeClass}`}>
+                          {tri.shortLabel}
+                        </span>
+                        <span className="text-[11px] text-zinc-400 flex items-center gap-0.5">
+                          Detalhes <ChevronRight className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ── 2. TRIAGEM: PODE ACONTECER / PRÓXIMAS A VIRAR LEI ── */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-1 rounded-full bg-amber-400" />
+                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-zinc-300">
+                    Triagem • Pode Acontecer
+                  </h2>
+                </div>
+              </div>
+
+              {/* Abas de Triagem */}
+              <div className="grid grid-cols-3 gap-2">
+                {(Object.keys(TRIAGEM_CONFIG) as RadarTriagemStage[]).map((stage) => {
+                  const cfg = TRIAGEM_CONFIG[stage];
+                  const Icon = cfg.icon;
+                  const count = triagemMap[stage].length;
+                  const active = triagemAtiva === stage;
+                  return (
+                    <button
+                      key={stage}
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        setTriagemAtiva(stage);
+                      }}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        active
+                          ? 'bg-white/10 border-rose-500/50 shadow-md'
+                          : 'bg-zinc-900/60 border-white/10 hover:bg-zinc-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <Icon className={`w-4 h-4 ${active ? 'text-amber-400' : 'text-zinc-400'}`} />
+                        <span className="text-xs font-mono font-bold text-white">{count}</span>
+                      </div>
+                      <p className="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-1">
+                        {cfg.shortLabel}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <p className="text-xs text-zinc-400 px-1">
+                {TRIAGEM_CONFIG[triagemAtiva].desc}
+              </p>
+
+              <div className="rounded-2xl bg-zinc-900/80 border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
+                {triagemMap[triagemAtiva].length === 0 ? (
+                  <div className="p-6 text-center text-xs text-zinc-500">
+                    Nenhuma proposição classificada neste estágio no momento.
+                  </div>
+                ) : (
+                  triagemMap[triagemAtiva].slice(0, 6).map((prop) => {
+                    const autor = prop.autores[0];
+                    return (
+                      <button
+                        key={prop.id}
+                        type="button"
+                        onClick={() => abrirProposicao(prop)}
+                        className="w-full flex items-start gap-3 p-4 hover:bg-white/[0.03] text-left transition-colors cursor-pointer"
+                      >
+                        <AutorAvatar autor={autor} size="sm" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span className="text-xs font-bold text-white">
+                              {prop.siglaTipo} {prop.numero}/{prop.ano}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/10 truncate max-w-[200px]">
+                              {prop.situacao}
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                            {prop.ementa}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-500 shrink-0 mt-1" />
+                      </button>
+                    );
+                  })
                 )}
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
-            </motion.div>
-          );
-        })}
+            </section>
+
+            {/* ── 3. LEIS EM ALTA & EMENDAS ── */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-1 rounded-full bg-rose-500" />
+                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-zinc-300 flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-rose-500" />
+                    Leis em Alta & Emendas
+                  </h2>
+                </div>
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                {(
+                  [
+                    { id: 'TODAS', label: 'Todas' },
+                    { id: 'PL', label: 'PL' },
+                    { id: 'PEC', label: 'PEC' },
+                    { id: 'PLP', label: 'PLP' },
+                    { id: 'EMD', label: 'Emendas' },
+                    { id: 'SENADO', label: 'Senado' },
+                  ] as const
+                ).map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setTipoAlta(f.id);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                      tipoAlta === f.id
+                        ? 'bg-rose-600 text-white'
+                        : 'bg-zinc-900 text-zinc-300 border border-white/10 hover:bg-zinc-800'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {leisEmAlta.map((prop) => {
+                  const autor = prop.autores[0];
+                  return (
+                    <button
+                      key={prop.id}
+                      type="button"
+                      onClick={() => abrirProposicao(prop)}
+                      className="rounded-2xl bg-zinc-900/80 border border-white/10 hover:border-rose-500/40 p-4 text-left flex flex-col gap-2.5 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <AutorAvatar autor={autor} size="sm" />
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-white truncate">
+                              {autor?.nome || (prop.casa === 'senado' ? 'Senado Federal' : 'Câmara')}
+                            </p>
+                            <p className="text-[10px] text-zinc-400">
+                              {autor?.partido ? `${autor.partido}-${autor.uf}` : prop.casa.toUpperCase()}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white shrink-0">
+                          {prop.siglaTipo} {prop.numero}/{prop.ano}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                        {prop.ementa}
+                      </p>
+
+                      {prop.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {prop.tags.slice(0, 3).map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/20"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ── 4. DEPUTADOS & SENADORES — O QUE ESTÃO PROPONDO ── */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-1 rounded-full bg-rose-500" />
+                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-zinc-300 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-rose-400" />
+                    Parlamentares & Propostas
+                  </h2>
+                </div>
+
+                <div className="flex rounded-xl bg-zinc-900 p-1 border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setCasaParlamentar('camara')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      casaParlamentar === 'camara' ? 'bg-rose-600 text-white' : 'text-zinc-400'
+                    }`}
+                  >
+                    Deputados
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCasaParlamentar('senado')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      casaParlamentar === 'senado' ? 'bg-rose-600 text-white' : 'text-zinc-400'
+                    }`}
+                  >
+                    Senadores
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+                {parlamentaresFiltrados.map((p: any) => {
+                  const pId = casaParlamentar === 'camara' ? p.id : p.codigo;
+                  return (
+                    <button
+                      key={pId}
+                      type="button"
+                      onClick={() =>
+                        abrirParlamentar({
+                          id: pId,
+                          nome: p.nome,
+                          partido: p.sigla_partido,
+                          uf: p.sigla_uf,
+                          foto_url: p.foto_url,
+                          casa: casaParlamentar,
+                        })
+                      }
+                      className="rounded-2xl bg-zinc-900/80 border border-white/10 hover:border-rose-500/40 p-3 flex flex-col items-center text-center gap-2 transition-all active:scale-95 cursor-pointer"
+                    >
+                      <AutorAvatar
+                        autor={{
+                          id: pId,
+                          nome: p.nome,
+                          partido: p.sigla_partido,
+                          uf: p.sigla_uf,
+                          foto_url: p.foto_url,
+                          casa: casaParlamentar,
+                        }}
+                        size="lg"
+                      />
+                      <div className="min-w-0 w-full">
+                        <p className="text-xs font-bold text-white truncate">{p.nome}</p>
+                        <p className="text-[10px] text-zinc-400">
+                          {p.sigla_partido} • {p.sigla_uf}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </>
+        )}
       </main>
+
+      {/* ── MODAL DE DETALHE DA PROPOSIÇÃO ── */}
+      {propSelecionada && (
+        <div className="fixed inset-0 z-[90] bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-xl max-h-[85dvh] bg-[#141417] border border-white/10 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <Landmark className="w-4 h-4 text-rose-400" />
+                <span className="font-bold text-sm text-white">
+                  {propSelecionada.siglaTipo} {propSelecionada.numero}/{propSelecionada.ano}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPropSelecionada(null)}
+                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              {/* Autores */}
+              {propSelecionada.autores.length > 0 && (
+                <div className="flex flex-wrap gap-2.5">
+                  {propSelecionada.autores.map((a, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2.5 bg-white/[0.04] border border-white/10 rounded-2xl px-3 py-2"
+                    >
+                      <AutorAvatar autor={a} size="sm" />
+                      <div>
+                        <p className="text-xs font-bold text-white">{a.nome}</p>
+                        <p className="text-[10px] text-zinc-400">
+                          {a.partido ? `${a.partido}-${a.uf}` : a.tipo || propSelecionada.casa.toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Situação */}
+              <div className="rounded-2xl bg-white/[0.03] border border-white/10 p-3.5 space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Situação Atual
+                </p>
+                <p className="text-xs font-semibold text-amber-300">
+                  {propSelecionada.situacao || 'Em tramitação'}
+                </p>
+              </div>
+
+              {/* Ementa */}
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Ementa
+                </p>
+                <p className="text-sm text-zinc-200 leading-relaxed">{propSelecionada.ementa}</p>
+              </div>
+
+              {/* Tramitações recentes */}
+              {propSelecionada.casa === 'camara' && (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                    Últimas Tramitações
+                  </p>
+                  {loadingTram ? (
+                    <div className="flex items-center gap-2 text-xs text-zinc-400 py-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Carregando histórico...
+                    </div>
+                  ) : tramitacoes.length === 0 ? (
+                    <p className="text-xs text-zinc-500">Sem tramitações recentes registradas.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {tramitacoes.map((t: any, i: number) => (
+                        <div
+                          key={i}
+                          className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs space-y-1"
+                        >
+                          <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                            <span>{t.siglaOrgao || 'Órgão'}</span>
+                            <span>
+                              {t.dataHora ? new Date(t.dataHora).toLocaleDateString('pt-BR') : ''}
+                            </span>
+                          </div>
+                          <p className="text-zinc-200 leading-snug">{t.descricaoTramitacao || t.despacho}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {(propSelecionada.urlOficial || propSelecionada.urlInteiroTeor) && (
+              <div className="p-4 border-t border-white/[0.06] flex gap-2">
+                {propSelecionada.urlInteiroTeor && (
+                  <a
+                    href={propSelecionada.urlInteiroTeor}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white"
+                  >
+                    <FileText className="w-4 h-4" /> Inteiro Teor
+                  </a>
+                )}
+                {propSelecionada.urlOficial && (
+                  <a
+                    href={propSelecionada.urlOficial}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white"
+                  >
+                    <ExternalLink className="w-4 h-4" /> Ver Oficial
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL DE PROPOSTAS DO PARLAMENTAR ── */}
+      {parlamentarSelecionado && (
+        <div className="fixed inset-0 z-[90] bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-xl max-h-[85dvh] bg-[#141417] border border-white/10 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3 min-w-0">
+                <AutorAvatar autor={parlamentarSelecionado} size="md" />
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm text-white truncate">
+                    {parlamentarSelecionado.nome}
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    {parlamentarSelecionado.partido} • {parlamentarSelecionado.uf} (
+                    {parlamentarSelecionado.casa === 'camara' ? 'Deputado(a)' : 'Senador(a)'})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setParlamentarSelecionado(null)}
+                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                Propostas e Emendas Recentes
+              </p>
+              {loadingParlamentar ? (
+                <div className="flex items-center justify-center py-10 gap-2 text-xs text-zinc-400">
+                  <Loader2 className="w-5 h-5 animate-spin text-rose-500" /> Buscando proposições...
+                </div>
+              ) : propsParlamentar.length === 0 ? (
+                <p className="text-xs text-zinc-500 py-6 text-center">
+                  Nenhuma proposição recente encontrada para este parlamentar.
+                </p>
+              ) : (
+                propsParlamentar.map((prop) => (
+                  <button
+                    key={prop.id}
+                    type="button"
+                    onClick={() => {
+                      setParlamentarSelecionado(null);
+                      abrirProposicao(prop);
+                    }}
+                    className="w-full rounded-2xl bg-white/[0.03] border border-white/10 hover:border-rose-500/40 p-3.5 text-left space-y-1.5 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-rose-300">
+                        {prop.siglaTipo} {prop.numero}/{prop.ano}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-zinc-500" />
+                    </div>
+                    <p className="text-xs text-zinc-300 line-clamp-3 leading-relaxed">
+                      {prop.ementa}
+                    </p>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
