@@ -16,6 +16,9 @@ import {
   ListChecks,
   FileText,
   Pill,
+  Clock,
+  Play,
+  Sparkles,
 } from 'lucide-react';
 
 import { haptic } from '@/lib/nativeHaptics';
@@ -70,6 +73,181 @@ const RESUMOS_ITENS: Array<{
   { id: 'resumos', label: 'Resumos', desc: 'Sínteses e anotações jurídicas', to: '/resumos-juridicos', icon: NotebookPen, colorClass: 'text-amber-400' },
   { id: 'mapas-mentais', label: 'Mapas Mentais', desc: 'Esquemas visuais para revisão rápida', to: '/mapas-mentais', icon: Brain, colorClass: 'text-violet-400' },
 ];
+
+type SheetAreaKey = 'praticar' | 'audioaulas' | 'resumos';
+
+interface SheetNavItem {
+  id: string;
+  label: string;
+  desc: string;
+  to: string;
+  icon: typeof Target;
+  colorClass: string;
+  prefetch?: PrefetchKey;
+}
+
+function getAreaLastItem(area: SheetAreaKey, items: SheetNavItem[]): { item: SheetNavItem; isRecent: boolean } {
+  try {
+    const raw = localStorage.getItem(`bottomnav:last:${area}`);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { id?: string };
+      const found = items.find((i) => i.id === parsed.id);
+      if (found) return { item: found, isRecent: true };
+    }
+  } catch {
+    /* ignore */
+  }
+  return { item: items[0], isRecent: false };
+}
+
+function saveAreaLastItem(area: SheetAreaKey, itemId: string) {
+  try {
+    localStorage.setItem(`bottomnav:last:${area}`, JSON.stringify({ id: itemId, at: Date.now() }));
+  } catch {
+    /* ignore */
+  }
+}
+
+interface BottomNavAreaSheetProps {
+  open: boolean;
+  area: SheetAreaKey;
+  title: string;
+  subtitle: string;
+  tip: string;
+  items: SheetNavItem[];
+  onClose: () => void;
+  onSelect: (area: SheetAreaKey, item: SheetNavItem) => void;
+}
+
+function BottomNavAreaSheet({
+  open,
+  area,
+  title,
+  subtitle,
+  tip,
+  items,
+  onClose,
+  onSelect,
+}: BottomNavAreaSheetProps) {
+  if (!open) return null;
+  const { item: lastItem, isRecent } = getAreaLastItem(area, items);
+  const LastIcon = lastItem.icon;
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
+      />
+      <div className="fixed bottom-0 left-0 right-0 z-[80] h-[80dvh] max-h-[80dvh] flex flex-col bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
+        <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
+          <div className="w-10 h-1 rounded-full bg-white/15" />
+        </div>
+
+        <div className="flex items-center justify-between px-5 pb-4 pt-1 shrink-0 border-b border-white/[0.06]">
+          <div>
+            <h3 className="font-display text-lg font-semibold text-white tracking-tight">{title}</h3>
+            <p className="font-body text-xs text-white/50 mt-0.5">{subtitle}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              haptic.light();
+              onClose();
+            }}
+            aria-label={`Fechar ${title}`}
+            className="w-11 h-11 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+          {/* Último acesso / Continuar */}
+          <div>
+            <p className="px-1 mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
+              {isRecent ? (
+                <>
+                  <Clock className="w-3 h-3 text-rose-400" />
+                  <span>Último acesso em {title}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  <span>Recomendado para começar</span>
+                </>
+              )}
+            </p>
+            <button
+              type="button"
+              onPointerEnter={() => {
+                if (lastItem.prefetch) prefetchRoute(lastItem.prefetch);
+              }}
+              onClick={() => onSelect(area, lastItem)}
+              className="w-full flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-white/[0.06] to-white/[0.02] hover:from-white/[0.1] hover:to-white/[0.04] border border-white/15 active:scale-[0.99] transition-all text-left cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
+                <LastIcon className={`w-6 h-6 ${lastItem.colorClass}`} strokeWidth={1.9} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-body text-[15px] font-semibold text-white truncate">
+                  {lastItem.label}
+                </p>
+                <p className="font-body text-xs text-white/55 truncate mt-0.5">
+                  {lastItem.desc}
+                </p>
+              </div>
+              <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center shrink-0">
+                <Play className="w-4 h-4 fill-current ml-0.5" />
+              </div>
+            </button>
+          </div>
+
+          {/* Lista ampliada de opções */}
+          <div>
+            <p className="px-1 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
+              Todas as opções
+            </p>
+            <div className="space-y-2.5">
+              {items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onPointerEnter={() => {
+                      if (item.prefetch) prefetchRoute(item.prefetch);
+                    }}
+                    onClick={() => onSelect(area, item)}
+                    className="w-full min-h-[72px] flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center shrink-0">
+                      <Icon className={`w-5 h-5 ${item.colorClass}`} strokeWidth={1.9} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-[15px] font-semibold text-white leading-tight">
+                        {item.label}
+                      </p>
+                      <p className="font-body text-[13px] text-white/55 line-clamp-1 mt-1">
+                        {item.desc}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dica contextual para completar o painel */}
+          <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] px-4 py-3.5">
+            <p className="font-body text-xs text-white/50 leading-relaxed">{tip}</p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 
 const BottomNav = () => {
   const navigate = useNavigate();
@@ -181,12 +359,13 @@ const BottomNav = () => {
     !resumosOpen &&
     !isAulasActive;
 
-  const navigateFromSheet = (to: string) => {
+  const navigateFromSheet = (area: SheetAreaKey, item: SheetNavItem) => {
     haptic.selection();
+    saveAreaLastItem(area, item.id);
     setPraticarOpen(false);
     setAudioaulasOpen(false);
     setResumosOpen(false);
-    startTransition(() => navigate(to));
+    startTransition(() => navigate(item.to));
   };
 
   const navItems = [
@@ -312,155 +491,38 @@ const BottomNav = () => {
         </div>
       </nav>
 
-      {/* Sheet Minimalista: Praticar */}
-      {praticarOpen && (
-        <>
-          <div
-            onClick={() => setPraticarOpen(false)}
-            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
-          />
-          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
-            <div className="flex items-center justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-white/15" />
-            </div>
-            <div className="flex items-center justify-between px-5 pb-3 pt-1">
-              <div>
-                <h3 className="font-display text-base font-semibold text-white tracking-tight">Praticar</h3>
-                <p className="font-body text-xs text-white/50">Escolha como treinar agora</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { haptic.light(); setPraticarOpen(false); }}
-                aria-label="Fechar Praticar"
-                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="px-4 space-y-2">
-              {PRATICAR_ITENS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
-                    onClick={() => navigateFromSheet(item.to)}
-                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
-                  >
-                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
-                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      <BottomNavAreaSheet
+        open={praticarOpen}
+        area="praticar"
+        title="Praticar"
+        subtitle="Escolha como treinar agora"
+        tip="Dica: alterne entre Questões e Flashcards para fixar os artigos mais cobrados em prova."
+        items={PRATICAR_ITENS}
+        onClose={() => setPraticarOpen(false)}
+        onSelect={navigateFromSheet}
+      />
 
-      {/* Sheet Minimalista: Audioaulas */}
-      {audioaulasOpen && (
-        <>
-          <div
-            onClick={() => setAudioaulasOpen(false)}
-            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
-          />
-          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
-            <div className="flex items-center justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-white/15" />
-            </div>
-            <div className="flex items-center justify-between px-5 pb-3 pt-1">
-              <div>
-                <h3 className="font-display text-base font-semibold text-white tracking-tight">Audioaulas</h3>
-                <p className="font-body text-xs text-white/50">Estude ouvindo em qualquer lugar</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { haptic.light(); setAudioaulasOpen(false); }}
-                aria-label="Fechar Audioaulas"
-                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="px-4 space-y-2">
-              {AUDIOAULAS_ITENS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
-                    onClick={() => navigateFromSheet(item.to)}
-                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
-                  >
-                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
-                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      <BottomNavAreaSheet
+        open={audioaulasOpen}
+        area="audioaulas"
+        title="Em Áudio"
+        subtitle="Estude ouvindo em qualquer lugar"
+        tip="Dica: use Pílulas para revisões rápidas de 3 minutos ou Audioaulas para ouvir a matéria completa."
+        items={AUDIOAULAS_ITENS}
+        onClose={() => setAudioaulasOpen(false)}
+        onSelect={navigateFromSheet}
+      />
 
-      {/* Sheet Minimalista: Resumos */}
-      {resumosOpen && (
-        <>
-          <div
-            onClick={() => setResumosOpen(false)}
-            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-[2px]"
-          />
-          <div className="fixed bottom-0 left-0 right-0 z-[80] bg-[#141417] border-t border-white/10 rounded-t-3xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl md:max-w-lg md:mx-auto md:bottom-6 md:rounded-3xl md:border">
-            <div className="flex items-center justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-white/15" />
-            </div>
-            <div className="flex items-center justify-between px-5 pb-3 pt-1">
-              <div>
-                <h3 className="font-display text-base font-semibold text-white tracking-tight">Resumos</h3>
-                <p className="font-body text-xs text-white/50">Revise com sínteses e esquemas visuais</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { haptic.light(); setResumosOpen(false); }}
-                aria-label="Fechar Resumos"
-                className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="px-4 space-y-2">
-              {RESUMOS_ITENS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onPointerEnter={() => { if (item.prefetch) prefetchRoute(item.prefetch); }}
-                    onClick={() => navigateFromSheet(item.to)}
-                    className="w-full min-h-[56px] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 active:scale-[0.99] transition-all text-left cursor-pointer"
-                  >
-                    <Icon className={`w-6 h-6 shrink-0 ${item.colorClass}`} strokeWidth={1.9} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-body text-sm font-semibold text-white leading-tight">{item.label}</p>
-                      <p className="font-body text-xs text-white/50 truncate mt-0.5">{item.desc}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-white/35 shrink-0" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      <BottomNavAreaSheet
+        open={resumosOpen}
+        area="resumos"
+        title="Resumos"
+        subtitle="Revise com sínteses e esquemas visuais"
+        tip="Dica: combine os Resumos com Mapas Mentais antes de resolver simulados."
+        items={RESUMOS_ITENS}
+        onClose={() => setResumosOpen(false)}
+        onSelect={navigateFromSheet}
+      />
 
       {sideMenuOpen && (
         <Suspense fallback={null}>
