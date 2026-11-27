@@ -17,7 +17,6 @@ const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
 import BottomNav from '@/components/vademecum/navigation/BottomNav';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // Heavy overlays are only rendered when opened — lazy-load their chunks so
 // the initial mobile bundle stays lean and the home paints faster.
@@ -85,9 +84,6 @@ const IndexMobile = () => {
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] pb-[calc(7rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-x-hidden">
-      <div className="fixed inset-0 z-0">
-        <ShapeGrid />
-      </div>
       <div className="relative z-10">
         <HomeHeaderHero
           onOpenMenu={() => setMenuOpen(true)}

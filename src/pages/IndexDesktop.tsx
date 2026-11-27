@@ -13,7 +13,6 @@ import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -86,9 +85,6 @@ const IndexDesktop = () => {
 
   return (
     <div className="h-dvh bg-zinc-950 flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-        <ShapeGrid />
-      </div>
       <div className="relative z-10 flex h-full w-full min-h-0 overflow-hidden">
         <DesktopOnboardingOverlay />
 
