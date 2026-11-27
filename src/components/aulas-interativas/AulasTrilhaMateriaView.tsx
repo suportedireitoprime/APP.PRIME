@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ArrowLeft, CheckCircle2, ChevronRight, Home, Play, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { useIsDesktop } from '@/hooks/use-desktop';
 import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { MateriaItem, AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
@@ -49,6 +50,7 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
   calcularProgressoCiclo,
 }) => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const [filtro, setFiltro] = useState<FiltroStatus>('todas');
 
   const { totalAulasDisc, pctDisc, materiasComStats, materiaContinuar } = useMemo(() => {
@@ -111,23 +113,25 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
   }, [filtro, materiasComStats, termoBuscaNorm]);
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-zinc-950 text-white relative">
-      {/* Fundo padrão oficial ShapeGrid */}
-      <div className="fixed inset-0 z-0 opacity-60 pointer-events-none">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#09090B] text-white relative">
+      {/* Fundo padrão oficial ShapeGrid apenas no mobile/tablet */}
+      {!isDesktop && (
+        <div className="fixed inset-0 z-0 opacity-60 pointer-events-none">
+          <ShapeGrid
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
 
       {/* Header fixo minimalista */}
-      <header className="sticky top-0 z-30 w-full bg-zinc-950/90 backdrop-blur-md border-b border-white/10 px-3.5 sm:px-6 pb-3 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-30 w-full bg-[#09090B]/90 backdrop-blur-md border-b border-white/[0.06] px-3.5 sm:px-6 lg:px-10 pb-3 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+        <div className="max-w-5xl lg:max-w-[1380px] mx-auto flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => {

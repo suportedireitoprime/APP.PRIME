@@ -171,7 +171,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   };
 
   return (
-    <div className="relative z-10 w-full min-h-screen flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overflow-x-hidden">
+    <div className="relative z-10 w-full min-h-screen flex flex-col pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:pb-10 overflow-x-hidden">
       {/* Painel Principal estilo Questões com as 4 funções integradas */}
       <AulasHero
         porcentagemGeral={porcentagemGeral}
@@ -189,7 +189,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
       />
 
       {/* Conteúdo Principal Minimalista */}
-      <main className="w-full max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 pt-4 space-y-6">
+      <main className="w-full max-w-5xl lg:max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-10 pt-4 space-y-6">
         {aulaParaContinuar && (
           <AulasContinuarAulaBanner
             aula={aulaParaContinuar}
