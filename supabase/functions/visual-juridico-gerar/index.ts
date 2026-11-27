@@ -258,7 +258,11 @@ Deno.serve(async (req) => {
 
     return json({ visual: inserido, cached: false });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const msg = e instanceof Error
+      ? e.message
+      : typeof e === "object" && e !== null
+        ? JSON.stringify(e)
+        : String(e);
     console.error("visual-juridico-gerar:", msg);
     const status = msg.includes("429") ? 429 : 500;
     return json({ error: msg }, status);
