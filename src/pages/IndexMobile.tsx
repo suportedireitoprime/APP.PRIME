@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, AlertTriangle, Radar, Lightbulb, ChevronRight } from 'lucide-react';
+import { Scale, AlertTriangle, Newspaper, Lightbulb, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
@@ -155,10 +155,10 @@ const IndexMobile = () => {
                 </button>
               </div>
 
-              {/* Linha 2: Radar e Descomplica compactos */}
+              {/* Linha 2: Boletins e Descomplica compactos */}
               <div className="grid grid-cols-2 gap-2.5 md:gap-4">
                 {[
-                  { id: 'radar-atalho', label: 'Radar', route: '/radar-360', icon: Radar },
+                  { id: 'boletins-atalho', label: 'Boletins', route: '/boletins', icon: Newspaper },
                   { id: 'descomplica-atalho', label: 'Descomplica', route: '/me-explique', icon: Lightbulb },
                 ].map(({ id, label, route, icon: Icon }) => (
                   <button
