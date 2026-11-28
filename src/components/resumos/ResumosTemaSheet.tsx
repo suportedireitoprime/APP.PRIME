@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useResumosLocal } from "@/hooks/useResumosLocal";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Bookmark, ChevronRight, Crown, Search, X, FileText } from "lucide-react";
 import { toast } from "sonner";
@@ -57,18 +58,15 @@ export function ResumosTemaSheet({
   const [rows, setRows] = useState<ResumoRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
+  const deferredSearch = useDeferredValue(localSearch);
   const [selectedResumo, setSelectedResumo] = useState<ResumoRow | null>(null);
   const [gateOpen, setGateOpen] = useState(false);
-  const [favs, setFavs] = useState<string[]>(() =>
-    resumosLocal.favoritos().map((f) => f.id)
-  );
-  const [recentesIds, setRecentesIds] = useState<Set<string>>(() =>
-    new Set(resumosLocal.recentes().map((r) => r.id))
-  );
+  const { favoritos: favList, recentes: recList, refresh: refreshBase } = useResumosLocal();
+  const favs = useMemo(() => favList.map((f) => f.id), [favList]);
+  const recentesIds = useMemo(() => new Set(recList.map((r) => r.id)), [recList]);
 
   const refreshLocalState = () => {
-    setFavs(resumosLocal.favoritos().map((f) => f.id));
-    setRecentesIds(new Set(resumosLocal.recentes().map((r) => r.id)));
+    refreshBase();
     onProgressChange?.();
   };
 
@@ -196,12 +194,12 @@ export function ResumosTemaSheet({
   }, [area, tema, cacheKey]);
 
   const filteredRows = useMemo(() => {
-    const term = localSearch.trim().toLowerCase();
+    const term = deferredSearch.trim().toLowerCase();
     if (!term) return rows;
     return rows.filter((r) =>
       formatJuridicoTitle(r.subtema || r.tema).toLowerCase().includes(term)
     );
-  }, [rows, localSearch]);
+  }, [rows, deferredSearch]);
 
   const areaCurta = area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
 

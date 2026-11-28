@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, ChevronRight, Mic } from "lucide-react";
@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
-import { resumosLocal } from "@/lib/resumosLocal";
+import { useResumosLocal } from "@/hooks/useResumosLocal";
 import ResumosBreadcrumbTimeline, { getMetodoLabel } from "@/components/resumos/ResumosBreadcrumbTimeline";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
 import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
@@ -80,20 +80,10 @@ export default function ResumosJuridicosTemas() {
   });
   const [loading, setLoading] = useState(() => !temasCache.has(decodedArea));
   const [q, setQ] = useState("");
+  const deferredQ = useDeferredValue(q);
   const { listening, startVoiceSearch } = useVoiceSearch(setQ);
   const [ordem, setOrdem] = useState<Ordem>("crono");
-  const [recentes, setRecentes] = useState(() => resumosLocal.recentes());
-  const [favoritosGlobais, setFavoritosGlobais] = useState(() => resumosLocal.favoritos());
-
-  const syncLocalProgress = useCallback(() => {
-    setRecentes(resumosLocal.recentes());
-    setFavoritosGlobais(resumosLocal.favoritos());
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("resumos-local-change", syncLocalProgress);
-    return () => window.removeEventListener("resumos-local-change", syncLocalProgress);
-  }, [syncLocalProgress]);
+  const { recentes, favoritos: favoritosGlobais, refresh: syncLocalProgress } = useResumosLocal();
 
   // 1. Carregar Temas Instantaneamente
   useEffect(() => {
@@ -207,8 +197,8 @@ export default function ResumosJuridicosTemas() {
 
   const filteredTemas = useMemo(() => {
     let result = rows;
-    if (q.trim()) {
-      const t = q.toLowerCase();
+    if (deferredQ.trim()) {
+      const t = deferredQ.toLowerCase();
       result = result.filter(r => r.tema.toLowerCase().includes(t));
     }
     
@@ -218,7 +208,7 @@ export default function ResumosJuridicosTemas() {
       result = result.filter(r => favoritosGlobais.some(f => f.tema === r.tema && f.area === decodedArea));
     }
     return result;
-  }, [rows, q, ordem, favoritosGlobais, decodedArea]);
+  }, [rows, deferredQ, ordem, favoritosGlobais, decodedArea]);
 
   return (
     <div className="min-h-dvh bg-[#09090B] text-white pb-20 relative overflow-x-hidden flex flex-col">

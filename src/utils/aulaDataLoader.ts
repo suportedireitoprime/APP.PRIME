@@ -1,7 +1,5 @@
 import type { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { SlideItem, AulaData } from '@/types/aulaInterativa';
-import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
-import { getAulaLaboratorioData } from '@/data/aulasLaboratorioData';
 
 const aulaCache: Record<string, AulaData> = {};
 
@@ -307,7 +305,11 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
   const baseFolder = (aula.urlJsonR2 || aula.urlHtmlR2 || '')
     .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
-  // 2. Fonte de Altíssima Fidelidade: Conteúdo Curado Pré-Estruturado (0ms, zero latência, rico em HTML e interatividade)
+  // 2. Fonte de Altíssima Fidelidade: Conteúdo Curado Pré-Estruturado (carregado sob demanda)
+  const [{ getAulaLaboratorioData }, { AULAS_CONTEUDO_REAL }] = await Promise.all([
+    import('@/data/aulasLaboratorioData'),
+    import('@/data/aulasConteudoRealData'),
+  ]);
   const labData = getAulaLaboratorioData(aula.id);
   const realData = labData || AULAS_CONTEUDO_REAL[aula.id] || (aula.slug && AULAS_CONTEUDO_REAL[aula.slug]);
   if (realData) {

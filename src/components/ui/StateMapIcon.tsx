@@ -1,5 +1,25 @@
-import React from 'react';
-import brazilStatesMap from '@/lib/brazilStatesMap';
+import React, { useEffect, useState } from 'react';
+
+interface StateLocation {
+  id: string;
+  name: string;
+  path: string;
+  viewBox?: string;
+}
+
+let cachedLocations: StateLocation[] | null = null;
+let inflightMap: Promise<StateLocation[]> | null = null;
+
+function loadBrazilStatesLocations(): Promise<StateLocation[]> {
+  if (cachedLocations) return Promise.resolve(cachedLocations);
+  if (!inflightMap) {
+    inflightMap = import('@/lib/brazilStatesMap').then((mod) => {
+      cachedLocations = mod.default.locations as StateLocation[];
+      return cachedLocations;
+    });
+  }
+  return inflightMap;
+}
 
 interface StateMapIconProps extends React.SVGProps<SVGSVGElement> {
   uf: string;
@@ -38,11 +58,22 @@ const STATE_VIEWBOX_MAP: Record<string, string> = {
 
 export function StateMapIcon({ uf, className, ...props }: StateMapIconProps) {
   const ufLower = (uf || '').toLowerCase().trim();
-  
-  const stateData = brazilStatesMap.locations.find((loc: { id: string, name: string, path: string, viewBox?: string }) => loc.id === ufLower);
+  const [locations, setLocations] = useState<StateLocation[] | null>(cachedLocations);
+
+  useEffect(() => {
+    if (cachedLocations) return;
+    let mounted = true;
+    void loadBrazilStatesLocations().then((locs) => {
+      if (mounted) setLocations(locs);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const stateData = locations?.find((loc) => loc.id === ufLower);
 
   if (!stateData) {
-    // Fallback genérico quando for nacional ou não encontrado
     return (
       <div className={`flex items-center justify-center bg-emerald-500/20 rounded-full font-bold text-emerald-400 text-[11px] sm:text-[13px] tracking-wide ${className}`}>
         {uf?.toUpperCase() || 'BR'}
@@ -50,7 +81,6 @@ export function StateMapIcon({ uf, className, ...props }: StateMapIconProps) {
     );
   }
 
-  // viewBox exata por estado
   const viewBox = STATE_VIEWBOX_MAP[ufLower] || stateData.viewBox || "0 0 100 100";
 
   return (

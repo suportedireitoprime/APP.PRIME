@@ -87,5 +87,18 @@ export default defineConfig({
         ],
       },
     },
+    build: {
+      rolldownOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes("node_modules/three/")) return "vendor-three";
+            if (id.includes("node_modules/pdfjs-dist/")) return "vendor-pdfjs";
+            if (id.includes("node_modules/@react-pdf/")) return "vendor-react-pdf";
+            if (id.includes("node_modules/recharts/")) return "vendor-recharts";
+            if (id.includes("node_modules/remotion/") || id.includes("node_modules/@remotion/")) return "vendor-remotion";
+          },
+        },
+      },
+    },
   },
 });

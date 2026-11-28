@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useDeferredValue, useEffect, useState, useMemo } from "react";
 import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -59,6 +59,7 @@ export default function ResumosJuridicosSubtemas() {
   });
   const [loading, setLoading] = useState(() => rows.length === 0);
   const [q, setQ] = useState("");
+  const deferredQ = useDeferredValue(q);
   const { listening, startVoiceSearch } = useVoiceSearch(setQ);
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
@@ -223,8 +224,8 @@ export default function ResumosJuridicosSubtemas() {
   const subtemasOrdenados = useMemo(() => {
     let result = rows;
     
-    if (q.trim()) {
-      const qLower = q.toLowerCase();
+    if (deferredQ.trim()) {
+      const qLower = deferredQ.toLowerCase();
       result = result.filter(s => 
         (s.subtema || s.tema).toLowerCase().includes(qLower)
       );
@@ -237,7 +238,7 @@ export default function ResumosJuridicosSubtemas() {
     }
     
     return result;
-  }, [rows, ordem, favs, q]);
+  }, [rows, ordem, favs, deferredQ]);
 
   const openReader = (r: ResumoRow, metodo: Metodo, deveGerar?: boolean) => {
     resumosLocal.registrarRecente({
