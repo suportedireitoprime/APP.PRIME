@@ -130,18 +130,17 @@ export default function MinhaAssinaturaView({
             setCurrentExpiresAt(exp);
           }
           const pLower = (sub.plano || '').toLowerCase();
-          const subPix =
-            pLower.includes('pix') ||
-            sub.origem === 'pix' ||
-            (!sub.asaas_subscription_id && !isVitalicio);
+          const subPix = pLower.includes('pix') || sub.origem === 'pix';
           setIsPix(subPix);
 
           const cardActive = Boolean(
-            sub.asaas_subscription_id && !subPix && !isVitalicio && sub.status !== 'CANCELED'
+            !subPix && !isVitalicio && sub.status !== 'CANCELED'
           );
           setHasCardRecurrence(cardActive);
 
-          if (sub.status === 'CANCELED' || cancelRes.data) {
+          if (sub.status === 'CANCELED') {
+            setIsCancelled(true);
+          } else if (cancelRes.data && !cardActive) {
             setIsCancelled(true);
           }
         } else if (cancelRes.data) {

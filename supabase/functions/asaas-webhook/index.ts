@@ -31,9 +31,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const event: string = body?.event ?? '';
     const payment = body?.payment ?? {};
-    const customerId: string | null = payment.customer ?? null;
-    const subscriptionId: string | null = payment.subscription ?? null;
-    const dueDate: string | null = payment.dueDate ?? payment.nextDueDate ?? null;
+    const subObj = body?.subscription ?? {};
+    const customerId: string | null = payment.customer ?? subObj.customer ?? null;
+    const subscriptionId: string | null = payment.subscription ?? subObj.id ?? null;
+    const dueDate: string | null = payment.dueDate ?? payment.nextDueDate ?? subObj.nextDueDate ?? null;
 
     if (!customerId && !subscriptionId) {
       return new Response(JSON.stringify({ ok: true, ignored: 'sem identificador' }), {
@@ -195,6 +196,7 @@ Deno.serve(async (req) => {
     // Plano efetivo: se for um novo pagamento confirmado ou cobrança, prioriza o plano detectado na transação atual
     const pago = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED', 'PAYMENT_RECEIVED_IN_CASH'].includes(event);
     const atrasado = event === 'PAYMENT_OVERDUE';
+    const isSubCanceledEvent = ['SUBSCRIPTION_DELETED', 'SUBSCRIPTION_INACTIVATED'].includes(event);
     const perdido = [
       'PAYMENT_DELETED', 'PAYMENT_REFUNDED',
       'PAYMENT_CHARGEBACK_REQUESTED', 'SUBSCRIPTION_DELETED',
@@ -217,7 +219,7 @@ Deno.serve(async (req) => {
     const finalUserId = targetUserId || legacy.claimed_user_id;
     let currSub: any = null;
     if (finalUserId) {
-      const { data } = await admin.from('asaas_subscriptions').select('status, plano, started_at, created_at').eq('user_id', finalUserId).maybeSingle();
+      const { data } = await admin.from('asaas_subscriptions').select('status, plano, started_at, created_at, expires_at').eq('user_id', finalUserId).maybeSingle();
       currSub = data;
       // Se o usuário já é vitalício no banco, preserva o vitalício contra cancelamentos acidentais de gateway
       if (currSub?.plano === 'vitalicio' && !pago) {
@@ -287,7 +289,11 @@ Deno.serve(async (req) => {
         status: nextStatus,
         asaas_customer_id: customerId ?? legacy.asaas_customer_id,
         asaas_subscription_id: subscriptionId ?? legacy.asaas_subscription_id,
-        expires_at: vitalicio ? null : (proximo ?? legacy.expires_at),
+        expires_at: vitalicio
+          ? null
+          : isSubCanceledEvent
+            ? (currSub?.expires_at ?? legacy.expires_at ?? null)
+            : (proximo ?? currSub?.expires_at ?? legacy.expires_at),
         origem: 'asaas',
         updated_at: new Date().toISOString(),
       };
@@ -349,10 +355,21 @@ Deno.serve(async (req) => {
           await admin.from('app_events').insert(purchaseEvents);
         }
       } else if (cortarAgora) {
-        await admin.from('profiles').update({
-          is_premium: false,
-          updated_at: new Date().toISOString()
-        }).eq('id', finalUserId);
+        const expMs = subUpsertPayload.expires_at ? new Date(subUpsertPayload.expires_at).getTime() : 0;
+        const aindaNoPeriodoPago = isSubCanceledEvent && expMs > Date.now();
+        if (isSubCanceledEvent) {
+          await admin.from('assinatura_cancelamentos').upsert({
+            user_id: finalUserId,
+            canceled_at: new Date().toISOString(),
+            motivo: `Cancelamento sincronizado via webhook (${event})`,
+          });
+        }
+        if (!aindaNoPeriodoPago) {
+          await admin.from('profiles').update({
+            is_premium: false,
+            updated_at: new Date().toISOString()
+          }).eq('id', finalUserId);
+        }
       }
       // Sincroniza imediatamente o plano no Horus (WhatsApp)
       try {

@@ -48,7 +48,15 @@ export default function CancelarAssinaturaSheet({
       const { data, error } = await supabase.functions.invoke('cancelar-assinatura-asaas');
 
       if (error) {
-        throw new Error(error.message || 'Erro ao comunicar com o servidor');
+        let detailed = error.message || 'Erro ao comunicar com o servidor';
+        try {
+          const ctx = (error as { context?: Response }).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const errBody = await ctx.json().catch(() => null);
+            if (errBody?.error) detailed = String(errBody.error);
+          }
+        } catch {}
+        throw new Error(detailed);
       }
 
       if (data?.error) {
