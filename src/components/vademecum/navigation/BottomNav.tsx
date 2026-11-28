@@ -67,9 +67,9 @@ const RESUMOS_ITENS: Array<{
   colorClass: string;
   prefetch?: PrefetchKey;
 }> = [
-  { id: 'resumos-conceitual', label: 'Resumo Conceitual', desc: 'Síntese direta e estruturada por tópicos', to: '/resumos-juridicos?metodo=conceitos', icon: NotebookPen, colorClass: 'text-emerald-400' },
-  { id: 'resumos-cornell', label: 'Método Cornell', desc: 'Tópicos, palavras-chave e resumo final', to: '/resumos-juridicos?metodo=cornell', icon: FileText, colorClass: 'text-amber-400' },
-  { id: 'resumos-feynman', label: 'Método Feynman', desc: 'Explicação simples como para um leigo', to: '/resumos-juridicos?metodo=feynman', icon: GraduationCap, colorClass: 'text-sky-400' },
+  { id: 'resumos-conceitual', label: 'Resumo Conceitual', desc: 'Síntese direta e estruturada por tópicos', to: '/resumos-juridicos?metodo=conceitos', icon: NotebookPen, colorClass: 'text-emerald-400', prefetch: 'resumosJuridicos' },
+  { id: 'resumos-cornell', label: 'Método Cornell', desc: 'Tópicos, palavras-chave e resumo final', to: '/resumos-juridicos?metodo=cornell', icon: FileText, colorClass: 'text-amber-400', prefetch: 'resumosJuridicos' },
+  { id: 'resumos-feynman', label: 'Método Feynman', desc: 'Explicação simples como para um leigo', to: '/resumos-juridicos?metodo=feynman', icon: GraduationCap, colorClass: 'text-sky-400', prefetch: 'resumosJuridicos' },
   { id: 'mapas-mentais', label: 'Mapas Mentais', desc: 'Esquemas visuais para revisão rápida', to: '/mapas-mentais', icon: Brain, colorClass: 'text-violet-400' },
 ];
 
@@ -151,6 +151,9 @@ function BottomNavAreaSheet({
                     key={item.id}
                     type="button"
                     onPointerEnter={() => {
+                      if (item.prefetch) prefetchRoute(item.prefetch);
+                    }}
+                    onTouchStart={() => {
                       if (item.prefetch) prefetchRoute(item.prefetch);
                     }}
                     onClick={() => onSelect(area, item)}

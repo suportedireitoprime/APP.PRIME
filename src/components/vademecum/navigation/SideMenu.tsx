@@ -16,6 +16,7 @@ import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { haptic } from '@/lib/nativeHaptics';
+import { prefetchRoute } from '@/lib/routePrefetch';
 
 type UserMeta = {
   display_name?: string;
@@ -286,22 +287,29 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
         {/* Card Isolado: Meu Perfil */}
         <GroupCard>
-          <MenuRow
-            icon={User}
-            iconColor="text-red-400"
-            label="Meu Perfil"
-            onClick={() => handleItemClick('perfil')}
-          />
+          <div onPointerEnter={() => prefetchRoute('perfil')} onTouchStart={() => prefetchRoute('perfil')}>
+            <MenuRow
+              icon={User}
+              iconColor="text-red-400"
+              label="Meu Perfil"
+              onClick={() => handleItemClick('perfil')}
+            />
+          </div>
         </GroupCard>
 
         {/* Conta & Suporte */}
         <GroupCard title="Conta & Suporte">
-          <MenuRow
-            icon={Gem}
-            iconColor="text-red-400"
-            label={isPremium ? 'Minha assinatura' : 'Minha assinatura / Planos'}
-            onClick={() => handleItemClick('planos')}
-          />
+          <div
+            onPointerEnter={() => { void import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+            onTouchStart={() => { void import('@/pages/assinatura/Assinatura.tsx').catch(() => {}); }}
+          >
+            <MenuRow
+              icon={Gem}
+              iconColor="text-red-400"
+              label={isPremium ? 'Minha assinatura' : 'Minha assinatura / Planos'}
+              onClick={() => handleItemClick('planos')}
+            />
+          </div>
           <MenuRow
             icon={LifeBuoy}
             iconColor="text-red-400"

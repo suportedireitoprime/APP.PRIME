@@ -96,6 +96,8 @@ export default defineConfig({
             if (id.includes("node_modules/@react-pdf/")) return "vendor-react-pdf";
             if (id.includes("node_modules/recharts/")) return "vendor-recharts";
             if (id.includes("node_modules/remotion/") || id.includes("node_modules/@remotion/")) return "vendor-remotion";
+            if (id.includes("node_modules/@supabase/")) return "vendor-supabase";
+            if (id.includes("node_modules/framer-motion/")) return "vendor-motion";
           },
         },
       },

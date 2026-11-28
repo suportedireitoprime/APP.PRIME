@@ -37,7 +37,7 @@ export const handler = async (req: Request) => {
     // Candidatos: usuários vinculados com telefone
     const { data: users } = await admin
       .from("horus_user_stats")
-      .select("*")
+      .select("telefone, user_id, nome_preferido, dias_streak_estudo, ultima_atividade_em, materia_mais_estudada_7d, ultimo_artigo_lido")
       .not("telefone", "is", null)
       .eq("notificacoes_permitidas", true)
       .limit(500);

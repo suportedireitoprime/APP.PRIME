@@ -102,12 +102,6 @@ export default function ResumosJuridicosSubtemas() {
     let cancelled = false;
     const localKey = `resumos_subtemas_v7_cap:${cacheKey}`;
 
-    // Purga imediata de caches legados
-    try {
-      localStorage.removeItem(`resumos_subtemas:${cacheKey}`);
-      localStorage.removeItem(`resumos_subtemas_v5:${cacheKey}`);
-    } catch {}
-
     // 1. Checar cache local se ainda não estiver em memória
     if (!subtemasCache.has(cacheKey) || !subtemasCache.get(cacheKey)?.every((c) => c.id && String(c.id).includes('_cap'))) {
       try {
@@ -395,7 +389,7 @@ export default function ResumosJuridicosSubtemas() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
                     transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-                    className="flex items-center gap-3 sm:gap-4"
+                    className="cv-auto flex items-center gap-3 sm:gap-4"
                   >
                     {/* Nó da Linha do Tempo */}
                     <div
@@ -581,12 +575,11 @@ export default function ResumosJuridicosSubtemas() {
                   metodosGerados={metodosGerados}
                   onSelectMetodo={(metodoId) => {
                     const r = modalResumo;
-                    // Pequeno atraso para a animação do Modal não piscar instantaneamente
-                    setTimeout(() => {
+                    requestAnimationFrame(() => {
                       setModalResumo(null);
                       setMetodosGerados([]);
                       openReader(r, metodoId);
-                    }, 150);
+                    });
                   }}
                 />
               </div>

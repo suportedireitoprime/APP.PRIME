@@ -378,7 +378,7 @@ export default function ResumosJuridicosTemas() {
                       });
                     }}
                     className={cn(
-                      "w-full group flex items-center gap-3.5 p-4 rounded-2xl border transition-all text-left cursor-pointer active:scale-[0.98]",
+                      "cv-auto w-full group flex items-center gap-3.5 p-4 rounded-2xl border transition-all text-left cursor-pointer active:scale-[0.98]",
                       isSelectedDesktop
                         ? "bg-zinc-900 border-white/30 shadow-lg"
                         : "bg-zinc-900/75 border-white/10 hover:border-white/25 hover:bg-zinc-900"

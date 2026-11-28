@@ -71,7 +71,13 @@ const ShapeGrid = ({
     // State flags (declaradas antecipadamente)
     let isVisible = false;
     let isPageVisible = typeof document !== 'undefined' ? !document.hidden : true;
-    let reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isLowPowerDevice =
+      typeof navigator !== 'undefined' &&
+      ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+        Boolean((navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData));
+    let reducedMotion =
+      isLowPowerDevice ||
+      (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     let isContextLost = false;
     let lastFrameTime = 0;
     const isMoving = speed > 0;
