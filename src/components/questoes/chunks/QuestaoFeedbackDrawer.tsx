@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle2, XCircle, X, RotateCw, ChevronRight, ChevronUp, Grid2X2, MessageSquare, ArrowRight, Scale, Sparkles,
 } from 'lucide-react';
-import { QuestaoAcoesBar } from '@/components/questoes/QuestaoAcoesBar';
 import { cn } from '@/lib/utils';
 
 function extrairResumoExpress(atual: any): string | null {
@@ -229,10 +228,6 @@ export function QuestaoFeedbackDrawer({
                           <ArrowRight className="h-5 w-5 opacity-80" />
                         </motion.div>
                       </button>
-
-                      <div className="w-full">
-                        <QuestaoAcoesBar source={atual} chaveRevisao={atual.id} layout="grid" />
-                      </div>
                     </div>
 
                     <div className="flex gap-2.5 pt-2">

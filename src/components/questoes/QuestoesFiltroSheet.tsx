@@ -265,7 +265,7 @@ const QuestoesFiltroSheet = ({
   return (
     <PrimeBottomSheet open={aberto} onClose={onFechar} zIndex={70} className="md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:rounded-none md:border-l md:border-t-0 md:border-zinc-800/80 md:shadow-2xl">
       <div className="theme-questoes flex h-full max-h-[90vh] md:max-h-screen flex-col overflow-hidden bg-zinc-950 text-foreground">
-        <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
+        <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/95">
           <button
                 onClick={onFechar}
                 aria-label="Voltar"
@@ -406,7 +406,7 @@ const QuestoesFiltroSheet = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
+            <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/95 px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
                 className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"

@@ -51,6 +51,7 @@ export default function Simulados() {
         .from('simulados')
         .select(`
           id,
+          titulo,
           year,
           prova_url,
           gabarito_url,
@@ -69,14 +70,14 @@ export default function Simulados() {
   });
 
   // Total exato de questões cadastradas no banco de simulados
-  const { data: totalQuestoesReal = 22056 } = useQuery({
+  const { data: totalQuestoesReal = 18757 } = useQuery({
     queryKey: ['simulados_total_questoes_banco'],
     staleTime: 30 * 60 * 1000,
     queryFn: async () => {
       const { count, error } = await supabase
         .from('simulado_questions')
         .select('id', { count: 'exact', head: true });
-      if (error || !count) return 22056;
+      if (error || !count) return 18757;
       return count;
     },
   });

@@ -116,11 +116,22 @@ export function QuestaoEnunciadoCard({
         <div className="flex flex-col gap-2.5 pt-4 pb-6 text-[13px]">
           <div className="flex flex-wrap gap-2">
             {atual.ano && <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 font-medium">Ano: <span className="text-white font-semibold">{atual.ano}</span></span>}
-            {atual.banca && <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 font-medium">Banca: <span className="text-white font-semibold">{atual.banca}</span></span>}
+            {atual.banca && <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 font-medium">Tipo: <span className="text-white font-semibold">{atual.banca}</span></span>}
           </div>
-          {atual.assunto && (
-            <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 leading-relaxed">
-              <span className="font-semibold text-white/70 mr-1">Assunto:</span> {atual.assunto}
+          {(atual.assunto || (atual as { topico?: string | null }).topico) && (
+            <div className="flex flex-wrap gap-2">
+              {atual.assunto && (
+                <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 leading-relaxed">
+                  <span className="font-semibold text-white/70 mr-1">Assunto:</span>
+                  {atual.assunto.replace(/^\d+\.\s*/, '')}
+                </div>
+              )}
+              {(atual as { topico?: string | null }).topico && (
+                <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 leading-relaxed">
+                  <span className="font-semibold text-white/70 mr-1">Tópico:</span>
+                  {(atual as { topico?: string | null }).topico}
+                </div>
+              )}
             </div>
           )}
         </div>

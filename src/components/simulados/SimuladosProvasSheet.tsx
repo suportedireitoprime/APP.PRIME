@@ -167,6 +167,14 @@ export const SimuladosProvasSheet = ({
     const examName = sim.exam?.name || 'Exame Oficial';
     const ano = sim.year || 2026;
 
+    if (sim.titulo) {
+      return {
+        banca: examName.toLowerCase().includes('oab') ? 'FGV / OAB' : null,
+        titulo: sim.titulo,
+        ano,
+      };
+    }
+
     if (!raw || raw.startsWith('http')) {
       return {
         banca: null,
