@@ -23,11 +23,10 @@ import PremiumGate from "@/components/PremiumGate";
 
 const RED = "#ef4444";
 
+import { useResumosSubtemas } from "@/hooks/useResumosSubtemas";
+
 type Ordem = "crono" | "alpha" | "fav";
 type Metodo = "conceitos" | "cornell" | "feynman";
-
-// Cache em memória para subtemas
-const subtemasCache = new Map<string, ResumoRow[]>();
 
 export default function ResumosJuridicosSubtemas() {
   const { area, tema } = useParams<{ area: string; tema: string }>();
@@ -49,15 +48,7 @@ export default function ResumosJuridicosSubtemas() {
   const { isPremium } = useSubscription();
   const [gateOpen, setGateOpen] = useState(false);
   
-  const cacheKey = useMemo(() => `${decodedArea}:${decodedTema}`, [decodedArea, decodedTema]);
-  const [rows, setRows] = useState<ResumoRow[]>(() => {
-    const cached = subtemasCache.get(cacheKey);
-    if (cached && Array.isArray(cached) && cached.length > 0 && cached.every((c) => c.id && String(c.id).includes('_cap'))) {
-      return cached;
-    }
-    return [];
-  });
-  const [loading, setLoading] = useState(() => rows.length === 0);
+  const { rows, loading } = useResumosSubtemas(decodedArea, decodedTema, true);
   const [q, setQ] = useState("");
   const deferredQ = useDeferredValue(q);
   const { listening, startVoiceSearch } = useVoiceSearch(setQ);
@@ -97,123 +88,6 @@ export default function ResumosJuridicosSubtemas() {
   }, [modalResumo?.id]);
 
   const refreshFavs = () => setFavs(resumosLocal.favoritos().map((f) => f.id));
-
-  useEffect(() => {
-    let cancelled = false;
-    const localKey = `resumos_subtemas_v7_cap:${cacheKey}`;
-
-    // 1. Checar cache local se ainda não estiver em memória
-    if (!subtemasCache.has(cacheKey) || !subtemasCache.get(cacheKey)?.every((c) => c.id && String(c.id).includes('_cap'))) {
-      try {
-        const stored = localStorage.getItem(localKey);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            const isOfficial = parsed.every((p: any) => p.id && String(p.id).includes('_cap'));
-            if (isOfficial) {
-              subtemasCache.set(cacheKey, parsed);
-              setRows(parsed);
-              setLoading(false);
-            }
-          }
-        }
-      } catch {}
-    }
-
-    (async () => {
-      // 2. Carregar instantaneamente (0ms) do catálogo offline
-      try {
-        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea, getOrFetchMateriaContent } = await import("@/services/resumosCatalog");
-        const catalog = await getResumosCatalog();
-        const areaObj = matchAreaInCatalog(catalog, decodedArea);
-        const temaObj = areaObj ? matchTemaInArea(areaObj.temas, decodedTema) : undefined;
-        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
-          const list: ResumoRow[] = temaObj.subtemas.map((s, idx) => ({
-            id: s.id,
-            area: areaObj?.area || decodedArea,
-            tema: temaObj.tema || decodedTema,
-            subtema: s.subtema,
-            ordem_subtema: s.ordem ?? idx + 1,
-            markdown: s.markdown || null,
-            exemplos: s.exemplos || null,
-            termos: s.termos || null,
-            audio_url: s.audio_url || null,
-            imageUrl: s.imageUrl || null,
-          }));
-          if (!cancelled) {
-            subtemasCache.set(cacheKey, list);
-            setRows(list);
-            setLoading(false);
-            try {
-              localStorage.setItem(localKey, JSON.stringify(list));
-            } catch {}
-          }
-        }
-
-        // Pré-carrega o conteúdo completo com Markdown e Áudio do R2/IndexedDB em segundo plano (0ms ao clicar)
-        void getOrFetchMateriaContent(decodedArea).then((fullArea) => {
-          if (cancelled || !fullArea) return;
-          const fullTemaObj = matchTemaInArea(fullArea.temas, decodedTema);
-          if (fullTemaObj?.subtemas && fullTemaObj.subtemas.length > 0) {
-            const fullList: ResumoRow[] = fullTemaObj.subtemas.map((s, idx) => ({
-              id: s.id,
-              area: fullArea.area || decodedArea,
-              tema: fullTemaObj.tema || decodedTema,
-              subtema: s.subtema,
-              ordem_subtema: s.ordem ?? idx + 1,
-              markdown: s.markdown || null,
-              exemplos: s.exemplos || null,
-              termos: s.termos || null,
-              audio_url: s.audio_url || null,
-              imageUrl: s.imageUrl || null,
-            }));
-            subtemasCache.set(cacheKey, fullList);
-            if (!cancelled) {
-              setRows(fullList);
-            }
-          }
-        });
-
-        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
-          return;
-        }
-      } catch {}
-
-      // 3. Fallback: buscar dados leves no Supabase sem carregar o markdown pesado na listagem
-      try {
-        const { data } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("id, area, tema, subtema, ordem_subtema")
-          .eq("area", decodedArea)
-          .eq("tema", decodedTema)
-          .order("ordem_subtema", { ascending: true, nullsFirst: false })
-          .order("subtema", { ascending: true })
-          .limit(1000);
-
-        if (!cancelled && data && data.length > 0) {
-          const list: ResumoRow[] = data.map((d: any) => ({
-            id: d.id,
-            area: d.area,
-            tema: d.tema,
-            subtema: d.subtema,
-            ordem_subtema: d.ordem_subtema,
-            markdown: null,
-            exemplos: null,
-            termos: null,
-          }));
-          subtemasCache.set(cacheKey, list);
-          setRows(list);
-          try {
-            localStorage.setItem(localKey, JSON.stringify(list));
-          } catch {}
-        }
-      } catch {}
-
-      if (!cancelled) setLoading(false);
-    })();
-
-    return () => { cancelled = true; };
-  }, [cacheKey, decodedArea, decodedTema]);
 
   const subtemasOrdenados = useMemo(() => {
     let result = rows;

@@ -70,9 +70,10 @@ export default function CancelarAssinaturaSheet({
 
       onCancelled?.(data?.expires_at || expiresAt);
       onOpenChange(false);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Tente novamente em instantes ou contate o suporte.';
       toast.error('Não foi possível cancelar a cobrança automática', {
-        description: e.message || 'Tente novamente em instantes ou contate o suporte.',
+        description: msg,
       });
     } finally {
       setConfirming(false);

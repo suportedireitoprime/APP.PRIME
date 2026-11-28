@@ -1,9 +1,9 @@
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useResumosLocal } from "@/hooks/useResumosLocal";
+import { useResumosSubtemas } from "@/hooks/useResumosSubtemas";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Bookmark, ChevronRight, Crown, Search, X, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
 import ResumoJuridicoReaderSheet, { type ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
 import PremiumGate from "@/components/PremiumGate";
@@ -31,8 +31,6 @@ interface ResumosTemaSheetProps {
   onClose: () => void;
 }
 
-const temaSheetCache = new Map<string, ResumoRow[]>();
-
 export function ResumosTemaSheet({
   area,
   tema,
@@ -55,8 +53,7 @@ export function ResumosTemaSheet({
     [area, tema]
   );
 
-  const [rows, setRows] = useState<ResumoRow[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { rows, loading } = useResumosSubtemas(area, tema?.tema);
   const [localSearch, setLocalSearch] = useState("");
   const deferredSearch = useDeferredValue(localSearch);
   const [selectedResumo, setSelectedResumo] = useState<ResumoRow | null>(null);
@@ -85,113 +82,6 @@ export function ResumosTemaSheet({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [tema, inline, selectedResumo, gateOpen, onClose]);
-
-  useEffect(() => {
-    if (!tema || !area) {
-      setRows([]);
-      return;
-    }
-
-    let cancelled = false;
-    const cached = temaSheetCache.get(cacheKey);
-    if (cached && cached.length > 0) {
-      setRows(cached);
-      setLoading(false);
-    } else {
-      setRows([]);
-      setLoading(true);
-    }
-
-    (async () => {
-      try {
-        const {
-          getResumosCatalog,
-          matchAreaInCatalog,
-          matchTemaInArea,
-          getOrFetchMateriaContent,
-        } = await import("@/services/resumosCatalog");
-        const catalog = await getResumosCatalog();
-        const areaObj = matchAreaInCatalog(catalog, area);
-        const temaObj = areaObj
-          ? matchTemaInArea(areaObj.temas, tema.tema)
-          : undefined;
-
-        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
-          const list: ResumoRow[] = temaObj.subtemas.map((s, idx) => ({
-            id: s.id,
-            area: areaObj?.area || area,
-            tema: temaObj.tema || tema.tema,
-            subtema: s.subtema,
-            ordem_subtema: s.ordem ?? idx + 1,
-            markdown: s.markdown || null,
-            exemplos: s.exemplos || null,
-            termos: s.termos || null,
-            audio_url: s.audio_url || null,
-            imageUrl: s.imageUrl || null,
-          }));
-          if (!cancelled) {
-            temaSheetCache.set(cacheKey, list);
-            setRows(list);
-            setLoading(false);
-          }
-
-          void getOrFetchMateriaContent(area).then((fullArea) => {
-            if (cancelled || !fullArea) return;
-            const fullTema = matchTemaInArea(fullArea.temas, tema.tema);
-            if (fullTema?.subtemas && fullTema.subtemas.length > 0) {
-              const fullList: ResumoRow[] = fullTema.subtemas.map((s, idx) => ({
-                id: s.id,
-                area: fullArea.area || area,
-                tema: fullTema.tema || tema.tema,
-                subtema: s.subtema,
-                ordem_subtema: s.ordem ?? idx + 1,
-                markdown: s.markdown || null,
-                exemplos: s.exemplos || null,
-                termos: s.termos || null,
-                audio_url: s.audio_url || null,
-                imageUrl: s.imageUrl || null,
-              }));
-              temaSheetCache.set(cacheKey, fullList);
-              if (!cancelled) setRows(fullList);
-            }
-          });
-          return;
-        }
-      } catch {}
-
-      try {
-        const { data } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("id, area, tema, subtema, ordem_subtema")
-          .eq("area", area)
-          .eq("tema", tema.tema)
-          .order("ordem_subtema", { ascending: true, nullsFirst: false })
-          .order("subtema", { ascending: true })
-          .limit(500);
-
-        if (!cancelled && data && data.length > 0) {
-          const list: ResumoRow[] = data.map((d: any) => ({
-            id: d.id,
-            area: d.area,
-            tema: d.tema,
-            subtema: d.subtema,
-            ordem_subtema: d.ordem_subtema,
-            markdown: null,
-            exemplos: null,
-            termos: null,
-          }));
-          temaSheetCache.set(cacheKey, list);
-          setRows(list);
-        }
-      } catch {}
-
-      if (!cancelled) setLoading(false);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [area, tema, cacheKey]);
 
   const filteredRows = useMemo(() => {
     const term = deferredSearch.trim().toLowerCase();

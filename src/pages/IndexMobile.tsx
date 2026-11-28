@@ -5,6 +5,7 @@ import { Scale, AlertTriangle, Newspaper, Lightbulb, ChevronRight } from 'lucide
 import { haptic } from '@/lib/nativeHaptics';
 import HomeEmAltaCardsCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCardsCarousel';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
+const HomeAnimacoesCarousel = lazyWithRetry(() => import('@/components/animacoes/HomeAnimacoesCarousel'));
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -95,8 +96,13 @@ const IndexMobile = () => {
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
 
-            {/* Carrossel de Notícias Jurídicas no lugar do de Animações */}
+            {/* Carrossel de Notícias Jurídicas */}
             <HomeNoticiasCarousel />
+
+            {/* Carrossel de Animações Jurídicas abaixo de Notícias */}
+            <Suspense fallback={null}>
+              <HomeAnimacoesCarousel />
+            </Suspense>
 
             {/* Legislação 360° abaixo de Em Alta */}
             <section className="flex flex-col gap-3">

@@ -111,7 +111,17 @@ export default function MinhaAssinaturaView({
 
         if (cancelled) return;
 
-        const sub = subRes.data as any;
+        interface AsaasSubLookupRow {
+          id: string;
+          plano: string | null;
+          status: string | null;
+          asaas_subscription_id: string | null;
+          expires_at: string | null;
+          started_at: string | null;
+          created_at: string | null;
+          origem: string | null;
+        }
+        const sub = subRes.data as unknown as AsaasSubLookupRow | null;
         if (sub) {
           let exp = sub.expires_at;
           // Regra oficial: Se o plano é anual e anterior a 10/11/2026, é vitalício (sem expiração)

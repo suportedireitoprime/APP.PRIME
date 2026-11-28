@@ -24,6 +24,7 @@ import { useIsDesktop } from "@/hooks/use-desktop";
 import { BookOpen, Scale, Sparkles, AlertCircle, Landmark, Library, FileBadge } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { recordAreaActivity } from "@/lib/continuity";
 
 export default function LeiSecaIndex() {
   const navigate = useNavigate();
@@ -52,6 +53,16 @@ export default function LeiSecaIndex() {
   const [rankingOpen, setRankingOpen] = useState(false);
 
   const pctGlobal = resumo?.pctGlobal ?? 0;
+
+  // Registra acesso para continuidade (BottomNav → Praticar)
+  useEffect(() => {
+    recordAreaActivity({
+      path: '/lei-seca',
+      label: 'Lei Seca',
+      sublabel: 'Estudo guiado artigo por artigo',
+      kind: 'leiseca',
+    });
+  }, []);
 
   // Trilhas indexadas por slug
   const trilhasMap = useMemo(() => new Map((trilhas ?? []).map((t) => [t.slug, t])), [trilhas]);

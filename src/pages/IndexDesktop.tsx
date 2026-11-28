@@ -19,6 +19,7 @@ import DesktopRadarLeisCarousel from '@/components/vademecum/desktop/DesktopRada
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
+const HomeAnimacoesCarousel = lazyWithRetry(() => import('@/components/animacoes/HomeAnimacoesCarousel'));
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente, getRecentes, type LeiRecente } from '@/lib/leisRecentes';
@@ -281,10 +282,13 @@ const IndexDesktop = () => {
         </div>
       </section>
 
-      {/* 4. Radar Legislativo & Notícias Jurídicas */}
+      {/* 4. Radar Legislativo, Notícias Jurídicas & Animações */}
       <div className="space-y-8">
         <DesktopRadarLeisCarousel />
         <NoticiasJuridicasCarousel />
+        <Suspense fallback={null}>
+          <HomeAnimacoesCarousel />
+        </Suspense>
       </div>
 
       {/* 5. Catálogo Completo de Estudos & Prática */}

@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT_FOLDER_ID = '12ZQkbFEgqumtuqxSbj-ZHBscdrAeyD5z';
+const ROOT_FOLDER_ID = '1c6OUpK9vEeniPwt0PGusyykEJWDFGy7o';
 
 const R2_CONFIG = {
   endpoint: 'https://f654819db5e99f6d7f9475abf6e3f834.r2.cloudflarestorage.com',
@@ -113,18 +113,20 @@ function detectAudioExt(buf, mimeHint) {
   return { ext: 'mp3', contentType: 'audio/mpeg' };
 }
 
-function parseFolderMetadata(folderName, mdText) {
-  let categoria = 'Código Penal';
-  if (/^OAB\b/i.test(folderName)) categoria = 'OAB';
-  else if (/^TJSP\b/i.test(folderName)) categoria = 'Concursos';
+function parseFolderMetadata(folderName, mdText, areaName, temaName) {
+  let categoria = areaName || 'Direito';
+  if (!areaName) {
+    if (/^OAB\b/i.test(folderName)) categoria = 'OAB';
+    else if (/^TJSP\b/i.test(folderName)) categoria = 'Concursos';
+  }
 
   const gabaritoMatch = folderName.match(/gab\s+([A-E])/i);
   const gabarito = gabaritoMatch ? gabaritoMatch[1].toUpperCase() : null;
 
-  const artigoMatch = folderName.match(/CP\s+art\.?\s*([0-9º°A-Za-z-]+)/i);
-  const artigoRef = artigoMatch ? `CP Art. ${artigoMatch[1]}` : null;
+  const artigoMatch = folderName.match(/(?:CP|CF|CC|CPC|CPP|CDC)\s+art\.?\s*([0-9º°A-Za-z-]+)/i);
+  const artigoRef = artigoMatch ? artigoMatch[0] : (temaName || null);
 
-  const exameMatch = folderName.match(/^(OAB\s+[XVI0-9]+(?:\s+Q\d+)?|TJSP\s+\d+(?:\s+Q\d+)?)/i);
+  const exameMatch = folderName.match(/^(OAB\s+[0-9XVI.]+(?:\s+Q\d+)?|TJSP\s+\d+(?:\s+Q\d+)?)/i);
   const exameRef = exameMatch ? exameMatch[1] : null;
 
   // Extrai resumo legível do arquivo .md de tratamento
@@ -136,6 +138,9 @@ function parseFolderMetadata(folderName, mdText) {
       .filter((l) => l && !l.startsWith('#') && !l.startsWith('---') && !l.startsWith('```'));
     resumo = lines.slice(0, 4).join(' ').slice(0, 260);
   }
+  if (!resumo && temaName) {
+    resumo = `Tema: ${temaName}`;
+  }
 
   // Título limpo sem sufixo "- gab X"
   const titulo = folderName
@@ -146,14 +151,14 @@ function parseFolderMetadata(folderName, mdText) {
   return { categoria, gabarito, artigoRef, exameRef, resumo, titulo };
 }
 
-async function processFolder(folder, idx, total) {
+async function processFolder(folder, idx, total, areaName = null, temaName = null) {
   const name = folder.name;
   if (/^TESTE\b/i.test(name) || /\(Instagram\)\s*$/i.test(name)) {
     console.log(`[${idx + 1}/${total}] Ignorando (teste/duplicata): ${name}`);
     return null;
   }
 
-  const slug = slugify(name);
+  const slug = slugify([areaName, temaName, name].filter(Boolean).join(' '));
   const subfolders = await listDriveFolder(folder.id);
   const filmeDir = subfolders.find((s) => s.name.startsWith('01'));
   const audiosDir = subfolders.find((s) => s.name.startsWith('02'));
@@ -245,7 +250,7 @@ async function processFolder(folder, idx, total) {
     }
   }
 
-  const meta = parseFolderMetadata(name, tratamentoMd);
+  const meta = parseFolderMetadata(name, tratamentoMd, areaName, temaName);
   const titleTagMatch = html.match(/<title>(.*?)<\/title>/i);
   const tituloHtml = titleTagMatch ? titleTagMatch[1].trim() : meta.titulo;
 
@@ -266,18 +271,46 @@ async function processFolder(folder, idx, total) {
   };
 }
 
+async function collectCaseFolders(folderId, areaName = null, temaName = null, depth = 0) {
+  const items = await listDriveFolder(folderId);
+  const subdirs = items.filter((i) => i.mime.includes('folder'));
+  const hasFilme = subdirs.some((s) => s.name.startsWith('01'));
+  if (hasFilme) {
+    return [{ folder: { id: folderId, name: temaName || areaName || 'Animacao' }, areaName, temaName: null }];
+  }
+
+  const cases = [];
+  for (const sub of subdirs) {
+    if (depth === 0) {
+      const children = await collectCaseFolders(sub.id, sub.name, null, 1);
+      cases.push(...children);
+    } else if (depth === 1) {
+      const subItems = await listDriveFolder(sub.id);
+      const subSubdirs = subItems.filter((i) => i.mime.includes('folder'));
+      if (subSubdirs.some((s) => s.name.startsWith('01'))) {
+        cases.push({ folder: sub, areaName, temaName: sub.name });
+      } else {
+        for (const c of subSubdirs) {
+          cases.push({ folder: c, areaName, temaName: sub.name });
+        }
+      }
+    }
+  }
+  return cases;
+}
+
 async function main() {
-  const rootItems = await listDriveFolder(ROOT_FOLDER_ID);
-  const folders = rootItems.filter((i) => i.mime.includes('folder'));
-  console.log(`Encontradas ${folders.length} pastas no Drive.`);
+  const cases = await collectCaseFolders(ROOT_FOLDER_ID);
+  console.log(`Encontrados ${cases.length} casos de animação no Drive.`);
 
   const catalog = [];
-  for (let i = 0; i < folders.length; i++) {
+  for (let i = 0; i < cases.length; i++) {
+    const { folder, areaName, temaName } = cases[i];
     try {
-      const entry = await processFolder(folders[i], i, folders.length);
+      const entry = await processFolder(folder, i, cases.length, areaName, temaName);
       if (entry) catalog.push(entry);
     } catch (err) {
-      console.error(`Erro em ${folders[i].name}:`, err.message);
+      console.error(`Erro em ${folder.name}:`, err.message);
     }
   }
 

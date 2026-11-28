@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
 import { useResumosLocal } from "@/hooks/useResumosLocal";
+import { readCacheJson, writeCacheJson, removeCacheKey } from "@/lib/cacheStorage";
 import ResumosBreadcrumbTimeline, { getMetodoLabel } from "@/components/resumos/ResumosBreadcrumbTimeline";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
 import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
@@ -66,16 +67,11 @@ export default function ResumosJuridicosTemas() {
 
   const [rows, setRows] = useState<Row[]>(() => {
     if (temasCache.has(decodedArea)) return temasCache.get(decodedArea)!;
-    try {
-      const stored = localStorage.getItem(`resumos_temas_cache:${decodedArea}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          temasCache.set(decodedArea, parsed);
-          return parsed;
-        }
-      }
-    } catch {}
+    const parsed = readCacheJson<Row[]>(`resumos_temas_cache:${decodedArea}`);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      temasCache.set(decodedArea, parsed);
+      return parsed;
+    }
     return [];
   });
   const [loading, setLoading] = useState(() => !temasCache.has(decodedArea));
@@ -90,22 +86,15 @@ export default function ResumosJuridicosTemas() {
     let cancelled = false;
     const cacheKey = `resumos_temas_cache_v7:${decodedArea}`;
 
-    try {
-      localStorage.removeItem(`resumos_temas_cache:${decodedArea}`);
-    } catch {}
+    removeCacheKey(`resumos_temas_cache:${decodedArea}`);
 
     if (!temasCache.has(decodedArea)) {
-      try {
-        const stored = localStorage.getItem(cacheKey);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            temasCache.set(decodedArea, parsed);
-            setRows(parsed);
-            setLoading(false);
-          }
-        }
-      } catch {}
+      const parsed = readCacheJson<Row[]>(cacheKey);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        temasCache.set(decodedArea, parsed);
+        setRows(parsed);
+        setLoading(false);
+      }
     } else {
       setRows(temasCache.get(decodedArea)!);
       setLoading(false);
@@ -155,7 +144,7 @@ export default function ResumosJuridicosTemas() {
 
       if (list.length === 0) {
         try {
-          const { data } = await (supabase as any)
+          const { data } = await supabase
             .from("resumos_juridicos")
             .select("tema, ordem_tema")
             .eq("area", decodedArea)
@@ -185,9 +174,7 @@ export default function ResumosJuridicosTemas() {
       if (list.length > 0) {
         temasCache.set(decodedArea, list);
         setRows(list);
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(list));
-        } catch {}
+        writeCacheJson(cacheKey, list);
       }
       setLoading(false);
     })();
