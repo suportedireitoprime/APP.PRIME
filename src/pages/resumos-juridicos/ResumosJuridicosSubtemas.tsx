@@ -3,7 +3,8 @@ import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { toast as sonnerToast } from "sonner";
 import { ArrowLeft, FileText, Bookmark, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ export default function ResumosJuridicosSubtemas() {
   const materiaColor = useMemo(() => {
     return visualTheme?.primary || palette?.primary || "#ea580c";
   }, [visualTheme, palette]);
+  const prefersReducedMotion = useReducedMotion();
   const { isPremium } = useSubscription();
   const [gateOpen, setGateOpen] = useState(false);
   
@@ -350,6 +352,11 @@ export default function ResumosJuridicosSubtemas() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 pt-4">
+        {q.trim() && (
+          <div className="sr-only" aria-live="polite">
+            {subtemasOrdenados.length} {subtemasOrdenados.length === 1 ? "resumo encontrado" : "resumos encontrados"}
+          </div>
+        )}
         {loading ? (
           <div className="flex items-center justify-center py-24 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando resumos...
@@ -381,12 +388,12 @@ export default function ResumosJuridicosSubtemas() {
                 
                 return (
                   <motion.div
-                    layout
+                    layout={!prefersReducedMotion}
                     key={r.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
                     className="flex items-center gap-3 sm:gap-4"
                   >
                     {/* Nó da Linha do Tempo */}
@@ -472,13 +479,26 @@ export default function ResumosJuridicosSubtemas() {
                             onClick={(e) => {
                               e.stopPropagation();
                               haptic.selection();
-                              resumosLocal.toggleFavorito({
+                              const payload = {
                                 id: r.id,
                                 area: r.area,
                                 tema: r.tema,
                                 subtema: r.subtema,
-                              });
+                              };
+                              const estavaFav = isFav;
+                              resumosLocal.toggleFavorito(payload);
                               refreshFavs();
+                              if (estavaFav) {
+                                sonnerToast("Removido dos favoritos", {
+                                  action: {
+                                    label: "Desfazer",
+                                    onClick: () => {
+                                      resumosLocal.toggleFavorito(payload);
+                                      refreshFavs();
+                                    },
+                                  },
+                                });
+                              }
                             }}
                             className="p-1.5 -mr-1 rounded-full hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
                             aria-label={isFav ? "Remover dos favoritos" : "Salvar resumo"}

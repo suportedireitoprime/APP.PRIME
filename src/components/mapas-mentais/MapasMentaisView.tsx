@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, X, Loader2, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,6 +49,9 @@ export default function MapasMentaisView({
   onRotaChange,
 }: MapasMentaisViewProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollHistoryRef = useRef<{ root: number; item: number }>({ root: 0, item: 0 });
+  const prevNavRef = useRef<{ itemKey: string | null; temaName: string | null }>({ itemKey: null, temaName: null });
+  const prefersReducedMotion = useReducedMotion();
   const { user } = useAuth();
   const { isPremium } = useSubscription();
   const podeGerar = isPremium || isAdminEmail(user?.email);
@@ -63,12 +67,33 @@ export default function MapasMentaisView({
   const [item, setItem] = useState<CatalogoItem | null>(null);
   const [tema, setTema] = useState<TemaResumo | null>(null);
 
-  // Garante posicionamento no topo ao iniciar ou mudar de visualização
+  // Preserva e restaura posição de scroll ao entrar/voltar entre níveis
   useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const prev = prevNavRef.current;
+    const currItemKey = item?.key ?? null;
+    const currTema = tema?.tema ?? null;
+
+    if (!prev.itemKey && currItemKey) {
+      scrollHistoryRef.current.root = el.scrollTop;
+      el.scrollTop = 0;
+    } else if (prev.itemKey && !currItemKey) {
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollHistoryRef.current.root;
+      });
+    } else if (!prev.temaName && currTema) {
+      scrollHistoryRef.current.item = el.scrollTop;
+      el.scrollTop = 0;
+    } else if (prev.temaName && !currTema && currItemKey) {
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollHistoryRef.current.item;
+      });
+    } else {
+      el.scrollTop = 0;
     }
-  }, [item, filtro, categoria]);
+    prevNavRef.current = { itemKey: currItemKey, temaName: currTema };
+  }, [item, tema, filtro, categoria]);
 
   // Dados carregados de matérias / resumos — 0ms instantâneo do cache compilado
   const [areas, setAreas] = useState<CatalogoItem[]>(() => getCachedAreasResumos() || MATERIAS);
@@ -97,6 +122,7 @@ export default function MapasMentaisView({
     rotulo: string;
   } | null>(null);
   const [gerando, setGerando] = useState(false);
+  const [gerandoChave, setGerandoChave] = useState<string | null>(null);
   const [aberto, setAberto] = useState<VisualRecord | null>(null);
   const [gateOpen, setGateOpen] = useState(false);
 
@@ -371,6 +397,7 @@ export default function MapasMentaisView({
     }
 
     setGerando(true);
+    setGerandoChave(chave);
     try {
       const contexto = valor
         ? targetGeracao.kind === 'tema'
@@ -414,6 +441,7 @@ export default function MapasMentaisView({
       toast.error(msg ? `Falha ao gerar: ${msg.slice(0, 60)}` : 'Não foi possível gerar no momento.');
     } finally {
       setGerando(false);
+      setGerandoChave(null);
     }
   };
 
@@ -422,18 +450,20 @@ export default function MapasMentaisView({
       ref={scrollContainerRef}
       className="fixed inset-0 z-[100] flex flex-col bg-[#0D0D0D] text-white overflow-y-auto overscroll-contain"
     >
-      {/* Fundo Padrão com Grid Animado (ShapeGrid) */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
-        <ShapeGrid 
-          speed={0.4} 
-          squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.08)'
-          hoverFillColor='rgba(168, 85, 247, 0.15)'
-          shape='square'
-          hoverTrailAmount={5}
-        />
-      </div>
+      {/* Fundo Padrão com Grid Animado (ShapeGrid) respeitando prefers-reduced-motion */}
+      {!prefersReducedMotion && (
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
+          <ShapeGrid 
+            speed={0.4} 
+            squareSize={40}
+            direction='diagonal'
+            borderColor='rgba(255, 255, 255, 0.08)'
+            hoverFillColor='rgba(168, 85, 247, 0.15)'
+            shape='square'
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
 
       {/* 1. Header com Capa Roxa e Onda Fluida */}
       {!item && filtro !== 'pastas' && (
@@ -612,6 +642,7 @@ export default function MapasMentaisView({
             artigos={artigosFiltrados}
             prontos={prontos}
             favoritos={favoritos}
+            gerandoChave={gerandoChave}
             chaveDe={chaveDe}
             onGerar={handleSolicitarGeracao}
             onAbrir={(reg) => {
@@ -715,13 +746,31 @@ export default function MapasMentaisView({
         </div>
       )}
 
-      {/* 6. Visualizador em Tela Cheia */}
-      {aberto && (
-        <MapasMentaisViewer
-          registro={aberto}
-          onClose={() => setAberto(null)}
-        />
-      )}
+      {/* 6. Visualizador em Tela Cheia com navegação por setas entre mapas prontos */}
+      {aberto && (() => {
+        const listaProntos = Object.values(prontos);
+        const idxAtual = listaProntos.findIndex((r) => r.item_key === aberto.item_key);
+        const hasPrev = idxAtual > 0;
+        const hasNext = idxAtual >= 0 && idxAtual < listaProntos.length - 1;
+        return (
+          <MapasMentaisViewer
+            registro={aberto}
+            hasPrev={hasPrev}
+            hasNext={hasNext}
+            onPrev={hasPrev ? () => {
+              const prevReg = listaProntos[idxAtual - 1];
+              marcarRecente(prevReg.item_key);
+              setAberto(prevReg);
+            } : undefined}
+            onNext={hasNext ? () => {
+              const nextReg = listaProntos[idxAtual + 1];
+              marcarRecente(nextReg.item_key);
+              setAberto(nextReg);
+            } : undefined}
+            onClose={() => setAberto(null)}
+          />
+        );
+      })()}
 
       {/* 7. Gate Premium */}
       <PremiumGate

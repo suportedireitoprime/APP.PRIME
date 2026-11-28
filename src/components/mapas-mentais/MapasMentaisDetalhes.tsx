@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef } from 'react';
-import { Search, X, Bookmark, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { Search, X, Bookmark, ChevronRight, Loader2, WifiOff } from 'lucide-react';
+import { toast } from 'sonner';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { CATEGORIA_COR, getCorParaItem, formatarTituloMapa } from './mapasConstants';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
@@ -27,6 +28,7 @@ interface MapasMentaisDetalhesProps {
   // Estados compartilhados
   prontos: Record<string, VisualRecord>;
   favoritos: string[];
+  gerandoChave?: string | null;
   chaveDe: (base: CatalogoItem, sub?: string, kind?: 'artigo' | 'tema') => string;
   onGerar: (alvo: CatalogoItem, sub?: string, kind?: 'artigo' | 'tema', temaPai?: string) => void;
   onAbrir: (registro: VisualRecord) => void;
@@ -49,6 +51,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
   artigos,
   prontos,
   favoritos,
+  gerandoChave = null,
   chaveDe,
   onGerar,
   onAbrir,
@@ -109,6 +112,17 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
           </button>
         )}
       </div>
+
+      {/* Região acessível de contagem para leitores de tela */}
+      {busca.trim() && (
+        <div className="sr-only" aria-live="polite">
+          {isMateria
+            ? tema
+              ? `${subtemas.length} subtemas encontrados`
+              : `${temas.length} tópicos encontrados`
+            : `${artigos.length} artigos encontrados`}
+        </div>
+      )}
 
       {/* CASO 1: Matéria sem Tópico Selecionado (Lista de Tópicos) */}
       {isMateria && !tema && (
@@ -264,7 +278,13 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                         type="button"
                         onClick={() => {
                           haptic.light();
+                          const estavaFav = favoritos.includes(chave);
                           onToggleFavorito(chave);
+                          if (estavaFav) {
+                            toast('Removido dos favoritos', {
+                              action: { label: 'Desfazer', onClick: () => onToggleFavorito(chave) },
+                            });
+                          }
                         }}
                         className="p-2 text-zinc-500 hover:text-white"
                       >
@@ -278,20 +298,24 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                             haptic.selection();
                             onAbrir(pronto);
                           }}
-                          className="px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          title="Disponível offline"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                         >
+                          <WifiOff className="w-3 h-3 opacity-80" aria-hidden="true" />
                           Ver Mapa
                         </button>
                       ) : (
                         <button
                           type="button"
+                          disabled={gerandoChave === chave}
                           onClick={() => {
                             haptic.selection();
                             onGerar(item, s.subtema, 'tema', tema.tema);
                           }}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] disabled:opacity-75 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                         >
-                          Gerar
+                          {gerandoChave === chave && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          {gerandoChave === chave ? 'Gerando...' : 'Gerar'}
                         </button>
                       )}
                     </div>
@@ -383,7 +407,13 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                           type="button"
                           onClick={() => {
                             haptic.light();
+                            const estavaFav = favoritos.includes(chave);
                             onToggleFavorito(chave);
+                            if (estavaFav) {
+                              toast('Removido dos favoritos', {
+                                action: { label: 'Desfazer', onClick: () => onToggleFavorito(chave) },
+                              });
+                            }
                           }}
                           className="p-1.5 text-zinc-500 hover:text-white"
                         >
@@ -397,20 +427,24 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
                               haptic.selection();
                               onAbrir(pronto);
                             }}
-                            className="px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                            title="Disponível offline"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                           >
+                            <WifiOff className="w-3 h-3 opacity-80" aria-hidden="true" />
                             Ver Mapa
                           </button>
                         ) : (
                           <button
                             type="button"
+                            disabled={gerandoChave === chave}
                             onClick={() => {
                               haptic.selection();
                               onGerar(item, a.numero, 'artigo');
                             }}
-                            className="px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#9333ea] hover:bg-[#a855f7] disabled:opacity-75 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                           >
-                            Gerar
+                            {gerandoChave === chave && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                            {gerandoChave === chave ? 'Gerando...' : 'Gerar'}
                           </button>
                         )}
                       </div>

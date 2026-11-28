@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Download, FileImage, FileText, Loader2, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Copy, Download, FileImage, FileText, Loader2, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import VisualScene, { exportarPdf, exportarPng } from './VisualScene';
 import type { VisualContent, VisualEstilo, VisualRecord } from '@/lib/visuaisJuridicos/types';
 import { TIPO_INFO } from '@/lib/visuaisJuridicos/types';
@@ -17,23 +17,81 @@ import { haptic } from '@/lib/nativeHaptics';
 interface MapasMentaisViewerProps {
   registro: VisualRecord;
   onClose: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  hasPrev?: boolean;
+  hasNext?: boolean;
 }
 
-export function MapasMentaisViewer({ registro, onClose }: MapasMentaisViewerProps) {
+function formatVisualAsText(content: VisualContent): string {
+  const lines: string[] = [content.titulo];
+  if (content.subtitulo) lines.push(content.subtitulo);
+  lines.push('');
+
+  if (content.tipo === 'mapa_mental') {
+    lines.push(`Tema central: ${content.central}`);
+    content.ramos.forEach((r) => {
+      lines.push(`\n• ${r.titulo}`);
+      r.itens.forEach((it) => lines.push(`  - ${it}`));
+      if (r.nota) lines.push(`  Nota: ${r.nota}`);
+    });
+  } else if (content.tipo === 'infografico') {
+    content.cards.forEach((c, idx) => {
+      lines.push(`${idx + 1}. ${c.titulo}: ${c.texto}`);
+    });
+    if (content.rodape) lines.push(`\n${content.rodape}`);
+  } else if (content.tipo === 'fluxograma') {
+    lines.push(`Entrada: ${content.entrada}`);
+    content.decisoes.forEach((d, idx) => {
+      lines.push(`${idx + 1}. ${d.pergunta} → Se não: ${d.seNao}${d.base ? ` (${d.base})` : ''}`);
+    });
+    lines.push(`Resultado: ${content.resultado}`);
+  } else if (content.tipo === 'diagrama') {
+    lines.push(`Raiz: ${content.raiz}`);
+    content.grupos.forEach((g) => {
+      lines.push(`\n• ${g.titulo}`);
+      g.itens.forEach((it) => lines.push(`  - ${it}`));
+      if (g.nota) lines.push(`  Nota: ${g.nota}`);
+    });
+  }
+
+  if (content.fonte) lines.push(`\nFonte: ${content.fonte}`);
+  return lines.join('\n');
+}
+
+export function MapasMentaisViewer({
+  registro,
+  onClose,
+  onPrev,
+  onNext,
+  hasPrev = false,
+  hasNext = false,
+}: MapasMentaisViewerProps) {
   useBodyScrollLock(true);
   const estilo: VisualEstilo = 'limpo';
   const [zoom, setZoom] = useState(1);
   const [baixando, setBaixando] = useState(false);
+  const [copiado, setCopiado] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const content = registro.conteudo as VisualContent;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowLeft' && hasPrev && onPrev) {
+        e.preventDefault();
+        haptic.selection();
+        onPrev();
+      } else if (e.key === 'ArrowRight' && hasNext && onNext) {
+        e.preventDefault();
+        haptic.selection();
+        onNext();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, hasPrev, hasNext, onPrev, onNext]);
 
   // Zoom via roda do mouse / trackpad
   useEffect(() => {
@@ -49,7 +107,20 @@ export function MapasMentaisViewer({ registro, onClose }: MapasMentaisViewerProp
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
+  const copiarTexto = async () => {
+    haptic.impact('light');
+    try {
+      await navigator.clipboard.writeText(formatVisualAsText(content));
+      setCopiado(true);
+      toast.success('Texto do mapa copiado!');
+      setTimeout(() => setCopiado(false), 1800);
+    } catch {
+      toast.error('Não foi possível copiar o texto.');
+    }
+  };
+
   const baixar = async (formato: 'png' | 'pdf') => {
+    haptic.impact('light');
     setBaixando(true);
     try {
       const nome = `${registro.tipo}-${registro.item_key.replace(/[^a-z0-9]+/gi, '-')}`;
@@ -85,13 +156,56 @@ export function MapasMentaisViewer({ registro, onClose }: MapasMentaisViewerProp
           </button>
 
           <div className="min-w-0">
-            <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white break-words">
+            <h2 className="font-sans text-sm sm:text-base font-bold text-white break-words">
               {registro.titulo}
             </h2>
             <p className="text-xs text-zinc-400 break-words mt-0.5">
               {TIPO_INFO[registro.tipo]?.label ?? 'Visual'} · {registro.item_label}
             </p>
           </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          {(hasPrev || hasNext) && (
+            <div className="hidden sm:flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                disabled={!hasPrev}
+                onClick={() => {
+                  haptic.selection();
+                  onPrev?.();
+                }}
+                aria-label="Mapa anterior"
+                title="Anterior (←)"
+                className="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-zinc-700 disabled:opacity-35 flex items-center justify-center text-white transition cursor-pointer disabled:cursor-default"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                disabled={!hasNext}
+                onClick={() => {
+                  haptic.selection();
+                  onNext?.();
+                }}
+                aria-label="Próximo mapa"
+                title="Próximo (→)"
+                className="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-zinc-700 disabled:opacity-35 flex items-center justify-center text-white transition cursor-pointer disabled:cursor-default"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={copiarTexto}
+            aria-label="Copiar texto do mapa"
+            title="Copiar em texto"
+            className="w-10 h-10 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-200 hover:text-white transition-colors cursor-pointer"
+          >
+            {copiado ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+          </button>
         </div>
       </header>
 

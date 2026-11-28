@@ -317,6 +317,11 @@ export default function ResumosJuridicosTemas() {
       </div>
 
       <div className="max-w-5xl lg:max-w-7xl mx-auto px-4 pt-4 w-full">
+        {q.trim() && (
+          <div className="sr-only" aria-live="polite">
+            {filteredTemas.length} {filteredTemas.length === 1 ? "tema encontrado" : "temas encontrados"}
+          </div>
+        )}
         {loading ? (
           <div className="space-y-2.5 py-4 max-w-2xl">
             {[0, 1, 2, 3, 4].map((sk) => (

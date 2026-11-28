@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Bookmark, ChevronRight, Crown, Search, X, FileText } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
 import ResumoJuridicoReaderSheet, { type ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -284,6 +285,11 @@ export function ResumosTemaSheet({
           !inline && "pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]"
         )}
       >
+        {localSearch.trim() && (
+          <div className="sr-only" aria-live="polite">
+            {filteredRows.length} {filteredRows.length === 1 ? "tópico encontrado" : "tópicos encontrados"}
+          </div>
+        )}
         {loading && rows.length === 0 ? (
           <div className="space-y-2">
             {[0, 1, 2, 3].map((sk) => (
@@ -376,14 +382,21 @@ export function ResumosTemaSheet({
                     <p className="text-[13.5px] sm:text-sm font-semibold text-zinc-100 leading-snug group-hover:text-white transition-colors line-clamp-2">
                       {formatJuridicoTitle(r.subtema || r.tema)}
                     </p>
-                    {(isLido || isLocked) && (
+                    {(isLido || isLocked || Boolean(r.markdown)) && (
                       <p className="text-[11px] text-zinc-500 mt-0.5 flex items-center gap-1.5">
                         {isLocked ? (
                           <span className="text-amber-400/90 font-medium">
                             Exclusivo Prime
                           </span>
                         ) : (
-                          <span>Lido</span>
+                          <>
+                            {isLido && <span>Lido</span>}
+                            {Boolean(r.markdown) && (
+                              <span className="text-emerald-400/80">
+                                {isLido ? "• Offline" : "Offline"}
+                              </span>
+                            )}
+                          </>
                         )}
                       </p>
                     )}
@@ -400,13 +413,26 @@ export function ResumosTemaSheet({
                         onClick={(e) => {
                           e.stopPropagation();
                           haptic.selection();
-                          resumosLocal.toggleFavorito({
+                          const payload = {
                             id: r.id,
                             area: r.area,
                             tema: r.tema,
                             subtema: r.subtema,
-                          });
+                          };
+                          const estavaFav = favs.includes(r.id);
+                          resumosLocal.toggleFavorito(payload);
                           refreshLocalState();
+                          if (estavaFav) {
+                            toast("Removido dos favoritos", {
+                              action: {
+                                label: "Desfazer",
+                                onClick: () => {
+                                  resumosLocal.toggleFavorito(payload);
+                                  refreshLocalState();
+                                },
+                              },
+                            });
+                          }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
