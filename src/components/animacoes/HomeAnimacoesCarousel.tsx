@@ -1,12 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Clapperboard, Play } from 'lucide-react';
+import { Clapperboard, Play } from 'lucide-react';
 import animacoesHomeRaw from '@/data/animacoesHomeCatalog.json';
 import {
   type AnimacaoHomeItem,
   formatAnimacaoTitulo,
   formatAreaCurta,
-  getAreaBadgeStyle,
 } from '@/data/animacoesTypes';
 import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
 import { useAnimacoesVistas } from '@/hooks/useAnimacoesVistas';
@@ -40,7 +39,6 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
       <div className="flex items-start gap-3 overflow-x-auto overscroll-x-contain touch-pan-x touch-pan-y pb-1 no-scrollbar snap-x -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12">
         {destaques.map((item, idx) => {
           const tituloLimpo = formatAnimacaoTitulo(item.tituloHtml || item.titulo);
-          const areaStyle = getAreaBadgeStyle(item.categoria);
           const vista = vistasSet.has(item.slug);
           return (
             <button
@@ -74,22 +72,7 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
                   </div>
                 )}
 
-                <span
-                  style={areaStyle}
-                  className="absolute top-2 left-2 truncate px-2 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-64px)]"
-                >
-                  {formatAreaCurta(item.categoria)}
-                </span>
-
-                {vista ? (
-                  <span
-                    className="absolute top-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-black/85 border border-emerald-400/50 text-[9px] font-bold uppercase tracking-wider text-emerald-300"
-                    title="Você já assistiu"
-                  >
-                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
-                    <span>Visto</span>
-                  </span>
-                ) : (
+                {!vista && (
                   <span
                     style={{ backgroundColor: '#10B981', color: '#09090B' }}
                     className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider"
