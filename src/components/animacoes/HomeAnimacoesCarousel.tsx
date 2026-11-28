@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clapperboard, Play, Volume2, ChevronRight } from 'lucide-react';
+import { Clapperboard, Play } from 'lucide-react';
 import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
-import type { AnimacaoItem } from '@/data/animacoesTypes';
+import {
+  type AnimacaoItem,
+  formatAnimacaoTitulo,
+  formatAreaCurta,
+  getAreaBadgeClass,
+} from '@/data/animacoesTypes';
 import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { prefetchRoute } from '@/lib/routePrefetch';
@@ -14,73 +19,75 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
 
   if (!animacoesCatalog || animacoesCatalog.length === 0) return null;
 
-  const destaques = animacoesCatalog.slice(0, 12);
+  const destaques = animacoesCatalog.slice(0, 14);
 
   return (
     <section className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <HomeSectionHeader title="ANIMAÇÕES JURÍDICAS" />
-        <button
-          type="button"
-          onPointerEnter={() => prefetchRoute('animacoes')}
-          onClick={() => {
-            haptic.selection();
-            navigate('/animacoes');
-          }}
-          className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-0.5 shrink-0 transition-colors"
-        >
-          <span>Ver todas ({animacoesCatalog.length})</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      <HomeSectionHeader
+        title="ANIMAÇÕES JURÍDICAS"
+        actionLabel="Ver todas"
+        onAction={() => {
+          haptic.selection();
+          navigate('/animacoes');
+        }}
+      />
 
-      <div className="flex items-stretch gap-3 overflow-x-auto pb-1 no-scrollbar snap-x">
-        {destaques.map((item) => (
-          <button
-            key={item.slug}
-            type="button"
-            onPointerEnter={() => prefetchRoute('animacoes')}
-            onClick={() => {
-              haptic.selection();
-              navigate(`/animacoes/${item.slug}`);
-            }}
-            className="group min-w-[235px] max-w-[235px] sm:min-w-[260px] sm:max-w-[260px] snap-start flex flex-col justify-between p-3.5 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 hover:border-amber-500/40 shadow-sm hover:shadow-lg active:scale-[0.98] transition-all text-left shrink-0"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                  {item.categoria}
+      <div className="flex items-start gap-3 overflow-x-auto pb-1 no-scrollbar snap-x -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12">
+        {destaques.map((item, idx) => {
+          const tituloLimpo = formatAnimacaoTitulo(item.tituloHtml || item.titulo);
+          const areaClass = getAreaBadgeClass(item.categoria);
+          return (
+            <button
+              key={item.slug}
+              type="button"
+              onPointerEnter={() => prefetchRoute('animacoes')}
+              onClick={() => {
+                haptic.selection();
+                navigate(`/animacoes/${item.slug}`);
+              }}
+              className="group w-[134px] sm:w-[154px] snap-start flex flex-col gap-2 text-left shrink-0 active:scale-[0.97] transition-transform"
+            >
+              {/* Capa estilo livro (proporção 7:10) */}
+              <div className="relative w-full aspect-[7/10] rounded-xl overflow-hidden bg-zinc-900 border border-white/15 group-hover:border-red-500/60 shadow-xl shadow-black/70 transition-all">
+                {item.capaR2Url ? (
+                  <img
+                    src={item.capaR2Url}
+                    alt={tituloLimpo}
+                    loading={idx < 4 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    className="w-full h-full object-cover brightness-110 contrast-105 saturate-125 group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-3 bg-gradient-to-br from-red-950/50 via-zinc-900 to-zinc-950 text-center gap-2">
+                    <Clapperboard className="w-7 h-7 text-red-500" />
+                    <span className="text-[11px] font-bold text-white line-clamp-3">
+                      {tituloLimpo}
+                    </span>
+                  </div>
+                )}
+
+                <span
+                  className={`absolute top-2 left-2 truncate px-2 py-0.5 rounded-md backdrop-blur-sm border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-16px)] shadow-sm ${areaClass}`}
+                >
+                  {formatAreaCurta(item.categoria)}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-amber-500/15 group-hover:bg-amber-500 text-amber-300 group-hover:text-zinc-950 flex items-center justify-center transition-colors shrink-0">
-                  <Play className="w-3.5 h-3.5 ml-0.5" />
+
+                <div className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg shadow-black/50 group-hover:scale-110 transition-transform">
+                  <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />
                 </div>
               </div>
 
-              <h3 className="text-sm font-bold text-foreground line-clamp-2 leading-snug">
-                {item.tituloHtml || item.titulo}
-              </h3>
-
-              {item.resumo && (
-                <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                  {item.resumo}
+              <div className="px-0.5 space-y-0.5">
+                <h3 className="text-xs font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-red-400 transition-colors">
+                  {tituloLimpo}
+                </h3>
+                <p className="text-[10px] text-muted-foreground truncate">
+                  {item.artigoRef || item.exameRef || formatAreaCurta(item.categoria)}
                 </p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between gap-2 pt-3 mt-2 border-t border-border/40 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1 truncate">
-                <Clapperboard className="w-3 h-3 text-amber-400 shrink-0" />
-                <span className="truncate">{item.artigoRef || item.exameRef || 'Caso animado'}</span>
-              </span>
-              {item.totalAudios > 0 && (
-                <span className="flex items-center gap-1 text-zinc-400 shrink-0">
-                  <Volume2 className="w-3 h-3 text-amber-400" />
-                  <span>{item.totalAudios}</span>
-                </span>
-              )}
-            </div>
-          </button>
-        ))}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </section>
   );

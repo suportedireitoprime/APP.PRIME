@@ -96,10 +96,7 @@ const IndexMobile = () => {
             {/* Seção Em Alta — Carrossel Infinito com Zoom no Card Central */}
             <HomeEmAltaCardsCarousel />
 
-            {/* Carrossel de Notícias Jurídicas */}
-            <HomeNoticiasCarousel />
-
-            {/* Carrossel de Animações Jurídicas abaixo de Notícias */}
+            {/* Carrossel de Animações Jurídicas antes de Legislação 360° */}
             <Suspense fallback={null}>
               <HomeAnimacoesCarousel />
             </Suspense>
@@ -190,6 +187,9 @@ const IndexMobile = () => {
                 ))}
               </div>
             </section>
+
+            {/* Carrossel de Notícias Jurídicas depois de Legislação 360° */}
+            <HomeNoticiasCarousel />
 
             <MobileHomeSections hideNoticias />
           </main>

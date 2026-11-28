@@ -21,7 +21,7 @@ const HomeSectionHeader = ({
   className = 'px-1',
 }: HomeSectionHeaderProps) => {
   return (
-    <div className={`relative z-10 flex items-start justify-between gap-3 ${className}`}>
+    <div className={`relative z-10 flex items-center justify-between gap-3 ${className}`}>
       <div className="min-w-0 flex-1">
         <h3 className="font-display text-white text-[14.5px] sm:text-[15.5px] font-bold flex items-center gap-2 uppercase tracking-[0.05em]">
           <span className="w-1 h-4 rounded-full bg-primary shrink-0 shadow-[0_0_8px_hsl(var(--primary)/0.7)]" />
@@ -41,10 +41,10 @@ const HomeSectionHeader = ({
             haptic.selection();
             onAction();
           }}
-          className="group shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-[11.5px] sm:text-[12px] font-semibold text-white/80 hover:text-white transition-colors shadow-sm cursor-pointer"
+          className="group shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 hover:bg-red-500/25 active:scale-95 border border-red-500/30 text-[11.5px] sm:text-[12px] font-semibold text-red-200 hover:text-white transition-colors shadow-sm cursor-pointer"
         >
           <span>{actionLabel}</span>
-          <ChevronRight className="w-3.5 h-3.5 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight className="w-3.5 h-3.5 text-red-300 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
         </button>
       )}
     </div>

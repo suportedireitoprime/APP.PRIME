@@ -163,6 +163,7 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
   const filmeDir = subfolders.find((s) => s.name.startsWith('01'));
   const audiosDir = subfolders.find((s) => s.name.startsWith('02'));
   const descDir = subfolders.find((s) => s.name.startsWith('03'));
+  const capaDir = subfolders.find((s) => s.name.startsWith('04'));
 
   if (!filmeDir) {
     console.log(`[${idx + 1}/${total}] Sem 01 - Filme: ${name}`);
@@ -250,6 +251,28 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
     }
   }
 
+  // 5b. Baixa capa de 04 - Capa (se houver) e sobe para o R2 em WebP quando possível
+  let capaR2Url = null;
+  if (capaDir) {
+    const capaFiles = await listDriveFolder(capaDir.id);
+    const capaFile = capaFiles.find((f) => /\.(png|jpe?g|webp)$/i.test(f.name) || f.mime.startsWith('image/'));
+    if (capaFile) {
+      let capaBuf = await downloadDriveFileBuffer(capaFile.id);
+      let capaExt = (capaFile.name.match(/\.([a-z0-9]+)$/i)?.[1] || 'png').toLowerCase();
+      let capaMime = capaExt === 'webp' ? 'image/webp' : capaExt === 'jpg' || capaExt === 'jpeg' ? 'image/jpeg' : 'image/png';
+      try {
+        const sharp = require('sharp');
+        capaBuf = await sharp(capaBuf).resize({ width: 960, withoutEnlargement: true }).webp({ quality: 84 }).toBuffer();
+        capaExt = 'webp';
+        capaMime = 'image/webp';
+      } catch {
+        // fallback para formato original caso sharp não esteja instalado
+      }
+      const capaKey = `animacoes/${slug}/capa.${capaExt}`;
+      capaR2Url = await uploadToR2(capaKey, capaBuf, capaMime, false);
+    }
+  }
+
   const meta = parseFolderMetadata(name, tratamentoMd, areaName, temaName);
   const titleTagMatch = html.match(/<title>(.*?)<\/title>/i);
   const tituloHtml = titleTagMatch ? titleTagMatch[1].trim() : meta.titulo;
@@ -265,6 +288,7 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
     resumo: meta.resumo,
     tratamentoMd: tratamentoMd.slice(0, 12000),
     htmlR2Url,
+    capaR2Url,
     audiosR2Urls,
     totalAudios: audiosR2Urls.length,
     driveFolderId: folder.id,
