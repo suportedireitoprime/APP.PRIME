@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import type { AnimacaoItem } from '@/data/animacoesTypes';
+import type { AnimacaoHomeItem } from '@/data/animacoesTypes';
 import { useAnimacoesVistas } from '@/hooks/useAnimacoesVistas';
 
 export { useAnimacoesVistas };
@@ -34,28 +34,22 @@ export interface AnimacaoRankingEntry {
   totalComentarios: number;
 }
 
-interface AvaliacaoRow {
+interface ResumoRpcRow {
   animacao_slug: string;
-  user_id: string;
-  nota: number;
+  media: number;
+  total_votos: number;
+  total_favoritos: number;
+  total_comentarios: number;
+  minha_nota: number | null;
+  favoritada: boolean;
 }
 
-interface FavoritoRow {
-  animacao_slug: string;
-  user_id: string;
-}
-
-interface ComentarioCountRow {
-  animacao_slug: string;
-}
-
-interface VisualizacaoRow {
-  animacao_slug: string;
-}
-
-// Tabelas criadas via migrations 20261128013000 e 20261128103000
+// Tabelas/RPC criadas via migrations 20261128013000, 20261128103000 e 20261128113000
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as unknown as { from: (table: string) => any };
+const db = supabase as unknown as {
+  from: (table: string) => any;
+  rpc: (fn: string) => Promise<{ data: ResumoRpcRow[] | null; error: unknown }>;
+};
 
 const EMPTY_STATS: AnimacaoStats = {
   media: 0,
@@ -68,14 +62,12 @@ const EMPTY_STATS: AnimacaoStats = {
 };
 
 export function useAnimacoesInteracoes(
-  catalog: AnimacaoItem[],
+  catalog: AnimacaoHomeItem[],
   activeSlug?: string
 ) {
   const { userId, vistasSet, marcarComoVista } = useAnimacoesVistas();
   const [userName, setUserName] = useState<string>('Estudante');
-  const [avaliacoes, setAvaliacoes] = useState<AvaliacaoRow[]>([]);
-  const [favoritos, setFavoritos] = useState<FavoritoRow[]>([]);
-  const [comentariosCount, setComentariosCount] = useState<Record<string, number>>({});
+  const [resumoRows, setResumoRows] = useState<Record<string, ResumoRpcRow>>({});
   const [comentarios, setComentarios] = useState<AnimacaoComentario[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingComentarios, setLoadingComentarios] = useState(false);
@@ -83,9 +75,9 @@ export function useAnimacoesInteracoes(
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
-      const u = data?.user;
+      const u = data?.session?.user;
       const meta = (u?.user_metadata || {}) as Record<string, unknown>;
       const nome =
         (typeof meta.full_name === 'string' && meta.full_name.trim()) ||
@@ -101,24 +93,21 @@ export function useAnimacoesInteracoes(
   const carregarResumo = useCallback(async () => {
     setLoadingStats(true);
     try {
-      const [avRes, favRes, comRes] = await Promise.all([
-        db.from('animacoes_avaliacoes').select('animacao_slug,user_id,nota'),
-        db.from('animacoes_favoritos').select('animacao_slug,user_id'),
-        db.from('animacoes_comentarios').select('animacao_slug'),
-      ]);
-
-      if (!avRes.error && Array.isArray(avRes.data)) {
-        setAvaliacoes(avRes.data as AvaliacaoRow[]);
-      }
-      if (!favRes.error && Array.isArray(favRes.data)) {
-        setFavoritos(favRes.data as FavoritoRow[]);
-      }
-      if (!comRes.error && Array.isArray(comRes.data)) {
-        const counts: Record<string, number> = {};
-        for (const row of comRes.data as ComentarioCountRow[]) {
-          counts[row.animacao_slug] = (counts[row.animacao_slug] || 0) + 1;
+      const { data, error } = await db.rpc('get_animacoes_resumo');
+      if (!error && Array.isArray(data)) {
+        const next: Record<string, ResumoRpcRow> = {};
+        for (const r of data) {
+          next[r.animacao_slug] = {
+            animacao_slug: r.animacao_slug,
+            media: Number(r.media || 0),
+            total_votos: Number(r.total_votos || 0),
+            total_favoritos: Number(r.total_favoritos || 0),
+            total_comentarios: Number(r.total_comentarios || 0),
+            minha_nota: r.minha_nota !== null && r.minha_nota !== undefined ? Number(r.minha_nota) : null,
+            favoritada: Boolean(r.favoritada),
+          };
         }
-        setComentariosCount(counts);
+        setResumoRows(next);
       }
     } finally {
       setLoadingStats(false);
@@ -155,42 +144,24 @@ export function useAnimacoesInteracoes(
   const statsMap = useMemo(() => {
     const map: Record<string, AnimacaoStats> = {};
     for (const item of catalog) {
-      map[item.slug] = {
-        ...EMPTY_STATS,
-        totalComentarios: comentariosCount[item.slug] || 0,
-        visto: vistasSet.has(item.slug),
-      };
+      const row = resumoRows[item.slug];
+      map[item.slug] = row
+        ? {
+            media: row.media,
+            totalVotos: row.total_votos,
+            totalFavoritos: row.total_favoritos,
+            totalComentarios: row.total_comentarios,
+            minhaNota: row.minha_nota,
+            favoritada: row.favoritada,
+            visto: vistasSet.has(item.slug),
+          }
+        : {
+            ...EMPTY_STATS,
+            visto: vistasSet.has(item.slug),
+          };
     }
-
-    const somas: Record<string, number> = {};
-    for (const av of avaliacoes) {
-      if (!map[av.animacao_slug]) {
-        map[av.animacao_slug] = { ...EMPTY_STATS, visto: vistasSet.has(av.animacao_slug) };
-      }
-      map[av.animacao_slug].totalVotos += 1;
-      somas[av.animacao_slug] = (somas[av.animacao_slug] || 0) + Number(av.nota);
-      if (userId && av.user_id === userId) {
-        map[av.animacao_slug].minhaNota = Number(av.nota);
-      }
-    }
-
-    for (const slug of Object.keys(somas)) {
-      const votos = map[slug].totalVotos;
-      map[slug].media = votos > 0 ? Number((somas[slug] / votos).toFixed(1)) : 0;
-    }
-
-    for (const fav of favoritos) {
-      if (!map[fav.animacao_slug]) {
-        map[fav.animacao_slug] = { ...EMPTY_STATS, visto: vistasSet.has(fav.animacao_slug) };
-      }
-      map[fav.animacao_slug].totalFavoritos += 1;
-      if (userId && fav.user_id === userId) {
-        map[fav.animacao_slug].favoritada = true;
-      }
-    }
-
     return map;
-  }, [catalog, avaliacoes, favoritos, comentariosCount, userId, vistasSet]);
+  }, [catalog, resumoRows, vistasSet]);
 
   const ranking = useMemo<AnimacaoRankingEntry[]>(() => {
     return catalog
@@ -219,10 +190,25 @@ export function useAnimacoesInteracoes(
         return;
       }
       haptic.impact('light');
-      const prev = avaliacoes;
-      setAvaliacoes((cur) => {
-        const filtered = cur.filter((r) => !(r.animacao_slug === slug && r.user_id === userId));
-        return [...filtered, { animacao_slug: slug, user_id: userId, nota }];
+      const prev = resumoRows;
+      setResumoRows((cur) => {
+        const atual = cur[slug] || {
+          animacao_slug: slug,
+          media: 0,
+          total_votos: 0,
+          total_favoritos: 0,
+          total_comentarios: 0,
+          minha_nota: null,
+          favoritada: false,
+        };
+        const tinhaNota = atual.minha_nota !== null;
+        const novoTotal = tinhaNota ? atual.total_votos : atual.total_votos + 1;
+        const somaAnterior = atual.media * atual.total_votos - (atual.minha_nota || 0);
+        const novaMedia = novoTotal > 0 ? Number(((somaAnterior + nota) / novoTotal).toFixed(1)) : nota;
+        return {
+          ...cur,
+          [slug]: { ...atual, minha_nota: nota, total_votos: novoTotal, media: novaMedia },
+        };
       });
 
       const { error } = await db
@@ -233,13 +219,13 @@ export function useAnimacoesInteracoes(
         );
 
       if (error) {
-        setAvaliacoes(prev);
+        setResumoRows(prev);
         toast.error('Não foi possível salvar sua avaliação.');
         return;
       }
       toast.success(`Avaliação ${nota}/5 salva!`);
     },
-    [userId, avaliacoes]
+    [userId, resumoRows]
   );
 
   const toggleFavorito = useCallback(
@@ -249,36 +235,55 @@ export function useAnimacoesInteracoes(
         return;
       }
       haptic.selection();
-      const jaFavorita = favoritos.some((f) => f.animacao_slug === slug && f.user_id === userId);
-      const prev = favoritos;
+      const atual = resumoRows[slug];
+      const jaFavorita = Boolean(atual?.favoritada);
+      const prev = resumoRows;
+
+      setResumoRows((cur) => {
+        const base = cur[slug] || {
+          animacao_slug: slug,
+          media: 0,
+          total_votos: 0,
+          total_favoritos: 0,
+          total_comentarios: 0,
+          minha_nota: null,
+          favoritada: false,
+        };
+        return {
+          ...cur,
+          [slug]: {
+            ...base,
+            favoritada: !jaFavorita,
+            total_favoritos: Math.max(0, base.total_favoritos + (jaFavorita ? -1 : 1)),
+          },
+        };
+      });
 
       if (jaFavorita) {
-        setFavoritos((cur) => cur.filter((f) => !(f.animacao_slug === slug && f.user_id === userId)));
         const { error } = await db
           .from('animacoes_favoritos')
           .delete()
           .eq('animacao_slug', slug)
           .eq('user_id', userId);
         if (error) {
-          setFavoritos(prev);
+          setResumoRows(prev);
           toast.error('Erro ao remover dos favoritos.');
           return;
         }
         toast.success('Removida dos favoritos.');
       } else {
-        setFavoritos((cur) => [...cur, { animacao_slug: slug, user_id: userId }]);
         const { error } = await db
           .from('animacoes_favoritos')
           .insert({ animacao_slug: slug, user_id: userId });
         if (error) {
-          setFavoritos(prev);
+          setResumoRows(prev);
           toast.error('Erro ao favoritar animação.');
           return;
         }
         toast.success('Adicionada aos favoritos!');
       }
     },
-    [userId, favoritos]
+    [userId, resumoRows]
   );
 
   const enviarComentario = useCallback(
@@ -310,7 +315,18 @@ export function useAnimacoesInteracoes(
 
         haptic.impact('light');
         setComentarios((cur) => [data as AnimacaoComentario, ...cur]);
-        setComentariosCount((cur) => ({ ...cur, [slug]: (cur[slug] || 0) + 1 }));
+        setResumoRows((cur) => {
+          const base = cur[slug] || {
+            animacao_slug: slug,
+            media: 0,
+            total_votos: 0,
+            total_favoritos: 0,
+            total_comentarios: 0,
+            minha_nota: null,
+            favoritada: false,
+          };
+          return { ...cur, [slug]: { ...base, total_comentarios: base.total_comentarios + 1 } };
+        });
         toast.success('Comentário publicado!');
         return true;
       } finally {
@@ -323,9 +339,14 @@ export function useAnimacoesInteracoes(
   const excluirComentario = useCallback(
     async (id: string, slug: string) => {
       if (!userId) return;
-      const prev = comentarios;
+      const prevCom = comentarios;
+      const prevRows = resumoRows;
       setComentarios((cur) => cur.filter((c) => c.id !== id));
-      setComentariosCount((cur) => ({ ...cur, [slug]: Math.max(0, (cur[slug] || 1) - 1) }));
+      setResumoRows((cur) => {
+        const base = cur[slug];
+        if (!base) return cur;
+        return { ...cur, [slug]: { ...base, total_comentarios: Math.max(0, base.total_comentarios - 1) } };
+      });
 
       const { error } = await db
         .from('animacoes_comentarios')
@@ -334,14 +355,14 @@ export function useAnimacoesInteracoes(
         .eq('user_id', userId);
 
       if (error) {
-        setComentarios(prev);
-        setComentariosCount((cur) => ({ ...cur, [slug]: (cur[slug] || 0) + 1 }));
+        setComentarios(prevCom);
+        setResumoRows(prevRows);
         toast.error('Não foi possível excluir o comentário.');
         return;
       }
       toast.success('Comentário excluído.');
     },
-    [userId, comentarios]
+    [userId, comentarios, resumoRows]
   );
 
   return {

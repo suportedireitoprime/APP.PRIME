@@ -8,6 +8,7 @@ export interface AnimacaoHomeItem {
   artigoRef: string | null;
   exameRef: string | null;
   capaR2Url?: string | null;
+  capaThumbR2Url?: string | null;
 }
 
 export interface AnimacaoItem extends AnimacaoHomeItem {

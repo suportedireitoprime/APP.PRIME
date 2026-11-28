@@ -55,9 +55,9 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
             >
               {/* Capa estilo livro (proporção 7:10) */}
               <div className="relative w-full aspect-[7/10] rounded-xl overflow-hidden bg-zinc-900 border border-white/15 group-hover:border-red-500/60 shadow-sm">
-                {item.capaR2Url ? (
+                {(item.capaThumbR2Url || item.capaR2Url) ? (
                   <img
-                    src={item.capaR2Url}
+                    src={item.capaThumbR2Url || item.capaR2Url || ''}
                     alt={tituloLimpo}
                     width={154}
                     height={220}

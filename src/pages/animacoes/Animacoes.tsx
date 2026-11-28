@@ -18,15 +18,15 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
-import type { AnimacaoItem } from '@/data/animacoesTypes';
+import animacoesHomeRaw from '@/data/animacoesHomeCatalog.json';
+import type { AnimacaoHomeItem, AnimacaoItem } from '@/data/animacoesTypes';
 import { getAreaBadgeStyle, formatAreaCurta } from '@/data/animacoesTypes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useAnimacoesInteracoes } from '@/hooks/useAnimacoesInteracoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { resetGlobalScroll } from '@/lib/scrollUtils';
 
-const animacoesCatalog = animacoesCatalogRaw as AnimacaoItem[];
+const animacoesCatalog = animacoesHomeRaw as AnimacaoHomeItem[];
 
 type OrdenacaoLista = 'padrao' | 'ranking' | 'comentarios';
 
@@ -60,10 +60,29 @@ const Animacoes: React.FC = () => {
   const [novoComentario, setNovoComentario] = useState('');
   const [iframeHeight, setIframeHeight] = useState<number | null>(null);
 
-  const ativa = useMemo(
+  const ativaResumo = useMemo(
     () => (slug ? animacoesCatalog.find((a) => a.slug === slug) || null : null),
     [slug]
   );
+  const [ativaDetalhe, setAtivaDetalhe] = useState<AnimacaoItem | null>(null);
+
+  useEffect(() => {
+    if (!slug) {
+      setAtivaDetalhe(null);
+      return;
+    }
+    let active = true;
+    import('@/data/animacoesCatalog.json').then((mod) => {
+      if (!active) return;
+      const full = (mod.default as AnimacaoItem[]).find((a) => a.slug === slug) || null;
+      setAtivaDetalhe(full);
+    });
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  const ativa = ativaResumo;
 
   const proximaDaArea = useMemo(() => {
     if (!ativa) return null;
@@ -132,7 +151,7 @@ const Animacoes: React.FC = () => {
   }, []);
 
   const catalogBySlug = useMemo(() => {
-    const map: Record<string, AnimacaoItem> = {};
+    const map: Record<string, AnimacaoHomeItem> = {};
     for (const item of animacoesCatalog) map[item.slug] = item;
     return map;
   }, []);
@@ -252,7 +271,7 @@ const Animacoes: React.FC = () => {
               </h1>
               <p className="text-xs text-zinc-400 truncate">
                 {ativa
-                  ? `${ativa.categoria}${ativa.artigoRef ? ` • ${ativa.artigoRef}` : ''}${ativa.gabarito ? ` • Gabarito ${ativa.gabarito}` : ''}`
+                  ? `${ativa.categoria}${ativa.artigoRef ? ` • ${ativa.artigoRef}` : ''}${ativaDetalhe?.gabarito ? ` • Gabarito ${ativaDetalhe?.gabarito}` : ''}`
                   : `${animacoesCatalog.length} casos animados • Avalie, comente e favorite`}
               </p>
             </div>
@@ -275,15 +294,19 @@ const Animacoes: React.FC = () => {
             {/* Coluna do Player */}
             <div className="lg:col-span-6 xl:col-span-5 flex flex-col items-center w-full space-y-3">
               <div className="relative w-full max-w-[560px] mx-auto overflow-hidden bg-[#0b1220] sm:rounded-2xl sm:border sm:border-zinc-800">
+                {ativaDetalhe?.htmlR2Url ? (
                 <iframe
                   key={ativa.slug}
-                  src={`${ativa.htmlR2Url}?v=6`}
+                  src={`${ativaDetalhe.htmlR2Url}?v=6`}
                   title={formatTitulo(ativa.tituloHtml || ativa.titulo)}
                   allow="autoplay; fullscreen"
                   scrolling="no"
                   style={iframeHeight ? { height: `${iframeHeight}px` } : undefined}
                   className="w-full h-[calc(100vw*1.92+175px)] min-h-[760px] sm:h-[980px] lg:h-[1040px] border-0 block overflow-hidden bg-[#0b1220]"
                 />
+                ) : (
+                  <div className="w-full h-[580px] flex items-center justify-center text-xs text-zinc-400">Carregando animação...</div>
+                )}
               </div>
 
               {/* Barra de Avaliação (1-5), Favoritar e Compartilhar */}
@@ -368,7 +391,7 @@ const Animacoes: React.FC = () => {
                   >
                     {proximaDaArea.capaR2Url ? (
                       <img
-                        src={proximaDaArea.capaR2Url}
+                        src={proximaDaArea.capaThumbR2Url || proximaDaArea.capaR2Url || ''}
                         alt={formatTitulo(proximaDaArea.tituloHtml || proximaDaArea.titulo)}
                         loading="lazy"
                         decoding="async"
@@ -528,9 +551,9 @@ const Animacoes: React.FC = () => {
                         }}
                         className="flex items-center gap-3 p-3 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800 hover:border-zinc-700 text-left transition-colors"
                       >
-                        {item.capaR2Url ? (
+                        {(item.capaThumbR2Url || item.capaR2Url) ? (
                           <img
-                            src={item.capaR2Url}
+                            src={item.capaThumbR2Url || item.capaR2Url || ''}
                             alt={formatTitulo(item.tituloHtml || item.titulo)}
                             width={88}
                             height={126}
@@ -718,7 +741,7 @@ const Animacoes: React.FC = () => {
                       {item.capaR2Url ? (
                         <div className="relative w-[76px] sm:w-[88px] aspect-[7/10] rounded-xl bg-zinc-900 overflow-hidden shrink-0 border border-white/15">
                           <img
-                            src={item.capaR2Url}
+                            src={item.capaThumbR2Url || item.capaR2Url || ''}
                             alt={formatTitulo(item.tituloHtml || item.titulo)}
                             width={88}
                             height={126}

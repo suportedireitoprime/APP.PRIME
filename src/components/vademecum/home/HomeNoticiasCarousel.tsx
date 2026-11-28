@@ -240,7 +240,10 @@ function HomeNoticiasCarousel({ onOpenChange, autoplay = true, variant = 'defaul
   const normalizedActiveIndex = feed.length > 0 ? activeIndex % feed.length : 0;
 
   return (
-    <div className={`space-y-3.5 ${variant === 'hero' ? 'max-w-[340px]' : ''}`}>
+    <div
+      className={`space-y-3.5 ${variant === 'hero' ? 'max-w-[340px]' : ''}`}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 280px' }}
+    >
       {variant === 'default' && <CarouselHeaderTitle kind="noticia" />}
 
       <div

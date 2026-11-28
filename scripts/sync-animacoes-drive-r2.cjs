@@ -251,8 +251,9 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
     }
   }
 
-  // 5b. Baixa capa de 04 - Capa (se houver) e sobe para o R2 em WebP quando possível
+  // 5b. Baixa capa de 04 - Capa (se houver) e sobe para o R2 em WebP + thumb 320px
   let capaR2Url = null;
+  let capaThumbR2Url = null;
   if (capaDir) {
     const capaFiles = await listDriveFolder(capaDir.id);
     const capaFile = capaFiles.find((f) => /\.(png|jpe?g|webp)$/i.test(f.name) || f.mime.startsWith('image/'));
@@ -262,6 +263,8 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
       let capaMime = capaExt === 'webp' ? 'image/webp' : capaExt === 'jpg' || capaExt === 'jpeg' ? 'image/jpeg' : 'image/png';
       try {
         const sharp = require('sharp');
+        const thumbBuf = await sharp(capaBuf).resize({ width: 320, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+        capaThumbR2Url = await uploadToR2(`animacoes/${slug}/capa-thumb.webp`, thumbBuf, 'image/webp', false);
         capaBuf = await sharp(capaBuf).resize({ width: 960, withoutEnlargement: true }).webp({ quality: 84 }).toBuffer();
         capaExt = 'webp';
         capaMime = 'image/webp';
@@ -289,6 +292,7 @@ async function processFolder(folder, idx, total, areaName = null, temaName = nul
     tratamentoMd: tratamentoMd.slice(0, 12000),
     htmlR2Url,
     capaR2Url,
+    capaThumbR2Url,
     audiosR2Urls,
     totalAudios: audiosR2Urls.length,
     driveFolderId: folder.id,
@@ -349,6 +353,7 @@ async function main() {
     artigoRef: c.artigoRef,
     exameRef: c.exameRef,
     capaR2Url: c.capaR2Url || null,
+    capaThumbR2Url: c.capaThumbR2Url || null,
   }));
   const homeOutPath = path.join(process.cwd(), 'src', 'data', 'animacoesHomeCatalog.json');
   fs.writeFileSync(homeOutPath, JSON.stringify(homeCatalog), 'utf8');

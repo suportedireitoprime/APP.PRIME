@@ -302,7 +302,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
 
             {/* Play Button (Glassmorphism) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-transform duration-300 group-data-[is-center=true]:scale-110">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/25 backdrop-blur-md border border-white/35 group-data-[is-center=true]:border-white/60 group-data-[is-center=true]:bg-black/35 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/65 border border-white/35 group-data-[is-center=true]:border-white/60 group-data-[is-center=true]:bg-black/80 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-transform duration-300">
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5 transition-transform group-data-[is-center=true]:scale-105" fill="currentColor" />
               </div>
             </div>

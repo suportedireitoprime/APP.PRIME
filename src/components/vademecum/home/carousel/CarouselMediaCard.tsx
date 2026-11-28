@@ -67,7 +67,7 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
-            className="absolute inset-0 w-full h-full object-cover brightness-95 contrast-[1.03]"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         )}
         <div className="absolute inset-x-0 bottom-0 h-[78%] bg-gradient-to-t from-black/95 via-black/70 to-transparent pointer-events-none" />

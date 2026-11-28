@@ -219,7 +219,7 @@ export const HomeBoletinsList: React.FC = () => {
                   
                   {/* Ícone de Play centralizado na miniatura */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary transition-all">
+                    <div className="w-7 h-7 rounded-full bg-black/75 border border-white/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary transition-transform">
                       <Play className="w-3.5 h-3.5 text-white ml-0.5 fill-white" />
                     </div>
                   </div>
