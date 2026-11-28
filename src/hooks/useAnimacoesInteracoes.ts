@@ -3,6 +3,9 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import type { AnimacaoItem } from '@/data/animacoesTypes';
+import { useAnimacoesVistas } from '@/hooks/useAnimacoesVistas';
+
+export { useAnimacoesVistas };
 
 export interface AnimacaoComentario {
   id: string;
@@ -63,76 +66,6 @@ const EMPTY_STATS: AnimacaoStats = {
   favoritada: false,
   visto: false,
 };
-
-// Snapshot em memória para sincronizar vistas instantaneamente entre Home e /animacoes
-let vistasMemorySet = new Set<string>();
-let vistasLoadedUserId: string | null = null;
-const vistasListeners = new Set<() => void>();
-
-function notifyVistas() {
-  for (const fn of vistasListeners) fn();
-}
-
-export function useAnimacoesVistas() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [vistasSet, setVistasSet] = useState<Set<string>>(() => new Set(vistasMemorySet));
-
-  useEffect(() => {
-    const sync = () => setVistasSet(new Set(vistasMemorySet));
-    vistasListeners.add(sync);
-    return () => {
-      vistasListeners.delete(sync);
-    };
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!active) return;
-      const uid = data?.user?.id ?? null;
-      setUserId(uid);
-      if (!uid) {
-        if (vistasLoadedUserId !== null) {
-          vistasMemorySet = new Set();
-          vistasLoadedUserId = null;
-          notifyVistas();
-        }
-        return;
-      }
-      if (vistasLoadedUserId === uid) return;
-      const { data: rows, error } = await db
-        .from('animacoes_visualizacoes')
-        .select('animacao_slug')
-        .eq('user_id', uid);
-      if (!active) return;
-      if (!error && Array.isArray(rows)) {
-        vistasMemorySet = new Set((rows as VisualizacaoRow[]).map((r) => r.animacao_slug));
-        vistasLoadedUserId = uid;
-        notifyVistas();
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const marcarComoVista = useCallback(
-    async (slug: string) => {
-      if (!slug || vistasMemorySet.has(slug)) return;
-      vistasMemorySet = new Set(vistasMemorySet).add(slug);
-      notifyVistas();
-
-      if (!userId) return;
-      await db.from('animacoes_visualizacoes').upsert(
-        { animacao_slug: slug, user_id: userId, visto_em: new Date().toISOString() },
-        { onConflict: 'animacao_slug,user_id' }
-      );
-    },
-    [userId]
-  );
-
-  return { userId, vistasSet, marcarComoVista };
-}
 
 export function useAnimacoesInteracoes(
   catalog: AnimacaoItem[],

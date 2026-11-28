@@ -1,17 +1,20 @@
 import type { CSSProperties } from 'react';
 
-export interface AnimacaoItem {
+export interface AnimacaoHomeItem {
   slug: string;
   titulo: string;
   tituloHtml?: string;
   categoria: string;
-  gabarito: string | null;
   artigoRef: string | null;
   exameRef: string | null;
+  capaR2Url?: string | null;
+}
+
+export interface AnimacaoItem extends AnimacaoHomeItem {
+  gabarito: string | null;
   resumo: string;
   tratamentoMd: string;
   htmlR2Url: string;
-  capaR2Url?: string | null;
   audiosR2Urls: string[];
   totalAudios: number;
   driveFolderId: string;

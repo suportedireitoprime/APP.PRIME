@@ -340,7 +340,20 @@ async function main() {
 
   const outPath = path.join(process.cwd(), 'src', 'data', 'animacoesCatalog.json');
   fs.writeFileSync(outPath, JSON.stringify(catalog, null, 2), 'utf8');
-  console.log(`\nConcluído! ${catalog.length} animações salvas em ${outPath}`);
+
+  const homeCatalog = catalog.map((c) => ({
+    slug: c.slug,
+    titulo: c.titulo,
+    tituloHtml: c.tituloHtml,
+    categoria: c.categoria,
+    artigoRef: c.artigoRef,
+    exameRef: c.exameRef,
+    capaR2Url: c.capaR2Url || null,
+  }));
+  const homeOutPath = path.join(process.cwd(), 'src', 'data', 'animacoesHomeCatalog.json');
+  fs.writeFileSync(homeOutPath, JSON.stringify(homeCatalog), 'utf8');
+
+  console.log(`\nConcluído! ${catalog.length} animações salvas em ${outPath} e ${homeOutPath}`);
 }
 
 main().catch((e) => {

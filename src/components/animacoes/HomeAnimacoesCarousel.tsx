@@ -1,30 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Clapperboard, Play } from 'lucide-react';
-import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
+import animacoesHomeRaw from '@/data/animacoesHomeCatalog.json';
 import {
-  type AnimacaoItem,
+  type AnimacaoHomeItem,
   formatAnimacaoTitulo,
   formatAreaCurta,
   getAreaBadgeStyle,
 } from '@/data/animacoesTypes';
 import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
-import { useAnimacoesVistas } from '@/hooks/useAnimacoesInteracoes';
+import { useAnimacoesVistas } from '@/hooks/useAnimacoesVistas';
 import { haptic } from '@/lib/nativeHaptics';
 import { prefetchRoute } from '@/lib/routePrefetch';
 
-const animacoesCatalog = animacoesCatalogRaw as AnimacaoItem[];
+const animacoesHome = animacoesHomeRaw as AnimacaoHomeItem[];
 
 export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoesCarousel() {
   const navigate = useNavigate();
   const { vistasSet } = useAnimacoesVistas();
 
-  if (!animacoesCatalog || animacoesCatalog.length === 0) return null;
+  if (!animacoesHome || animacoesHome.length === 0) return null;
 
-  const destaques = animacoesCatalog.slice(0, 14);
+  const destaques = animacoesHome.slice(0, 14);
 
   return (
-    <section className="flex flex-col gap-3">
+    <section
+      className="flex flex-col gap-3"
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 290px' }}
+    >
       <HomeSectionHeader
         title="ANIMAÇÕES JURÍDICAS"
         actionLabel="Ver todas"
@@ -34,7 +37,7 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
         }}
       />
 
-      <div className="flex items-start gap-3 overflow-x-auto pb-1 no-scrollbar snap-x -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12">
+      <div className="flex items-start gap-3 overflow-x-auto overscroll-x-contain touch-pan-x touch-pan-y pb-1 no-scrollbar snap-x -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12">
         {destaques.map((item, idx) => {
           const tituloLimpo = formatAnimacaoTitulo(item.tituloHtml || item.titulo);
           const areaStyle = getAreaBadgeStyle(item.categoria);
@@ -51,14 +54,16 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
               className="group w-[134px] sm:w-[154px] snap-start flex flex-col gap-2 text-left shrink-0 active:scale-[0.97] transition-transform"
             >
               {/* Capa estilo livro (proporção 7:10) */}
-              <div className="relative w-full aspect-[7/10] rounded-xl overflow-hidden bg-zinc-900 border border-white/15 group-hover:border-red-500/60 shadow-xl shadow-black/70 transition-all">
+              <div className="relative w-full aspect-[7/10] rounded-xl overflow-hidden bg-zinc-900 border border-white/15 group-hover:border-red-500/60 shadow-sm">
                 {item.capaR2Url ? (
                   <img
                     src={item.capaR2Url}
                     alt={tituloLimpo}
-                    loading={idx < 4 ? 'eager' : 'lazy'}
+                    width={154}
+                    height={220}
+                    loading={idx < 3 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="w-full h-full object-cover brightness-110 contrast-105 saturate-125 group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center p-3 bg-gradient-to-br from-red-950/50 via-zinc-900 to-zinc-950 text-center gap-2">
@@ -71,14 +76,14 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
 
                 <span
                   style={areaStyle}
-                  className="absolute top-2 left-2 truncate px-2 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-64px)] shadow-sm"
+                  className="absolute top-2 left-2 truncate px-2 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-64px)]"
                 >
                   {formatAreaCurta(item.categoria)}
                 </span>
 
                 {vista ? (
                   <span
-                    className="absolute top-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-black/80 border border-emerald-400/50 text-[9px] font-bold uppercase tracking-wider text-emerald-300 shadow-sm"
+                    className="absolute top-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-black/85 border border-emerald-400/50 text-[9px] font-bold uppercase tracking-wider text-emerald-300"
                     title="Você já assistiu"
                   >
                     <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
@@ -87,13 +92,13 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
                 ) : (
                   <span
                     style={{ backgroundColor: '#10B981', color: '#09090B' }}
-                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider shadow-sm"
+                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider"
                   >
                     NOVO
                   </span>
                 )}
 
-                <div className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg shadow-black/50 group-hover:scale-110 transition-transform">
+                <div className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                   <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />
                 </div>
               </div>

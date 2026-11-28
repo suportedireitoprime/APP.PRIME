@@ -372,7 +372,7 @@ const Animacoes: React.FC = () => {
                         alt={formatTitulo(proximaDaArea.tituloHtml || proximaDaArea.titulo)}
                         loading="lazy"
                         decoding="async"
-                        className="w-11 h-[62px] rounded-lg object-cover brightness-110 contrast-105 saturate-125 border border-white/15 shrink-0"
+                        className="w-11 h-[62px] rounded-lg object-cover border border-white/15 shrink-0"
                       />
                     ) : (
                       <div className="w-11 h-[62px] rounded-lg bg-zinc-800 flex items-center justify-center shrink-0">
@@ -532,9 +532,11 @@ const Animacoes: React.FC = () => {
                           <img
                             src={item.capaR2Url}
                             alt={formatTitulo(item.tituloHtml || item.titulo)}
+                            width={88}
+                            height={126}
                             loading="eager"
                             decoding="async"
-                            className="w-12 h-[68px] rounded-lg object-cover brightness-110 contrast-105 saturate-125 shadow-md shadow-black/60 shrink-0 border border-white/15"
+                            className="w-12 h-[68px] rounded-lg object-cover shadow-md shadow-black/60 shrink-0 border border-white/15"
                           />
                         ) : (
                           <div className="w-12 h-[68px] rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
@@ -718,9 +720,11 @@ const Animacoes: React.FC = () => {
                           <img
                             src={item.capaR2Url}
                             alt={formatTitulo(item.tituloHtml || item.titulo)}
+                            width={88}
+                            height={126}
                             loading={idx < 6 ? 'eager' : 'lazy'}
                             decoding="async"
-                            className="w-full h-full object-cover brightness-110 contrast-105 saturate-125 group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                       ) : (
