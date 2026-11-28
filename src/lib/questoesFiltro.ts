@@ -2,6 +2,7 @@ export type QuestoesFiltro = {
   segmentos: string[];
   disciplinas: string[];
   assuntos: string[];
+  topicos: string[];
   anos: string[];
   status: string[];
   ordem: 'embaralhado' | 'original';
@@ -14,6 +15,7 @@ export const FILTRO_VAZIO: QuestoesFiltro = {
   segmentos: [],
   disciplinas: [],
   assuntos: [],
+  topicos: [],
   anos: [],
   status: [],
   ordem: 'embaralhado',

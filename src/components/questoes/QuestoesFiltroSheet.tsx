@@ -21,10 +21,8 @@ export type { QuestoesFiltro };
 const db = supabase as any;
 
 const SEGMENTOS = [
-  { id: 'conceituais', label: 'Conceituais', desc: 'Teoria e fundamentos.' },
-  { id: 'concursos', label: 'Concursos', desc: 'Concursos de todas as bancas.' },
-  { id: 'policiais', label: 'Carreiras policiais', desc: 'Polícia Civil, Federal, PRF e afins.' },
-  { id: 'oab', label: 'OAB', desc: 'Exame de Ordem (FGV).' },
+  { id: 'oab', label: 'OAB', desc: 'Exame de Ordem (1ª Fase).' },
+  { id: 'conceituais', label: 'Conceituais', desc: 'Questões teóricas e conceituais.' },
 ];
 
 const QUANTIDADES = [null, 10, 20, 50, 100] as const;
@@ -33,16 +31,18 @@ type Counts = {
   segmentos: Record<string, number>;
   disciplinas: Record<string, number>;
   assuntos: Record<string, number>;
+  topicos?: Record<string, number>;
   anos: Record<string, number>;
   total: number;
 };
 
 const DEFAULT_COUNTS: Counts = {
-  segmentos: { conceituais: 4098, concursos: 7466, policiais: 3120, oab: 1195 },
+  segmentos: { oab: 3815, conceituais: 15000 },
   disciplinas: {},
   assuntos: {},
+  topicos: {},
   anos: {},
-  total: 15879,
+  total: 18815,
 };
 
 let cachedCountsMemory: Counts | null = null;
@@ -91,7 +91,7 @@ const QuestoesFiltroSheet = ({
     }
     return filtroInicial ? { ...salvo, ...filtroInicial } : salvo;
   });
-  const [passo, setPasso] = useState<null | 'segmento' | 'disciplinas' | 'assuntos' | 'anos' | 'status' | 'quantidade'>(null);
+  const [passo, setPasso] = useState<null | 'segmento' | 'disciplinas' | 'assuntos' | 'topicos' | 'anos' | 'status' | 'quantidade'>(null);
   const [counts, setCounts] = useState<Counts>(getInitialCounts);
   const [carregando, setCarregando] = useState(false);
 
@@ -120,6 +120,7 @@ const QuestoesFiltroSheet = ({
       _segmentos: f.segmentos.length ? f.segmentos : null,
       _disciplinas: f.disciplinas.length ? f.disciplinas : null,
       _assuntos: f.assuntos.length ? f.assuntos : null,
+      _topicos: f.topicos?.length ? f.topicos : null,
       _anos: f.anos.length ? f.anos.map(Number) : null,
       _bancas: null,
     }).then(({ data, error }: any) => {
@@ -139,7 +140,15 @@ const QuestoesFiltroSheet = ({
     return () => {
       cancelado = true;
     };
-  }, [aberto, f.segmentos, f.disciplinas, f.assuntos, f.anos]);
+  }, [aberto, f.segmentos, f.disciplinas, f.assuntos, f.topicos, f.anos]);
+
+  const topicos = useMemo(
+    () =>
+      Object.keys(counts.topicos || {}).sort(
+        (a, b) => (counts.topicos?.[b] || 0) - (counts.topicos?.[a] || 0),
+      ),
+    [counts.topicos],
+  );
 
   const disciplinas = useMemo(
     () => Object.keys(counts.disciplinas).sort((a, b) => counts.disciplinas[b] - counts.disciplinas[a]),
@@ -195,6 +204,7 @@ const QuestoesFiltroSheet = ({
     f.segmentos.length +
     f.disciplinas.length +
     f.assuntos.length +
+    (f.topicos?.length || 0) +
     f.anos.length +
     (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
@@ -329,6 +339,20 @@ const QuestoesFiltroSheet = ({
               />
               <StepRow
                 step={4}
+                label="Tópicos"
+                hint={
+                  f.topicos?.length
+                    ? `${f.topicos.length} selecionado(s)`
+                    : 'Todos os tópicos'
+                }
+                locked={!f.disciplinas.length}
+                done={!!f.topicos?.length}
+                badge={f.topicos?.length || undefined}
+                lockedMessage="Escolha as disciplinas primeiro."
+                onClick={() => setPasso('topicos')}
+              />
+              <StepRow
+                step={4}
                 label="Status"
                 hint={f.status.length ? `${f.status.length} selecionado(s)` : 'Todos os status'}
                 locked={!f.segmentos.length}
@@ -455,8 +479,20 @@ const QuestoesFiltroSheet = ({
                         newRawAssuntos.push(main);
                       }
                     });
-                    setF((p) => ({ ...p, assuntos: newRawAssuntos, anos: [] }));
+                    setF((p) => ({ ...p, assuntos: newRawAssuntos, topicos: [], anos: [] }));
                   }}
+                />
+              )}
+              {passo === 'topicos' && (
+                <SelecaoSheet
+                  key="top"
+                  titulo="Tópicos"
+                  buscavel
+                  opcoes={topicos}
+                  contagens={counts.topicos}
+                  selecionado={f.topicos || []}
+                  onFechar={() => setPasso(null)}
+                  onConfirmar={(v) => setF((p) => ({ ...p, topicos: v }))}
                 />
               )}
               {passo === 'anos' && (

@@ -11,6 +11,8 @@ export type Questao = {
   nivel: string;
   disciplina: string | null;
   assunto: string | null;
+  topico?: string | null;
+  tema_amplo?: string | null;
   tema_central: string | null;
   ano: number | null;
   banca: string | null;
@@ -127,7 +129,7 @@ export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null)
 const LIMITE_PADRAO = 50;
 
 export type FiltroAvancado = {
-  segmentos: string[]; disciplinas: string[]; assuntos: string[]; anos: string[];
+  segmentos: string[]; disciplinas: string[]; assuntos: string[]; topicos?: string[]; anos: string[];
   status: string[]; ordem: 'embaralhado' | 'original'; quantidade: number | null;
 };
 
@@ -184,6 +186,7 @@ export function useQuestoesSessao(opts: SortearOpts) {
           _segmentos: f.segmentos?.length ? f.segmentos : null,
           _disciplinas: f.disciplinas?.length ? f.disciplinas : null,
           _assuntos: f.assuntos?.length ? f.assuntos : null,
+          _topicos: f.topicos?.length ? f.topicos : null,
           _anos: f.anos?.length ? f.anos.map(Number) : null,
           _bancas: null,
         })
