@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Search, ChevronRight, Mic, Layers, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, ChevronRight, Mic } from "lucide-react";
+import { motion } from "framer-motion";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
 import { resumosLocal } from "@/lib/resumosLocal";
 import ResumosBreadcrumbTimeline, { getMetodoLabel } from "@/components/resumos/ResumosBreadcrumbTimeline";
-import { toast } from "@/hooks/use-toast";
+import { useVoiceSearch } from "@/hooks/useVoiceSearch";
+import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
 import { PrimeImage } from '@/components/ui/PrimeImage';
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getDisciplinaVisualTheme } from "@/lib/disciplinasTheme";
@@ -39,6 +40,18 @@ export default function ResumosJuridicosTemas() {
 
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
   const [selectedTema, setSelectedTema] = useState<SelectedTemaInfo | null>(null);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => setIsDesktop(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   // Registra acesso por área para continuidade (BottomNav → Resumos)
   useEffect(() => {
@@ -67,18 +80,20 @@ export default function ResumosJuridicosTemas() {
   });
   const [loading, setLoading] = useState(() => !temasCache.has(decodedArea));
   const [q, setQ] = useState("");
+  const { listening, startVoiceSearch } = useVoiceSearch(setQ);
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [recentes, setRecentes] = useState(() => resumosLocal.recentes());
   const [favoritosGlobais, setFavoritosGlobais] = useState(() => resumosLocal.favoritos());
 
-  useEffect(() => {
-    const onEvt = () => {
-      setRecentes(resumosLocal.recentes());
-      setFavoritosGlobais(resumosLocal.favoritos());
-    };
-    window.addEventListener("resumos-local-change", onEvt);
-    return () => window.removeEventListener("resumos-local-change", onEvt);
+  const syncLocalProgress = useCallback(() => {
+    setRecentes(resumosLocal.recentes());
+    setFavoritosGlobais(resumosLocal.favoritos());
   }, []);
+
+  useEffect(() => {
+    window.addEventListener("resumos-local-change", syncLocalProgress);
+    return () => window.removeEventListener("resumos-local-change", syncLocalProgress);
+  }, [syncLocalProgress]);
 
   // 1. Carregar Temas Instantaneamente
   useEffect(() => {
@@ -238,8 +253,13 @@ export default function ResumosJuridicosTemas() {
               className="pl-12 pr-12 h-14 rounded-2xl backdrop-blur-md text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all focus:border-primary/80" 
             />
             <button
-              onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all text-white/70 hover:text-white"
+              type="button"
+              onClick={startVoiceSearch}
+              aria-label="Pesquisar por voz"
+              className={cn(
+                "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all",
+                listening ? "text-red-400 animate-pulse bg-red-500/15" : "text-white/70 hover:text-white"
+              )}
             >
               <Mic className="w-5 h-5" />
             </button>
@@ -296,80 +316,132 @@ export default function ResumosJuridicosTemas() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 pt-4 w-full">
+      <div className="max-w-5xl lg:max-w-7xl mx-auto px-4 pt-4 w-full">
         {loading ? (
-          <div className="flex items-center justify-center py-24 text-muted-foreground">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando matérias...
+          <div className="space-y-2.5 py-4 max-w-2xl">
+            {[0, 1, 2, 3, 4].map((sk) => (
+              <div
+                key={sk}
+                className="h-[76px] rounded-2xl border border-white/5 bg-zinc-900/60 animate-pulse p-4 flex items-center gap-3.5"
+              >
+                <div className="w-9 h-9 rounded-xl bg-white/10 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-2/3 rounded bg-white/10" />
+                  <div className="h-3 w-1/4 rounded bg-white/5" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredTemas.length === 0 ? (
-          <div className="text-center py-24 text-muted-foreground flex flex-col items-center">
-            <p className="font-semibold text-lg mb-4">Nenhuma matéria encontrada</p>
-            {q && (
-              <button 
-                onClick={() => { haptic.selection(); setQ(""); }}
-                className="px-6 py-2.5 rounded-xl text-white font-bold text-sm active:opacity-70 transition-all shadow-md"
-                style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
-              >
-                Limpar Pesquisa
-              </button>
-            )}
+          <div className="text-center py-20 text-muted-foreground flex flex-col items-center gap-3">
+            <p className="font-semibold text-base text-zinc-300">
+              {ordem === "fav" && !q
+                ? "Nenhum tema favoritado nesta matéria"
+                : "Nenhum tema encontrado"}
+            </p>
+            <div className="flex items-center gap-2">
+              {q && (
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); setQ(""); }}
+                  className="px-5 py-2.5 rounded-xl text-white font-bold text-xs active:opacity-70 transition-all shadow-md cursor-pointer"
+                  style={{ backgroundColor: palette.primary, boxShadow: `0 4px 14px ${palette.primary}4D` }}
+                >
+                  Limpar pesquisa
+                </button>
+              )}
+              {ordem === "fav" && (
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); setOrdem("crono"); }}
+                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-all cursor-pointer"
+                >
+                  Ver todos os temas
+                </button>
+              )}
+            </div>
           </div>
         ) : (
-          <div className="space-y-2.5 py-4">
-            {filteredTemas.map((r, i) => {
-              const lidosCount = recentes.filter(x => x.area === decodedArea && x.tema === r.tema).length;
-              const pct = r.total > 0 ? Math.min(100, Math.round((lidosCount / r.total) * 100)) : 0;
-              const ordemStr = String(i + 1).padStart(2, '0');
+          <div className="lg:grid lg:grid-cols-12 lg:gap-6 items-start">
+            <div className="space-y-2.5 py-4 lg:col-span-6">
+              {filteredTemas.map((r, i) => {
+                const lidosCount = recentes.filter(x => x.area === decodedArea && x.tema === r.tema).length;
+                const pct = r.total > 0 ? Math.min(100, Math.round((lidosCount / r.total) * 100)) : 0;
+                const ordemStr = String(i + 1).padStart(2, '0');
+                const isSelectedDesktop = isDesktop && selectedTema?.tema === r.tema;
 
-              return (
-                <button
-                  key={r.tema}
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
-                    setSelectedTema({
-                      tema: r.tema,
-                      ordemStr,
-                      total: r.total,
-                    });
-                  }}
-                  className="w-full group flex items-center gap-3.5 p-4 rounded-2xl bg-zinc-900/75 border border-white/10 hover:border-white/25 hover:bg-zinc-900 transition-all text-left cursor-pointer active:scale-[0.98]"
-                >
-                  <div
-                    className="w-9 h-9 rounded-xl border flex items-center justify-center font-mono font-bold text-xs shrink-0"
-                    style={{
-                      backgroundColor: `${palette.primary}1A`,
-                      borderColor: `${palette.primary}40`,
-                      color: palette.primary,
+                return (
+                  <button
+                    key={r.tema}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setSelectedTema({
+                        tema: r.tema,
+                        ordemStr,
+                        total: r.total,
+                      });
                     }}
+                    className={cn(
+                      "w-full group flex items-center gap-3.5 p-4 rounded-2xl border transition-all text-left cursor-pointer active:scale-[0.98]",
+                      isSelectedDesktop
+                        ? "bg-zinc-900 border-white/30 shadow-lg"
+                        : "bg-zinc-900/75 border-white/10 hover:border-white/25 hover:bg-zinc-900"
+                    )}
                   >
-                    {ordemStr}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm sm:text-[15px] font-bold text-white leading-snug group-hover:text-zinc-100 transition-colors">
-                      {r.tema}
-                    </p>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">
-                      {r.total} {r.total === 1 ? 'tópico' : 'tópicos'}
-                      {pct > 0 ? ` • ${pct}% lido` : ''}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white shrink-0 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              );
-            })}
+                    <div
+                      className="w-9 h-9 rounded-xl border flex items-center justify-center font-mono font-bold text-xs shrink-0"
+                      style={{
+                        backgroundColor: `${palette.primary}1A`,
+                        borderColor: `${palette.primary}40`,
+                        color: palette.primary,
+                      }}
+                    >
+                      {ordemStr}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm sm:text-[15px] font-bold text-white leading-snug group-hover:text-zinc-100 transition-colors">
+                        {formatJuridicoTitle(r.tema)}
+                      </p>
+                      <p className="text-[11px] text-zinc-400 mt-0.5">
+                        {r.total} {r.total === 1 ? 'tópico' : 'tópicos'}
+                        {pct > 0 ? ` • ${pct}% lido` : ''}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white shrink-0 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                );
+              })}
+            </div>
+
+            {isDesktop && (
+              <div className="hidden lg:block lg:col-span-6 lg:sticky lg:top-4 py-4">
+                <ResumosTemaSheet
+                  inline
+                  area={decodedArea}
+                  tema={selectedTema}
+                  metodo={metodo}
+                  accentColor={palette.primary}
+                  onProgressChange={syncLocalProgress}
+                  onClose={() => setSelectedTema(null)}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
       </div>
 
-      <ResumosTemaSheet
-        area={decodedArea}
-        tema={selectedTema}
-        metodo={metodo}
-        accentColor={palette.primary}
-        onClose={() => setSelectedTema(null)}
-      />
+      {!isDesktop && (
+        <ResumosTemaSheet
+          area={decodedArea}
+          tema={selectedTema}
+          metodo={metodo}
+          accentColor={palette.primary}
+          onProgressChange={syncLocalProgress}
+          onClose={() => setSelectedTema(null)}
+        />
+      )}
     </div>
   );
 }

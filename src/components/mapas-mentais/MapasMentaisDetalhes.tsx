@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { Search, X, Bookmark, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { CATEGORIA_COR, getCorParaItem, formatarTituloMapa } from './mapasConstants';
@@ -57,6 +57,20 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
 }: MapasMentaisDetalhesProps) {
   const isMateria = categoria === 'materias';
   const corCategoria = getCorParaItem(item.key, categoria);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Atalho "/" no desktop para focar o campo de pesquisa
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      e.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const rowVirtualizer = useVirtualizer({
     count: artigos.length,
@@ -71,6 +85,7 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
         <input
+          ref={searchInputRef}
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value.slice(0, 60))}
@@ -99,13 +114,32 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
       {isMateria && !tema && (
         <div className="space-y-3">
           {carregandoTemas ? (
-            <div className="py-16 text-center text-xs text-zinc-400">
-              <div className="w-7 h-7 rounded-full border-2 border-purple-500 border-t-transparent animate-spin mx-auto mb-2" />
-              Carregando tópicos de {item.label}...
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
+              {[0, 1, 2, 3, 4, 5].map((sk) => (
+                <div
+                  key={sk}
+                  className="h-[68px] rounded-xl bg-zinc-900/70 border border-white/5 animate-pulse p-3.5 flex items-center gap-3"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-white/10 shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 w-3/4 rounded bg-white/10" />
+                    <div className="h-2.5 w-1/3 rounded bg-white/5" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : !temas.length ? (
-            <div className="py-12 text-center text-xs text-zinc-400">
-              Nenhum tópico encontrado.
+            <div className="py-12 text-center text-xs text-zinc-400 space-y-3">
+              <p>Nenhum tópico encontrado{busca.trim() ? ` para "${busca.trim()}"` : ''}.</p>
+              {busca.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold transition cursor-pointer"
+                >
+                  Limpar pesquisa
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
@@ -175,16 +209,33 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
           </div>
 
           {carregandoSubtemas ? (
-            <div className="py-16 text-center text-xs text-zinc-400">
-              <div className="w-7 h-7 rounded-full border-2 border-purple-500 border-t-transparent animate-spin mx-auto mb-2" />
-              Carregando subtemas...
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+              {[0, 1, 2, 3].map((sk) => (
+                <div
+                  key={sk}
+                  className="h-[64px] rounded-xl bg-zinc-900/70 border border-white/5 animate-pulse p-3.5 flex items-center gap-3"
+                >
+                  <div className="w-7 h-7 rounded-full bg-white/10 shrink-0" />
+                  <div className="h-3.5 flex-1 rounded bg-white/10" />
+                  <div className="w-16 h-7 rounded-lg bg-white/10 shrink-0" />
+                </div>
+              ))}
             </div>
           ) : !subtemas.length ? (
-            <div className="py-12 text-center text-xs text-zinc-400">
-              Nenhum subtema encontrado para este tópico.
+            <div className="py-12 text-center text-xs text-zinc-400 space-y-3">
+              <p>Nenhum subtema encontrado{busca.trim() ? ` para "${busca.trim()}"` : ' para este tópico'}.</p>
+              {busca.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold transition cursor-pointer"
+                >
+                  Limpar pesquisa
+                </button>
+              )}
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 sm:gap-3">
               {subtemas.map((s, index) => {
                 const chave = chaveDe(item, `${tema.tema} ${s.subtema}`, 'tema');
                 const pronto = prontos[chave];
@@ -256,13 +307,32 @@ export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
       {!isMateria && (
         <div className="space-y-3">
           {carregandoArtigos ? (
-            <div className="py-16 text-center text-xs text-zinc-400">
-              <div className="w-7 h-7 rounded-full border-2 border-purple-500 border-t-transparent animate-spin mx-auto mb-2" />
-              Carregando artigos de {item.label}...
+            <div className="space-y-2">
+              {[0, 1, 2, 3, 4].map((sk) => (
+                <div
+                  key={sk}
+                  className="h-[78px] rounded-xl bg-zinc-900/70 border border-white/5 animate-pulse p-3.5 flex items-center justify-between gap-3"
+                >
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3.5 w-1/3 rounded bg-white/10" />
+                    <div className="h-3 w-4/5 rounded bg-white/5" />
+                  </div>
+                  <div className="w-16 h-7 rounded-lg bg-white/10 shrink-0" />
+                </div>
+              ))}
             </div>
           ) : !artigos.length ? (
-            <div className="py-12 text-center text-xs text-zinc-400">
-              Nenhum artigo encontrado.
+            <div className="py-12 text-center text-xs text-zinc-400 space-y-3">
+              <p>Nenhum artigo encontrado{busca.trim() ? ` para "${busca.trim()}"` : ''}.</p>
+              {busca.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold transition cursor-pointer"
+                >
+                  Limpar pesquisa
+                </button>
+              )}
             </div>
           ) : (
             <div 

@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import { cleanTitulo } from "@/components/resumos-juridicos/resumoMarkdownNormalizer";
+import { formatJuridicoTitle } from "@/lib/text/formatJuridicoTitle";
+import { useVoiceSearch } from "@/hooks/useVoiceSearch";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,6 +57,7 @@ export default function ResumosJuridicosSubtemas() {
   });
   const [loading, setLoading] = useState(() => rows.length === 0);
   const [q, setQ] = useState("");
+  const { listening, startVoiceSearch } = useVoiceSearch(setQ);
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
   const [selectedMetodo, setSelectedMetodo] = useState<Metodo>(urlMetodo);
@@ -283,8 +285,13 @@ export default function ResumosJuridicosSubtemas() {
               className="pl-12 pr-12 h-14 rounded-2xl backdrop-blur-md text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all focus:border-primary/80" 
             />
             <button
-              onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all text-white/70 hover:text-white"
+              type="button"
+              onClick={startVoiceSearch}
+              aria-label="Pesquisar por voz"
+              className={cn(
+                "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all",
+                listening ? "text-red-400 animate-pulse bg-red-500/15" : "text-white/70 hover:text-white"
+              )}
             >
               <Mic className="w-5 h-5" />
             </button>
@@ -363,7 +370,7 @@ export default function ResumosJuridicosSubtemas() {
           </div>
         ) : (
           <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-            <div className="relative space-y-4 ml-3 sm:ml-4 pb-20 z-[2]">
+            <div className="relative space-y-4 pb-20 z-[2]">
               <AnimatePresence mode="popLayout">
                 {subtemasOrdenados.map((r, i) => {
                 const numero = String(
@@ -448,7 +455,7 @@ export default function ResumosJuridicosSubtemas() {
                       <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <h3 className="text-[14.5px] sm:text-[15.5px] font-normal font-sans text-zinc-100 group-hover:text-white break-words line-clamp-2 leading-snug transition-colors">
-                            {cleanTitulo(r.subtema || r.tema)}
+                            {formatJuridicoTitle(r.subtema || r.tema)}
                           </h3>
                           {isLocked && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
