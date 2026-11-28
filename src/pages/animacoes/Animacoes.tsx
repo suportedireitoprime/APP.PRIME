@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   Award,
-  BookOpen,
+  ChevronRight,
   Clapperboard,
   Heart,
   MessageSquare,
@@ -19,7 +19,7 @@ import {
 import { toast } from 'sonner';
 import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
 import type { AnimacaoItem } from '@/data/animacoesTypes';
-import { getAreaBadgeClass } from '@/data/animacoesTypes';
+import { getAreaBadgeClass, formatAreaCurta } from '@/data/animacoesTypes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useAnimacoesInteracoes } from '@/hooks/useAnimacoesInteracoes';
 import { haptic } from '@/lib/nativeHaptics';
@@ -27,15 +27,10 @@ import { resetGlobalScroll } from '@/lib/scrollUtils';
 
 const animacoesCatalog = animacoesCatalogRaw as AnimacaoItem[];
 
-type AbaPainel = 'comentarios' | 'resumo' | 'ranking';
 type OrdenacaoLista = 'padrao' | 'ranking' | 'comentarios';
 
 function formatTitulo(titulo: string) {
   return titulo.replace(/\s*[—–]\s*/g, ': ');
-}
-
-function formatAreaCurta(categoria: string) {
-  return categoria.replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '').trim() || categoria;
 }
 
 function formatarDataCurta(iso: string) {
@@ -60,7 +55,6 @@ const Animacoes: React.FC = () => {
   const [categoria, setCategoria] = useState<string>('Todas');
   const [tema, setTema] = useState<string>('Todos');
   const [ordenacao, setOrdenacao] = useState<OrdenacaoLista>('padrao');
-  const [abaPainel, setAbaPainel] = useState<AbaPainel>('comentarios');
   const [hoverNota, setHoverNota] = useState<number | null>(null);
   const [novoComentario, setNovoComentario] = useState('');
   const [iframeHeight, setIframeHeight] = useState<number | null>(null);
@@ -69,6 +63,14 @@ const Animacoes: React.FC = () => {
     () => (slug ? animacoesCatalog.find((a) => a.slug === slug) || null : null),
     [slug]
   );
+
+  const proximaDaArea = useMemo(() => {
+    if (!ativa) return null;
+    const daArea = animacoesCatalog.filter((a) => a.categoria === ativa.categoria);
+    if (daArea.length <= 1) return null;
+    const idx = daArea.findIndex((a) => a.slug === ativa.slug);
+    return daArea[(idx + 1) % daArea.length] || null;
+  }, [ativa]);
 
   const {
     userId,
@@ -342,6 +344,48 @@ const Animacoes: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {proximaDaArea && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      resetGlobalScroll();
+                      navigate(`/animacoes/${proximaDaArea.slug}`);
+                    }}
+                    className="mt-3 w-full flex items-center gap-3 p-3 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800 hover:border-zinc-700 text-left transition-colors group"
+                  >
+                    {proximaDaArea.capaR2Url ? (
+                      <img
+                        src={proximaDaArea.capaR2Url}
+                        alt={formatTitulo(proximaDaArea.tituloHtml || proximaDaArea.titulo)}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-11 h-[62px] rounded-lg object-cover brightness-110 contrast-105 saturate-125 border border-white/15 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-11 h-[62px] rounded-lg bg-zinc-800 flex items-center justify-center shrink-0">
+                        <Clapperboard className="w-5 h-5 text-red-500" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                        Próxima em {formatAreaCurta(proximaDaArea.categoria)}
+                      </span>
+                      <p className="text-xs sm:text-sm font-bold text-white truncate group-hover:text-red-400 transition-colors">
+                        {formatTitulo(proximaDaArea.tituloHtml || proximaDaArea.titulo)}
+                      </p>
+                      {proximaDaArea.artigoRef && (
+                        <p className="text-[11px] text-zinc-400 truncate">
+                          {proximaDaArea.artigoRef}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
 
