@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   Award,
+  CheckCircle2,
   ChevronRight,
   Clapperboard,
   Heart,
@@ -19,7 +20,7 @@ import {
 import { toast } from 'sonner';
 import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
 import type { AnimacaoItem } from '@/data/animacoesTypes';
-import { getAreaBadgeClass, formatAreaCurta } from '@/data/animacoesTypes';
+import { getAreaBadgeStyle, formatAreaCurta } from '@/data/animacoesTypes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useAnimacoesInteracoes } from '@/hooks/useAnimacoesInteracoes';
 import { haptic } from '@/lib/nativeHaptics';
@@ -83,15 +84,23 @@ const Animacoes: React.FC = () => {
     toggleFavorito,
     enviarComentario,
     excluirComentario,
+    marcarComoVista,
   } = useAnimacoesInteracoes(animacoesCatalog, ativa?.slug);
+
+  useEffect(() => {
+    if (ativa?.slug) {
+      void marcarComoVista(ativa.slug);
+    }
+  }, [ativa?.slug, marcarComoVista]);
 
   const categorias = useMemo(() => {
     const unicas = Array.from(new Set(animacoesCatalog.map((a) => a.categoria))).sort();
-    return ['Todas', 'Favoritas', ...unicas];
+    return ['Todas', 'Não vistas', 'Favoritas', ...unicas];
   }, []);
 
   const temasDisponiveis = useMemo(() => {
     const base = animacoesCatalog.filter((item) => {
+      if (categoria === 'Não vistas') return !statsMap[item.slug]?.visto;
       if (categoria === 'Favoritas') return Boolean(statsMap[item.slug]?.favoritada);
       if (categoria !== 'Todas') return item.categoria === categoria;
       return true;
@@ -132,7 +141,9 @@ const Animacoes: React.FC = () => {
     const q = busca.trim().toLowerCase();
     const lista = animacoesCatalog.filter((item) => {
       const stats = statsMap[item.slug];
-      if (categoria === 'Favoritas') {
+      if (categoria === 'Não vistas') {
+        if (stats?.visto) return false;
+      } else if (categoria === 'Favoritas') {
         if (!stats?.favoritada) return false;
       } else if (categoria !== 'Todas' && item.categoria !== categoria) {
         return false;
@@ -703,7 +714,7 @@ const Animacoes: React.FC = () => {
                       className="group cursor-pointer flex items-center gap-3.5 p-3 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800 hover:border-zinc-700 text-left transition-colors"
                     >
                       {item.capaR2Url ? (
-                        <div className="relative w-[76px] sm:w-[88px] aspect-[7/10] rounded-xl bg-zinc-900 overflow-hidden shrink-0 border border-white/15 shadow-lg shadow-black/70">
+                        <div className="relative w-[76px] sm:w-[88px] aspect-[7/10] rounded-xl bg-zinc-900 overflow-hidden shrink-0 border border-white/15">
                           <img
                             src={item.capaR2Url}
                             alt={formatTitulo(item.tituloHtml || item.titulo)}
@@ -711,11 +722,6 @@ const Animacoes: React.FC = () => {
                             decoding="async"
                             className="w-full h-full object-cover brightness-110 contrast-105 saturate-125 group-hover:scale-105 transition-transform duration-300"
                           />
-                          <span
-                            className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded backdrop-blur-sm border text-[8px] font-bold uppercase tracking-wider max-w-[calc(100%-12px)] truncate shadow-sm ${getAreaBadgeClass(item.categoria)}`}
-                          >
-                            {formatAreaCurta(item.categoria)}
-                          </span>
                         </div>
                       ) : (
                         <div className="w-[76px] sm:w-[88px] aspect-[7/10] rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center shrink-0">
@@ -725,9 +731,25 @@ const Animacoes: React.FC = () => {
 
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider ${getAreaBadgeClass(item.categoria)}`}>
+                          <span
+                            style={getAreaBadgeStyle(item.categoria)}
+                            className="px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider"
+                          >
                             {formatAreaCurta(item.categoria)}
                           </span>
+                          {st?.visto ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/40 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <span>Visto</span>
+                            </span>
+                          ) : (
+                            <span
+                              style={{ backgroundColor: '#10B981', color: '#09090B' }}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider"
+                            >
+                              NOVO
+                            </span>
+                          )}
                           {item.artigoRef && (
                             <span className="text-[11px] text-zinc-400 truncate">
                               {item.artigoRef}

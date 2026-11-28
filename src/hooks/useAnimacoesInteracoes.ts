@@ -20,6 +20,7 @@ export interface AnimacaoStats {
   totalComentarios: number;
   minhaNota: number | null;
   favoritada: boolean;
+  visto: boolean;
 }
 
 export interface AnimacaoRankingEntry {
@@ -45,7 +46,11 @@ interface ComentarioCountRow {
   animacao_slug: string;
 }
 
-// Tabelas criadas via migration 20261128013000_animacoes_interacoes.sql
+interface VisualizacaoRow {
+  animacao_slug: string;
+}
+
+// Tabelas criadas via migrations 20261128013000 e 20261128103000
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as unknown as { from: (table: string) => any };
 
@@ -56,13 +61,84 @@ const EMPTY_STATS: AnimacaoStats = {
   totalComentarios: 0,
   minhaNota: null,
   favoritada: false,
+  visto: false,
 };
+
+// Snapshot em memória para sincronizar vistas instantaneamente entre Home e /animacoes
+let vistasMemorySet = new Set<string>();
+let vistasLoadedUserId: string | null = null;
+const vistasListeners = new Set<() => void>();
+
+function notifyVistas() {
+  for (const fn of vistasListeners) fn();
+}
+
+export function useAnimacoesVistas() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [vistasSet, setVistasSet] = useState<Set<string>>(() => new Set(vistasMemorySet));
+
+  useEffect(() => {
+    const sync = () => setVistasSet(new Set(vistasMemorySet));
+    vistasListeners.add(sync);
+    return () => {
+      vistasListeners.delete(sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!active) return;
+      const uid = data?.user?.id ?? null;
+      setUserId(uid);
+      if (!uid) {
+        if (vistasLoadedUserId !== null) {
+          vistasMemorySet = new Set();
+          vistasLoadedUserId = null;
+          notifyVistas();
+        }
+        return;
+      }
+      if (vistasLoadedUserId === uid) return;
+      const { data: rows, error } = await db
+        .from('animacoes_visualizacoes')
+        .select('animacao_slug')
+        .eq('user_id', uid);
+      if (!active) return;
+      if (!error && Array.isArray(rows)) {
+        vistasMemorySet = new Set((rows as VisualizacaoRow[]).map((r) => r.animacao_slug));
+        vistasLoadedUserId = uid;
+        notifyVistas();
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const marcarComoVista = useCallback(
+    async (slug: string) => {
+      if (!slug || vistasMemorySet.has(slug)) return;
+      vistasMemorySet = new Set(vistasMemorySet).add(slug);
+      notifyVistas();
+
+      if (!userId) return;
+      await db.from('animacoes_visualizacoes').upsert(
+        { animacao_slug: slug, user_id: userId, visto_em: new Date().toISOString() },
+        { onConflict: 'animacao_slug,user_id' }
+      );
+    },
+    [userId]
+  );
+
+  return { userId, vistasSet, marcarComoVista };
+}
 
 export function useAnimacoesInteracoes(
   catalog: AnimacaoItem[],
   activeSlug?: string
 ) {
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId, vistasSet, marcarComoVista } = useAnimacoesVistas();
   const [userName, setUserName] = useState<string>('Estudante');
   const [avaliacoes, setAvaliacoes] = useState<AvaliacaoRow[]>([]);
   const [favoritos, setFavoritos] = useState<FavoritoRow[]>([]);
@@ -77,7 +153,6 @@ export function useAnimacoesInteracoes(
     supabase.auth.getUser().then(({ data }) => {
       if (!active) return;
       const u = data?.user;
-      setUserId(u?.id ?? null);
       const meta = (u?.user_metadata || {}) as Record<string, unknown>;
       const nome =
         (typeof meta.full_name === 'string' && meta.full_name.trim()) ||
@@ -147,13 +222,17 @@ export function useAnimacoesInteracoes(
   const statsMap = useMemo(() => {
     const map: Record<string, AnimacaoStats> = {};
     for (const item of catalog) {
-      map[item.slug] = { ...EMPTY_STATS, totalComentarios: comentariosCount[item.slug] || 0 };
+      map[item.slug] = {
+        ...EMPTY_STATS,
+        totalComentarios: comentariosCount[item.slug] || 0,
+        visto: vistasSet.has(item.slug),
+      };
     }
 
     const somas: Record<string, number> = {};
     for (const av of avaliacoes) {
       if (!map[av.animacao_slug]) {
-        map[av.animacao_slug] = { ...EMPTY_STATS };
+        map[av.animacao_slug] = { ...EMPTY_STATS, visto: vistasSet.has(av.animacao_slug) };
       }
       map[av.animacao_slug].totalVotos += 1;
       somas[av.animacao_slug] = (somas[av.animacao_slug] || 0) + Number(av.nota);
@@ -169,7 +248,7 @@ export function useAnimacoesInteracoes(
 
     for (const fav of favoritos) {
       if (!map[fav.animacao_slug]) {
-        map[fav.animacao_slug] = { ...EMPTY_STATS };
+        map[fav.animacao_slug] = { ...EMPTY_STATS, visto: vistasSet.has(fav.animacao_slug) };
       }
       map[fav.animacao_slug].totalFavoritos += 1;
       if (userId && fav.user_id === userId) {
@@ -178,7 +257,7 @@ export function useAnimacoesInteracoes(
     }
 
     return map;
-  }, [catalog, avaliacoes, favoritos, comentariosCount, userId]);
+  }, [catalog, avaliacoes, favoritos, comentariosCount, userId, vistasSet]);
 
   const ranking = useMemo<AnimacaoRankingEntry[]>(() => {
     return catalog
@@ -334,6 +413,7 @@ export function useAnimacoesInteracoes(
 
   return {
     userId,
+    vistasSet,
     statsMap,
     ranking,
     comentarios,
@@ -344,5 +424,6 @@ export function useAnimacoesInteracoes(
     toggleFavorito,
     enviarComentario,
     excluirComentario,
+    marcarComoVista,
   };
 }

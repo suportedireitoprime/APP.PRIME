@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 export interface AnimacaoItem {
   slug: string;
   titulo: string;
@@ -23,36 +25,47 @@ export function formatAreaCurta(categoria: string): string {
   return categoria.replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '').trim() || categoria;
 }
 
-const AREA_BADGE_COLORS: Record<string, string> = {
-  'direito civil': 'bg-sky-600/90 border-sky-400/50 text-white',
-  'direito penal': 'bg-red-600/90 border-red-400/50 text-white',
-  'direito do consumidor': 'bg-emerald-600/90 border-emerald-400/50 text-white',
-  'direito processual civil': 'bg-violet-600/90 border-violet-400/50 text-white',
-  'direito processual penal': 'bg-orange-600/90 border-orange-400/50 text-white',
-  'direito processual do trabalho': 'bg-teal-600/90 border-teal-400/50 text-white',
-  'direito constitucional': 'bg-indigo-600/90 border-indigo-400/50 text-white',
-  'direito administrativo': 'bg-cyan-600/90 border-cyan-400/50 text-white',
-  'direito tributario': 'bg-pink-600/90 border-pink-400/50 text-white',
-  'direito do trabalho': 'bg-lime-600/90 border-lime-400/50 text-white',
+const AREA_HEX_COLORS: Record<string, { bg: string; border: string }> = {
+  'direito civil': { bg: 'rgba(2, 132, 199, 0.92)', border: 'rgba(56, 189, 248, 0.65)' },
+  'direito penal': { bg: 'rgba(220, 38, 38, 0.92)', border: 'rgba(248, 113, 113, 0.65)' },
+  'direito do consumidor': { bg: 'rgba(5, 150, 105, 0.92)', border: 'rgba(52, 211, 153, 0.65)' },
+  'direito constitucional': { bg: 'rgba(79, 70, 229, 0.92)', border: 'rgba(129, 140, 248, 0.65)' },
+  'direito processual civil': { bg: 'rgba(124, 58, 237, 0.92)', border: 'rgba(167, 139, 250, 0.65)' },
+  'direito processual penal': { bg: 'rgba(234, 88, 12, 0.92)', border: 'rgba(251, 146, 60, 0.65)' },
+  'direito processual do trabalho': { bg: 'rgba(13, 148, 136, 0.92)', border: 'rgba(45, 212, 191, 0.65)' },
+  'etica profissional': { bg: 'rgba(192, 38, 211, 0.92)', border: 'rgba(232, 121, 249, 0.65)' },
+  'direito administrativo': { bg: 'rgba(8, 145, 178, 0.92)', border: 'rgba(34, 211, 238, 0.65)' },
+  'direito tributario': { bg: 'rgba(219, 39, 119, 0.92)', border: 'rgba(244, 114, 182, 0.65)' },
+  'direito do trabalho': { bg: 'rgba(101, 163, 13, 0.92)', border: 'rgba(163, 230, 53, 0.65)' },
 };
 
-const FALLBACK_BADGE_COLORS = [
-  'bg-sky-600/90 border-sky-400/50 text-white',
-  'bg-emerald-600/90 border-emerald-400/50 text-white',
-  'bg-violet-600/90 border-violet-400/50 text-white',
-  'bg-orange-600/90 border-orange-400/50 text-white',
-  'bg-teal-600/90 border-teal-400/50 text-white',
-  'bg-pink-600/90 border-pink-400/50 text-white',
+const FALLBACK_HEX_COLORS = [
+  { bg: 'rgba(2, 132, 199, 0.92)', border: 'rgba(56, 189, 248, 0.65)' },
+  { bg: 'rgba(5, 150, 105, 0.92)', border: 'rgba(52, 211, 153, 0.65)' },
+  { bg: 'rgba(124, 58, 237, 0.92)', border: 'rgba(167, 139, 250, 0.65)' },
+  { bg: 'rgba(234, 88, 12, 0.92)', border: 'rgba(251, 146, 60, 0.65)' },
+  { bg: 'rgba(13, 148, 136, 0.92)', border: 'rgba(45, 212, 191, 0.65)' },
+  { bg: 'rgba(192, 38, 211, 0.92)', border: 'rgba(232, 121, 249, 0.65)' },
 ];
 
-export function getAreaBadgeClass(categoria: string): string {
+export function getAreaBadgeStyle(categoria: string): CSSProperties {
   const key = categoria
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim();
-  if (AREA_BADGE_COLORS[key]) return AREA_BADGE_COLORS[key];
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
-  return FALLBACK_BADGE_COLORS[hash % FALLBACK_BADGE_COLORS.length];
+  const palette = AREA_HEX_COLORS[key] ?? (() => {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    return FALLBACK_HEX_COLORS[hash % FALLBACK_HEX_COLORS.length];
+  })();
+  return {
+    backgroundColor: palette.bg,
+    borderColor: palette.border,
+    color: '#FFFFFF',
+  };
+}
+
+export function getAreaBadgeClass(_categoria: string): string {
+  return 'text-white';
 }

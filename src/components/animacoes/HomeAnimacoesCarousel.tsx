@@ -1,14 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clapperboard, Play } from 'lucide-react';
+import { CheckCircle2, Clapperboard, Play } from 'lucide-react';
 import animacoesCatalogRaw from '@/data/animacoesCatalog.json';
 import {
   type AnimacaoItem,
   formatAnimacaoTitulo,
   formatAreaCurta,
-  getAreaBadgeClass,
+  getAreaBadgeStyle,
 } from '@/data/animacoesTypes';
 import HomeSectionHeader from '@/components/vademecum/home/sections/HomeSectionHeader';
+import { useAnimacoesVistas } from '@/hooks/useAnimacoesInteracoes';
 import { haptic } from '@/lib/nativeHaptics';
 import { prefetchRoute } from '@/lib/routePrefetch';
 
@@ -16,6 +17,7 @@ const animacoesCatalog = animacoesCatalogRaw as AnimacaoItem[];
 
 export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoesCarousel() {
   const navigate = useNavigate();
+  const { vistasSet } = useAnimacoesVistas();
 
   if (!animacoesCatalog || animacoesCatalog.length === 0) return null;
 
@@ -35,7 +37,8 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
       <div className="flex items-start gap-3 overflow-x-auto pb-1 no-scrollbar snap-x -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-4 sm:px-6 md:px-8 lg:px-12">
         {destaques.map((item, idx) => {
           const tituloLimpo = formatAnimacaoTitulo(item.tituloHtml || item.titulo);
-          const areaClass = getAreaBadgeClass(item.categoria);
+          const areaStyle = getAreaBadgeStyle(item.categoria);
+          const vista = vistasSet.has(item.slug);
           return (
             <button
               key={item.slug}
@@ -67,10 +70,28 @@ export const HomeAnimacoesCarousel: React.FC = React.memo(function HomeAnimacoes
                 )}
 
                 <span
-                  className={`absolute top-2 left-2 truncate px-2 py-0.5 rounded-md backdrop-blur-sm border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-16px)] shadow-sm ${areaClass}`}
+                  style={areaStyle}
+                  className="absolute top-2 left-2 truncate px-2 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider w-fit max-w-[calc(100%-64px)] shadow-sm"
                 >
                   {formatAreaCurta(item.categoria)}
                 </span>
+
+                {vista ? (
+                  <span
+                    className="absolute top-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-black/80 border border-emerald-400/50 text-[9px] font-bold uppercase tracking-wider text-emerald-300 shadow-sm"
+                    title="Você já assistiu"
+                  >
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                    <span>Visto</span>
+                  </span>
+                ) : (
+                  <span
+                    style={{ backgroundColor: '#10B981', color: '#09090B' }}
+                    className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider shadow-sm"
+                  >
+                    NOVO
+                  </span>
+                )}
 
                 <div className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg shadow-black/50 group-hover:scale-110 transition-transform">
                   <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />
